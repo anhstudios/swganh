@@ -328,12 +328,12 @@ void Player::ClearAllWaypoints()
         ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
 }
 
-uint32_t Player::GetCurrentForcePower() 
+int32_t Player::GetCurrentForcePower() 
 {
     return current_force_power_;
 }
 
-void Player::SetCurrentForcePower(uint32_t force_power)
+void Player::SetCurrentForcePower(int32_t force_power)
 {
     current_force_power_ = force_power;
 
@@ -343,7 +343,7 @@ void Player::SetCurrentForcePower(uint32_t force_power)
 
 void Player::IncrementForcePower(int32_t force_power)
 {
-    uint32_t new_force_power = current_force_power_ + force_power;
+    int32_t new_force_power = current_force_power_ + force_power;
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
     
@@ -351,12 +351,12 @@ void Player::IncrementForcePower(int32_t force_power)
         ("Player::ForcePower", static_pointer_cast<Player>(shared_from_this())));
 }
 
-uint32_t Player::GetMaxForcePower() 
+int32_t Player::GetMaxForcePower() 
 {
     return max_force_power_;
 }
 
-void Player::SetMaxForcePower(uint32_t force_power)
+void Player::SetMaxForcePower(int32_t force_power)
 {
     max_force_power_ = force_power;
 

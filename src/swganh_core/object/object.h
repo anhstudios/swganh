@@ -55,7 +55,7 @@ typedef std::map<
 	std::shared_ptr<SlotInterface>
 > ObjectSlots;
 
-typedef boost::variant<float, int32_t, std::wstring> AttributeVariant;
+typedef boost::variant<float, int32_t, std::wstring, boost::blank> AttributeVariant;
 
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
@@ -528,7 +528,8 @@ public:
 	T GetAttribute(const std::string& name)
 	{
 		auto val = GetAttribute(name);
-		if (!val.empty())
+		// Return if not blank
+		if (val.which() != 3)
 			return boost::get<T>(val);
 		return 0;
 	}
@@ -544,7 +545,8 @@ public:
 	T GetAttributeRecursive(const std::string& name)
 	{
 		auto val = GetAttributeRecursive(name);
-		if (!val.empty())
+		// Return if not blank
+		if (val.which() != 3)
 			return boost::get<T>(val);
 		return 0;
 	}

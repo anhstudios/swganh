@@ -41,7 +41,7 @@ std::basic_ostream< CharT, TraitsT >& strm, severity_level lvl)
 {
     static const char* const str[] =
     {
-        "event"
+        "event",
         "info",
         "warning",
         "error",

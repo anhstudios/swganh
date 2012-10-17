@@ -505,7 +505,7 @@ public:
     /**
      * @return the current force power of the player.
      */
-    uint32_t GetCurrentForcePower() ;
+    int32_t GetCurrentForcePower() ;
     
     /**
      * Increments the force power of the player. Can be a negative value.
@@ -519,19 +519,19 @@ public:
      *
      * @param force_power The new force power.
      */
-    void SetCurrentForcePower(uint32_t force_power);
+    void SetCurrentForcePower(int32_t force_power);
     
     /**
      * @return the max force power of the player.
      */
-    uint32_t GetMaxForcePower() ;
+    int32_t GetMaxForcePower() ;
     
     /**
      * Sets the max force power.
      *
      * @param force_power The new max force power.
      */
-    void SetMaxForcePower(uint32_t force_power);
+    void SetMaxForcePower(int32_t force_power);
 
     uint32_t GetCurrentForceSensitiveQuests();
     void AddCurrentForceSensitiveQuest(uint32_t quest_mask);
@@ -879,8 +879,8 @@ private:
     std::atomic<uint32_t> region_;
     swganh::messages::containers::NetworkMap<std::string, XpData> experience_;
     swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> waypoints_;
-    std::atomic<uint32_t> current_force_power_;
-    std::atomic<uint32_t> max_force_power_;
+    std::atomic<int32_t> current_force_power_;
+    std::atomic<int32_t> max_force_power_;
     std::atomic<uint32_t> current_force_sensitive_quests_;
     std::atomic<uint32_t> completed_force_sensitive_quests_;
     swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> quest_journal_;

@@ -18,7 +18,7 @@ class Weapon : public swganh::object::Tangible
 public:
 	typedef WeaponFactory FactoryType;
     typedef WeaponMessageBuilder MessageBuilderType;
-    
+    Weapon();
 	WeaponType GetWeaponType() { return weapon_type_; }
 	// WEAO
     virtual uint32_t GetType() const;

@@ -943,7 +943,7 @@ AttributeVariant Object::GetAttribute(const std::string& name)
 		return find_iter->second;
 	}	
 	LOG(info) << "Attribute "<< name << " does not exist";	
-	return AttributeVariant();
+	return boost::blank();
 	//throw std::runtime_error("Attribute " + name + " does not exist");
 }
 
@@ -963,7 +963,6 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 				break;
 			case 2:
 				return boost::get<wstring>(val);
-
 		}
 	} catch (std::exception& e) {
 		LOG(error) << "Attribute " << name << " could not be converted to wstring";
@@ -998,6 +997,9 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 			case 2:
 				ss << boost::get<wstring>(val);
 				break;
+			case 3:
+				ss << L"";
+				break;
 		}		
 	
 	return ss.str();
@@ -1014,7 +1016,7 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 		{
 			// float
 			case 0:
-				 float_val = boost::get<float>(val);
+				float_val = boost::get<float>(val);
 				return AddAttributeRecursive<float>(float_val, name);			
 			case 1:
 				int_val = boost::get<int32_t>(val);
@@ -1022,11 +1024,13 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 			case 2:
 				attr_val = boost::get<wstring>(val);
 				return AddAttributeRecursive<wstring>(attr_val, name);			
+			case 3:
+				return boost::blank();				
 		}	
-		return boost::get<wstring>(val);
+		return boost::get<wstring>(val);	
 	}
 	// Doesn't Exist
-	return 0;
+	return boost::blank();;
 }
 
 bool Object::HasAttribute(const std::string& name)

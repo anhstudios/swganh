@@ -38,6 +38,7 @@ namespace Concurrency {
 namespace swganh {
 namespace object {
 	class Weapon;
+	class Player;
 }
 namespace equipment {
 	class EquipmentServiceInterface;
@@ -175,6 +176,8 @@ namespace combat {
         CombatSpecialMoveEffect ApplyStates(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& defender, std::shared_ptr<CombatData> combat_data);
         int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& defender, std::shared_ptr<CombatData> combat_data, int damage, HIT_LOCATION pool);
         int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, std::shared_ptr<CombatData> combat_data, int damage, HIT_LOCATION pool);
+
+		bool ApplySpecialCost(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data);
         // Message Helpers
         void BroadcastCombatSpam(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, const std::shared_ptr<CombatData> combat_data, uint32_t damage, const std::string& string_file);
 
