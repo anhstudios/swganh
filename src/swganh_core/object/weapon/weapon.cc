@@ -16,4 +16,4 @@ Weapon::Weapon()
 uint32_t Weapon::GetType() const 
 { 
 	return Weapon::type; 
-}
+} 

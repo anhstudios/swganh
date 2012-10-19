@@ -105,24 +105,25 @@ void CombatService::SendCombatAction(BaseCombatCommand* command)
 {    
     auto actor = std::static_pointer_cast<Creature>(command->GetActor());
     auto target = std::static_pointer_cast<Tangible>(command->GetTarget());
-
-    if (actor != nullptr && InitiateCombat(actor, target, command->combat_data))
+	auto weapon = equipment_service_->GetEquippedObject<Weapon>(actor, "hold_r");
+    if (actor != nullptr && InitiateCombat(actor, target, weapon, command->combat_data))
     {
 		std::vector<CombatDefender> defender_data;
-        for (auto& target_ : GetCombatTargets(actor, target, command->combat_data))
+        for (auto& target_ : GetCombatTargets(actor, target, weapon, command->combat_data))
 		{
-			auto defender = DoCombat(actor, target_, command->combat_data);
+			auto defender = DoCombat(actor, target_, weapon, command->combat_data);
 			if (defender.defender_id > 0)
 				defender_data.push_back(defender);	
 		}
 		// Send Combat message
-		SendCombatActionMessage(actor, target, command->combat_data, defender_data);
+		SendCombatActionMessage(actor, target, weapon, command->combat_data, defender_data);
     }
 }
 
 CombatDefender CombatService::DoCombat(
 	const shared_ptr<Creature>& attacker,
 	const shared_ptr<Tangible>& target,
+	const shared_ptr<Weapon>& weapon,
 	std::shared_ptr<CombatData> combat_data)
 {
 	CombatDefender defender;
@@ -130,14 +131,14 @@ CombatDefender CombatService::DoCombat(
 	FlyTextColor color = GREEN;
 	HIT_TYPE hit_type = HIT;
 	HIT_LOCATION hit_location;
+	int total_damage = 0;
 
-	auto weapon = equipment_service_->GetEquippedObject<Weapon>(attacker, "hold_r");
 	if (!ApplySpecialCost(attacker, weapon, combat_data))
 		return defender;
 	if (target->GetType() == Creature::type)
 	{
 		auto creature_target = static_pointer_cast<Creature>(target);
-		hit_type = GetHitResult(attacker, creature_target, combat_data);
+		hit_type = GetHitResult(attacker, creature_target, weapon, combat_data);
 		hit_location = GetHitLocation(combat_data);
 		switch (hit_type)
 		{
@@ -167,10 +168,13 @@ CombatDefender CombatService::DoCombat(
 		// we always hit tangibles
 		combat_spam = CombatData::HIT_spam();
 	}
-	float initial_damage = CalculateDamage(attacker, target, combat_data);
-	int damage = ApplyDamage(attacker, target, combat_data, (int)(initial_damage), hit_location);
+	if (hit_type == HIT)
+	{
+		float initial_damage = CalculateDamage(attacker, target, combat_data);
+		total_damage = ApplyDamage(attacker, target, weapon, combat_data, (int)(initial_damage), hit_location);		
+	}
+	BroadcastCombatSpam(attacker, target, weapon, combat_data, total_damage, combat_spam);
 	CombatSpecialMoveEffect csme = ApplyStates(attacker, target, combat_data);
-	BroadcastCombatSpam(attacker, target, combat_data, damage, combat_spam);
 	SystemMessage::FlyText(attacker, combat_spam, color);
 
 	// Set Defender values
@@ -183,9 +187,10 @@ CombatDefender CombatService::DoCombat(
 }
 
 bool CombatService::InitiateCombat(
-    const std::shared_ptr<Creature>& attacker, 
-    const shared_ptr<Tangible>& target, 
-    const std::shared_ptr<CombatData> combat_data)
+    const shared_ptr<Creature>& attacker, 
+    const shared_ptr<Tangible>& target,
+	const shared_ptr<Weapon>& weapon,
+    const shared_ptr<CombatData> combat_data)
 {    
     if (attacker->GetObjectId() == target->GetObjectId())
     {
@@ -196,14 +201,31 @@ bool CombatService::InitiateCombat(
     shared_ptr<Creature> creature_target = nullptr;
     if (target->GetType() == Creature::type)
         creature_target = static_pointer_cast<Creature>(target);
-
-	int range = combat_data->range > 0 ? combat_data->range : 7;
-	if (!attacker->InRange(target->GetPosition(), (float)(range)))
+	// check for too far out of range to disengage combat...
+	if (!attacker->InRange(target->GetPosition(), 128.0f))
 	{
-		SystemMessage::Send(attacker, OutOfBand("cbt_spam", "out_of_range_single"), false, false);
+		EndCombat(attacker, creature_target);
 		return false;
 	}
-
+	int range = combat_data->range > 0 ? combat_data->range : 7;
+	if (weapon)
+	{
+		int range_ok = weapon->GetAttribute<int32_t>("range");
+		if (range_ok > 0 && attacker->InRange(target->GetPosition(), (float)(range_ok)))
+		{
+			SystemMessage::Send(attacker, OutOfBand("cbt_spam", "out_of_range_single"), false, false);
+			return false;
+		}
+	}
+	else
+	{
+		if (!attacker->InRange(target->GetPosition(), (float)(range)))
+		{
+			SystemMessage::Send(attacker, OutOfBand("cbt_spam", "out_of_range_single"), false, false);
+			return false;
+		}
+	}
+	
     if (!attacker->CanAttack(creature_target.get()))
         return false;
 	
@@ -250,7 +272,8 @@ bool CombatService::InitiateCombat(
 vector<shared_ptr<Tangible>> CombatService::GetCombatTargets(
 	const shared_ptr<Creature>& attacker, 
 	const shared_ptr<Tangible> & target, 
-	std::shared_ptr<CombatData> combat_data)
+	const shared_ptr<Weapon>& weapon,
+	shared_ptr<CombatData> combat_data)
 {
 	std::vector<std::shared_ptr<Tangible>> targets_in_range;
 
@@ -289,9 +312,9 @@ float CombatService::CalculateDamage(
 HIT_TYPE CombatService::GetHitResult(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Creature>& defender, 
+	const shared_ptr<Weapon>& weapon,
     std::shared_ptr<CombatData> combat_data)
 {
-	auto weapon = equipment_service_->GetEquippedObject<Weapon>(attacker, "hold_r");
 	// Accuracy Mods
 	int weapon_accuracy = combat_data->weapon_accuracy + (int)(GetWeaponRangeModifier(weapon, attacker->RangeTo(defender->GetPosition())));
 	int attacker_accuracy = combat_data->accuracy_bonus;
@@ -389,7 +412,7 @@ HIT_LOCATION CombatService::GetHitLocation(std::shared_ptr<CombatData> combat_da
 	return location;
 }
 // http://wiki.swganh.org/index.php/Accuracy_%28Game_Mechanics%29
-float CombatService::GetWeaponRangeModifier(shared_ptr<Weapon>& weapon, float range_to_target)
+float CombatService::GetWeaponRangeModifier(const shared_ptr<Weapon>& weapon, float range_to_target)
 {
 	float min_range = 0;
 	float ideal_range = 2;
@@ -477,42 +500,44 @@ bool CombatService::ApplySpecialCost(
 	const shared_ptr<Weapon>& weapon, 
 	shared_ptr<CombatData> combat_data)
 {
-	int health_cost = (int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_health") * combat_data->health_cost_multiplier);
-	int action_cost =(int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_action") * combat_data->action_cost_multiplier);
-	int mind_cost = (int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_mind") * combat_data->mind_cost_multiplier);
-	int force_cost = (int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_force") * combat_data->force_cost_multiplier);
-
-	// Force is in player
-	if (force_cost > 0)
+	if (weapon)
 	{
-		auto player = equipment_service_->GetEquippedObject<Player>(attacker, "ghost");
-		int32_t current_force = player->GetCurrentForcePower();
-		if (current_force > force_cost)
+		int health_cost = (int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_health") * combat_data->health_cost_multiplier);
+		int action_cost =(int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_action") * combat_data->action_cost_multiplier);
+		int mind_cost = (int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_mind") * combat_data->mind_cost_multiplier);
+		int force_cost = (int)(weapon->GetAttributeRecursive<float>("wpn_attack_cost_force") * combat_data->force_cost_multiplier);
+
+		// Force is in player
+		if (force_cost > 0)
 		{
-			player->SetCurrentForcePower(current_force - force_cost);
+			auto player = equipment_service_->GetEquippedObject<Player>(attacker, "ghost");
+			int32_t current_force = player->GetCurrentForcePower();
+			if (current_force > force_cost)
+			{
+				player->SetCurrentForcePower(current_force - force_cost);
+			}
+			else
+			{
+				SystemMessage::Send(attacker, "jedi_spam", "no_force_power");
+				return false;
+			}
 		}
-		else
-		{
-			SystemMessage::Send(attacker, "jedi_spam", "no_force_power");
+		if (health_cost > 0 && attacker->GetStatCurrent(StatIndex::HEALTH) <= health_cost)
 			return false;
-		}
-	}
-	if (health_cost > 0 && attacker->GetStatCurrent(StatIndex::HEALTH) <= health_cost)
-		return false;
-	if (action_cost > 0 && attacker->GetStatCurrent(StatIndex::ACTION) <= action_cost)
-		return false;
-	if (mind_cost > 0 && attacker->GetStatCurrent(StatIndex::MIND) <= mind_cost)
-		return false;
+		if (action_cost > 0 && attacker->GetStatCurrent(StatIndex::ACTION) <= action_cost)
+			return false;
+		if (mind_cost > 0 && attacker->GetStatCurrent(StatIndex::MIND) <= mind_cost)
+			return false;
 		
-	if (health_cost > 0)
-		attacker->DeductStatCurrent(StatIndex::HEALTH, health_cost);
-	if (action_cost > 0)
-		attacker->DeductStatCurrent(StatIndex::ACTION, action_cost);
-	if (mind_cost > 0)
-		attacker->DeductStatCurrent(StatIndex::MIND, mind_cost);
+		if (health_cost > 0)
+			attacker->DeductStatCurrent(StatIndex::HEALTH, health_cost);
+		if (action_cost > 0)
+			attacker->DeductStatCurrent(StatIndex::ACTION, action_cost);
+		if (mind_cost > 0)
+			attacker->DeductStatCurrent(StatIndex::MIND, mind_cost);
 
-	// TODO: Weapon decay
-
+		// TODO: Weapon decay
+	}
 	return true;
 }
 CombatSpecialMoveEffect CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Tangible>& target, std::shared_ptr<CombatData> combat_data) {
@@ -547,11 +572,12 @@ float CombatService::GetHitChance(int attacker_accuracy, int attacker_bonus, int
 int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Tangible>& target, 
+	const shared_ptr<Weapon>& weapon,
     std::shared_ptr<CombatData> combat_data,
     int damage, HIT_LOCATION pool)
 {
 	if (target->GetType() == Creature::type)
-		return ApplyDamage(attacker, static_pointer_cast<Creature>(target), combat_data, damage, pool);
+		return ApplyDamage(attacker, static_pointer_cast<Creature>(target), weapon, combat_data, damage, pool);
     // Sanity Check
     if (damage == 0 || pool < 0)
         return 0;
@@ -563,6 +589,7 @@ int CombatService::ApplyDamage(
 int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Creature>& defender,
+	const shared_ptr<Weapon>& weapon,
     std::shared_ptr<CombatData> combat_data,
     int damage, HIT_LOCATION pool)
 {
@@ -636,16 +663,28 @@ int CombatService::ApplyDamage(
 void CombatService::BroadcastCombatSpam(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Tangible>& target, 
+	const shared_ptr<Weapon>& weapon,
     const std::shared_ptr<CombatData> combat_data,
     uint32_t damage, const string& string_file)
 {
     CombatSpamMessage spam;
     spam.attacker_id = attacker->GetObjectId();
     spam.defender_id = target->GetObjectId();
-    spam.weapon_id = attacker->GetWeaponId();
+	if (weapon)
+	{
+		if (weapon->GetWeaponType() == RANGED)
+			spam.text = "shoot_" + string_file;
+		else
+			spam.text = "melee_" + string_file;
+		spam.weapon_id = weapon->GetObjectId();
+	}
+	else
+	{
+		spam.weapon_id = attacker->GetWeaponId();
+		spam.text ="attack_" + string_file;
+	}
     spam.damage = damage;
     spam.file = "cbt_spam";
-	spam.text ="melee_" + string_file;
     if (combat_data->combat_spam.length() > 0)
         spam.text = combat_data->combat_spam + "_"  + string_file;
 	
@@ -655,20 +694,36 @@ void CombatService::BroadcastCombatSpam(
 void CombatService::SendCombatActionMessage(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible> & target, 
+	const shared_ptr<Weapon>& weapon,
     std::shared_ptr<CombatData> command_property,
 	std::vector<CombatDefender> defenders)
 {
-        CombatActionMessage cam;
-        if ((uint32_t)command_property->animation_crc == 0)
-            cam.action_crc = CombatData::DefaultAttacks[generator_.Rand(0, 9)];
-        else
-        {
-			cam.action_crc = command_property->animation_crc;
-        }
+        CombatActionMessage cam;		
         cam.attacker_id = attacker->GetObjectId();
         cam.weapon_id = attacker->GetWeaponId();
         cam.attacker_end_posture = attacker->GetPosture();
-        
+
+        if (weapon)
+		{
+			if (weapon->GetWeaponType() == WeaponType::RANGED)
+			{
+				// Temp
+				if ((uint32_t)command_property->animation_crc == 0)
+					cam.action_crc = 1349426508;
+				else
+					cam.action_crc = command_property->animation_crc;
+			}
+			cam.weapon_id = weapon->GetObjectId();
+		}
+		else
+		{
+			if ((uint32_t)command_property->animation_crc == 0)
+				cam.action_crc = CombatData::DefaultAttacks[generator_.Rand(0, 9)];
+			else
+			{
+				cam.action_crc = command_property->animation_crc;
+			}
+		}
         // build up the defenders
         for(auto& defender : defenders)
         {
@@ -757,8 +812,9 @@ void CombatService::EndCombat(const shared_ptr<Creature>& attacker, const shared
     command_service_->ClearDefaultCommand(attacker->GetObjectId());
 
     target->RemoveDefender(attacker->GetObjectId());
+	target->ToggleStateOff(COMBAT);
     command_service_->ClearDefaultCommand(target->GetObjectId());
-    attacker->SetTargetId(0);
+    
     // End Duel
     EndDuel(attacker, target);
 }

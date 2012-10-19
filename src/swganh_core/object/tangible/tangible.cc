@@ -217,7 +217,7 @@ void Tangible::RemoveDefender(uint64_t defender)
             return (x.object_id == defender);
         });
 
-        if(iter != end(defender_list_))
+        if(iter == end(defender_list_))
         {
             return;
         }

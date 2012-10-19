@@ -1,3 +1,4 @@
+import swgpy
 from swgpy.object import *
 from swgpy.command import BaseSwgCommand
 from swgpy import ACTION
@@ -20,8 +21,7 @@ class PeaceCommand(BaseSwgCommand):
 			actor.stateBitmask = ACTION.NONE   
 	def postRun(self, success):
 		if success:
-			service_mgr = self.getKernel().serviceManager()			
-			combat_svc = service_mgr.combatService()
+			combat_svc = self.getKernel().serviceManager().combatService()
 			actor = self.getActor()
 			target = self.getTargetCreature()
 			if (actor and target):

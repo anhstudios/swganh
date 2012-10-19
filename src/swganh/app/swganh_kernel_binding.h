@@ -47,7 +47,7 @@ void exportSWGANHKernel()
                std::bind(&swganh::service::ServiceManager::GetService<swganh::combat::CombatServiceInterface>, std::placeholders::_1, "CombatService"),
                return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::combat::CombatServiceInterface*, swganh::service::ServiceManager*>()),
-                "returns an internal refrence of the :class:`.CombatServiceInterface`")
+                "returns an internal refrence of the :class:`.CombatService`")
        .def("commandService", make_function(
                std::bind(&swganh::service::ServiceManager::GetService<swganh::command::CommandServiceInterface>, std::placeholders::_1, "CommandService"),
                return_value_policy<reference_existing_object>(),
