@@ -11,6 +11,7 @@
 #include <cppconn/sqlstring.h>
 
 using namespace swganh::statics;
+using namespace swganh::object;
 
 void SkillManager::Start(std::shared_ptr<sql::Statement> statement)
 {
@@ -82,27 +83,25 @@ void SkillManager::_loadSkillMods(std::unique_ptr<sql::ResultSet> result)
 	}
 }
 
-bool SkillManager::HasSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+std::pair<uint32_t, uint32_t> SkillManager::GetSkillMod(const std::shared_ptr<Creature>& creature, const std::string& skill_mod_name)
 {
-	return false;
-}
+	std::map<std::string, std::pair<uint32_t, uint32_t>> mods = GetSkillMods(creature);
 
-uint32_t SkillManager::GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
-{
-	return 0;
-}
+	auto find_itr = mods.find(skill_mod_name);
+	
+	if(find_itr != mods.end())
+	{
+		return find_itr->second;
+	}
 
-uint32_t SkillManager::GetTotalSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
-{
-	return 0;
+	return std::make_pair<uint32_t, uint32_t>(0, 0);
 }
-
-std::map<std::string, uint32_t> SkillManager::GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature)
+		
+std::map<std::string, std::pair<uint32_t, uint32_t>> GetSkillMods(const std::shared_ptr<Creature>& creature)
 {
-	return std::map<std::string, uint32_t>();
-}
+	std::map<std::string, std::pair<uint32_t, uint32_t>> result;
 
-std::map<std::string, uint32_t> SkillManager::GetSkillModTotals(const std::shared_ptr<swganh::object::Creature>& creature)
-{
-	return std::map<std::string, uint32_t>();
+
+
+	return result;
 }

@@ -45,23 +45,16 @@ namespace statics
 		std::vector<std::shared_ptr<ElevatorData>> GetElevatorDataForObject(uint64_t terminal_id);
 
 		/*
-		 * @brief Checks to see if the creature has access to the skill mod based on the given creature and it's skill levels
-		 */
-		virtual bool HasSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
-		/*
-		 * @brief Gets a given skill mod value if exists
-		 */
-		virtual uint32_t GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
-		/*
 		 * @brief Gets a given skill mod and any affected Attributes if exist
+		 * @return a pair of base, modifier
 		 */
-		virtual uint32_t GetTotalSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
+		std::pair<uint32_t, uint32_t> GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
+		
 		/*
 		 * @brief Gets All SkillMods that are applicable for this creature.
+		 * @return a map of pairs of base, modifier
 		 */
-		virtual std::map<std::string, uint32_t> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
-
-		virtual std::map<std::string, uint32_t> GetSkillModTotals(const std::shared_ptr<swganh::object::Creature>& creature);
+		std::map<std::string, std::pair<uint32_t, uint32_t>> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
 
 	private:
 
