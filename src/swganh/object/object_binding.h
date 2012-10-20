@@ -5,6 +5,7 @@
 #ifndef WIN32
 #include <Python.h>
 #endif
+#include "swganh/python_shared_ptr.h"
 
 #include "swganh_core/object/object.h"
 #include "swganh/object/object_controller_binding.h"

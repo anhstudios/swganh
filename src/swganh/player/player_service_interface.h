@@ -13,7 +13,7 @@ namespace object {
 namespace swganh {
 namespace player {
 
-class PlayerServiceInterface : swganh::service::ServiceInterface
+class PlayerServiceInterface : public swganh::service::ServiceInterface
 {
 public:
 	virtual void OnPlayerEnter(std::shared_ptr<swganh::object::Player> player) = 0;

@@ -1,11 +1,11 @@
 import swgpy
 from swgpy.object import *
+from swgpy.player import *
 from swgpy.sui import RadialMenu, RadialOptions, RadialOptionsList, RadialIdentifier
 from swgpy.utility import vector3, quat
 
 class PyRadialMenu(RadialMenu):
 	def buildRadial(self, owner, target, radials):
-		print('build bank radial')
 		radial_list = RadialOptionsList()
 		#Get bank object
 		bank = self.getKernel().serviceManager().equipmentService().getEquippedObject(owner, "bank")
@@ -29,12 +29,10 @@ class PyRadialMenu(RadialMenu):
 		return radial_list
 		
 	def handleRadial(self, owner, target, action):
-		print('handle bank radial')
 		player_service = self.getKernel().serviceManager().playerService()
-		print(player_service)
 		if player_service:			
 			if action == RadialIdentifier.bankItems:			
-				player_service.OpenBank(owner)
+				player_service.openBank(owner)
 			elif action == RadialIdentifier.bankJoin:
 				joinBank(self, owner)
 			elif action == RadialIdentifier.bankQuit:
