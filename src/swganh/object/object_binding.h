@@ -172,6 +172,7 @@ void exportObject()
 		.def("transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
 		.def("swapSlots", &Object::SwapSlots, "Change an objects current arrangement")	
 		.def("container", &Object::GetContainer, "Gets the :class:`ContainerInterface` object of the current object")
+		.def("hasContainedObjects", &Object::HasContainedObjects, "Checks to see if container has any objects in it")
 		.def_readonly("id", &ContainerInterface::GetObjectId, "Gets the object id of the container")
 		;
 	

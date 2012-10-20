@@ -10,8 +10,11 @@
 #include "swganh/event_dispatcher.h"
 
 namespace swganh {
+namespace equipment {
+	class EquipmentService;
+}
 namespace object {
-	class ObjectController;
+	class ObjectController;	
 } // object
 namespace simulation {
 	class SimulationServiceInterface;
@@ -50,6 +53,18 @@ public:
 	* Called when a player exits the game
 	*/
 	void OnPlayerExit(std::shared_ptr<swganh::object::Player> player);
+
+	/**
+	 *  Send Bank Tip
+	 */
+	void SendBankTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount);
+
+	/**
+	 *  Open Bank
+	 */
+	void OpenBank(const std::shared_ptr<swganh::object::Creature>& owner);
+
+
 private:
 	void RemoveClientTimerHandler_(
 		const boost::system::error_code& e, 
@@ -58,6 +73,7 @@ private:
 		std::shared_ptr<swganh::object::ObjectController> controller);
 
 	swganh::app::SwganhKernel* kernel_;
+	swganh::equipment::EquipmentService* equipment_service_;
 	swganh::simulation::SimulationServiceInterface* simulation_service_;
 	swganh::CallbackId player_selected_callback_;
 	swganh::CallbackId player_removed_;
