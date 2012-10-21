@@ -33,8 +33,21 @@ public:
         items_.reserve(capacity);
     }
 
+	NetworkSortedVector(std::vector<T> orig)
+		: items_(orig.begin(), orig.end())
+		, update_counter_(0)
+		, clear_(false)
+		, reinstall_(false)
+	{
+	}
+
     ~NetworkSortedVector(void)
     {}
+
+	std::vector<T> Get() const
+	{
+		return items_;
+	}
 
     void Add(const T& item)
     {
@@ -145,6 +158,18 @@ public:
     uint16_t Size() { return items_.size(); }
     iterator begin() { return items_.begin(); }
     iterator end() { return items_.end(); } 
+
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
 
 	void Serialize(swganh::messages::BaselinesMessage& message)
     {
