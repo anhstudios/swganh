@@ -9,6 +9,6 @@ class PyRadialMenu(RadialMenu):
 			radial_list.extend(radials)
 		return radial_list
 		
-	def handleRadial(self, owner, target):
+	def handleRadial(self, owner, target, action):
 		pass
 		
