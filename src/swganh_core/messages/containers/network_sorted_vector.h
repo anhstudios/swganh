@@ -3,7 +3,6 @@
 #pragma once
 
 #include <vector>
-#include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
 
 #include "swganh_core/messages/baselines_message.h"
@@ -49,8 +48,7 @@ public:
 
     void Add(const T& item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
+		auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
             return (i == item);
         });
 
@@ -63,23 +61,20 @@ public:
 
 	void Remove(uint16_t index)
 	{
-		boost::lock_guard<boost::mutex> lock(mutex_);
 		items_removed_.push_back(index);
 		items_.erase(items_.begin()+index);
 	}
 
     void Remove(iterator iter)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
-        uint16_t distance = std::distance<const_iterator>(items_.begin(), iter);
+		uint16_t distance = std::distance<const_iterator>(items_.begin(), iter);
         items_removed_.push_back(distance);
         items_.erase(iter);
     }
 
     void Insert(const T& item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
+		auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
             return (i == item);
         });
 
@@ -91,40 +86,34 @@ public:
 
     void Erase(iterator iter)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
-        items_.erase(iter);
+		items_.erase(iter);
     }
 
     void Update(iterator iter, T& item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
-        uint16_t index = std::distance<const_iterator>(items_.begin(), iter);
+		uint16_t index = std::distance<const_iterator>(items_.begin(), iter);
         items_[index] = item;
         items_changed_.push_back(index);
     }
 
 	void Update(uint16_t index, T& item)
 	{
-		boost::lock_guard<boost::mutex> lock(mutex_);
 		items_[index] = item;
 		items_changed_.push_back(index);
 	}
 
     void Clear()
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         clear_ = true;
     }
 
     void Reinstall()
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         reinstall_ = true;
     }
 
     iterator Find(T& item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [=](const T& x)->bool {
             return (item == x);
         });
@@ -137,7 +126,6 @@ public:
      */
     T At(uint16_t index)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         return items_.at(index);
     }
 
@@ -156,7 +144,6 @@ public:
      */
     void ClearDeltas(void)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         items_added_.clear();
         items_removed_.clear();
         items_changed_.clear();
@@ -183,7 +170,6 @@ public:
 
 	void Serialize(swganh::messages::BaselinesMessage& message)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
         for (auto& item : items_)
@@ -195,7 +181,6 @@ public:
     void Serialize(swganh::messages::DeltasMessage& message)
     {
 		{
-			boost::lock_guard<boost::mutex> lock(mutex_);
 			message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
 			message.data.write<uint32_t>(++update_counter_);
 
@@ -250,7 +235,6 @@ private:
     bool clear_;
     bool reinstall_;
     uint32_t update_counter_;
-	mutable boost::mutex mutex_;
 };
 
 }}} // swganh::messages::containers

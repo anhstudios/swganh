@@ -3,7 +3,6 @@
 #pragma once
 
 #include <list>
-#include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
 
 #include "swganh/byte_buffer.h"
@@ -56,7 +55,6 @@ public:
      */
     void Add(T item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [&item](T& x)->bool {
             return (x == item);
         });
@@ -73,7 +71,6 @@ public:
      */
     void Remove(iterator iter)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         if(iter != items_.end())
         {
             removed_items_.push_back(*iter);
@@ -86,7 +83,6 @@ public:
      */
     void Insert(T item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [=](T& x)->bool {
             return (x == item);
         });
@@ -99,14 +95,12 @@ public:
 
     void Clear(void)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         items_.clear();
         clear_ = true;
     }
 
     bool Contains(const T& item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [&item](T& x)->bool {
             return (x == item);
         });
@@ -124,7 +118,6 @@ public:
      */
     void ClearDeltas(void)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         added_items_.clear();
         removed_items_.clear();
         clear_ = false;
@@ -149,7 +142,6 @@ public:
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
         for(auto& item : items_)
@@ -161,7 +153,6 @@ public:
     void Serialize(swganh::messages::DeltasMessage& message)
     {
 		{
-			boost::lock_guard<boost::mutex> lock(mutex_);
 			message.data.write<uint32_t>(added_items_.size() + removed_items_.size());
 			message.data.write<uint32_t>(++update_counter_);
 
@@ -194,7 +185,6 @@ private:
     std::list<T> added_items_;
     std::list<T> removed_items_;
     bool clear_;
-	mutable boost::mutex mutex_;
 };
 
 }}} // namespaces
