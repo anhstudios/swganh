@@ -136,7 +136,11 @@ void SUIService::_handleObjectMenuRequest(
 	
 	// Fill it in
 	ObjectMenuResponse response;
-	response.radial_options = GetRadialInterfaceForObject(target)->BuildRadial(controller, target, message->radial_options);
+	auto radial_interface = GetRadialInterfaceForObject(target);
+	if (radial_interface)
+		response.radial_options = radial_interface->BuildRadial(controller, target, message->radial_options);
+	else
+		response.radial_options = message->radial_options;
 	response.owner_id = message->owner_id;
 	response.target_id = message->target_id;
 	response.response_count = message->response_count;

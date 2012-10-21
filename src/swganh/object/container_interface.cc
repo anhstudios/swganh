@@ -3,7 +3,7 @@
 
 #include "container_interface.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
-
+#include "swganh_core/object/object.h"
 #include <glm/glm.hpp>
 #include <boost/thread/locks.hpp>
 
@@ -20,6 +20,16 @@ void ContainerInterface::SetPermissions(std::shared_ptr<ContainerPermissionsInte
 	container_permissions_ = obj; 
 }
 
+bool ContainerInterface::HasContainedObjects()
+{
+	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
+	bool has_objects = false;
+	__InternalViewObjects(nullptr, 1, true, [&](std::shared_ptr<Object> obj){
+		has_objects = true;		
+	});
+
+	return has_objects;
+}
 void ContainerInterface::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);

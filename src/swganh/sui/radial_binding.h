@@ -16,6 +16,7 @@
 #include "radial_interface.h"
 
 #include "swganh/scripting/utilities.h"
+#include "swganh_core/object/creature/creature.h"
 
 #include "swganh_core/messages/controllers/object_menu_request.h"
 #include "swganh_core/messages/controllers/object_menu_response.h"
@@ -45,7 +46,7 @@ namespace sui {
 			ScopedGilLock lock;
 			try 
 			{
-				return this->get_override("buildRadial")(owner, target, radials);
+				return this->get_override("buildRadial")(static_pointer_cast<swganh::object::Creature>(owner), target, radials);
 			}
 			catch (bp::error_already_set& )
 			{
@@ -58,7 +59,7 @@ namespace sui {
 			ScopedGilLock lock;
 			try 
 			{				
-				this->get_override("handleRadial")(owner, target, action);
+				this->get_override("handleRadial")(static_pointer_cast<swganh::object::Creature>(owner), target, action);
 			}
 			catch (bp::error_already_set& )
 			{

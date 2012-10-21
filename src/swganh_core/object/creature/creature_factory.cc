@@ -349,7 +349,7 @@ void CreatureFactory::LoadSkillMods_(
 
             creature->AddSkillMod( 
                 SkillMod(skill_mod_name, skill_mod_value, 0)
-                );
+				);			
         }
     }
 }

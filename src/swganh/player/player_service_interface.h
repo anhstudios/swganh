@@ -7,19 +7,24 @@
 namespace swganh {
 namespace object {
 	class Player;
+	class Creature;
 }}
 
 namespace swganh {
 namespace player {
 
-class PlayerServiceInterface : swganh::service::ServiceInterface
+class PlayerServiceInterface : public swganh::service::ServiceInterface
 {
 public:
 	virtual void OnPlayerEnter(std::shared_ptr<swganh::object::Player> player) = 0;
 
 	virtual void OnPlayerExit(std::shared_ptr<swganh::object::Player> player) = 0;
+
+	virtual void SendTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount, bool bank = false) = 0;
+	
+	virtual void OpenBank(const std::shared_ptr<swganh::object::Creature>& owner) = 0;
 };
 
 
 
-}}// swganh:
+}}

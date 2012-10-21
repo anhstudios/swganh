@@ -76,6 +76,11 @@ OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_s
         case TO:
             AddProsePackage(base_stf_file, base_stf_string, 0, 0, object_id, 0, 0.0f, display_flag);
             break;
+		case DI:
+			AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, (int32_t)object_id, 0.0f, display_flag);
+			break;
+		case DF:
+			AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, 0, (float)object_id, display_flag);
         default:
             AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
             break;
