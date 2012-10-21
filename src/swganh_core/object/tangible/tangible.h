@@ -10,8 +10,9 @@
 #include <list>
 
 #include "swganh_core/object/object.h"
-#include "swganh_core/messages/containers/network_sorted_vector.h"
+
 #include "swganh_core/messages/containers/network_list.h"
+#include "swganh_core/messages/containers/network_sorted_vector.h"
 
 namespace swganh {
 namespace object {
@@ -113,9 +114,10 @@ public:
     std::string GetCustomization();
 
     // Component Customization
-    swganh::messages::containers::NetworkList<ComponentCustomization>& GetComponentCustomization(void);
+    std::list<ComponentCustomization> GetComponentCustomization();
     void AddComponentCustomization(uint32_t customization_crc);
     void RemoveComponentCustomization(uint32_t customization_crc);
+	void SerializeComponentCustomization(swganh::messages::BaseSwgMessage* message);
     void ClearComponentCustomization();
     
     // Options Mask
@@ -144,7 +146,8 @@ public:
     void RemoveDefender(uint64_t defender);
     void ResetDefenders(std::vector<uint64_t> defenders);
     bool IsDefending(uint64_t defender);
-    swganh::messages::containers::NetworkSortedVector<Defender>& GetDefenders();
+    std::vector<Defender> GetDefenders();
+	void SerializeDefenders(swganh::messages::BaseSwgMessage* message);
     void ClearDefenders();
 
     void ActivateAutoAttack();

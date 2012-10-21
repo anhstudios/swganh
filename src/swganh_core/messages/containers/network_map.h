@@ -31,18 +31,21 @@ public:
         , reinstall_(false)
     {}
 
-	NetworkMap(NetworkMap<I,T>& other)
-		: update_counter_(other.update_counter_)
-		, items_(other.items_)
-		, items_added_(other.items_added_)
-		, items_removed_(other.items_removed_)
-		, items_changed_(other.items_changed_)
-		, clear_(other.clear_)
-		, reinstall_(other.reinstall_)
-	{}
+	NetworkMap(std::map<I, T> orig)
+		: items_(orig.begin(), orig.end())
+		, clear_(false)
+		, reinstall_(false)
+		, update_counter_(0)
+	{
+	}
 
     ~NetworkMap()
     {}
+
+	std::map<I, T> Get() const
+	{
+		return items_;
+	}
 
     /**
      * Inserts a new entry into the NetworkMap without
@@ -181,6 +184,18 @@ public:
 
     iterator begin() { return items_.begin(); }
     iterator end() { return items_.end(); }
+
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {

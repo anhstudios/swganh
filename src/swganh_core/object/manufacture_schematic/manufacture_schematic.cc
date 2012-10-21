@@ -277,10 +277,10 @@ void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
 		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
-NetworkSortedVector<ManufactureSchematic::Slot>& ManufactureSchematic::GetSlots()
+std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return slots_;
+    return std::move(slots_.Get());
 }
 
 void ManufactureSchematic::RemoveSlot(uint16_t index)
@@ -393,10 +393,10 @@ void ManufactureSchematic::ClearAllSlots()
 	("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
-NetworkSortedVector<ManufactureSchematic::Experiment>& ManufactureSchematic::GetExperiments()
+std::vector<ManufactureSchematic::Experiment> ManufactureSchematic::GetExperiments() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return experiments_;
+    return std::move(experiments_.Get());
 }
 
 void ManufactureSchematic::RemoveExperiment(uint16_t index)
@@ -530,10 +530,10 @@ void ManufactureSchematic::ClearAllExperiments()
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
-NetworkSortedVector<ManufactureSchematic::Customization>& ManufactureSchematic::GetCustomizations()
+std::vector<ManufactureSchematic::Customization> ManufactureSchematic::GetCustomizations() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return customizations_;
+    return std::move(customizations_.Get());
 }
 
 void ManufactureSchematic::RemoveCustomization(uint16_t index)

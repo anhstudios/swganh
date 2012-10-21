@@ -1007,7 +1007,6 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 
 AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 {
-	try {
 	auto val = GetAttribute(name);
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -1032,7 +1031,7 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 		return boost::get<wstring>(val);	
 	}
 	// Doesn't Exist
-	return boost::blank();;
+	return boost::blank();
 }
 
 bool Object::HasAttribute(const std::string& name)

@@ -5,11 +5,10 @@
 #include <cstdint>
 #include <string>
 
+#include "swganh_core/object/intangible/intangible.h"
+
 #include "swganh_core/messages/containers/network_array.h"
 #include "swganh_core/messages/containers/network_sorted_vector.h"
-#include "swganh_core/messages/containers/network_map.h"
-
-#include "swganh_core/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {
@@ -141,8 +140,10 @@ public:
     /**
      * @return property list.
      */
-    swganh::messages::containers::NetworkArray<Property>& GetProperties();
+	std::vector<Property> GetProperties() const;
     
+	void SerializeProperties(swganh::messages::BaseSwgMessage* message);
+
     /**
      * Adds a property to the properties list.
      *
@@ -301,7 +302,9 @@ public:
     /**
      * @return the list of ingredient slots.
      */
-    swganh::messages::containers::NetworkSortedVector<Slot>& GetSlots();
+    std::vector<Slot> GetSlots() const;
+
+	void SerializeSlots(swganh::messages::BaseSwgMessage* message);
 
     /**
      * Removes an ingredient slot.
@@ -348,7 +351,9 @@ public:
     /**
      * @return experiment list.
      */
-    swganh::messages::containers::NetworkSortedVector<Experiment>& GetExperiments() ;
+    std::vector<Experiment> GetExperiments() const;
+
+	void SerializeExperiments(swganh::messages::BaseSwgMessage* message);
 
     /**
      * Removes an experiment.
@@ -415,8 +420,10 @@ public:
     /**
      * @return customizations list.
      */
-    swganh::messages::containers::NetworkSortedVector<Customization>& GetCustomizations() ;
+    std::vector<Customization> GetCustomizations() const;
     
+	void SerializeCustomizations(swganh::messages::BaseSwgMessage* message);
+
     /**
      * Removes a customization.
      *

@@ -31,9 +31,21 @@ public:
     {
     }
 
+	NetworkArray(std::vector<T> orig)
+		: items_(orig.begin(), orig.end())
+		, clear_(false)
+		, update_counter_(0)
+	{
+	}
+
     ~NetworkArray(void)
     {
     }
+
+	std::vector<T> Get() const
+	{
+		return items_;
+	}
 
     /**
      * Sets the value of the index without queueing a change.
@@ -110,6 +122,18 @@ public:
         items_changed_.clear();
         clear_ = false;
     }
+
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {

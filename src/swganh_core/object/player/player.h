@@ -15,10 +15,9 @@
 #include "swganh_core/object/intangible/intangible.h"
 #include "swganh_core/object/waypoint/waypoint.h"
 
-#include "swganh_core/messages/containers/network_sorted_list.h"
-#include "swganh_core/messages/containers/network_array.h"
-#include "swganh_core/messages/containers/network_map.h"
 #include "swganh_core/messages/containers/network_sorted_vector.h"
+#include "swganh_core/messages/containers/network_sorted_list.h"
+#include "swganh_core/messages/containers/network_map.h"
 
 namespace swganh {
 namespace object {
@@ -436,7 +435,7 @@ public:
     /**
      * @return the current experience for the player.
      */
-    swganh::messages::containers::NetworkMap<std::string, XpData>& GetXp() ;
+	std::map<std::string, XpData> GetXp() ;
     
     /**
      * Adds experience to the player.
@@ -452,6 +451,8 @@ public:
      */
     void DeductXp(XpData experience);
 
+	void SerializeXp(swganh::messages::BaseSwgMessage* message);
+
     /**
      * Clears all experience of a specific type.
      *
@@ -464,7 +465,7 @@ public:
      *
      * @param experience The new experience counts for the player.
      */
-    void ResetXp(swganh::messages::containers::NetworkMap<std::string, XpData>& experience);
+    void ResetXp(std::map<std::string, XpData>& experience);
     
     /**
      * Clears all experience.
@@ -474,7 +475,7 @@ public:
     /**
      * @return The waypoints currently held by the player.
      */
-    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer>& GetWaypoints() ;
+	std::map<uint64_t, PlayerWaypointSerializer> GetWaypoints() ;
     
     /**
      * Adds a waypoint to the player.
@@ -497,6 +498,8 @@ public:
      */
     void ModifyWaypoint(PlayerWaypointSerializer waypoint);
     
+	void SerializeWaypoints(swganh::messages::BaseSwgMessage* message);
+
     /** 
      * Clears all waypoints.
      */
@@ -546,7 +549,7 @@ public:
     /**
      * @return The quests currently in the quest journal.
      */
-    swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData>& GetQuests() ;
+	std::map<uint32_t, QuestJournalData> GetQuests() ;
     
     /**
      * Adds a quest to the journal.
@@ -569,15 +572,18 @@ public:
      */
     void UpdateQuest(QuestJournalData quest);
 
+	void SerializeQuests(swganh::messages::BaseSwgMessage* message);
+
     /**
      * Clears all quests in the journal.
      */
     void ClearAllQuests();
     
     /**
-     * @return list of abilities and certificates this player has. 
+     * @return list of 
+	 and certificates this player has. 
      */
-    swganh::messages::containers::NetworkSortedList<Ability> GetAbilityList() ;
+    std::vector<Ability> GetAbilityList() ;
 
     /**
      * Checks to see if the player has the input ability
@@ -587,6 +593,8 @@ public:
      */
     bool HasAbility(std::string ability);
     
+	void SerializeAbilities(swganh::messages::BaseSwgMessage* message);
+
     /**
      * @return whether player can experiment or not.
      */
@@ -628,7 +636,7 @@ public:
     /**
      * @return The draft schematics assigned to this player.
      */
-    swganh::messages::containers::NetworkSortedList<DraftSchematicData>& GetDraftSchematics() ;
+    std::vector<DraftSchematicData> GetDraftSchematics();
     
     /**
      * Adds a draft schematic.
@@ -644,6 +652,8 @@ public:
      */
     void RemoveDraftSchematic(uint32_t schematic_id);
     
+	void SerializeDraftSchematics(swganh::messages::BaseSwgMessage* message);
+
     /**
      * Clears all draft schematics.
      */
@@ -696,7 +706,7 @@ public:
     /**
      * @return the list of friends.
      */
-    swganh::messages::containers::NetworkSortedVector<Name>& GetFriends();
+    std::vector<Name> GetFriends();
 
     /**
      * Checks to see if the name is already a friend
@@ -719,6 +729,8 @@ public:
      */ 
     void RemoveFriend(std::string friend_name);
 
+	void SerializeFriends(swganh::messages::BaseSwgMessage* message);
+
     /**
      * Clears the friends list.
      */
@@ -727,7 +739,7 @@ public:
     /**
      * @return the list of ignored players.
      */
-    swganh::messages::containers::NetworkSortedVector<Name>& GetIgnoredPlayers();
+    std::vector<Name> GetIgnoredPlayers();
 
     /**
      * Checks to see if the name is already being ignored
@@ -751,6 +763,8 @@ public:
      */ 
     void StopIgnoringPlayer(std::string player_name);
     
+	void SerializeIgnoredPlayers(swganh::messages::BaseSwgMessage* message);
+
     /**
      * Clears the ignored list.
      */

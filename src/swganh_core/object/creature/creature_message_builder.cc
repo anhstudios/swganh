@@ -254,26 +254,16 @@ void CreatureMessageBuilder::BuildCashCreditsDelta(const shared_ptr<Creature>& c
 
 void CreatureMessageBuilder::BuildStatBaseDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 2);
-        creature->GetBaseStats().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetBaseStats().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 2);
+    creature->SerializeBaseStats(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildSkillDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 3);
-        creature->GetSkills().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetSkills().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 3);
+    creature->SerializeSkills(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildPostureUpdate(const shared_ptr<Creature>& creature)
@@ -349,14 +339,9 @@ void CreatureMessageBuilder::BuildStateBitmaskDelta(const shared_ptr<Creature>& 
 
 void CreatureMessageBuilder::BuildStatWoundDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 17);
-        creature->GetStatWounds().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetStatWounds().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 17);
+    creature->SerializeStatWounds(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(const shared_ptr<Creature>& creature)
@@ -381,26 +366,14 @@ void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(const shar
 
 void CreatureMessageBuilder::BuildStatEncumberanceDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 2);
-        creature->GetStatEncumberances().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetStatEncumberances().ClearDeltas();
+	DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 2);
 }
 
 void CreatureMessageBuilder::BuildSkillModDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 3);
-        creature->GetSkillMods().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetSkillMods().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 3);
+    creature->SerializeSkillMods(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(const shared_ptr<Creature>& creature)
@@ -495,14 +468,9 @@ void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(const shared_ptr<Cre
 
 void CreatureMessageBuilder::BuildMissionCriticalObjectDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 13);
-        creature->GetMissionCriticalObjects().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetMissionCriticalObjects().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 13);
+    creature->SerializeMissionCriticalObjects(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildCombatLevelDelta(const shared_ptr<Creature>& creature)
@@ -608,38 +576,23 @@ void CreatureMessageBuilder::BuildPerformanceIdDelta(const shared_ptr<Creature>&
 
 void CreatureMessageBuilder::BuildStatCurrentDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 13);
-        creature->GetCurrentStats().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetCurrentStats().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 13);
+    creature->SerializeCurrentStats(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildStatMaxDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 14);
-        creature->GetMaxStats().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetMaxStats().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 14);
+    creature->SerializeMaxStats(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildEquipmentDelta(const shared_ptr<Creature>& creature)
 {
-    if (creature->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 15);
-        creature->GetEquipment().Serialize(message);
-        creature->AddDeltasUpdate(&message);
-    }
-    else
-        creature->GetEquipment().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 15);
+    creature->SerializeEquipment(&message);
+    creature->AddDeltasUpdate(&message);
 }
 
 void CreatureMessageBuilder::BuildDisguiseDelta(const shared_ptr<Creature>& creature)
@@ -680,8 +633,8 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creatur
     auto message = CreateBaselinesMessage(creature, Object::VIEW_1, 4);
     message.data.write<uint32_t>(creature->GetBankCredits());                  // Bank Credits
     message.data.write<uint32_t>(creature->GetCashCredits());                  // Cash Credits
-    creature->GetBaseStats().Serialize(message);                           // Stats Negative
-    creature->GetSkills().Serialize(message);                                   // Skills
+    creature->SerializeBaseStats(&message);                           // Stats Negative
+    creature->SerializeSkills(&message);                                   // Skills
     
     return BaselinesMessage(std::move(message));
 }
@@ -696,7 +649,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creatur
     message.data.write<float>(creature->GetScale());                            // Scale
     message.data.write<uint32_t>(creature->GetBattleFatigue());                // Battle Fatigue
     message.data.write<uint64_t>(creature->GetStateBitmask());                 // States Bitmask
-    creature->GetStatWounds().Serialize(message);                          // Stat Wounds
+    creature->SerializeStatWounds(&message);                          // Stat Wounds
     
     return BaselinesMessage(move(message));
 }
@@ -706,8 +659,8 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creatur
     auto message = CreateBaselinesMessage(creature, Object::VIEW_4, 20);
     message.data.write<float>(creature->GetAccelerationMultiplierBase());         // Acceleration Multiplier Base
     message.data.write<float>(creature->GetAccelerationMultiplierModifier());     // Acceleration Multiplier Modifier
-    creature->GetStatEncumberances().Serialize(message);                       // Stat Encumberances
-    creature->GetSkillMods().Serialize(message);                               // Skill Mods
+    creature->SerializeStatEncumberances(&message);                       // Stat Encumberances
+    creature->SerializeSkillMods(&message);                               // Skill Mods
     message.data.write<float>(creature->GetSpeedMultiplierBase());                // Speed Multiplier Base
     message.data.write<float>(creature->GetSpeedMultiplierModifier());            // Speed Multiplier Modifier
     message.data.write<uint64_t>(creature->GetListenToId());                      // Listen To Id
@@ -717,7 +670,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creatur
     message.data.write<float>(creature->GetTurnRadius());                          // Turn Radius
     message.data.write<float>(creature->GetWalkingSpeed());                        // Walking Speed
     message.data.write<float>(creature->GetWaterModifierPercent());               // Water Modifier Percent
-    creature->GetMissionCriticalObjects().Serialize(message);                 // Mission Critical Object
+    creature->SerializeMissionCriticalObjects(&message);                 // Mission Critical Object
     
     return BaselinesMessage(move(message));
 }
@@ -738,9 +691,9 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline6(const shared_ptr<Creatur
     message.data.write<uint8_t>(creature->GetMoodId());                            // Mood Id
     message.data.write<uint32_t>(creature->IncrementPerformanceCounter());             // Performance Update Counter
     message.data.write<uint32_t>(creature->GetPerformanceId());                    // Performance Id
-    creature->GetCurrentStats().Serialize(message);                            // Current Stats
-    creature->GetMaxStats().Serialize(message);                                // Max Stats
-    creature->GetEquipment().Serialize(message);                               // Equipment
+    creature->SerializeCurrentStats(&message);                            // Current Stats
+    creature->SerializeMaxStats(&message);                                // Max Stats
+    creature->SerializeEquipment(&message);                               // Equipment
     message.data.write<std::string>(creature->GetDisguise());                       // Disguise Template
     message.data.write<uint8_t>(creature->IsStationary());                         // Stationary
     

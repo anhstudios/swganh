@@ -29,8 +29,27 @@ public:
         , clear_(false)
     {}
 
+	NetworkList(std::list<T> orig)
+		: items_(orig.begin(), orig.end())
+		, clear_(false)
+		, update_counter_(0)
+	{
+	}
+
+	NetworkList(std::vector<T> orig)
+		: items_(orig.begin(), orig.end())
+		, clear_(false)
+		, update_counter_(0)
+	{
+	}
+
     ~NetworkList()
     {}
+
+	std::list<T> Get() const
+	{
+		return items_;
+	}
 
     /**
      * Inserts the item and queues a change to the added_items_ list.
@@ -115,6 +134,18 @@ public:
     iterator end(void) { return items_.end(); }
 
     uint16_t Size(void) const { return items_.size(); }
+
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
