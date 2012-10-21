@@ -22,7 +22,8 @@ CREATE PROCEDURE `sp_CharacterCreate`(
     IN `hair_customization` TINYBLOB,
     IN `base_model_string` CHAR(64),
     OUT `object_id` BIGINT(20))
-charCreate:BEGIN
+-- charCreate:
+BEGIN
     DECLARE oX FLOAT;DECLARE oY FLOAT;DECLARE oZ FLOAT;DECLARE oW FLOAT;
     DECLARE race_id INT;
     DECLARE iff_template_id INT;
@@ -61,7 +62,7 @@ charCreate:BEGIN
     SELECT sf_CharacterNameInUseCheck(start_firstname) INTO nameCheck;
     IF nameCheck <> 666 THEN
         SELECT(nameCheck);
-        LEAVE charCreate;
+        -- LEAVE charCreate;
     END IF;
 
     IF base_model_string like '%female%' THEN
@@ -79,7 +80,7 @@ charCreate:BEGIN
     
         SELECT MAX(id) + 10 FROM object INTO object_id FOR UPDATE;
 
-        IF object_id IS NULL THEN
+        IF object_id IS NULL OR object_id < 8589934593 THEN
             SET object_id = 8589934593;
         END IF;
 
@@ -113,8 +114,6 @@ charCreate:BEGIN
             VALUES (object_id, parent_id, 2000, 0, 0, start_scale, 1, 1, 1, 1, 5.75, 1, 1, 1, 1,
                 health, strength, constitution, action, quickness, stamina, mind, focus, willpower,
                 health, strength, constitution, action, quickness, stamina, mind, focus, willpower );
-        -- APPEARANCE
-        INSERT INTO `appearance` VALUES (object_id, scale, gender, shortSpecies, start_appearance_customization);
         -- DATAPAD 2 -- 9357
         INSERT INTO `object` VALUES (object_id+2, start_scene, object_id, 9357, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'datapad', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+2, '', 0, 0, 0, 0, 1);
@@ -135,7 +134,6 @@ charCreate:BEGIN
 
             INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031, -2, 1);
             INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);
-            INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
         END IF;
 
         -- EQUIPED ??
@@ -154,7 +152,7 @@ charCreate:BEGIN
         END IF;
 
         CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender, start_scene);
-    COMMIT;
+    -- COMMIT;
 END//
 DELIMITER ;
 

@@ -934,6 +934,49 @@ void Player::CreateBaselines(shared_ptr<swganh::observer::ObserverInterface> obs
         ("Player::Baselines", shared_from_this(), observer));
 }
 
+std::shared_ptr<Object> Player::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Player>();
+	Clone(other);
+	return other;
+}
+
+void Player::Clone(std::shared_ptr<Player> other)
+{
+	other->status_flags_ = status_flags_;
+    other->profile_flags_ = profile_flags_;
+    other->profession_tag_ = profession_tag_;
+    other->born_date_.store(born_date_);
+    other->total_playtime_.store(total_playtime_);
+    other->admin_tag_.store(admin_tag_);
+    other->region_ .store(region_);
+    other->experience_ = experience_;
+    other->waypoints_ = waypoints_;
+    other->current_force_power_.store(current_force_power_);
+	other->max_force_power_.store(max_force_power_);
+	other->current_force_sensitive_quests_.store(current_force_sensitive_quests_);
+	other->completed_force_sensitive_quests_.store(completed_force_sensitive_quests_);
+    other->quest_journal_ = quest_journal_;
+	other->experimentation_flag_.store(experimentation_flag_);
+	other->crafting_stage_.store(crafting_stage_);
+	other->nearest_crafting_station_.store(nearest_crafting_station_);
+	other->draft_schematics_ = draft_schematics_;
+	other->experimentation_points_.store(experimentation_points_);
+	other->friends_ = friends_;
+	other->ignored_players_ = ignored_players_;
+	other->accomplishment_counter_.store(accomplishment_counter_);
+	other->language_.store(language_);
+	other->current_stomach_.store(current_stomach_);
+    other->max_stomach_.store(max_stomach_);
+	other->current_drink_.store(current_drink_);
+    other->max_drink_.store(max_drink_);
+	other->jedi_state_.store(jedi_state_);
+    other->gender_ = gender_;
+
+	Intangible::Clone(other);
+}
+
 void Player::SerializeXp(swganh::messages::BaseSwgMessage* message)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -975,4 +1018,3 @@ void Player::SerializeIgnoredPlayers(swganh::messages::BaseSwgMessage* message)
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	ignored_players_.Serialize(message);
 }
-

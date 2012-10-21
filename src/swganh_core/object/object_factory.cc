@@ -174,6 +174,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		auto find_itr = persisted_objects_.find(object);
 		if(find_itr != persisted_objects_.end())
 			persisted_objects_.erase(find_itr);
+
     }
     catch(sql::SQLException &e)
     {
@@ -329,7 +330,7 @@ void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
 			object->SetStfName(object_name->file, object_name->entry);
 		}
 
-	} catch (std::exception& ex) {
-		LOG(warning) << "Client data not found for object: " << object->GetObjectId() << " with error:" << ex.what();
+	} catch (std::exception& /*ex*/) {
+		//LOG(warning) << "Client data not found for object: " << object->GetObjectId() << " with error:" << ex.what();
 	}
 }

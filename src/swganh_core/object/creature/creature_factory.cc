@@ -297,17 +297,9 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
     return creature;
 }
 
-shared_ptr<Object> CreatureFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> CreatureFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//TODO: Have to hit the db to make this
-		return make_shared<Creature>();
-	}
-	else
-	{
-		return make_shared<Creature>();
-	}
+	return make_shared<Creature>();
 }
 
 void CreatureFactory::LoadSkills_(

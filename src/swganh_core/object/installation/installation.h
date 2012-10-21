@@ -356,6 +356,9 @@ public:
 	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceNames_();
 	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceTypes_();
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Installation> other);
+
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
 

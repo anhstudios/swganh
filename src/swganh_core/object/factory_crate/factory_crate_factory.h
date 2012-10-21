@@ -24,6 +24,8 @@ namespace object {
 
 		virtual void RegisterEventHandlers(){}
 
+		std::shared_ptr<swganh::object::Object> CreateObject();
+
     };
 
 
