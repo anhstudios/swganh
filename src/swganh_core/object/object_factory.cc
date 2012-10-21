@@ -174,6 +174,8 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		auto find_itr = persisted_objects_.find(object);
 		if(find_itr != persisted_objects_.end())
 			persisted_objects_.erase(find_itr);
+
+		result->close();
     }
     catch(sql::SQLException &e)
     {

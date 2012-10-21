@@ -68,12 +68,12 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
         
 		statement->setUInt64(1, object_id);
 
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
 
-		CreateBaseObjectFromStorage(intangible, result);
+		CreateBaseObjectFromStorage(intangible, std::move(result));
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
 				intangible->SetStfName(result->getString("stf_detail_file"), result->getString("stf_detail_string"));
@@ -89,8 +89,11 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     }
     catch(sql::SQLException &e)
     {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+		if(e.getErrorCode() != 0)
+		{
+			LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+			LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+		}
     }
     return intangible;
 }

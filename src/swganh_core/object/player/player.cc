@@ -199,10 +199,10 @@ void Player::SetAdminTag(uint8_t tag)
         ("Player::AdminTag", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkMap<string, XpData> Player::GetXp() 
+std::map<string, XpData> Player::GetXp() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return experience_;
+    return std::move(experience_.Get());
 }
 
 void Player::AddExperience(XpData experience)
@@ -244,7 +244,7 @@ void Player::ClearXpType(string type)
         ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
-void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpData>& experience)
+void Player::ResetXp(std::map<std::string, XpData>& experience)
 {
     {
         boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -269,10 +269,10 @@ void Player::ClearAllXp()
         ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
+std::map<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return waypoints_;
+    return std::move(waypoints_.Get());
 }
 
 void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
@@ -422,10 +422,10 @@ void Player::ClearCompletedForceSensitiveQuests()
         ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
-swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> Player::GetQuests() 
+std::map<uint32_t, QuestJournalData> Player::GetQuests() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return quest_journal_;
+    return std::move(quest_journal_.Get());
 }
 
 void Player::AddQuest(QuestJournalData quest)
@@ -482,15 +482,15 @@ void Player::ClearAllQuests()
         ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
 }
 
-swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
+std::vector<Ability> Player::GetAbilityList() 
 {
     auto creature = GetContainer<Creature>();
 	auto skill_commands = creature->GetSkillCommands();
 	
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	swganh::messages::containers::NetworkSortedList<Ability> abilities;
+	std::vector<Ability> abilities;
     for_each(begin(skill_commands), end(skill_commands),[&abilities](pair<uint32_t, string> skill_command){
-        abilities.Add(Ability(skill_command.second));
+        abilities.push_back(Ability(skill_command.second));
     });
     return abilities;
 }
@@ -549,10 +549,17 @@ void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
         ("Player::NearestCraftingStation", static_pointer_cast<Player>(shared_from_this())));
 }
 
-swganh::messages::containers::NetworkSortedList<DraftSchematicData> Player::GetDraftSchematics() 
+std::vector<DraftSchematicData> Player::GetDraftSchematics() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return draft_schematics_;
+	std::vector<DraftSchematicData> schematics;
+
+	for(auto& v : draft_schematics_)
+	{
+		schematics.push_back(v.second);
+	}
+
+    return std::move(schematics);
 }
 
 void Player::AddDraftSchematic(DraftSchematicData schematic)
@@ -641,10 +648,10 @@ void Player::IncrementAccomplishmentCounter()
         ("Player::AccomplishmentCounter", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkSortedVector<Name> Player::GetFriends()
+std::vector<Name> Player::GetFriends()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return friends_;
+    return std::move(friends_.Get());
 }
 bool Player::IsFriend(std::string friend_name)
 {
@@ -700,10 +707,10 @@ void Player::ClearFriends()
         ("Player::Friend", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkSortedVector<Name> Player::GetIgnoredPlayers()
+std::vector<Name> Player::GetIgnoredPlayers()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return ignored_players_;
+    return std::move(ignored_players_.Get());
 }
 
 bool Player::IsIgnored(string player_name)
@@ -968,4 +975,47 @@ void Player::Clone(std::shared_ptr<Player> other)
     other->gender_ = gender_;
 
 	Intangible::Clone(other);
+}
+
+void Player::SerializeXp(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	experience_.Serialize(message);
+}
+
+void Player::SerializeWaypoints(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	waypoints_.Serialize(message);
+}
+
+void Player::SerializeQuests(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	quest_journal_.Serialize(message);
+}
+
+void Player::SerializeAbilities(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto list = GetAbilityList();
+	NetworkList<Ability>(GetAbilityList()).Serialize(message);
+}
+
+void Player::SerializeDraftSchematics(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	draft_schematics_.Serialize(message);
+}
+
+void Player::SerializeFriends(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	friends_.Serialize(message);
+}
+
+void Player::SerializeIgnoredPlayers(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	ignored_players_.Serialize(message);
 }

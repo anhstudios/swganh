@@ -270,21 +270,16 @@ void PlayerMessageBuilder::BuildAdminTagDelta(const shared_ptr<Player>& object)
 }
 void PlayerMessageBuilder::BuildXpDelta(const shared_ptr<Player>& object)
 {
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 0);
-        object->GetXp().Serialize(message);
-        object->AddDeltasUpdate(&message);
-    }
-    else
-        object->GetXp().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 0);
+    object->SerializeXp(&message);
+    object->AddDeltasUpdate(&message);
 }
 void PlayerMessageBuilder::BuildWaypointDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 1);
-        object->GetWaypoints().Serialize(message);
+        object->SerializeWaypoints(&message);
         object->AddDeltasUpdate(&message);
     }
 }
@@ -330,23 +325,15 @@ void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(const shared_p
 }
 void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& object)
 {
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
-        object->GetQuests().Serialize(message);
-        object->AddDeltasUpdate(&message);
-    }
-    else
-        object->GetQuests().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
+    object->SerializeQuests(&message);
+    object->AddDeltasUpdate(&message);
 }
 void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
 {
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
-        object->GetAbilityList().Serialize(message);
-        object->AddDeltasUpdate(&message);
-    }
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
+    object->SerializeAbilities(&message);
+    object->AddDeltasUpdate(&message);
 }
 
 void PlayerMessageBuilder::BuildExperimentationFlagDelta(const shared_ptr<Player>& object)
@@ -381,14 +368,9 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(const shared_ptr<Pla
 }
 void PlayerMessageBuilder::BuildDraftSchematicDelta(const shared_ptr<Player>& object)
 {
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
-        object->GetDraftSchematics().Serialize(message);
-        object->AddDeltasUpdate(&message);
-    }
-    else
-        object->GetDraftSchematics().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
+    object->SerializeDraftSchematics(&message);
+    object->AddDeltasUpdate(&message);
 }
 
 void PlayerMessageBuilder::BuildExperimentationPointsDelta(const shared_ptr<Player>& object)
@@ -413,25 +395,15 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(const shared_ptr<Play
 }
 void PlayerMessageBuilder::BuildFriendsDelta(const shared_ptr<Player>& object)
 {
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
-        object->GetFriends().Serialize(message);
-        object->AddDeltasUpdate(&message);
-    }
-    else
-        object->GetFriends().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
+    object->SerializeFriends(&message);
+    object->AddDeltasUpdate(&message);
 }
 void PlayerMessageBuilder::BuildIgnoredDelta(const shared_ptr<Player>& object)
 {
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
-        object->GetIgnoredPlayers().Serialize(message);
-        object->AddDeltasUpdate(&message);
-    }
-    else
-        object->GetIgnoredPlayers().ClearDeltas();
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
+    object->SerializeIgnoredPlayers(&message);
+    object->AddDeltasUpdate(&message);
 }
 void PlayerMessageBuilder::BuildLanguageDelta(const shared_ptr<Player>& object)
 {
@@ -538,8 +510,8 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline6(const shared_ptr<Player>& 
 BaselinesMessage PlayerMessageBuilder::BuildBaseline8(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_8, 7);
-    object->GetXp().Serialize(message);
-    object->GetWaypoints().Serialize(message);
+    object->SerializeXp(&message);
+    object->SerializeWaypoints(&message);
     
     message.data.write<uint32_t>(object->GetCurrentForcePower());
     message.data.write<uint32_t>(object->GetMaxForcePower());
@@ -550,7 +522,7 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline8(const shared_ptr<Player>& 
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Size
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Counter
     
-    object->GetQuests().Serialize(message);
+    object->SerializeQuests(&message);
     
     return BaselinesMessage(move(message));
 }
@@ -559,19 +531,19 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline9(const shared_ptr<Player>& 
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_9, 17);
     
-    object->GetAbilityList().Serialize(message);
+    object->SerializeAbilities(&message);
     message.data.write<uint32_t>(object->GetExperimentationFlag());
     message.data.write<uint32_t>(object->GetCraftingStage());
     message.data.write<uint64_t>(object->GetNearestCraftingStation());
     
-    object->GetDraftSchematics().Serialize(message);
+    object->SerializeDraftSchematics(&message);
     
     message.data.write<uint32_t>(object->GetExperimentationPoints());
     message.data.write<uint32_t>(object->GetAccomplishmentCounter());
     
-    object->GetFriends().Serialize(message);
+    object->SerializeFriends(&message);
     
-    object->GetIgnoredPlayers().Serialize(message);
+    object->SerializeIgnoredPlayers(&message);
     
     message.data.write<uint32_t>(object->GetLanguage());
     message.data.write<uint32_t>(object->GetCurrentStomach());

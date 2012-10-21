@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `scene` (
 -- Dumping data for table galaxy.scene: ~44 rows (approximately)
 /*!40000 ALTER TABLE `scene` DISABLE KEYS */;
 INSERT INTO `scene` (`id`, `name`, `label`, `description`, `terrain`) VALUES
+	(NULL, 'bad', 'bad', 'Null scene for object prototypes', 'bad'),
 	(1, 'corellia', 'corellia', '', 'terrain/corellia.trn'),
 	(2, 'dantooine', 'dantooine', '', 'terrain/dantooine.trn'),
 	(3, 'dathomir', 'dathomir', '', 'terrain/dathomir.trn'),
