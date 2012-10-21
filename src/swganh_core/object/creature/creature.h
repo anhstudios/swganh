@@ -378,13 +378,13 @@ public:
     void SetStatBase(StatIndex stat_index, int32_t value);
     void AddStatBase(StatIndex stat_index, int32_t value);
     void DeductStatBase(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void);
-    int32_t GetStatBase(StatIndex stat_index);
+	swganh::messages::containers::NetworkArray<Stat>& GetBaseStats(void);
+	int32_t GetStatBase(StatIndex stat_index);
 
     // Skills
     void AddSkill(std::string skill);
     void RemoveSkill(std::string skill);
-    swganh::messages::containers::NetworkList<Skill> GetSkills(void);
+    swganh::messages::containers::NetworkList<Skill>& GetSkills(void);
     bool HasSkill(std::string skill);
 
     // Skill Commands
@@ -430,7 +430,7 @@ public:
     void DeductStatWound(StatIndex stat_index, int32_t value);
     void AddStatWound(StatIndex stat_index, int32_t value);
     void SetStatWound(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void);
+    swganh::messages::containers::NetworkArray<Stat>& GetStatWounds(void);
     int32_t GetStatWound(StatIndex stat_index);
 
     // Acceleration Multiplier Base
@@ -445,7 +445,7 @@ public:
     void AddStatEncumberance(StatIndex stat_index, int32_t value);
     void DeductStatEncumberance(StatIndex stat_index, int32_t value);
     void SetStatEncumberance(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void);
+    swganh::messages::containers::NetworkArray<Stat>& GetStatEncumberances(void);
     int32_t GetStatEncumberance(StatIndex stat_index);
 
     // Skill Mods
@@ -453,7 +453,7 @@ public:
     void RemoveSkillMod(std::string identifier);
     void SetSkillMod(SkillMod mod);
     void ClearSkillMods(void);
-    swganh::messages::containers::NetworkMap<std::string, SkillMod> GetSkillMods(void);
+    swganh::messages::containers::NetworkMap<std::string, SkillMod>& GetSkillMods(void);
     SkillMod GetSkillMod(std::string identifier);
 
     // Speed Multiplier Base
@@ -496,7 +496,7 @@ public:
     void AddMissionCriticalObject(MissionCriticalObject& object);
     void RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id);
     MissionCriticalObject GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner);
-    swganh::messages::containers::NetworkList<MissionCriticalObject> GetMissionCriticalObjects(void);
+    swganh::messages::containers::NetworkList<MissionCriticalObject>& GetMissionCriticalObjects(void);
 
     // Combat Level
     void SetCombatLevel(uint16_t);
@@ -552,21 +552,21 @@ public:
     void SetStatCurrent(StatIndex stat_index, int32_t value);
     void AddStatCurrent(StatIndex stat_index, int32_t value);
     void DeductStatCurrent(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void);
+    swganh::messages::containers::NetworkArray<Stat>& GetCurrentStats(void);
     int32_t GetStatCurrent(StatIndex stat_index);
 
     // Max Stats
     void SetStatMax(StatIndex stat_index, int32_t value);
     void AddStatMax(StatIndex stat_index, int32_t value);
     void DeductStatMax(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void);
+    swganh::messages::containers::NetworkArray<Stat>& GetMaxStats(void);
     int32_t GetStatMax(StatIndex stat_index);
 
     // Equipment List
     void AddEquipmentItem(EquipmentItem& item);
     void RemoveEquipmentItem(uint64_t object_id);
     void UpdateEquipmentItem(EquipmentItem& item);
-    swganh::messages::containers::NetworkSortedList<EquipmentItem> GetEquipment();
+    swganh::messages::containers::NetworkSortedList<EquipmentItem>& GetEquipment();
     EquipmentItem GetEquipmentItem(uint64_t object_id);
 
     // Disguise

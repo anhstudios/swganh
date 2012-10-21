@@ -436,7 +436,7 @@ public:
     /**
      * @return the current experience for the player.
      */
-    swganh::messages::containers::NetworkMap<std::string, XpData> GetXp() ;
+    swganh::messages::containers::NetworkMap<std::string, XpData>& GetXp() ;
     
     /**
      * Adds experience to the player.
@@ -474,7 +474,7 @@ public:
     /**
      * @return The waypoints currently held by the player.
      */
-    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> GetWaypoints() ;
+    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer>& GetWaypoints() ;
     
     /**
      * Adds a waypoint to the player.
@@ -505,7 +505,7 @@ public:
     /**
      * @return the current force power of the player.
      */
-    uint32_t GetCurrentForcePower() ;
+    int32_t GetCurrentForcePower() ;
     
     /**
      * Increments the force power of the player. Can be a negative value.
@@ -519,19 +519,19 @@ public:
      *
      * @param force_power The new force power.
      */
-    void SetCurrentForcePower(uint32_t force_power);
+    void SetCurrentForcePower(int32_t force_power);
     
     /**
      * @return the max force power of the player.
      */
-    uint32_t GetMaxForcePower() ;
+    int32_t GetMaxForcePower() ;
     
     /**
      * Sets the max force power.
      *
      * @param force_power The new max force power.
      */
-    void SetMaxForcePower(uint32_t force_power);
+    void SetMaxForcePower(int32_t force_power);
 
     uint32_t GetCurrentForceSensitiveQuests();
     void AddCurrentForceSensitiveQuest(uint32_t quest_mask);
@@ -546,7 +546,7 @@ public:
     /**
      * @return The quests currently in the quest journal.
      */
-    swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> GetQuests() ;
+    swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData>& GetQuests() ;
     
     /**
      * Adds a quest to the journal.
@@ -628,7 +628,7 @@ public:
     /**
      * @return The draft schematics assigned to this player.
      */
-    swganh::messages::containers::NetworkSortedList<DraftSchematicData> GetDraftSchematics() ;
+    swganh::messages::containers::NetworkSortedList<DraftSchematicData>& GetDraftSchematics() ;
     
     /**
      * Adds a draft schematic.
@@ -696,7 +696,7 @@ public:
     /**
      * @return the list of friends.
      */
-    swganh::messages::containers::NetworkSortedVector<Name> GetFriends();
+    swganh::messages::containers::NetworkSortedVector<Name>& GetFriends();
 
     /**
      * Checks to see if the name is already a friend
@@ -727,7 +727,7 @@ public:
     /**
      * @return the list of ignored players.
      */
-    swganh::messages::containers::NetworkSortedVector<Name> GetIgnoredPlayers();
+    swganh::messages::containers::NetworkSortedVector<Name>& GetIgnoredPlayers();
 
     /**
      * Checks to see if the name is already being ignored
@@ -879,8 +879,8 @@ private:
     std::atomic<uint32_t> region_;
     swganh::messages::containers::NetworkMap<std::string, XpData> experience_;
     swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> waypoints_;
-    std::atomic<uint32_t> current_force_power_;
-    std::atomic<uint32_t> max_force_power_;
+    std::atomic<int32_t> current_force_power_;
+    std::atomic<int32_t> max_force_power_;
     std::atomic<uint32_t> current_force_sensitive_quests_;
     std::atomic<uint32_t> completed_force_sensitive_quests_;
     swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> quest_journal_;

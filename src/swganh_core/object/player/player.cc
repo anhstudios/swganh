@@ -199,7 +199,7 @@ void Player::SetAdminTag(uint8_t tag)
         ("Player::AdminTag", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkMap<string, XpData> Player::GetXp() 
+NetworkMap<string, XpData>& Player::GetXp() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return experience_;
@@ -269,7 +269,7 @@ void Player::ClearAllXp()
         ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
+NetworkMap<uint64_t, PlayerWaypointSerializer>& Player::GetWaypoints() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return waypoints_;
@@ -328,12 +328,12 @@ void Player::ClearAllWaypoints()
         ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
 }
 
-uint32_t Player::GetCurrentForcePower() 
+int32_t Player::GetCurrentForcePower() 
 {
     return current_force_power_;
 }
 
-void Player::SetCurrentForcePower(uint32_t force_power)
+void Player::SetCurrentForcePower(int32_t force_power)
 {
     current_force_power_ = force_power;
 
@@ -343,7 +343,7 @@ void Player::SetCurrentForcePower(uint32_t force_power)
 
 void Player::IncrementForcePower(int32_t force_power)
 {
-    uint32_t new_force_power = current_force_power_ + force_power;
+    int32_t new_force_power = current_force_power_ + force_power;
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
     
@@ -351,12 +351,12 @@ void Player::IncrementForcePower(int32_t force_power)
         ("Player::ForcePower", static_pointer_cast<Player>(shared_from_this())));
 }
 
-uint32_t Player::GetMaxForcePower() 
+int32_t Player::GetMaxForcePower() 
 {
     return max_force_power_;
 }
 
-void Player::SetMaxForcePower(uint32_t force_power)
+void Player::SetMaxForcePower(int32_t force_power)
 {
     max_force_power_ = force_power;
 
@@ -422,7 +422,7 @@ void Player::ClearCompletedForceSensitiveQuests()
         ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
-swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> Player::GetQuests() 
+swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData>& Player::GetQuests() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return quest_journal_;
@@ -549,7 +549,7 @@ void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
         ("Player::NearestCraftingStation", static_pointer_cast<Player>(shared_from_this())));
 }
 
-swganh::messages::containers::NetworkSortedList<DraftSchematicData> Player::GetDraftSchematics() 
+swganh::messages::containers::NetworkSortedList<DraftSchematicData>& Player::GetDraftSchematics() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return draft_schematics_;
@@ -641,7 +641,7 @@ void Player::IncrementAccomplishmentCounter()
         ("Player::AccomplishmentCounter", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkSortedVector<Name> Player::GetFriends()
+NetworkSortedVector<Name>& Player::GetFriends()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return friends_;
@@ -700,7 +700,7 @@ void Player::ClearFriends()
         ("Player::Friend", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkSortedVector<Name> Player::GetIgnoredPlayers()
+NetworkSortedVector<Name>& Player::GetIgnoredPlayers()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return ignored_players_;
