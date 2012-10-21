@@ -136,7 +136,7 @@ void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
         ("Creature::StatBase",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetBaseStats(void)
+NetworkArray<Stat>& Creature::GetBaseStats(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_base_list_;
@@ -179,7 +179,7 @@ void Creature::RemoveSkill(std::string skill)
         ("Creature::Skill",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkList<Skill> Creature::GetSkills(void)
+NetworkList<Skill>& Creature::GetSkills(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return skills_;
@@ -394,7 +394,7 @@ void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
         ("Creature::StatWound",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetStatWounds(void)
+NetworkArray<Stat>& Creature::GetStatWounds(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_wound_list_;
@@ -479,7 +479,7 @@ void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
         ("Creature::StatEncumberance",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetStatEncumberances(void)
+NetworkArray<Stat>& Creature::GetStatEncumberances(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_encumberance_list_;
@@ -541,7 +541,7 @@ void Creature::ClearSkillMods(void)
         ("Creature::SkillMod",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkMap<std::string, SkillMod> Creature::GetSkillMods(void)
+NetworkMap<std::string, SkillMod>& Creature::GetSkillMods(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return skill_mod_list_;
@@ -755,7 +755,7 @@ MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uin
         return MissionCriticalObject(0, 0);
 }
 
-NetworkList<MissionCriticalObject> Creature::GetMissionCriticalObjects(void)
+NetworkList<MissionCriticalObject>& Creature::GetMissionCriticalObjects(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return mission_critical_object_list_;
@@ -966,7 +966,7 @@ void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
         ("Creature::StatCurrent", static_pointer_cast<Creature>(static_pointer_cast<Creature>(shared_from_this()))));
 }
 
-NetworkArray<Stat> Creature::GetCurrentStats(void)
+NetworkArray<Stat>& Creature::GetCurrentStats(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_current_list_;
@@ -1016,7 +1016,7 @@ void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
         ("Creature::StatMax",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetMaxStats(void)
+NetworkArray<Stat>& Creature::GetMaxStats(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_max_list_;
@@ -1069,7 +1069,7 @@ void Creature::UpdateEquipmentItem(EquipmentItem& item)
         ("Creature::EquipmentItem",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkSortedList<EquipmentItem> Creature::GetEquipment(void)
+NetworkSortedList<EquipmentItem>& Creature::GetEquipment(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return equipment_list_;

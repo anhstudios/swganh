@@ -60,7 +60,7 @@ public:
 
     void AddGuildTag(uint32_t guild_id, std::string abbreviation);
     void RemoveGuildTag(uint32_t guild_id);
-    swganh::messages::containers::NetworkList<GuildTag> GetGuildList();
+    swganh::messages::containers::NetworkList<GuildTag>& GetGuildList();
 
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;

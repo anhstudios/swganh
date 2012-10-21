@@ -13,3 +13,8 @@ boots = simulation.createObject('object/tangible/wearables/boots/shared_boots_s1
 inventory.add(actor, boots)
 boots.condition = 0
 boots.max_condition = 1000
+
+pistol = simulation.createObject('object/weapon/ranged/pistol/shared_pistol_cdef.iff', ContainerPermission.DEFAULT, False, False)
+pistol.condition = 0
+pistol.max_condition = 1000
+inventory.add(actor, pistol)

@@ -12,6 +12,7 @@
 using swganh::observer::ObserverInterface;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandProperties;
+using swganh::command::CommandGroup;
 using swganh::object::Object;
 using swganh::object::Creature;
 using swganh::messages::controllers::CommandQueueEnqueue;
@@ -64,7 +65,7 @@ uint32_t BaseSwgCommand::GetPriority() const
     return properties_->default_priority;
 }
 
-uint32_t BaseSwgCommand::GetCommandGroup() const
+CommandGroup BaseSwgCommand::GetCommandGroup() const
 {
     return properties_->command_group;
 }
@@ -77,6 +78,10 @@ uint32_t BaseSwgCommand::GetTargetRequiredType() const
 uint64_t BaseSwgCommand::GetAllowedStateBitmask() const
 {
     return properties_->allow_in_state;
+}
+uint64_t BaseSwgCommand::GetAllowedLocomotionBitmask() const
+{
+	return properties_->allow_in_locomotion;
 }
 
 float BaseSwgCommand::GetMaxRangeToTarget() const

@@ -75,7 +75,7 @@ public:
     // Group Members
     void AddGroupMember(uint64_t member, std::string name);
     void RemoveGroupMember(uint64_t member);
-    swganh::messages::containers::NetworkSortedVector<Member> GetGroupMembers();
+    swganh::messages::containers::NetworkSortedVector<Member>& GetGroupMembers();
     
     // Loot Mode
     void SetLootMode(LootMode loot_mode);

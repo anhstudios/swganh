@@ -17,7 +17,7 @@ using namespace std;
 
 void exportCombatService()
 {
-    class_<CombatServiceInterface, std::shared_ptr<CombatServiceInterface>, boost::noncopyable>("CombatServiceInterface", no_init)
+    class_<CombatServiceInterface, std::shared_ptr<CombatServiceInterface>, boost::noncopyable>("CombatService", no_init)
         .def("incapacitate", &CombatServiceInterface::SetIncapacitated, "sets the target as incapacitated and sends out appropriate system messages")
         .def("kill", &CombatServiceInterface::SetDead, "Sets the target as dead and sends out the appropriate system messages and begins the cloning process")
         .def("endDuel", &CombatServiceInterface::EndDuel, "Ends the duel between the two players")

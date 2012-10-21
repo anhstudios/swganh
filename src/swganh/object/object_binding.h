@@ -231,10 +231,13 @@ void exportObject()
 		.def("getStringAttribute", &Object::GetAttribute<wstring>, "Gets the string attribute value")
 		.def("setStringAttribute", &Object::SetAttribute<wstring>, "sets the string attribute value")
 		.def("getAttributeRecursive", &Object::GetAttributeRecursiveAsString, "Gets the attribute as a string recursively")
+		.def("getIntAttributeRecursive", &Object::GetAttributeRecursive<int>, "Gets an integer attribute recursively")
+		.def("getFloatAttributeRecursive", &Object::GetAttributeRecursive<float>, "Gets a float attribute recursively")
 		.add_property("attribute_template_id", &Object::GetAttributeTemplateId, &Object::SetAttributeTemplateId, "Gets and Sets the attribute template_id")
 		.def("eventDispatcher", &Object::SetEventDispatcher, "Sets the event dispatcher pointer")
 		.def("updatePosition", &Object::UpdatePosition, "Updates the position and sends an update to the player")
 		.def("toCreature", ToCreature)
+		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
 		;
 
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();

@@ -336,8 +336,9 @@ void Installation::ToggleUpdating()
         ("Installation::IsUpdating",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-NetworkSortedVector<Installation::HopperItem> Installation::GetHopperContents() const
+NetworkSortedVector<Installation::HopperItem>& Installation::GetHopperContents()
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return hopper_;
 }
 
@@ -449,19 +450,19 @@ void Installation::SetConditionPercentage(uint8_t condition)
         ("Installation::ConditionPercent",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-NetworkSortedVector<ResourceId> Installation::GetResourceIds_()
+NetworkSortedVector<ResourceId>& Installation::GetResourceIds_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_pool_ids_;
 }
 
-NetworkSortedVector<ResourceString> Installation::GetResourceNames_()
+NetworkSortedVector<ResourceString>& Installation::GetResourceNames_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_names_;
 }
 
-NetworkSortedVector<ResourceString> Installation::GetResourceTypes_()
+NetworkSortedVector<ResourceString>& Installation::GetResourceTypes_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_types_;

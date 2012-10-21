@@ -549,6 +549,10 @@ bool Object::InRange(glm::vec3 target, float range)
 	}
 	return true;
 }
+float Object::RangeTo(glm::vec3 target)
+{
+	return glm::distance(GetPosition(), target);
+}
 void Object::SetOrientation(glm::quat orientation)
 {
     {
@@ -892,12 +896,9 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 	if (slot_iter != slot_descriptor_.end())
 	{
 		auto slot = slot_iter->second;
-		if (!slot->is_filled())
-		{			
-			slot->view_objects([&](shared_ptr<Object> object){
-				found = object;
-			});
-		}
+		slot->view_objects([&](shared_ptr<Object> object){
+			found = object;
+		});
 	}
 	return found;
 }
@@ -930,7 +931,7 @@ AttributesMap Object::GetAttributeMap()
 	return attributes_map_;
 }
 
-boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::string& name)
+AttributeVariant Object::GetAttribute(const std::string& name)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
@@ -941,8 +942,8 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 	{
 		return find_iter->second;
 	}	
-	LOG(error) << "Attribute "<< name << " does not exist";	
-	return L"";
+	LOG(info) << "Attribute "<< name << " does not exist";	
+	return boost::blank();
 	//throw std::runtime_error("Attribute " + name + " does not exist");
 }
 
@@ -962,7 +963,6 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 				break;
 			case 2:
 				return boost::get<wstring>(val);
-
 		}
 	} catch (std::exception& e) {
 		LOG(error) << "Attribute " << name << " could not be converted to wstring";
@@ -997,68 +997,42 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 			case 2:
 				ss << boost::get<wstring>(val);
 				break;
+			case 3:
+				ss << L"";
+				break;
 		}		
 	
 	return ss.str();
 }
-boost::variant<float, int32_t, std::wstring> Object::AddAttributeRecursive(
-	boost::variant<float, int32_t, std::wstring> val, 
-	const std::string& name)
-{
-	// Add Values
-	float float_val = 0.0f;
-	int32_t int_val = 0;
-	wstring attr_val = L"";
-	boost::variant<float, int32_t, std::wstring> found_val;
-	ViewObjects(nullptr, 1, false, [&](std::shared_ptr<Object> recurse)
-	{
 
-		if (recurse->HasAttribute(name))
-		{
-			found_val = GetAttribute(name);
-
-			switch(val.which())
-			{
-				// float
-				case 0:
-					float_val = boost::get<float>(found_val);
-					if (!val.empty())
-						float_val += boost::get<float>(val);
-				case 1:
-					int_val = boost::get<int32_t>(found_val);
-					if (!val.empty())
-						int_val += boost::get<int32_t>(val);			
-				case 2:
-					attr_val = boost::get<wstring>(found_val);
-					if (!val.empty())
-						attr_val +=  boost::get<int32_t>(val);
-			}	
-		}
-	});
-	if (float_val > 0.0f)
-		return float_val;
-	else if(int_val > 0)
-		return int_val;
-	else if (attr_val.length() > 0)
-		return attr_val;
-	else
-		return val;
-}
-boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
+AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 {
 	try {
 	auto val = GetAttribute(name);
 	{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	return AddAttributeRecursive(val, name);		
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		float float_val;
+		int32_t int_val;
+		wstring attr_val;
+		switch(val.which())
+		{
+			// float
+			case 0:
+				float_val = boost::get<float>(val);
+				return AddAttributeRecursive<float>(float_val, name);			
+			case 1:
+				int_val = boost::get<int32_t>(val);
+				return AddAttributeRecursive<int32_t>(int_val, name);			
+			case 2:
+				attr_val = boost::get<wstring>(val);
+				return AddAttributeRecursive<wstring>(attr_val, name);			
+			case 3:
+				return boost::blank();				
+		}	
+		return boost::get<wstring>(val);	
 	}
-	if (!val.empty())
-		return boost::get<int32_t>(val);
-	} catch(std::exception& e)
-	{
-		LOG(warning) << "Error:" << e.what() << " Getting Recursive Attribute: " << name << std::endl;
-	}
-	return 0;
+	// Doesn't Exist
+	return boost::blank();;
 }
 
 bool Object::HasAttribute(const std::string& name)

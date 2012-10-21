@@ -303,7 +303,7 @@ public:
     /**
      * @return the current hopper contents.
      */
-	swganh::messages::containers::NetworkSortedVector<HopperItem> GetHopperContents() const;
+	swganh::messages::containers::NetworkSortedVector<HopperItem>& GetHopperContents();
 
     /**
      * Adds a quantity of a resource to the hopper.
@@ -352,9 +352,9 @@ public:
      */
     void SetConditionPercentage(uint8_t condition);
 
-	swganh::messages::containers::NetworkSortedVector<ResourceId> GetResourceIds_();
-	swganh::messages::containers::NetworkSortedVector<ResourceString> GetResourceNames_();
-	swganh::messages::containers::NetworkSortedVector<ResourceString> GetResourceTypes_();
+	swganh::messages::containers::NetworkSortedVector<ResourceId>& GetResourceIds_();
+	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceNames_();
+	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceTypes_();
 
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;

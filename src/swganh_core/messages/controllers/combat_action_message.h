@@ -12,6 +12,11 @@ namespace messages {
 namespace controllers {
 
     struct CombatDefender{
+		CombatDefender()
+			: defender_id(0)
+			, defender_end_posture(0)
+			, hit_type(0)
+			, defender_special_move_effect(0){}
         uint64_t defender_id;
         uint8_t defender_end_posture;
         uint8_t hit_type;
@@ -27,7 +32,7 @@ namespace controllers {
             , attacker_id(0)
             , attacker_end_posture(0)
             , trails_bit_flag(0xFF)
-            , combat_special_move_effect(0xFF)
+            , combat_special_move_effect(0)
     		, defender_list(std::vector<CombatDefender>())
         {}
 
