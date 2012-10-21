@@ -129,7 +129,18 @@ StaticService::StaticService(SwganhKernel* kernel)
 
 void StaticService::Startup()
 {
+	auto database_manager = kernel_->GetDatabaseManager();
+	auto conn = database_manager->getConnection("swganh_static");
+
+	std::stringstream ss;
+	ss << "CALL sp_GetStaticData();";
+
+	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+	statement->execute(ss.str());
+
+	skill_mod_manager_.Start(statement);
 }
+
 StaticService::~StaticService()
 {
 }
@@ -477,4 +488,14 @@ std::vector<std::shared_ptr<ElevatorData>> StaticService::GetElevatorDataForObje
 		return find_itr->second;
 	}
 	return std::vector<std::shared_ptr<ElevatorData>>();
+}
+
+std::pair<uint32_t, uint32_t> StaticService::GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+{
+	return skill_mod_manager_.GetSkillMod(creature, skill_mod_name);
+}
+		
+std::map<std::string, std::pair<uint32_t, uint32_t>> StaticService::GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature)
+{
+	return skill_mod_manager_.GetSkillMods(creature);
 }

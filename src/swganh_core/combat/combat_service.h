@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <map>
 
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/python.hpp>
@@ -34,8 +35,10 @@ namespace Concurrency {
 #include "swganh/command/command_properties.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
-
 namespace swganh {
+namespace statics {
+	class StaticServiceInterface;	
+}
 namespace object {
 	class Weapon;
 	class Player;
@@ -193,6 +196,7 @@ namespace combat {
         swganh::ActiveObject active_;
         swganh::app::SwganhKernel* kernel_;			
 		std::shared_ptr<swganh::equipment::EquipmentServiceInterface> equipment_service_;
+		swganh::statics::StaticServiceInterface* static_service_;
     };
 
 }}  // namespace swganh::combat

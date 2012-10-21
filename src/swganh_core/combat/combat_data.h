@@ -20,6 +20,8 @@ namespace combat {
 /**
 * Data used in combat
 */
+typedef std::map<std::string, std::pair<uint32_t, uint32_t>>SkillModsMap;
+
 struct CombatData : public swganh::command::CommandProperties
 {
 	CombatData(swganh::command::CommandProperties properties)
@@ -80,6 +82,9 @@ struct CombatData : public swganh::command::CommandProperties
     float health_hit_chance;
     float action_hit_chance;
     float mind_hit_chance;
+
+	SkillModsMap attacker_skill_mods;
+	SkillModsMap target_skill_mods;
 
     void GetPythonData(boost::python::object global);
 

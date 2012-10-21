@@ -34,6 +34,8 @@
 #include "swganh/simulation/simulation_service_interface.h"
 
 #include "swganh_core/equipment/equipment_service.h"
+#include "swganh_core/static/static_service.h"
+#include "swganh/static/skill_manager.h"
 
 #include "swganh_core/messages/controllers/combat_action_message.h"
 #include "swganh_core/messages/controllers/combat_spam_message.h"
@@ -86,6 +88,9 @@ void CombatService::Startup()
 		->GetService<CommandServiceInterface>("CommandService");
 	
 	equipment_service_ = simulation_service_->GetEquipmentService();
+
+	static_service_ = kernel_->GetServiceManager()
+		->GetService<swganh::statics::StaticServiceInterface>("StaticService");	
     
     command_service_->AddCommandCreator("attack", swganh::command::PythonCommandCreator("commands.attack", "AttackCommand"));
     command_service_->AddCommandCreator("deathblow", swganh::command::PythonCommandCreator("commands.deathblow", "DeathBlowCommand")); 
@@ -108,6 +113,14 @@ void CombatService::SendCombatAction(BaseCombatCommand* command)
 	auto weapon = equipment_service_->GetEquippedObject<Weapon>(actor, "hold_r");
     if (actor != nullptr && InitiateCombat(actor, target, weapon, command->combat_data))
     {
+		auto attacker_mods = static_service_->GetSkillMods(actor);
+		command->combat_data->attacker_skill_mods = attacker_mods;
+		if (target->GetType() == Creature::type)
+		{
+			auto target_mods = static_service_->GetSkillMods(static_pointer_cast<Creature>(target));
+			command->combat_data->target_skill_mods = target_mods;
+		}
+		
 		std::vector<CombatDefender> defender_data;
         for (auto& target_ : GetCombatTargets(actor, target, weapon, command->combat_data))
 		{
@@ -319,7 +332,7 @@ HIT_TYPE CombatService::GetHitResult(
 	int weapon_accuracy = combat_data->weapon_accuracy + (int)(GetWeaponRangeModifier(weapon, attacker->RangeTo(defender->GetPosition())));
 	int attacker_accuracy = combat_data->accuracy_bonus;
 	attacker_accuracy += weapon_accuracy;
-    combat_data->accuracy_bonus += GetAccuracyBonus(attacker, weapon);
+    combat_data->accuracy_bonus += GetAccuracyBonus(attacker, weapon, mods);
 
 	int target_defense = 0;
 	if (weapon && weapon->GetWeaponType() == WeaponType::MELEE)
@@ -476,7 +489,6 @@ uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& att
 
 uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<Weapon>& weapon) { 
     uint16_t bonus = 0;
-	// get base attacker accuracy mods
 	bonus += attacker->GetAttributeRecursive<int>("attack_accuracy");
 	bonus += attacker->GetAttributeRecursive<int>("private_accuracy_bonus");
 
