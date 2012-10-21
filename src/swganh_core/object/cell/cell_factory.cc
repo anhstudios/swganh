@@ -37,7 +37,8 @@ void CellFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 
@@ -75,15 +76,7 @@ shared_ptr<Object> CellFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Cell>();
 }
 
-shared_ptr<Object> CellFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> CellFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//TODO: Have to hit the db to make this
-		return make_shared<Cell>();
-	}
-	else
-	{
-		return make_shared<Cell>();
-	}
+	return make_shared<Cell>();
 }

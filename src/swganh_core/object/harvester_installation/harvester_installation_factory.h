@@ -14,6 +14,8 @@ namespace object {
 		typedef HarvesterInstallation ObjectType;
 		virtual void PersistChangedObjects(){}
         HarvesterInstallationFactory(swganh::app::SwganhKernel* kernel);
+
+		std::shared_ptr<swganh::object::Object> CreateObject();
     };
 
 }}  // namespace swganh::object

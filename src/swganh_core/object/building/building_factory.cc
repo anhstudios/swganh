@@ -22,3 +22,8 @@ BuildingFactory::BuildingFactory(swganh::app::SwganhKernel* kernel)
 	: TangibleFactory(kernel)
 {
 }
+
+std::shared_ptr<swganh::object::Object> BuildingFactory::CreateObject()
+{
+	return std::make_shared<Building>();
+}

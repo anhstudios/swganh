@@ -61,19 +61,6 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 	//Load slot definitions
 	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 
-	//Load Object Templates
-	auto conn = kernel->GetDatabaseManager()->getConnection("swganh_static");
-    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-    statement->execute("SELECT i.iff_template, i.object_type FROM iff_templates i WHERE i.object_type != 0;");
-	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-
-	while(result->next())
-	{
-		std::string key = result->getString("iff_template");
-		uint32_t value = result->getUInt("object_type");
-		type_lookup_.insert(make_pair(key, value));
-	}
-
 	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 }
@@ -92,6 +79,31 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
 
     factories_.insert(make_pair(object_type, factory));
 	factory->RegisterEventHandlers();
+
+	//Load Object Prototypes For this ObjectType
+	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
+    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+
+	std::stringstream ss;
+	ss << "SELECT i.id, i.iff_template FROM iff_templates i WHERE i.has_prototype=1 and i.object_type ="<< object_type <<";";
+    statement->execute(ss.str());
+
+	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
+
+	while(result->next())
+	{
+		uint64_t id = result->getUInt64("id");
+		std::string key = result->getString("iff_template");
+
+		std::shared_ptr<Object> obj = factory->CreateObjectFromStorage(id);
+		obj->SetDatabasePersisted(false);
+		obj->SetInSnapshot(false);
+
+		if(obj)
+		{
+			prototypes_.insert(make_pair(key, obj));
+		}
+	}
 }
 
 void ObjectManager::UnregisterObjectType(uint32_t object_type)
@@ -257,38 +269,51 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 
 	//Then make sure we actually can create an object of this type
 	shared_ptr<Object> created_object;
-    auto template_itr = type_lookup_.find(template_name);
-	if(template_itr != type_lookup_.end())
+	auto prototype_itr = prototypes_.find(template_name);
+	if(prototype_itr != prototypes_.end())
 	{
-		//Find that type's facory
-		auto factory_itr = factories_.find(template_itr->second);
-		if(factory_itr != factories_.end())
+		std::shared_ptr<Object> prototype = prototype_itr->second;
+
+		if(is_initialized)
 		{
-			//Create the object with that factory
-			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
-			if(created_object != nullptr)
+			created_object = prototype->Clone();
+		}
+		else
+		{
+			auto factory_itr = factories_.find(prototype->GetType());
+			if(factory_itr != factories_.end())
 			{
-				//Set the required stuff
-				created_object->SetPermissions(permission_itr->second);
-				created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
-				created_object->SetTemplate(template_name);
-				created_object->SetDatabasePersisted(is_persisted);
-				LoadSlotsForObject(created_object);
-
-				//Set the ID based on the inputs
-				if(!is_persisted)
-				{
-					if(object_id == 0)
-						created_object->SetObjectId(next_dynamic_id_++);
-					else
-						created_object->SetObjectId(object_id);
-				}
-
-				//Insert it into the object map
-				InsertObject(created_object);
+				created_object = factory_itr->second->CreateObject();
 			}
 		}
-	}	
+
+		if(created_object != nullptr)
+		{
+			//Set the required stuff
+			created_object->SetPermissions(permission_itr->second);
+			created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
+			created_object->SetTemplate(template_name);
+			created_object->SetDatabasePersisted(is_persisted);
+			LoadSlotsForObject(created_object);
+
+			//Set the ID based on the inputs
+			if(is_persisted)
+			{
+
+			}
+			else if(object_id == 0)
+			{
+				created_object->SetObjectId(next_dynamic_id_++);
+			}
+			else 
+			{
+				created_object->SetObjectId(object_id);
+			}
+
+			//Insert it into the object map
+			InsertObject(created_object);
+		}
+	}
 	return created_object;
 }
 
@@ -364,51 +389,58 @@ std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefin
 void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 {
 	auto oiff = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(object->GetTemplate());
+	if(oiff == nullptr)
+		return;
+
 	oiff->load_aggregate_data(kernel_->GetResourceManager());
 
-	auto arrangmentDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotArrangementVisitor>(
-		oiff->attribute<std::string>("arrangementDescriptorFilename"));
+	if(oiff->has_attribute("arrangementDescriptorFilename") &&
+		oiff->has_attribute("slotDescriptorFilename"))
+	{
+		auto arrangmentDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotArrangementVisitor>(
+			oiff->attribute<std::string>("arrangementDescriptorFilename"));
 
-	auto slotDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotDescriptorVisitor>(
-		oiff->attribute<std::string>("slotDescriptorFilename"));
+		auto slotDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotDescriptorVisitor>(
+			oiff->attribute<std::string>("slotDescriptorFilename"));
 
-	ObjectArrangements arrangements;
+		ObjectArrangements arrangements;
 		
-	// arrangements
-	if (arrangmentDescriptor != nullptr)
-	{
-		for_each(arrangmentDescriptor->begin(), arrangmentDescriptor->end(), [&](std::vector<std::string> arrangement)
-		{			
-			std::vector<int32_t> arr;
-			for (auto& str : arrangement)
-			{
-				arr.push_back(slot_definition_->findSlotByName(str));				
-			}
-			arrangements.push_back(arr);
-		});
-	}
-	ObjectSlots descriptors;
-
-	// Globals
-	//
-	descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));
-
-	// Descriptors
-	if (slotDescriptor != nullptr)
-	{
-		for ( size_t j = 0; j < slotDescriptor->available_count(); ++j)
+		// arrangements
+		if (arrangmentDescriptor != nullptr)
 		{
-			auto descriptor = slotDescriptor->slot(j);
-			size_t id = slot_definition_->findSlotByName(descriptor);
-			auto entry = slot_definition_->entry(id);
-			if(entry.exclusive)
-				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));
-			else
-				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotContainer>(new SlotContainer())));
+			for_each(arrangmentDescriptor->begin(), arrangmentDescriptor->end(), [&](std::vector<std::string> arrangement)
+			{			
+				std::vector<int32_t> arr;
+				for (auto& str : arrangement)
+				{
+					arr.push_back(slot_definition_->findSlotByName(str));				
+				}
+				arrangements.push_back(arr);
+			});
 		}
-	}
+		ObjectSlots descriptors;
+
+		// Globals
+		//
+		descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));
+
+		// Descriptors
+		if (slotDescriptor != nullptr)
+		{
+			for ( size_t j = 0; j < slotDescriptor->available_count(); ++j)
+			{
+				auto descriptor = slotDescriptor->slot(j);
+				size_t id = slot_definition_->findSlotByName(descriptor);
+				auto entry = slot_definition_->entry(id);
+				if(entry.exclusive)
+					descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));
+				else
+					descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotContainer>(new SlotContainer())));
+			}
+		}
 	
-	object->SetSlotInformation(descriptors, arrangements);
+		object->SetSlotInformation(descriptors, arrangements);
+	}
 }
 
 PermissionsObjectMap& ObjectManager::GetPermissionsMap()

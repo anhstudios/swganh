@@ -64,14 +64,16 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     intangible->SetObjectId(object_id);
     try {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?);"));
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?)"));
         
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+		statement->setUInt64(1, object_id);
 
-		CreateBaseObjectFromStorage(intangible, result);
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+		CreateBaseObjectFromStorage(intangible, std::move(result));
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
 				intangible->SetStfName(result->getString("stf_detail_file"), result->getString("stf_detail_string"));
@@ -87,21 +89,16 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     }
     catch(sql::SQLException &e)
     {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+		if(e.getErrorCode() != 0)
+		{
+			LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+			LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+		}
     }
     return intangible;
 }
 
-shared_ptr<Object> IntangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> IntangibleFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//@TODO: Create me with help from db
-		return make_shared<Intangible>();
-	}
-	else
-	{
-		return make_shared<Intangible>();
-	}
+	return make_shared<Intangible>();
 }

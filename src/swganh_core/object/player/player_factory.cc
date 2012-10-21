@@ -73,7 +73,8 @@ void PlayerFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
@@ -189,7 +190,7 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
     return player;
 }
 
-shared_ptr<Object> PlayerFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> PlayerFactory::CreateObject()
 {
 	//@TODO: Create me with help from db
 	return make_shared<Player>();
