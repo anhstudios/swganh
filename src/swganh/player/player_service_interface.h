@@ -20,7 +20,7 @@ public:
 
 	virtual void OnPlayerExit(std::shared_ptr<swganh::object::Player> player) = 0;
 
-	virtual void SendBankTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount) = 0;
+	virtual void SendTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount, bool bank = false) = 0;
 	
 	virtual void OpenBank(const std::shared_ptr<swganh::object::Creature>& owner) = 0;
 };

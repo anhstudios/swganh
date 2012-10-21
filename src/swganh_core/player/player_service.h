@@ -55,9 +55,9 @@ public:
 	void OnPlayerExit(std::shared_ptr<swganh::object::Player> player);
 
 	/**
-	 *  Send Bank Tip
+	 *  Send Tip
 	 */
-	void SendBankTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount);
+	void SendTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount, bool bank = false);
 
 	/**
 	 *  Open Bank

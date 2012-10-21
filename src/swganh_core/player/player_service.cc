@@ -94,45 +94,51 @@ void PlayerService::OnPlayerExit(shared_ptr<swganh::object::Player> player)
     }
 }
 
-void PlayerService::SendBankTip(
+void PlayerService::SendTip(
 	const shared_ptr<Creature>& from, 
 	const shared_ptr<Creature>& to, 
-	uint32_t amount)
+	uint32_t amount, bool bank)
 {
 	// Check to see if we even have the proper amount
-	if (amount > 1)
-	{
-		SystemMessage::Send(from, L"Invalid tip amount, set amount between 1 and 1,000,000");
-		return;
-	}
-	else if (amount > 1000000)
+	if (amount < 1 || amount > 1000000)
 	{
 		SystemMessage::Send(from, L"Invalid tip amount, set amount between 1 and 1,000,000");
 		return;
 	}
 
-	int32_t total_amount = (int32_t)(amount * 1.05); // 5% tip charge
-	int32_t from_amount = from->GetBankCredits();
-	if ( from_amount - total_amount > 0)
+	if (bank)
 	{
-		from->SetBankCredits( from_amount - total_amount );
-		int32_t to_amount = to->GetBankCredits();
-		to->SetBankCredits( to_amount + total_amount );
-		ProsePackage pp("base_player", "prose_wire_pass_self");
-		pp.di_integer = total_amount;
-		pp.to_object_id = to->GetObjectId();
-		SystemMessage::Send(from, OutOfBand(pp));
-		ProsePackage prose("base_player", "prose_wire_pass_target");
-		prose.di_integer = amount;
-		prose.to_object_id = from->GetObjectId();
-		SystemMessage::Send(to, OutOfBand(prose));
+		int32_t total_amount = (int32_t)(amount * 1.05); // 5% tip charge
+		int32_t from_amount = from->GetBankCredits();
+		if ( from_amount - total_amount > 0)
+		{
+			from->SetBankCredits( from_amount - total_amount );
+			int32_t to_amount = to->GetBankCredits();
+			to->SetBankCredits( to_amount + amount );
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_wire_pass_self",0,0,to->GetObjectId(),amount), false, false);
+			SystemMessage::Send(to, OutOfBand("base_player", "prose_wire_pass_target",0,0,from->GetObjectId(),amount), false, false);
+		}
+		else
+		{
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_tip_nsf_bank",0,to->GetObjectId(),0,total_amount), false, false);			
+		}
 	}
 	else
 	{
-		ProsePackage prose_package("base_player", "prose_tip_nsf_bank");
-		prose_package.di_integer = total_amount;
-		prose_package.to_object_id = to->GetObjectId();
-		SystemMessage::Send(from, OutOfBand(prose_package));
+		int32_t total_amount = (int32_t)(amount * 1.05); // 5% tip charge
+		int32_t from_amount = from->GetCashCredits();
+		if ( from_amount - total_amount > 0)
+		{
+			from->SetCashCredits( from_amount - total_amount );
+			int32_t to_amount = to->GetBankCredits();
+			to->SetCashCredits( to_amount + amount );
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_tip_pass_self",0,to->GetObjectId(),0,amount), false, false);
+			SystemMessage::Send(to, OutOfBand("base_player", "prose_tip_pass_target",0,from->GetObjectId(),0,amount), false, false);
+		}
+		else
+		{
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_tip_nsf_cash",0,to->GetObjectId(),0,total_amount), false, false);
+		}
 	}
 }
 

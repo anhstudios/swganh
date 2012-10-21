@@ -23,7 +23,7 @@ void OpenBank(PlayerServiceInterface* player_service, std::shared_ptr<swganh::ob
 void exportPlayerService()
 {
 	class_<PlayerServiceInterface, shared_ptr<PlayerServiceInterface>, boost::noncopyable>("PlayerService", "The player service handles player specific actions", no_init)
-        .def("sendBankTip", &PlayerServiceInterface::SendBankTip, "Sends a bank tip from the given player to the given player of the alloted amount")
+        .def("sendTip", &PlayerServiceInterface::SendTip, "Sends a bank tip from the given player to the given player of the alloted amount")
         .def("openBank", OpenBank, "Opens the safety deposit box for a player")
         ;
 }

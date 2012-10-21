@@ -135,6 +135,12 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
 
+
+std::shared_ptr<swganh::object::Creature> ToCreature(std::shared_ptr<swganh::object::Object> obj)
+{
+	return static_pointer_cast<swganh::object::Creature>(obj);
+}
+
 struct ProsePackageWrapper : ProsePackage, wrapper<ProsePackage>
 {
     ProsePackageWrapper() : ProsePackage(){}
@@ -152,7 +158,7 @@ void exportOutOfBand()
     class_<OutOfBand, boost::noncopyable>("OutOfBand","object that is used in the help with sending system stf messages")
         .def(init<std::string, std::string, ProseType, uint64_t>())
 		.def(init<std::string, std::string, ProseType, std::wstring>())
-        .def(init<std::string, std::string>())
+		.def(init<std::string, std::string>())
     ;
 }
 
@@ -228,6 +234,7 @@ void exportObject()
 		.add_property("attribute_template_id", &Object::GetAttributeTemplateId, &Object::SetAttributeTemplateId, "Gets and Sets the attribute template_id")
 		.def("eventDispatcher", &Object::SetEventDispatcher, "Sets the event dispatcher pointer")
 		.def("updatePosition", &Object::UpdatePosition, "Updates the position and sends an update to the player")
+		.def("toCreature", ToCreature)
 		;
 
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();
