@@ -19,10 +19,6 @@ CREATE TABLE IF NOT EXISTS `player_account` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
--- Dumping data for table galaxy.player_account: ~0 rows (approximately)
-/*!40000 ALTER TABLE `player_account` DISABLE KEYS */;
-INSERT INTO `player_account` (`id`, `reference_id`, `max_characters`) VALUES
-	(2, 12, 8);
 /*!40000 ALTER TABLE `player_account` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -80,7 +80,8 @@ void CreatureFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)

@@ -51,7 +51,8 @@ void TangibleFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 

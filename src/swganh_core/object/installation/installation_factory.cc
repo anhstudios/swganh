@@ -48,7 +48,8 @@ void InstallationFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)

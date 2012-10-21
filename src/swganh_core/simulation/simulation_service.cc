@@ -540,7 +540,6 @@ SimulationService::SimulationService(SwganhKernel* kernel)
     , kernel_(kernel)
 {
     impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel_->GetDatabaseManager()->getConnection("galaxy"));
-    RegisterObjectFactories();
 }
 
 SimulationService::~SimulationService()
@@ -584,10 +583,11 @@ void SimulationService::RegisterObjectFactories()
 {
     auto object_manager = impl_->GetObjectManager();
 
+	LOG(warning) << "Loading Object Prototypes. This may take several moments.";
     object_manager->RegisterObjectType<Object>();
 	object_manager->RegisterObjectType<Static>();
 	object_manager->RegisterObjectType<Tangible>();
-	//object_manager->RegisterObjectType<Intangible>();
+	object_manager->RegisterObjectType<Intangible>();
 	object_manager->RegisterObjectType<Installation>();
 	object_manager->RegisterObjectType<HarvesterInstallation>();
 	object_manager->RegisterObjectType<Mission>();
@@ -716,6 +716,8 @@ void SimulationService::AddObjectToScene(std::shared_ptr<swganh::object::Object>
 
 void SimulationService::Startup()
 {
+	RegisterObjectFactories();
+
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 
     connection_service->RegisterMessageHandler(

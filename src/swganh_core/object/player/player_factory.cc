@@ -73,7 +73,8 @@ void PlayerFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)

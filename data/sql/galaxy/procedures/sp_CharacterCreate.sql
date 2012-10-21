@@ -22,8 +22,7 @@ CREATE PROCEDURE `sp_CharacterCreate`(
     IN `hair_customization` TINYBLOB,
     IN `base_model_string` CHAR(64),
     OUT `object_id` BIGINT(20))
--- charCreate:
-BEGIN
+charCreate:BEGIN
     DECLARE oX FLOAT;DECLARE oY FLOAT;DECLARE oZ FLOAT;DECLARE oW FLOAT;
     DECLARE race_id INT;
     DECLARE iff_template_id INT;
@@ -62,7 +61,7 @@ BEGIN
     SELECT sf_CharacterNameInUseCheck(start_firstname) INTO nameCheck;
     IF nameCheck <> 666 THEN
         SELECT(nameCheck);
-        -- LEAVE charCreate;
+        LEAVE charCreate;
     END IF;
 
     IF base_model_string like '%female%' THEN
@@ -152,7 +151,7 @@ BEGIN
         END IF;
 
         CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender, start_scene);
-    -- COMMIT;
+    COMMIT;
 END//
 DELIMITER ;
 

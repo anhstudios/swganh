@@ -58,7 +58,8 @@ void ObjectFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& incoming_event)
