@@ -133,15 +133,11 @@ void PlayerService::SendTip(
 	}
 }
 
-void PlayerService::OpenBank(const shared_ptr<Creature>& owner)
+void PlayerService::OpenContainer(const std::shared_ptr<swganh::object::Creature>& owner, std::shared_ptr<swganh::object::Object> object)
 {
-	// Get Bank Object
-	auto bank = equipment_service_->GetEquippedObject(owner, "bank");
-	if (!bank)
-		return;
 	// Send Open Container
 	OpenedContainerMessage opened_container;
-	opened_container.container_object_id = bank->GetObjectId();
+	opened_container.container_object_id = object->GetObjectId();
 	owner->NotifyObservers(&opened_container);
 }
 

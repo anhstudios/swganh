@@ -28,8 +28,9 @@ class PyRadialMenu(RadialMenu):
 	def handleRadial(self, owner, target, action):
 		player_service = self.getKernel().serviceManager().playerService()
 		if player_service:			
-			if action == RadialIdentifier.bankItems:			
-				player_service.openBank(owner)
+			if action == RadialIdentifier.bankItems:
+				bank = self.getKernel().serviceManager().equipmentService().getEquippedObject(owner, "bank")
+				player_service.openContainer(owner, bank)
 			elif action == RadialIdentifier.bankJoin:
 				joinBank(self, owner)
 			elif action == RadialIdentifier.bankQuit:
