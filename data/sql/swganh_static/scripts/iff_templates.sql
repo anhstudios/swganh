@@ -1,9 +1,9 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Server version:               5.1.63-community - MySQL Community Server (GPL)
+-- Server version:               5.5.27-MariaDB-log - mariadb.org binary distribution
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-10-21 00:10:57
+-- Date/time:                    2012-10-21 01:16:52
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS `iff_templates` (
   KEY `id` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15856 DEFAULT CHARSET=latin1;
 
--- Dumping data for table swganh_static.iff_templates: ~16,313 rows (approximately)
+-- Dumping data for table swganh_static.iff_templates: ~15,788 rows (approximately)
+DELETE FROM `iff_templates`;
 /*!40000 ALTER TABLE `iff_templates` DISABLE KEYS */;
 INSERT INTO `iff_templates` (`id`, `iff_template`, `object_type`, `attribute_template_id`, `has_prototype`) VALUES
 	(2, 'object/battlefield_marker/shared_battlefield_marker.iff', 0, -1, 0),
@@ -5833,7 +5834,7 @@ INSERT INTO `iff_templates` (`id`, `iff_template`, `object_type`, `attribute_tem
 	(5806, 'object/mobile/shared_junk_reggi.iff', 1129465167, 9, 0),
 	(5807, 'object/mobile/shared_junk_sheani.iff', 1129465167, 9, 0),
 	(5808, 'object/mobile/shared_junk_sneg.iff', 1129465167, 9, 0),
-	(5809, 'object/mobile/shared_juvenile_canyon_krayt.iff', 1129465167, 9, 0),
+	(5809, 'object/mobile/shared_juvenile_canyon_krayt.iff', 1129465167, 9, 1),
 	(5810, 'object/mobile/shared_kaadu.iff', 1129465167, 9, 0),
 	(5811, 'object/mobile/shared_kaadu_hue.iff', 1129465167, 9, 0),
 	(5812, 'object/mobile/shared_kahmurra.iff', 1129465167, 9, 0),
