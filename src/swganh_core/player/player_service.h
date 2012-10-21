@@ -60,9 +60,9 @@ public:
 	void SendTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount, bool bank = false);
 
 	/**
-	 *  Open Bank
+	 *  Open Container
 	 */
-	void OpenBank(const std::shared_ptr<swganh::object::Creature>& owner);
+	virtual void OpenContainer(const std::shared_ptr<swganh::object::Creature>& owner, std::shared_ptr<swganh::object::Object> object);
 
 
 private:

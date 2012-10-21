@@ -41,15 +41,6 @@ ServiceDescription PlayerService::GetServiceDescription()
 PlayerService::PlayerService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 {
-
-	player_selected_callback_ = kernel_->GetEventDispatcher()->Subscribe(
-		"Simulation::PlayerSelected",
-		[this] (shared_ptr<EventInterface> incoming_event)
-	{
-		const auto& player = static_pointer_cast<ValueEvent<shared_ptr<Player>>>(incoming_event)->Get();
-		OnPlayerEnter(player);
-	});
-
 	player_removed_ = kernel_->GetEventDispatcher()->Subscribe(
 		"Connection::PlayerRemoved",
 		[this] (shared_ptr<EventInterface> incoming_event)
@@ -142,15 +133,11 @@ void PlayerService::SendTip(
 	}
 }
 
-void PlayerService::OpenBank(const shared_ptr<Creature>& owner)
+void PlayerService::OpenContainer(const std::shared_ptr<swganh::object::Creature>& owner, std::shared_ptr<swganh::object::Object> object)
 {
-	// Get Bank Object
-	auto bank = equipment_service_->GetEquippedObject(owner, "bank");
-	if (!bank)
-		return;
 	// Send Open Container
 	OpenedContainerMessage opened_container;
-	opened_container.container_object_id = bank->GetObjectId();
+	opened_container.container_object_id = object->GetObjectId();
 	owner->NotifyObservers(&opened_container);
 }
 

@@ -22,12 +22,16 @@ namespace tre {
 		template<class ValueType>
 		std::shared_ptr<ValueType> GetResourceByName(const std::string& name, bool is_cached=true)
 		{
-			auto itr = loadedResources_.find(name);
-			if(itr != loadedResources_.end())
 			{
-				return std::static_pointer_cast<ValueType>(itr->second);
+				boost::lock_guard<boost::mutex> lock(resource_mutex_);
+				auto itr = loadedResources_.find(name);
+				if(itr != loadedResources_.end())
+				{
+					return std::static_pointer_cast<ValueType>(itr->second);
+				}
 			}
-			else if(name.size() != 0)
+
+			if(name.size() != 0)
 			{
 				std::shared_ptr<ValueType> visitor = std::make_shared<ValueType>();
 				LoadResourceByName(name, visitor, is_cached);
@@ -40,6 +44,7 @@ namespace tre {
 		}
 
 	private:
+		boost::mutex resource_mutex_;
 		ResourceCache loadedResources_;
 		std::shared_ptr<swganh::tre::TreArchive> archive_;
 	};

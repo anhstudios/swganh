@@ -20,6 +20,7 @@ void ResourceManager::LoadResourceByName(const std::string& name, std::shared_pt
 	iff_file::loadIFF(archive_->GetResource(name), type);
 	if(is_cached)
 	{
+		boost::lock_guard<boost::mutex> lock(resource_mutex_);
 		loadedResources_.insert(ResourceCache::value_type(name, type));
 	}
 }

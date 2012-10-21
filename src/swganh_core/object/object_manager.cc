@@ -70,14 +70,16 @@ ObjectManager::~ObjectManager()
 
 void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<ObjectFactoryInterface>& factory)
 {
-    auto find_iter = factories_.find(object_type);
+	{
+		boost::lock_guard<boost::shared_mutex> lock(object_factories_mutex_);
+		auto find_iter = factories_.find(object_type);
+		if (find_iter != factories_.end())
+		{
+			throw InvalidObjectType("A factory for the specified object type already exists.");
+		}
+		factories_.insert(make_pair(object_type, factory));
+	}
 
-    if (find_iter != factories_.end())
-    {
-        throw InvalidObjectType("A factory for the specified object type already exists.");
-    }
-
-    factories_.insert(make_pair(object_type, factory));
 	factory->RegisterEventHandlers();
 
 	//Load Object Prototypes For this ObjectType
@@ -101,6 +103,7 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
 
 		if(obj)
 		{
+			boost::lock_guard<boost::shared_mutex> lock(object_map_mutex_);
 			prototypes_.insert(make_pair(key, obj));
 		}
 	}
@@ -108,8 +111,8 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
 
 void ObjectManager::UnregisterObjectType(uint32_t object_type)
 {
+	boost::lock_guard<boost::shared_mutex> lock(object_factories_mutex_);
     auto find_iter = factories_.find(object_type);
-
     if (find_iter == factories_.end())
     {
         throw InvalidObjectType("Cannot remove a factory for an object type that has not been registered.");
@@ -119,10 +122,10 @@ void ObjectManager::UnregisterObjectType(uint32_t object_type)
 }
 void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder)
 {
+	boost::lock_guard<boost::shared_mutex> lock(object_factories_mutex_);
     auto find_iter = message_builders_.find(object_type);
     if (find_iter != end(message_builders_))
         throw InvalidObjectType("A message builder for the specified type already exists.");
-    
     message_builders_.insert(make_pair(object_type, message_builder));	
 }
 void ObjectManager::InsertObject(std::shared_ptr<swganh::object::Object> object)
@@ -135,6 +138,7 @@ void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)
 {
 	if (!e)
 	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
 		for (auto& factory : factories_)
 		{
 			factory.second->PersistChangedObjects();
@@ -225,35 +229,42 @@ shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_na
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
 {
-
     shared_ptr<Object> object;
     
     if (factories_.size() == 0)
         return object;
     
     // lookup the type
-    uint32_t object_type = factories_[0]->LookupType(object_id);
-    auto find_iter = factories_.find(object_type);
-
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot create object for an unregistered type.");
-    }
-    object = find_iter->second->CreateObjectFromStorage(object_id);
+	std::shared_ptr<ObjectFactoryInterface> factory;
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		uint32_t object_type = factories_[0]->LookupType(object_id);
+		auto find_iter = factories_.find(object_type);
+		if (find_iter == factories_.end())
+		{
+			throw InvalidObjectType("Cannot create object for an unregistered type.");
+		}
+		factory = find_iter->second;
+	}
+    object = factory->CreateObjectFromStorage(object_id);
 	
 	return object;
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, uint32_t object_type)
 {
-    auto find_iter = factories_.find(object_type);
+	std::shared_ptr<ObjectFactoryInterface> factory;
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		auto find_iter = factories_.find(object_type);
+		if (find_iter == factories_.end())
+		{
+			throw InvalidObjectType("Cannot create object for an unregistered type.");
+		}
+		factory = find_iter->second;
+	}
 
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot create object for an unregistered type.");
-    }
-
-    return find_iter->second->CreateObjectFromStorage(object_id);
+    return factory->CreateObjectFromStorage(object_id);
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& template_name, 
@@ -268,18 +279,26 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 	}
 
 	//Then make sure we actually can create an object of this type
-	shared_ptr<Object> created_object;
-	auto prototype_itr = prototypes_.find(template_name);
-	if(prototype_itr != prototypes_.end())
+	shared_ptr<Object> created_object, prototype;
 	{
-		std::shared_ptr<Object> prototype = prototype_itr->second;
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		auto prototype_itr = prototypes_.find(template_name);
+		if(prototype_itr == prototypes_.end())
+		{
+			return nullptr;
+		}
+		prototype = prototype_itr->second;
+	}
 
+	if(prototype)
+	{
 		if(is_initialized)
 		{
 			created_object = prototype->Clone();
 		}
 		else
 		{
+			boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
 			auto factory_itr = factories_.find(prototype->GetType());
 			if(factory_itr != factories_.end())
 			{
@@ -319,35 +338,42 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 
 void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)
 {
-    auto find_iter = factories_.find(object->GetType());
+	std::shared_ptr<ObjectFactoryInterface> factory;
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		auto find_iter = factories_.find(object->GetType());
+		if (find_iter == factories_.end())
+		{
+			throw InvalidObjectType("Cannot delete object from storage for an unregistered type.");
+		}
+		factory = find_iter->second;
+	}
 
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot delete object from storage for an unregistered type.");
-    }
-
-    return find_iter->second->DeleteObjectFromStorage(object);
+    return factory->DeleteObjectFromStorage(object);
 }
 
 void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
 {
-    auto find_iter = factories_.find(object->GetType());
-
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot persist object to storage for an unregistered type.");
-    }
+	std::shared_ptr<ObjectFactoryInterface> factory;
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		auto find_iter = factories_.find(object->GetType());
+		if (find_iter == factories_.end())
+		{
+			throw InvalidObjectType("Cannot delete object from storage for an unregistered type.");
+		}
+		factory = find_iter->second;
+	}
 
 	if(object->IsDatabasePersisted())
     {
-		find_iter->second->PersistObject(object);
+		factory->PersistObject(object);
 	}
 }
 
 void ObjectManager::PersistObject(uint64_t object_id)
 {
     auto object = GetObjectById(object_id);
-
     if (object)
     {
         PersistObject(object);
@@ -356,7 +382,6 @@ void ObjectManager::PersistObject(uint64_t object_id)
 
 void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
 {
-	
     if (object)
     {
 		// first persist the parent object
@@ -373,7 +398,6 @@ void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
 void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id)
 {
     auto object = GetObjectById(parent_object_id);
-
     if (object)
     {
         PersistRelatedObjects(object);
