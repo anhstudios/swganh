@@ -114,16 +114,16 @@ charCreate:BEGIN
                 health, strength, constitution, action, quickness, stamina, mind, focus, willpower,
                 health, strength, constitution, action, quickness, stamina, mind, focus, willpower );
         -- DATAPAD 2 -- 9357
-        INSERT INTO `object` VALUES (object_id+2, start_scene, object_id, 9357, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'datapad', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+        INSERT INTO `object` VALUES (object_id+2, start_scene, object_id, 9357, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'datapad', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+2, '', 0, 0, 0, 0, 1);
         -- INVENTORY 3 -- 10708
-		INSERT INTO `object` VALUES (object_id+3, start_scene, object_id, 10708, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'inventory', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+		INSERT INTO `object` VALUES (object_id+3, start_scene, object_id, 10708, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'inventory', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+3, '', 0, 0, 0, 0, 1);
         -- BANK 4 -- 8571
-		INSERT INTO `object` VALUES (object_id+4, start_scene, object_id, 8571, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'bank', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+		INSERT INTO `object` VALUES (object_id+4, start_scene, object_id, 8571, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'bank', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+4, '', 0, 0, 0, 0, 1);
         -- MISSION 5 -- 12386
-		INSERT INTO `object` VALUES (object_id+5, start_scene, object_id, 12386, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'mission_bag', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+		INSERT INTO `object` VALUES (object_id+5, start_scene, object_id, 12386, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'mission_bag', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+5, '', 0, 0, 0, 0, 1);
         -- HAIR 6
 
