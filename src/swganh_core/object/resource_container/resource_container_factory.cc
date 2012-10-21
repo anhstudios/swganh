@@ -29,8 +29,7 @@ shared_ptr<Object> ResourceContainerFactory::CreateObjectFromStorage(uint64_t ob
     return make_shared<ResourceContainer>();
 }
 
-shared_ptr<Object> ResourceContainerFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> ResourceContainerFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
     return make_shared<ResourceContainer>();
 }

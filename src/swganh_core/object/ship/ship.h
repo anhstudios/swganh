@@ -29,7 +29,7 @@ public:
     // SHIP
     uint32_t GetType() const;
     const static uint32_t type = 0x6FB799E0; 
-    
+
 private:
     std::vector<ShipList<float>> energy_drain_;                     // update 1
     std::vector<ShipList<float>> mass_;                             // update 1

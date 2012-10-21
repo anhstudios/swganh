@@ -30,8 +30,7 @@ shared_ptr<Object> StaticFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Static>();
 }
 
-shared_ptr<Object> StaticFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> StaticFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
     return make_shared<Static>();
 }

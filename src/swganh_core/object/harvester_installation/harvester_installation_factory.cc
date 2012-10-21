@@ -14,3 +14,8 @@ HarvesterInstallationFactory::HarvesterInstallationFactory(swganh::app::SwganhKe
 	: InstallationFactory(kernel)
 {
 }
+
+std::shared_ptr<Object> HarvesterInstallationFactory::CreateObject()
+{
+	return std::make_shared<HarvesterInstallation>();
+}

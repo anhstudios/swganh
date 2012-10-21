@@ -489,6 +489,9 @@ public:
 
 	typedef swganh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<ManufactureSchematic> other);
+
 private:
 	swganh::messages::containers::NetworkArray<Property> properties_;
     std::wstring creator_;

@@ -184,3 +184,23 @@ const std::string& Waypoint::GetColor()
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return color_; 
 }
+
+std::shared_ptr<Object> Waypoint::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = std::make_shared<Waypoint>();
+	Clone(other);
+	return other;
+}
+
+void Waypoint::Clone(std::shared_ptr<Waypoint> other)
+{
+	other->coordinates_ = coordinates_;
+    other->activated_flag_.store(activated_flag_);
+	other->location_network_id_.store(location_network_id_);
+    other->planet_name_ = planet_name_;
+    other->name_ = name_;
+    other->color_ = color_;
+
+	Intangible::Clone(other);
+}

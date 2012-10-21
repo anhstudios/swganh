@@ -24,6 +24,9 @@ public:
     uint32_t GetType() const;
     const static uint32_t type = 0x4255494f;
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Building> other);
+
 private:
 
 };

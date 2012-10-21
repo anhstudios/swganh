@@ -1,9 +1,17 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               5.1.63-community - MySQL Community Server (GPL)
+-- Server OS:                    Win64
+-- HeidiSQL version:             7.0.0.4053
+-- Date/time:                    2012-10-14 17:58:59
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
+-- Dumping structure for table galaxy.namegen_lastname
+DROP TABLE IF EXISTS `namegen_lastname`;
 CREATE TABLE IF NOT EXISTS `namegen_lastname` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `lastname` varchar(100) NOT NULL,
@@ -12,8 +20,7 @@ CREATE TABLE IF NOT EXISTS `namegen_lastname` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=76516 DEFAULT CHARSET=latin1;
 
-DELETE FROM `namegen_lastname`;
-
+-- Dumping data for table galaxy.namegen_lastname: ~76,737 rows (approximately)
 /*!40000 ALTER TABLE `namegen_lastname` DISABLE KEYS */;
 INSERT INTO `namegen_lastname` (`id`, `lastname`, `species`, `gender`) VALUES
 	(1, 'A\'a', 6, 0),
@@ -76534,7 +76541,5 @@ INSERT INTO `namegen_lastname` (`id`, `lastname`, `species`, `gender`) VALUES
 	(76514, 'Zysossk', 2, 1),
 	(76515, 'Zytoscizz', 2, 1);
 /*!40000 ALTER TABLE `namegen_lastname` ENABLE KEYS */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

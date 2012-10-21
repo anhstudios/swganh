@@ -17,7 +17,7 @@ namespace object {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+        std::shared_ptr<swganh::object::Object> CreateObject();
     };
 
 }}  // namespace swganh::object

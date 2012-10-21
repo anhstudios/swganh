@@ -285,3 +285,34 @@ void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypo
 	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
         ("Mission::Waypoint", static_pointer_cast<Mission>(shared_from_this())));
 }
+
+
+std::shared_ptr<Object> Mission::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Mission>();
+	Clone(other);
+	return other;
+}
+
+void Mission::Clone(std::shared_ptr<Mission> other)
+{
+	other->difficulty_level_ = difficulty_level_;
+	other->starting_position_ = starting_position_;
+    other->starting_scene_ = starting_scene_;
+	other->creator_ = creator_;
+	other->reward_ = reward_;
+	other->destination_position_ = destination_position_;
+	other->destination_scene_ = destination_scene_;
+	other->target_object_template_ = target_object_template_;
+	other->mission_description_stf_file_ = mission_description_stf_file_;
+	other->mission_description_stf_name_ = mission_description_stf_name_;
+	other->mission_title_stf_file_ = mission_title_stf_file_;
+	other->mission_title_stf_name_ = mission_title_stf_name_;
+	other->repeat_counter_ = repeat_counter_;
+	other->mission_type_ = mission_type_;
+	other->target_name_ = target_name_;
+    other->waypoint_ = waypoint_;
+
+	Intangible::Clone(other);
+}

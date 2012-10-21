@@ -110,3 +110,23 @@ void ResourceContainer::SetResourceName(const wstring& name)
 	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
         ("ResourceContainer::ResourceName",static_pointer_cast<ResourceContainer>(shared_from_this())));
 }
+
+
+std::shared_ptr<Object> ResourceContainer::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<ResourceContainer>();
+	Clone(other);
+	return other;
+}
+
+void ResourceContainer::Clone(std::shared_ptr<ResourceContainer> other)
+{
+	other->current_quantity_ = current_quantity_;
+	other->global_resource_id_ = global_resource_id_;
+	other->max_quantity_ = max_quantity_;
+	other->resource_type_ = resource_type_;
+	other->variation_name_ = variation_name_;
+
+	Tangible::Clone(other);
+}

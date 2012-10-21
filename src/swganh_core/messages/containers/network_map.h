@@ -4,7 +4,6 @@
 
 #include <map>
 #include <list>
-#include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
 
 #include "swganh/byte_buffer.h"
@@ -53,7 +52,6 @@ public:
      */
     void Insert(const I& index, T item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = items_.find(index);
         if(iter == items_.end())
         {
@@ -67,7 +65,6 @@ public:
      */
     void Erase(const I& index)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = items_.find(index);
         if(iter != items_.end())
         {
@@ -81,7 +78,6 @@ public:
      */
     void Add(const I& index, T item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = items_.find(index);
         if(iter == items_.end())
         {
@@ -96,7 +92,6 @@ public:
      */
     void Remove(iterator iter)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         if(iter != items_.end())
         {
             items_removed_.push_back(iter->second);
@@ -110,7 +105,6 @@ public:
      */
     void Update(const I& index, T item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = items_.find(index);
         if(iter != items_.end())
         {
@@ -124,7 +118,6 @@ public:
      */
     bool Contains(const I& index)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = items_.find(index);
         if(iter != items_.end())
             return true;
@@ -134,7 +127,6 @@ public:
 
     iterator Find(const I& index)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         return items_.find(index);
     }
 
@@ -143,7 +135,6 @@ public:
      */
     void Clear(void)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         items_.clear();
         clear_ = true;
     }
@@ -153,7 +144,6 @@ public:
      */
     void Reinstall(void)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         reinstall_ = true;
     }
 
@@ -162,7 +152,6 @@ public:
      */
     void Reinstall(const std::map<I, T>& new_items)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         items_ = new_items;
         reinstall_ = true;
     }
@@ -174,7 +163,6 @@ public:
      */
     void ClearDeltas(void)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         items_added_.clear();
         items_removed_.clear();
         items_changed_.clear();
@@ -199,7 +187,6 @@ public:
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
         for(auto& item : items_)
@@ -211,7 +198,6 @@ public:
     void Serialize(swganh::messages::DeltasMessage& message)
     {
 		{
-			boost::lock_guard<boost::mutex> lock(mutex_);
 			uint32_t size = items_added_.size() + items_removed_.size() + items_changed_.size() + reinstall_ + clear_;
 			message.data.write<uint32_t>(size);
 			message.data.write<uint32_t>(++update_counter_);
@@ -263,7 +249,6 @@ private:
     std::list<I> items_changed_;
     bool clear_;
     bool reinstall_;
-	mutable boost::mutex mutex_;
 };
 
 }}} // swganh::messages::containers

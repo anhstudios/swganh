@@ -12,3 +12,8 @@ FactoryCrateFactory::FactoryCrateFactory(swganh::app::SwganhKernel* kernel)
 	: TangibleFactory(kernel)
 {
 }
+
+std::shared_ptr<swganh::object::Object> FactoryCrateFactory::CreateObject()
+{
+	return make_shared<FactoryCrate>();
+}

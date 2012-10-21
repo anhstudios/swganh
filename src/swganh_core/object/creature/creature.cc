@@ -1229,6 +1229,65 @@ void Creature::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
         ("Creature::Baselines", shared_from_this(), observer));
 }
 
+std::shared_ptr<Object> Creature::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Creature>();
+	Clone(other);
+	return other;
+}
+
+void Creature::Clone(std::shared_ptr<Creature> other)
+{
+	other->bank_credits_.store(bank_credits_);
+    other->cash_credits_.store(cash_credits_);
+    other->stat_base_list_ = stat_base_list_;
+    other->skills_ = skills_;
+    other->skill_commands_ = skill_commands_;
+    other->posture_.store(posture_);
+    other->faction_rank_.store(faction_rank_);
+    other->owner_id_.store(owner_id_);
+    other->scale_ = scale_;
+    other->battle_fatigue_.store(battle_fatigue_);
+    other->state_bitmask_.store(state_bitmask_);
+	other->stat_wound_list_ = stat_wound_list_;
+	other->acceleration_multiplier_base_ = acceleration_multiplier_base_;
+	other->acceleration_multiplier_modifier_ = acceleration_multiplier_modifier_;
+	other->stat_encumberance_list_ = stat_encumberance_list_;
+    other->skill_mod_list_ = skill_mod_list_;
+	other->speed_multiplier_base_ = speed_multiplier_base_;
+	other->speed_multiplier_modifier_ =  speed_multiplier_modifier_;
+	other->listen_to_id_.store(listen_to_id_);
+    other->run_speed_ = run_speed_;
+	other->slope_modifier_angle_ = slope_modifier_angle_;
+    other->slope_modifier_percent_ = slope_modifier_percent_;
+    other->turn_radius_ = turn_radius_;
+    other->walking_speed_ = walking_speed_;
+	other->water_modifier_percent_ = water_modifier_percent_;
+	other->mission_critical_object_list_ = mission_critical_object_list_;
+	other->combat_level_.store(combat_level_);
+    other->animation_ = animation_;
+    other->mood_animation_ = mood_animation_;
+    other->weapon_id_.store(weapon_id_);
+    other->group_id_.store(group_id_);
+	other->invite_sender_id_.store(invite_sender_id_);
+    other->invite_counter_.store(invite_counter_);
+    other->guild_id_.store(guild_id_);
+    other->target_id_.store(target_id_);
+    other->mood_id_.store(mood_id_);
+    other->performance_counter_.store(performance_counter_);
+    other->performance_id_.store(performance_id_);
+	other->stat_current_list_ = stat_current_list_;
+	other->stat_max_list_ = stat_max_list_;
+    other->equipment_list_ =  equipment_list_;
+	other->disguise_ = disguise_;
+	other->stationary_.store(stationary_);
+	other->pvp_status_ = pvp_status_;
+    other->duel_list_ = duel_list_;
+
+	Tangible::Clone(other);
+}
+
 void Creature::SerializeBaseStats(swganh::messages::BaseSwgMessage* message)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);

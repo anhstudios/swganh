@@ -132,6 +132,9 @@ public:
     void SetColorByte(uint8_t color_byte);
 
     typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
+
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Waypoint> other);
 private:
 
     glm::vec3 coordinates_;			                    //update 3

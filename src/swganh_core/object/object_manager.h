@@ -281,10 +281,7 @@ namespace object {
             std::shared_ptr<ObjectMessageBuilder>
         > ObjectMessageBuilderMap;
 
-		typedef std::map<
-			std::string,
-			uint32_t
-		> TemplateTypeMap;
+		typedef std::map<std::string, std::shared_ptr<swganh::object::Object>> PrototypeMap;
 
         /**
          * Registers a message builder for a specific object type
@@ -313,7 +310,8 @@ namespace object {
 
         ObjectFactoryMap factories_;
         ObjectMessageBuilderMap message_builders_;
-        TemplateTypeMap type_lookup_;
+        
+		PrototypeMap prototypes_; 
 
 		uint64_t next_dynamic_id_;
 

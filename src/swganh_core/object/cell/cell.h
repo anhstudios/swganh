@@ -32,6 +32,9 @@ public:
     */
     void SetCell(uint32_t cell_number);
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Cell> other);
+
 };
 
 }} // swganh::object

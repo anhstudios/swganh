@@ -24,6 +24,9 @@ public:
 
     const static uint32_t type = 0x48494e4f;
     
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<HarvesterInstallation> other);
+
 private:
 };
 

@@ -5,7 +5,6 @@
 #include "swganh/byte_buffer.h"
 
 #include <list>
-#include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
 
 #include "swganh_core/messages/baselines_message.h"
@@ -52,7 +51,6 @@ public:
      */
     void Set(uint16_t index, T item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
 		if(index < 0 || index > Size())
 			throw std::out_of_range("NetworkArray::Set index out of range.");
 			items_[index] = item;
@@ -63,7 +61,6 @@ public:
      */
     void Update(uint16_t index, T item)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         if(index < 0 || index > Size())
             throw std::out_of_range("NetworkArray::Update index out of range.");
     
@@ -73,7 +70,6 @@ public:
 
     T At(uint16_t index)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         if(index < 0 || index > Size())
             throw std::out_of_range("NetworkArray::At index out of range.");
     
@@ -82,7 +78,6 @@ public:
 
     void Resize(uint16_t size)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         // Queue added indices.
         if(size > items_.size())
         {
@@ -116,7 +111,6 @@ public:
      */
     void ClearDeltas(void)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         items_added_.clear();
         items_removed_.clear();
         items_changed_.clear();
@@ -137,7 +131,6 @@ public:
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
-		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
         std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
@@ -148,7 +141,6 @@ public:
     void Serialize(swganh::messages::DeltasMessage& message)
     {
 		{
-			boost::lock_guard<boost::mutex> lock(mutex_);
 			message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_);
 			message.data.write<uint32_t>(++update_counter_);
 
@@ -188,7 +180,6 @@ private:
     std::list<uint16_t> items_removed_;
     std::list<uint16_t> items_changed_;
     bool clear_;
-	mutable boost::mutex mutex_;
 };
 
 }}} // namespace swganh::messages::containers

@@ -881,6 +881,9 @@ public:
 
     typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Player> other);
+
 private:
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 

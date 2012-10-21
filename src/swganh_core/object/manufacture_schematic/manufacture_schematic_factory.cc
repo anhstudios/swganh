@@ -29,8 +29,7 @@ shared_ptr<Object> ManufactureSchematicFactory::CreateObjectFromStorage(uint64_t
     return make_shared<ManufactureSchematic>();
 }
 
-shared_ptr<Object> ManufactureSchematicFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> ManufactureSchematicFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
     return make_shared<ManufactureSchematic>();
 }

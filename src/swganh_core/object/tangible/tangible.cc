@@ -276,6 +276,28 @@ void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
         ("Tangible::Baselines",shared_from_this(), observer));
 }
 
+std::shared_ptr<Object> Tangible::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Tangible>();
+	Clone(other);
+	return other;
+}
+
+void Tangible::Clone(std::shared_ptr<Tangible> other)
+{
+	other->customization_ =  customization_;
+	other->component_customization_list_ = component_customization_list_;
+	other->options_bitmask_.store(options_bitmask_);
+    other->incap_timer_.store(incap_timer_);
+	other->condition_damage_.store(condition_damage_);
+    other->max_condition_.store(max_condition_);
+    other->is_static_.store(is_static_);
+
+	//Call the method in the super class
+	Object::Clone(other);
+}
+
 void Tangible::SerializeComponentCustomization(swganh::messages::BaseSwgMessage* message)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);

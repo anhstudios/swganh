@@ -253,3 +253,8 @@ void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 		has_aggregate_ = true;		
 	}
 }
+
+bool ObjectVisitor::has_attribute(const std::string& key)
+{
+	return attributes_.find(key) != attributes_.end();
+}

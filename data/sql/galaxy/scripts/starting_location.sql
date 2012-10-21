@@ -1,9 +1,17 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               5.1.63-community - MySQL Community Server (GPL)
+-- Server OS:                    Win64
+-- HeidiSQL version:             7.0.0.4053
+-- Date/time:                    2012-10-14 17:59:01
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
+-- Dumping structure for table galaxy.starting_location
+DROP TABLE IF EXISTS `starting_location`;
 CREATE TABLE IF NOT EXISTS `starting_location` (
   `location_id` int(11) NOT NULL AUTO_INCREMENT,
   `scene_id` int(11) DEFAULT NULL,
@@ -19,8 +27,7 @@ CREATE TABLE IF NOT EXISTS `starting_location` (
   CONSTRAINT `FK_6D2A488E166053B4` FOREIGN KEY (`scene_id`) REFERENCES `scene` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 
-DELETE FROM `starting_location`;
-    
+-- Dumping data for table galaxy.starting_location: ~18 rows (approximately)
 /*!40000 ALTER TABLE `starting_location` DISABLE KEYS */;
 INSERT INTO `starting_location` (`location_id`, `scene_id`, `location`, `x`, `y`, `z`, `description`, `radius`, `heading`) VALUES
 	(1, 9, 'bestine', -1290, 0, -3590, 'Bestine, Tatooine', 3, 180),
@@ -42,7 +49,5 @@ INSERT INTO `starting_location` (`location_id`, `scene_id`, `location`, `x`, `y`
 	(17, 42, 'tutorial', 0, 0, 0, 'Tutorial', 3, 180),
 	(18, 42, 'default_location', 27.4, -42, -161.100006, 'Skipped Tutorial', 3, 180);
 /*!40000 ALTER TABLE `starting_location` ENABLE KEYS */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
