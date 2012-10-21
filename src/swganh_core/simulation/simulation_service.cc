@@ -417,8 +417,8 @@ public:
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
 		auto player = GetEquipmentService()->GetEquippedObject<Player>(object, "ghost");
-		event_dispatcher->Dispatch(
-					make_shared<ValueEvent<shared_ptr<Player>>>("Simulation::PlayerSelected", player));
+		
+		event_dispatcher->Dispatch(make_shared<ValueEvent<shared_ptr<Player>>>("Simulation::PlayerSelected", player));
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
         if (!scene)

@@ -316,6 +316,7 @@ namespace object {
 		uint64_t next_dynamic_id_;
 
         boost::shared_mutex object_map_mutex_;
+		boost::shared_mutex object_factories_mutex_;
 		std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
 		std::shared_ptr<boost::asio::deadline_timer> persist_timer_;
 		
