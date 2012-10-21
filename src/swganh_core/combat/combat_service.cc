@@ -332,7 +332,7 @@ HIT_TYPE CombatService::GetHitResult(
 	int weapon_accuracy = combat_data->weapon_accuracy + (int)(GetWeaponRangeModifier(weapon, attacker->RangeTo(defender->GetPosition())));
 	int attacker_accuracy = combat_data->accuracy_bonus;
 	attacker_accuracy += weapon_accuracy;
-    combat_data->accuracy_bonus += GetAccuracyBonus(attacker, weapon, mods);
+    combat_data->accuracy_bonus += GetAccuracyBonus(attacker, weapon, combat_data);
 
 	int target_defense = 0;
 	if (weapon && weapon->GetWeaponType() == WeaponType::MELEE)
@@ -487,10 +487,12 @@ uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& att
 
 }
 
-uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<Weapon>& weapon) { 
+uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<Weapon>& weapon, std::shared_ptr<CombatData> combat_data) { 
     uint16_t bonus = 0;
-	bonus += attacker->GetAttributeRecursive<int>("attack_accuracy");
-	bonus += attacker->GetAttributeRecursive<int>("private_accuracy_bonus");
+	auto acc_bonus_pair = combat_data->attacker_skill_mods["attack_accuracy"];
+	bonus += acc_bonus_pair.first + acc_bonus_pair.second;
+	auto priv_acc_bonus = combat_data->attacker_skill_mods["attack_accuracy"];
+	bonus += priv_acc_bonus.first + priv_acc_bonus.second;	
 
 	if (weapon)
 	{
@@ -626,6 +628,7 @@ int CombatService::ApplyDamage(
         health_damage = damage * damage_multiplier;
         if (defender->GetStatCurrent(StatIndex::HEALTH) - health_damage <= 0)
         {
+			defender->SetStatCurrent(StatIndex::HEALTH, 0);
             SetIncapacitated(attacker, defender);
         }
         else
@@ -641,7 +644,8 @@ int CombatService::ApplyDamage(
         action_damage = damage * damage_multiplier;
         if (defender->GetStatCurrent(StatIndex::ACTION) - action_damage <= 0)
         {
-            SetIncapacitated(attacker, defender);
+			defender->SetStatCurrent(StatIndex::ACTION, 0);
+            SetIncapacitated(attacker, defender);			
         }
         else
             defender->DeductStatCurrent(StatIndex::ACTION, (int)(action_damage));
@@ -655,6 +659,7 @@ int CombatService::ApplyDamage(
         mind_damage = damage * damage_multiplier;
         if (defender->GetStatCurrent(StatIndex::MIND) - mind_damage <= 0)
         {
+			defender->SetStatCurrent(StatIndex::MIND, 0);
             SetIncapacitated(attacker, defender);
         }
         else

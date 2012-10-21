@@ -325,15 +325,21 @@ void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(const shared_p
 }
 void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& object)
 {
-    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
-    object->SerializeQuests(&message);
-    object->AddDeltasUpdate(&message);
+	if (object->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
+		object->SerializeQuests(&message);
+		object->AddDeltasUpdate(&message);
+	}
 }
 void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
 {
-    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
-    object->SerializeAbilities(&message);
-    object->AddDeltasUpdate(&message);
+	if (object->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
+		object->SerializeAbilities(&message);
+		object->AddDeltasUpdate(&message);
+	}
 }
 
 void PlayerMessageBuilder::BuildExperimentationFlagDelta(const shared_ptr<Player>& object)
@@ -368,9 +374,12 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(const shared_ptr<Pla
 }
 void PlayerMessageBuilder::BuildDraftSchematicDelta(const shared_ptr<Player>& object)
 {
-    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
-    object->SerializeDraftSchematics(&message);
-    object->AddDeltasUpdate(&message);
+	if (object->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
+		object->SerializeDraftSchematics(&message);
+		object->AddDeltasUpdate(&message);
+	}
 }
 
 void PlayerMessageBuilder::BuildExperimentationPointsDelta(const shared_ptr<Player>& object)
@@ -395,15 +404,21 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(const shared_ptr<Play
 }
 void PlayerMessageBuilder::BuildFriendsDelta(const shared_ptr<Player>& object)
 {
-    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
-    object->SerializeFriends(&message);
-    object->AddDeltasUpdate(&message);
+	if (object->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
+		object->SerializeFriends(&message);
+		object->AddDeltasUpdate(&message);
+	}
 }
 void PlayerMessageBuilder::BuildIgnoredDelta(const shared_ptr<Player>& object)
 {
-    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
-    object->SerializeIgnoredPlayers(&message);
-    object->AddDeltasUpdate(&message);
+	if (object->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
+		object->SerializeIgnoredPlayers(&message);
+		object->AddDeltasUpdate(&message);
+	}
 }
 void PlayerMessageBuilder::BuildLanguageDelta(const shared_ptr<Player>& object)
 {

@@ -254,16 +254,22 @@ void CreatureMessageBuilder::BuildCashCreditsDelta(const shared_ptr<Creature>& c
 
 void CreatureMessageBuilder::BuildStatBaseDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 2);
-    creature->SerializeBaseStats(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 2);
+		creature->SerializeBaseStats(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildSkillDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 3);
-    creature->SerializeSkills(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 3);
+		creature->SerializeSkills(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildPostureUpdate(const shared_ptr<Creature>& creature)
@@ -339,9 +345,12 @@ void CreatureMessageBuilder::BuildStateBitmaskDelta(const shared_ptr<Creature>& 
 
 void CreatureMessageBuilder::BuildStatWoundDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 17);
-    creature->SerializeStatWounds(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 17);
+		creature->SerializeStatWounds(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(const shared_ptr<Creature>& creature)
@@ -366,14 +375,20 @@ void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(const shar
 
 void CreatureMessageBuilder::BuildStatEncumberanceDelta(const shared_ptr<Creature>& creature)
 {
-	DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 2);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 2);
+	}
 }
 
 void CreatureMessageBuilder::BuildSkillModDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 3);
-    creature->SerializeSkillMods(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 3);
+		creature->SerializeSkillMods(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(const shared_ptr<Creature>& creature)
@@ -468,9 +483,12 @@ void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(const shared_ptr<Cre
 
 void CreatureMessageBuilder::BuildMissionCriticalObjectDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 13);
-    creature->SerializeMissionCriticalObjects(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 13);
+		creature->SerializeMissionCriticalObjects(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildCombatLevelDelta(const shared_ptr<Creature>& creature)
@@ -576,23 +594,32 @@ void CreatureMessageBuilder::BuildPerformanceIdDelta(const shared_ptr<Creature>&
 
 void CreatureMessageBuilder::BuildStatCurrentDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 13);
-    creature->SerializeCurrentStats(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 13);
+		creature->SerializeCurrentStats(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildStatMaxDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 14);
-    creature->SerializeMaxStats(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 14);
+		creature->SerializeMaxStats(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildEquipmentDelta(const shared_ptr<Creature>& creature)
 {
-    DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 15);
-    creature->SerializeEquipment(&message);
-    creature->AddDeltasUpdate(&message);
+	if (creature->HasObservers())
+    {
+		DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 15);
+		creature->SerializeEquipment(&message);
+		creature->AddDeltasUpdate(&message);
+	}
 }
 
 void CreatureMessageBuilder::BuildDisguiseDelta(const shared_ptr<Creature>& creature)
@@ -691,9 +718,9 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline6(const shared_ptr<Creatur
     message.data.write<uint8_t>(creature->GetMoodId());                            // Mood Id
     message.data.write<uint32_t>(creature->IncrementPerformanceCounter());             // Performance Update Counter
     message.data.write<uint32_t>(creature->GetPerformanceId());                    // Performance Id
-    creature->SerializeCurrentStats(&message);                            // Current Stats
-    creature->SerializeMaxStats(&message);                                // Max Stats
-    creature->SerializeEquipment(&message);                               // Equipment
+    creature->SerializeCurrentStats(&message);										// Current Stats
+    creature->SerializeMaxStats(&message);											// Max Stats
+    creature->SerializeEquipment(&message);											// Equipment
     message.data.write<std::string>(creature->GetDisguise());                       // Disguise Template
     message.data.write<uint8_t>(creature->IsStationary());                         // Stationary
     

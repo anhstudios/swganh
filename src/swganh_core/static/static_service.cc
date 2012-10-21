@@ -113,12 +113,12 @@ StaticService::StaticService(SwganhKernel* kernel)
 			auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
 			creature_dummy->SetPosition(glm::vec3(-137, 28,-4723));
 			creature_dummy->SetCustomName(L"Combat Dummy");
-			creature_dummy->SetStatMax(HEALTH, 999999);
-			creature_dummy->SetStatCurrent(HEALTH, 999999);
-			creature_dummy->SetStatMax(ACTION, 999999);
-			creature_dummy->SetStatCurrent(ACTION, 999999);
-			creature_dummy->SetStatMax(MIND, 999999);
-			creature_dummy->SetStatCurrent(MIND, 999999);
+			creature_dummy->SetStatMax(HEALTH, 9999);
+			creature_dummy->SetStatCurrent(HEALTH, 9999);
+			creature_dummy->SetStatMax(ACTION, 9999);
+			creature_dummy->SetStatCurrent(ACTION, 9999);
+			creature_dummy->SetStatMax(MIND, 9999);
+			creature_dummy->SetStatCurrent(MIND, 9999);
 			creature_dummy->SetScale(0.5);
 			
 			creature_dummy->SetPvPStatus(PvPStatus_Attackable);

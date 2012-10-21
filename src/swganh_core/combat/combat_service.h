@@ -167,7 +167,7 @@ namespace combat {
         
         uint16_t GetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker);
         uint16_t GetTargetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
-        uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Weapon>& weapon);
+        uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data);
         
 		/// HIT
 		float GetHitChance(int attacker_accuracy, int attacker_bonus, int target_defence);

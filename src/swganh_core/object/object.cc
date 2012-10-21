@@ -942,7 +942,7 @@ AttributeVariant Object::GetAttribute(const std::string& name)
 	{
 		return find_iter->second;
 	}	
-	LOG(info) << "Attribute "<< name << " does not exist";	
+	//DLOG(event) << "Attribute "<< name << " does not exist";	
 	return boost::blank();
 	//throw std::runtime_error("Attribute " + name + " does not exist");
 }
