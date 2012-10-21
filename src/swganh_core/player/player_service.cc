@@ -41,15 +41,6 @@ ServiceDescription PlayerService::GetServiceDescription()
 PlayerService::PlayerService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 {
-
-	player_selected_callback_ = kernel_->GetEventDispatcher()->Subscribe(
-		"Simulation::PlayerSelected",
-		[this] (shared_ptr<EventInterface> incoming_event)
-	{
-		const auto& player = static_pointer_cast<ValueEvent<shared_ptr<Player>>>(incoming_event)->Get();
-		OnPlayerEnter(player);
-	});
-
 	player_removed_ = kernel_->GetEventDispatcher()->Subscribe(
 		"Connection::PlayerRemoved",
 		[this] (shared_ptr<EventInterface> incoming_event)
