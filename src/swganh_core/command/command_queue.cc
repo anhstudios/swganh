@@ -110,12 +110,18 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
                 {
                     HandleCallback(*callback);
                 }
+				command->PostRun(true);
             }
             else
             {
                 action = 1; // indicates a general error
+				command->PostRun(false);
             }
         }
+		else
+		{
+			command->PostRun(false);
+		}
 
         command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
     } catch(const std::exception& e) {
@@ -136,7 +142,8 @@ void CommandQueue::Notify()
             ProcessCommand(command);
 
 			std::shared_ptr<swganh::object::Creature> actor = std::static_pointer_cast<swganh::object::Creature>(command->GetActor());
-            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>((actor->HasState(swganh::object::COMBAT)) ? command->GetDefaultTime() * 1000 : 0)));
+			uint64_t default_time = actor->HasState(swganh::object::COMBAT) ? static_cast<uint64_t>(command->GetDefaultTime() * 1000) : 0;
+			timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(default_time)));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
                 if (!ec && this)

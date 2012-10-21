@@ -36,6 +36,8 @@ namespace statics
 
 		std::vector<std::shared_ptr<ElevatorData>> GetElevatorDataForObject(uint64_t terminal_id);
 
+		void Startup();
+
 	private:
 
 		void _loadBuildings(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,

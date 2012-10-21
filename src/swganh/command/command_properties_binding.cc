@@ -13,7 +13,7 @@ using swganh::command::CommandProperties;
 
 void swganh::command::ExportCommandProperties()
 {
-    bp::class_<CommandProperties, boost::noncopyable>("CommandProperties")
+    bp::class_<CommandProperties, boost::noncopyable>("CommandProperties", bp::init<const CommandProperties&>() )
         .add_property("command_name", &CommandProperties::command_name)
         .add_property("default_priority", &CommandProperties::default_priority)
         .add_property("default_time", &CommandProperties::default_time)

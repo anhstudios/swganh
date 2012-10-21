@@ -58,6 +58,7 @@ std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
         {
             CommandInterface* obj_pointer = bp::extract<CommandInterface*>(new_instance);
             command.reset(obj_pointer, [new_instance] (CommandInterface*) {});
+			command->SetCommandProperties(properties);
         }
     }
     catch(bp::error_already_set& /*e*/)

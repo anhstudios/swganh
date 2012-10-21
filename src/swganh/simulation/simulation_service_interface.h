@@ -30,6 +30,10 @@ namespace messages
 	struct BaseSwgMessage;
 }
 
+namespace equipment {
+	class EquipmentServiceInterface;
+}
+
 namespace object {
 
 	typedef std::function<
@@ -189,6 +193,9 @@ namespace simulation {
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0) = 0;
 
 		virtual void PrepareToAccomodate(uint32_t delta) = 0;
+		
+		virtual const std::shared_ptr<swganh::equipment::EquipmentServiceInterface>& GetEquipmentService() = 0;
+
     };
 
 }}  // namespace swganh::simulation

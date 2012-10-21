@@ -61,7 +61,7 @@ void Group::RemoveGroupMember(uint64_t member)
         ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
 }
     
-swganh::messages::containers::NetworkSortedVector<Member> Group::GetGroupMembers()
+swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMembers()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return member_list_;

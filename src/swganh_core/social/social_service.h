@@ -12,6 +12,9 @@
 #include "swganh/observer/observer_interface.h"
 
 namespace swganh {
+namespace character{
+	class CharacterProviderInterface;
+}
 namespace social {
     
     class SocialService : public swganh::social::SocialServiceInterface

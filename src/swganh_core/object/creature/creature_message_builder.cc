@@ -71,11 +71,6 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);
         BuildStateBitmaskDelta(value_event->Get());
     });
-    event_dispatcher->Subscribe("Creature::StateBitmask", [this] (shared_ptr<EventInterface> incoming_event)
-    {
-        auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);
-        BuildStateBitmaskDelta(value_event->Get());
-    });
     event_dispatcher->Subscribe("Creature::StatWound", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);

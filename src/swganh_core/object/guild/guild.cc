@@ -57,7 +57,7 @@ void Guild::RemoveGuildTag(uint32_t guild_id)
         ("Guild::Tag",static_pointer_cast<Guild>(shared_from_this())));
 }
     
-swganh::messages::containers::NetworkList<GuildTag> Guild::GetGuildList()
+swganh::messages::containers::NetworkList<GuildTag>& Guild::GetGuildList()
 {
     boost::lock_guard<boost::mutex> lk(object_mutex_);
     return guild_list_;

@@ -13,14 +13,8 @@
 
 namespace swganh {
 namespace object {
-    class Object;
     class Player;
 }}  // namespace swganh::object
-
-namespace swganh {
-namespace character {
-class CharacterProviderInterface;
-}} // namespace swganh::character
 
 namespace swganh {
 namespace social {

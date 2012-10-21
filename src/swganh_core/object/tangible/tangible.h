@@ -113,7 +113,7 @@ public:
     std::string GetCustomization();
 
     // Component Customization
-    swganh::messages::containers::NetworkList<ComponentCustomization> GetComponentCustomization(void);
+    swganh::messages::containers::NetworkList<ComponentCustomization>& GetComponentCustomization(void);
     void AddComponentCustomization(uint32_t customization_crc);
     void RemoveComponentCustomization(uint32_t customization_crc);
     void ClearComponentCustomization();
@@ -144,7 +144,7 @@ public:
     void RemoveDefender(uint64_t defender);
     void ResetDefenders(std::vector<uint64_t> defenders);
     bool IsDefending(uint64_t defender);
-    swganh::messages::containers::NetworkSortedVector<Defender> GetDefenders();
+    swganh::messages::containers::NetworkSortedVector<Defender>& GetDefenders();
     void ClearDefenders();
 
     void ActivateAutoAttack();

@@ -141,7 +141,7 @@ public:
     /**
      * @return property list.
      */
-    swganh::messages::containers::NetworkArray<Property> GetProperties() const;
+    swganh::messages::containers::NetworkArray<Property>& GetProperties();
     
     /**
      * Adds a property to the properties list.
@@ -301,7 +301,7 @@ public:
     /**
      * @return the list of ingredient slots.
      */
-    swganh::messages::containers::NetworkSortedVector<Slot> GetSlots() const;
+    swganh::messages::containers::NetworkSortedVector<Slot>& GetSlots();
 
     /**
      * Removes an ingredient slot.
@@ -348,7 +348,7 @@ public:
     /**
      * @return experiment list.
      */
-    swganh::messages::containers::NetworkSortedVector<Experiment> GetExperiments() const;
+    swganh::messages::containers::NetworkSortedVector<Experiment>& GetExperiments() ;
 
     /**
      * Removes an experiment.
@@ -415,7 +415,7 @@ public:
     /**
      * @return customizations list.
      */
-    swganh::messages::containers::NetworkSortedVector<Customization> GetCustomizations() const;
+    swganh::messages::containers::NetworkSortedVector<Customization>& GetCustomizations() ;
     
     /**
      * Removes a customization.

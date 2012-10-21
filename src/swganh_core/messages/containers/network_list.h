@@ -3,6 +3,8 @@
 #pragma once
 
 #include <list>
+#include <boost/thread/mutex.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "swganh/byte_buffer.h"
 
@@ -23,10 +25,7 @@ public:
     typedef typename std::list<T>::iterator iterator;
     
     NetworkList()
-        : update_counter_(0)
-        , items_(std::list<T>())
-        , added_items_(std::list<T>())
-        , removed_items_(std::list<T>())
+        :  update_counter_(0)
         , clear_(false)
     {}
 
@@ -38,6 +37,7 @@ public:
      */
     void Add(T item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [&item](T& x)->bool {
             return (x == item);
         });
@@ -54,6 +54,7 @@ public:
      */
     void Remove(iterator iter)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         if(iter != items_.end())
         {
             removed_items_.push_back(*iter);
@@ -66,6 +67,7 @@ public:
      */
     void Insert(T item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [=](T& x)->bool {
             return (x == item);
         });
@@ -78,12 +80,14 @@ public:
 
     void Clear(void)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         items_.clear();
         clear_ = true;
     }
 
     bool Contains(const T& item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [&item](T& x)->bool {
             return (x == item);
         });
@@ -101,6 +105,7 @@ public:
      */
     void ClearDeltas(void)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         added_items_.clear();
         removed_items_.clear();
         clear_ = false;
@@ -113,36 +118,42 @@ public:
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
-        std::for_each(items_.begin(), items_.end(), [=, &message](T item) {
+        for(auto& item : items_)
+		{
             item.Serialize(message);
-        });
+        }
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(added_items_.size() + removed_items_.size());
-        message.data.write<uint32_t>(++update_counter_);
+		{
+			boost::lock_guard<boost::mutex> lock(mutex_);
+			message.data.write<uint32_t>(added_items_.size() + removed_items_.size());
+			message.data.write<uint32_t>(++update_counter_);
 
-        // Removed Items
-        std::for_each(removed_items_.begin(), removed_items_.end(), [=, &message](T x) {
-            message.data.write<uint8_t>(0);         // Update Type: 0 (Remove)
-            x.Serialize(message);
-        });
+			// Removed Items
+			for (auto& x : removed_items_)
+			{
+				message.data.write<uint8_t>(0);         // Update Type: 0 (Remove)
+				x.Serialize(message);
+			}
 
-        // Added Items
-        std::for_each(added_items_.begin(), added_items_.end(), [=, &message](T x) {
-            message.data.write<uint8_t>(1);              // Update Type: 1 (Add)
-            x.Serialize(message);
-        });
+			// Added Items
+			for (auto& x : added_items_)
+			{
+				message.data.write<uint8_t>(1);              // Update Type: 1 (Add)
+				x.Serialize(message);
+			}
 
-        // Clear Items
-        if(clear_ == true)
-        {
-            message.data.write<uint8_t>(2);
-        }
-
+			// Clear Items
+			if(clear_ == true)
+			{
+				message.data.write<uint8_t>(2);
+			}
+		}
         ClearDeltas();
     }
 
@@ -152,6 +163,7 @@ private:
     std::list<T> added_items_;
     std::list<T> removed_items_;
     bool clear_;
+	mutable boost::mutex mutex_;
 };
 
 }}} // namespaces

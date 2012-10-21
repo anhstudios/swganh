@@ -98,7 +98,7 @@ void Tangible::AddComponentCustomization(uint32_t customization)
         ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
 }
 
-NetworkList<ComponentCustomization> Tangible::GetComponentCustomization(void)
+NetworkList<ComponentCustomization>& Tangible::GetComponentCustomization(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return component_customization_list_;
@@ -217,7 +217,7 @@ void Tangible::RemoveDefender(uint64_t defender)
             return (x.object_id == defender);
         });
 
-        if(iter != end(defender_list_))
+        if(iter == end(defender_list_))
         {
             return;
         }
@@ -242,7 +242,7 @@ void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
         ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
 }
 
-NetworkSortedVector<Defender> Tangible::GetDefenders()
+NetworkSortedVector<Defender>& Tangible::GetDefenders()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return defender_list_;

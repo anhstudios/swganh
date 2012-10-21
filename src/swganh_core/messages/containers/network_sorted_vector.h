@@ -3,6 +3,8 @@
 #pragma once
 
 #include <vector>
+#include <boost/thread/mutex.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "swganh_core/messages/baselines_message.h"
 #include "swganh_core/messages/deltas_message.h"
@@ -22,22 +24,30 @@ public:
     typedef typename std::vector<T>::iterator iterator;
 
     NetworkSortedVector(uint16_t capacity)
-        : items_(std::vector<T>())
-        , items_added_(std::list<uint16_t>())
-        , items_removed_(std::list<uint16_t>())
-        , items_changed_(std::list<uint16_t>())
-        , clear_(false)
+        : clear_(false)
         , reinstall_(false)
         , update_counter_(0)
     {
         items_.reserve(capacity);
     }
 
+	NetworkSortedVector(NetworkSortedVector<T>& other)
+		: items_(other.items_)
+		, items_added_ (other.items_added_)
+		, items_changed_(other.items_changed_)
+		, items_removed_(other.items_removed_)
+		, clear_(other.clear_)
+		, reinstall_(other.reinstall_)
+		, update_counter_(other.update_counter_)
+	{
+	}
+
     ~NetworkSortedVector(void)
     {}
 
     void Add(const T& item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
             return (i == item);
         });
@@ -51,12 +61,14 @@ public:
 
 	void Remove(uint16_t index)
 	{
+		boost::lock_guard<boost::mutex> lock(mutex_);
 		items_removed_.push_back(index);
 		items_.erase(items_.begin()+index);
 	}
 
     void Remove(iterator iter)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         uint16_t distance = std::distance<const_iterator>(items_.begin(), iter);
         items_removed_.push_back(distance);
         items_.erase(iter);
@@ -64,6 +76,7 @@ public:
 
     void Insert(const T& item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
             return (i == item);
         });
@@ -76,11 +89,13 @@ public:
 
     void Erase(iterator iter)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         items_.erase(iter);
     }
 
     void Update(iterator iter, T& item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         uint16_t index = std::distance<const_iterator>(items_.begin(), iter);
         items_[index] = item;
         items_changed_.push_back(index);
@@ -88,22 +103,26 @@ public:
 
 	void Update(uint16_t index, T& item)
 	{
+		boost::lock_guard<boost::mutex> lock(mutex_);
 		items_[index] = item;
 		items_changed_.push_back(index);
 	}
 
     void Clear()
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         clear_ = true;
     }
 
     void Reinstall()
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         reinstall_ = true;
     }
 
     iterator Find(T& item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         auto iter = std::find_if(items_.begin(), items_.end(), [=](const T& x)->bool {
             return (item == x);
         });
@@ -116,6 +135,7 @@ public:
      */
     T At(uint16_t index)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         return items_.at(index);
     }
 
@@ -134,6 +154,7 @@ public:
      */
     void ClearDeltas(void)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         items_added_.clear();
         items_removed_.clear();
         items_changed_.clear();
@@ -148,58 +169,65 @@ public:
 
 	void Serialize(swganh::messages::BaselinesMessage& message)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
-        std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
+        for (auto& item : items_)
+		{
             item.Serialize(message);
-        });
+        }
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
-        message.data.write<uint32_t>(++update_counter_);
+		{
+			boost::lock_guard<boost::mutex> lock(mutex_);
+			message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
+			message.data.write<uint32_t>(++update_counter_);
 
-        // Remove Items
-        std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](const uint16_t& index) {
-            message.data.write<uint8_t>(0);
-            message.data.write<uint16_t>(index);
-        });
+			// Remove Items
+			for(auto& index : items_removed_)
+			{
+				message.data.write<uint8_t>(0);
+				message.data.write<uint16_t>(index);
+			}
 
-        // Added Items
-        std::for_each(items_added_.begin(), items_added_.end(), [=, &message](const uint16_t& index) {
-            message.data.write<uint8_t>(1);
-            message.data.write<uint16_t>(index);
-            items_[index].Serialize(message);
-        });
+			// Added Items
+			for(auto& index : items_added_)
+			{
+				message.data.write<uint8_t>(1);
+				message.data.write<uint16_t>(index);
+				items_[index].Serialize(message);
+			}
 
-        // Changed Items
-        std::for_each(items_changed_.begin(), items_changed_.end(), [=, &message](const uint16_t& index) {
-            message.data.write<uint8_t>(2);
-            message.data.write<uint16_t>(index);
-            items_[index].Serialize(message);
-        });
+			// Changed Items
+			for(auto& index : items_changed_)
+			{
+				message.data.write<uint8_t>(2);
+				message.data.write<uint16_t>(index);
+				items_[index].Serialize(message);
+			}
 
-        // Reinstall
-        if(reinstall_)
-        {
-            message.data.write<uint8_t>(3);
-            message.data.write<uint16_t>(items_.size());
-            std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
-                item.Serialize(message);
-            });            
-        }
+			// Reinstall
+			if(reinstall_)
+			{
+				message.data.write<uint8_t>(3);
+				message.data.write<uint16_t>(items_.size());
+				for(auto& item : items_)
+				{
+					item.Serialize(message);
+				}
+			}
 
-        // Clear
-        if(clear_)
-        {
-            message.data.write<uint8_t>(4);
-            items_.clear();
-        }
-
+			// Clear
+			if(clear_)
+			{
+				message.data.write<uint8_t>(4);
+				items_.clear();
+			}
+		}
         ClearDeltas();
-    }
-
+    }	
 private:
     std::vector<T> items_;
     std::list<uint16_t> items_added_;
@@ -208,6 +236,7 @@ private:
     bool clear_;
     bool reinstall_;
     uint32_t update_counter_;
+	mutable boost::mutex mutex_;
 };
 
 }}} // swganh::messages::containers
