@@ -954,7 +954,6 @@ void Player::SerializeQuests(swganh::messages::BaseSwgMessage* message)
 
 void Player::SerializeAbilities(swganh::messages::BaseSwgMessage* message)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto list = GetAbilityList();
 	NetworkList<Ability>(GetAbilityList()).Serialize(message);
 }
