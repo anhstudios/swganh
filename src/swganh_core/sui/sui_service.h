@@ -85,6 +85,8 @@ namespace sui
 		//Get Window
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> GetSUIWindowById(std::shared_ptr<swganh::object::Object> owner, int32_t windowId);
 
+		virtual std::shared_ptr<SUIWindowInterface> GetSUIWindowByScriptName(std::shared_ptr<swganh::object::Object> owner, std::string script);
+
 		//Forcefully closes a previously opened window.
 		virtual void CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId);
 

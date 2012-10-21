@@ -302,6 +302,22 @@ std::shared_ptr<SUIWindowInterface> SUIService::GetSUIWindowById(std::shared_ptr
 	return result;
 }
 
+std::shared_ptr<SUIWindowInterface> SUIService::GetSUIWindowByScriptName(std::shared_ptr<swganh::object::Object> owner, std::string script)
+{
+	boost::lock_guard<boost::mutex> lock(sui_mutex_);
+	WindowMapRange range = window_lookup_.equal_range(owner->GetObjectId());
+	std::shared_ptr<SUIWindowInterface> result = nullptr;
+	std::find_if(range.first, range.second, [&] (WindowMap::value_type& element) -> bool {
+		if(element.second->GetScriptName().compare(script) == 0)
+		{
+			result = element.second;
+			return true;
+		}
+		return false;
+	});
+	return result;
+}
+
 //Forcefully closes a previously opened page.
 void SUIService::CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId)
 {

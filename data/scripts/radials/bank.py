@@ -68,6 +68,11 @@ def quitBank(self, owner):
 			SystemMessage.sendSystemMessage(owner, swgpy.OutOfBand('system_msg', 'bank_not_empty'), False, False)	
 def transferBank(self, owner, target):
 	sui = self.getKernel().serviceManager().suiService()
+	
+	#Enforce uniqueness
+	if sui.getSUIWindowByScriptName(owner, 'Script.transfer') != None:
+		return
+
 	window = sui.createSUIWindow('Script.transfer', owner, target, 10)
 	window.setProperty('transaction.txtInputFrom:Text', 'From')
 	window.setProperty('transaction.txtInputTo:Text', 'To')	
