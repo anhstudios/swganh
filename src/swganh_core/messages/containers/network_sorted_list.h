@@ -36,8 +36,23 @@ public:
         , reinstall_(false)
     {}
 
+	NetworkSortedList(std::list<T> orig)
+		: clear_(false)
+		, reinstall_(false)
+		, update_counter_(0)
+	{
+		uint16_t i = 0;
+		for(auto& v : orig)
+			items_.insert(make_pair(++i, v));
+	}
+
     ~NetworkSortedList()
     {}
+
+	std::map<uint16_t, T> Get() const
+	{
+		return items_;
+	}
 
     /**
      *
@@ -168,6 +183,18 @@ public:
     
     iterator begin() { return items_.begin(); }
     iterator end() { return items_.end(); }
+
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
