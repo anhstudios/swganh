@@ -111,7 +111,7 @@ StaticService::StaticService(SwganhKernel* kernel)
 			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_juvenile_canyon_krayt.iff", CREATURE_PERMISSION, false, false);
 			auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
-			creature_dummy->SetPosition(glm::vec3(-137, 28,-4723));
+			creature_dummy->SetPosition(glm::vec3(-146, 28,-4702));
 			creature_dummy->SetCustomName(L"Combat Dummy");
 			creature_dummy->SetStatMax(HEALTH, 9999);
 			creature_dummy->SetStatCurrent(HEALTH, 9999);
