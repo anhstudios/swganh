@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <boost/thread/mutex.hpp>
 #include <map>
 
 #include "swganh/sui/sui_service_interface.h"
@@ -119,6 +120,8 @@ namespace sui
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		WindowMap window_lookup_;
 		int32_t window_id_counter_;
+
+		boost::mutex sui_mutex_;
 	};
 
 }
