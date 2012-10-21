@@ -5,6 +5,7 @@
 #ifndef WIN32
 #include <Python.h>
 #endif
+#include "swganh/python_shared_ptr.h"
 
 #include "swganh_core/object/object.h"
 #include "swganh/object/object_controller_binding.h"
@@ -134,6 +135,12 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
 
+
+std::shared_ptr<swganh::object::Creature> ToCreature(std::shared_ptr<swganh::object::Object> obj)
+{
+	return static_pointer_cast<swganh::object::Creature>(obj);
+}
+
 struct ProsePackageWrapper : ProsePackage, wrapper<ProsePackage>
 {
     ProsePackageWrapper() : ProsePackage(){}
@@ -141,7 +148,7 @@ struct ProsePackageWrapper : ProsePackage, wrapper<ProsePackage>
 
 void exportOutOfBand()
 {
-    enum_<ProseType>("ProseType", "Prose type of the :class:`.OutOfBand` Message")
+	enum_<ProseType>("ProseType", "Prose type of the :class:`.OutOfBand` Message")
         .value("TU", TU)
         .value("TT", TT)
         .value("TO", TO)
@@ -150,8 +157,8 @@ void exportOutOfBand()
         ;
     class_<OutOfBand, boost::noncopyable>("OutOfBand","object that is used in the help with sending system stf messages")
         .def(init<std::string, std::string, ProseType, uint64_t>())
-        .def(init<std::string, std::string, ProseType, std::wstring>())
-        .def(init<std::string, std::string>())
+		.def(init<std::string, std::string, ProseType, std::wstring>())
+		.def(init<std::string, std::string>())
     ;
 }
 
@@ -172,6 +179,7 @@ void exportObject()
 		.def("transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
 		.def("swapSlots", &Object::SwapSlots, "Change an objects current arrangement")	
 		.def("container", &Object::GetContainer, "Gets the :class:`ContainerInterface` object of the current object")
+		.def("hasContainedObjects", &Object::HasContainedObjects, "Checks to see if container has any objects in it")
 		.def_readonly("id", &ContainerInterface::GetObjectId, "Gets the object id of the container")
 		;
 	
@@ -200,7 +208,7 @@ void exportObject()
 
     class_<Object, bases<ContainerInterface>, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from")
 		.add_property("id", &Object::GetObjectId, &Object::SetObjectId, "Gets or sets The id of the object")
-		.add_property("scene_id", &Object::GetSceneId, "Gets the scene id the object is in")
+		.add_property("scene_id", &Object::GetSceneId, &Object::SetSceneId, "Gets and Sets the scene id the object is in")
 		.add_property("type", &Object::GetType, "Gets the type of the object")
 		.add_property("position", &Object::GetPosition, &Object::SetPosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
 		.add_property("heading", &Object::GetHeading, "Gets the heading as an int of the object")
@@ -228,6 +236,7 @@ void exportObject()
 		.add_property("attribute_template_id", &Object::GetAttributeTemplateId, &Object::SetAttributeTemplateId, "Gets and Sets the attribute template_id")
 		.def("eventDispatcher", &Object::SetEventDispatcher, "Sets the event dispatcher pointer")
 		.def("updatePosition", &Object::UpdatePosition, "Updates the position and sends an update to the player")
+		.def("toCreature", ToCreature)
 		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
 		;
 

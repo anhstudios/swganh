@@ -86,7 +86,7 @@ uint32_t Creature::GetBankCredits(void)
 
 void Creature::SetCashCredits(uint32_t cash_credits)
 {
-    cash_credits = cash_credits;
+    cash_credits_ = cash_credits;
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
         ("Creature::Cash",static_pointer_cast<Creature>(shared_from_this())));
 }

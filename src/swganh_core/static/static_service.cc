@@ -254,6 +254,12 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 				parent->AddObject(nullptr, object);
 			}
 		}
+		// Check if it's a bank
+		// TODO: Remove once prototypes are in..
+		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_bank.iff") == 0)
+		{
+			object->SetAttribute("radial_filename", L"radials.bank");
+		}
 	}
 }
 

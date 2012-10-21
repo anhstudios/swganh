@@ -9,15 +9,20 @@
 #include "swganh/service/service_manager.h"
 #include "swganh/connection/connection_client_interface.h"
 #include "swganh_core/object/player/player.h"
+#include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/object_controller.h"
+#include "swganh_core/messages/system_message.h"
+#include "swganh_core/messages/out_of_band.h"
+#include "swganh_core/messages/opened_container_message.h"
 #include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/equipment/equipment_service.h"
 
 using namespace std;
 using namespace swganh;
 using namespace swganh::service;
 using namespace swganh::player;
 using namespace swganh::object;
-
+using namespace swganh::messages;
 
 ServiceDescription PlayerService::GetServiceDescription()
 {
@@ -58,6 +63,9 @@ void PlayerService::Startup()
 {
 	simulation_service_ = kernel_->GetServiceManager()->
 		GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
+
+	equipment_service_ = kernel_->GetServiceManager()->
+		GetService<swganh::equipment::EquipmentService>("EquipmentService");
 }
 
 void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::Player> player)
@@ -84,6 +92,66 @@ void PlayerService::OnPlayerExit(shared_ptr<swganh::object::Player> player)
 			deadline_timer->async_wait(boost::bind(&PlayerService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 30, object_controller));
 		}
     }
+}
+
+void PlayerService::SendTip(
+	const shared_ptr<Creature>& from, 
+	const shared_ptr<Creature>& to, 
+	uint32_t amount, bool bank)
+{
+	// Check to see if we even have the proper amount
+	if (amount < 1 || amount > 1000000)
+	{
+		SystemMessage::Send(from, L"Invalid tip amount, set amount between 1 and 1,000,000");
+		return;
+	}
+
+	if (bank)
+	{
+		int32_t total_amount = (int32_t)(amount * 1.05); // 5% tip charge
+		int32_t from_amount = from->GetBankCredits();
+		if ( from_amount - total_amount > 0)
+		{
+			from->SetBankCredits( from_amount - total_amount );
+			int32_t to_amount = to->GetBankCredits();
+			to->SetBankCredits( to_amount + amount );
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_wire_pass_self",0,0,to->GetObjectId(),amount), false, false);
+			SystemMessage::Send(to, OutOfBand("base_player", "prose_wire_pass_target",0,0,from->GetObjectId(),amount), false, false);
+		}
+		else
+		{
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_tip_nsf_bank",0,to->GetObjectId(),0,total_amount), false, false);			
+		}
+	}
+	else
+	{
+		int32_t total_amount = (int32_t)(amount * 1.05); // 5% tip charge
+		int32_t from_amount = from->GetCashCredits();
+		if ( from_amount - total_amount > 0)
+		{
+			from->SetCashCredits( from_amount - total_amount );
+			int32_t to_amount = to->GetBankCredits();
+			to->SetCashCredits( to_amount + amount );
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_tip_pass_self",0,to->GetObjectId(),0,amount), false, false);
+			SystemMessage::Send(to, OutOfBand("base_player", "prose_tip_pass_target",0,from->GetObjectId(),0,amount), false, false);
+		}
+		else
+		{
+			SystemMessage::Send(from, OutOfBand("base_player", "prose_tip_nsf_cash",0,to->GetObjectId(),0,total_amount), false, false);
+		}
+	}
+}
+
+void PlayerService::OpenBank(const shared_ptr<Creature>& owner)
+{
+	// Get Bank Object
+	auto bank = equipment_service_->GetEquippedObject(owner, "bank");
+	if (!bank)
+		return;
+	// Send Open Container
+	OpenedContainerMessage opened_container;
+	opened_container.container_object_id = bank->GetObjectId();
+	owner->NotifyObservers(&opened_container);
 }
 
 void PlayerService::RemoveClientTimerHandler_(

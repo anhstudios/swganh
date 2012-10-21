@@ -24,6 +24,7 @@
 #include "swganh/equipment/equipment_service_interface.h"
 #include "swganh/weather/weather_service_interface.h"
 #include "swganh/simulation/spatial_provider_interface.h"
+#include "swganh/player/player_service_interface.h"
 
 #include <boost/python.hpp>
 
@@ -73,6 +74,11 @@ void exportSWGANHKernel()
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::statics::StaticServiceInterface*, swganh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.StaticService`")
+		.def("playerService", make_function(
+               std::bind(&swganh::service::ServiceManager::GetService<swganh::player::PlayerServiceInterface>, std::placeholders::_1, "PlayerService"),
+                return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::player::PlayerServiceInterface*, swganh::service::ServiceManager*>()),
+                "returns an internal refrence of the :class:`.PlayerService`")
 		.def("terrainService", make_function(
 				std::bind(&swganh::service::ServiceManager::GetService<swganh::terrain::TerrainServiceInterface>, std::placeholders::_1, "TerrainService"),
                 return_value_policy<reference_existing_object>(),
