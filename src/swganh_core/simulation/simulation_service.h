@@ -5,6 +5,10 @@
 #include "swganh/simulation/simulation_service_interface.h"
 
 namespace swganh {
+namespace object {
+	class ObjectManager;
+}
+
 namespace simulation {
     
     class SimulationServiceImpl;
@@ -74,6 +78,7 @@ namespace simulation {
 		virtual const std::shared_ptr<swganh::equipment::EquipmentServiceInterface>& GetEquipmentService();
 
 		virtual void PrepareToAccomodate(uint32_t delta);
+		std::shared_ptr<swganh::object::ObjectManager> GetObjectManager();
 
 		void Startup();
 

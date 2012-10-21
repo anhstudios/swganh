@@ -33,6 +33,8 @@ TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kern
 		{
 			SceneEntry entry;
 			entry.terrain_visitor_ = kernel_->GetResourceManager()->GetResourceByName<TerrainVisitor>(real_event->terrain_filename, false);
+			
+			boost::lock_guard<boost::mutex> lock(terrain_mutex_);
 			scenes_.insert(SceneMap::value_type(real_event->scene_id, std::move(entry)));
 		}
 		catch(...)
@@ -44,6 +46,8 @@ TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kern
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:DestroyScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
 		auto real_event = std::static_pointer_cast<swganh::simulation::DestroySceneEvent>(newEvent);
+		
+		boost::lock_guard<boost::mutex> lock(terrain_mutex_);
 		this->scenes_.erase(real_event->scene_id);
 	});
 }
@@ -91,6 +95,7 @@ bool TerrainService::waterHeightHelper(swganh::tre::ContainerLayer* layer, float
 
 float TerrainService::GetWaterHeight(uint32_t scene_id, float x, float z, float raw)
 {
+	boost::lock_guard<boost::mutex> lock(terrain_mutex_);
 	auto itr = scenes_.find(scene_id);
 	if(itr != scenes_.end())
 	{
@@ -119,6 +124,7 @@ float TerrainService::GetWaterHeight(uint32_t scene_id, float x, float z, float 
 
 float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 {
+	boost::lock_guard<boost::mutex> lock(terrain_mutex_);
 	auto itr = scenes_.find(scene_id);
 	if(itr != scenes_.end())
 	{
@@ -161,7 +167,6 @@ bool TerrainService::IsWater(uint32_t scene_id, float x, float z, bool raw)
 
 float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z, float& base_value, float affector_transform, std::map<uint32_t,Fractal*>& fractals)
 {
-	//std::cout << "PROCESS_LAYER_HEIGHT("<< x << "," << z << "," << base_value << "," << affector_transform << ")" << std::endl;
 	std::vector<BoundaryLayer*> boundaries = layer->boundaries;
 	std::vector<HeightLayer*> heights = layer->heights;
 	std::vector<FilterLayer*> filters = layer->filters;

@@ -142,10 +142,10 @@ void exportSuiService()
 		.def("createMessageBox", &SUIServiceInterface::CreateMessageBox, CreateMessageOverload(bp::args("msgBox_type", "title", "caption", "owner", "ranged_object", "max_distance"),"Creates a SUIWindow and fills in properties for a basic message box."))
 		.def("createListBox", CreateListBoxWrapper, ListBoxOverloads(bp::args("self", "lstBox_type", "title", "prompt", "dataList", "owner", "ranged_object", "range"),"Creates a SUIWindow and fills in properties for a basic list box."))
 		.def("createInputBox", &SUIServiceInterface::CreateInputBox, CreateInputOverload(bp::args("iptBox_type", "title", "caption", "max_input_length", "owner", "ranged_object", "max_distance"), "Creates a SUIWindow and fills in properties for a basic input box."))
-		
 		.def("openSUIWindow", &SUIServiceInterface::OpenSUIWindow, "Creates the given window for the window's current owner.")
 		.def("updateSUIWindow", &SUIServiceInterface::UpdateSUIWindow, "Updates the given window for the window's current owner.")
 		.def("getSUIWindowById", &SUIServiceInterface::GetSUIWindowById, "Gets the SUI window associated with the given id from the given owner.")
+		.def("getSUIWindowByScriptName", &SUIServiceInterface::GetSUIWindowByScriptName, "Gets the SUI window associated with the given script name from the given owner")
 		.def("closeSUIWindow", &SUIServiceInterface::CloseSUIWindow, "Forcefully closes the SUI window with the given id for the given owner");
 
 	bp::class_<std::vector<std::string>>("ResultList", "list for results of a SUI window")
