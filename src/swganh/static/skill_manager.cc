@@ -96,12 +96,51 @@ std::pair<uint32_t, uint32_t> SkillManager::GetSkillMod(const std::shared_ptr<Cr
 
 	return std::make_pair<uint32_t, uint32_t>(0, 0);
 }
-		
-std::map<std::string, std::pair<uint32_t, uint32_t>> GetSkillMods(const std::shared_ptr<Creature>& creature)
+
+void addMod(std::map<std::string, std::pair<uint32_t, uint32_t>>& map, std::string modname, uint32_t baseDelta, uint32_t modDelta)
+{
+	auto lb = map.lower_bound(modname);
+
+	if(lb != map.end() && !(map.key_comp()(modname, lb->first)))
+	{
+		lb->second.first += baseDelta;
+		lb->second.second += modDelta;
+	}
+	else
+	{
+		map.insert(lb, std::make_pair(modname, std::make_pair(baseDelta, modDelta)));
+	}
+}
+
+std::map<std::string, std::pair<uint32_t, uint32_t>> SkillManager::GetSkillMods(const std::shared_ptr<Creature>& creature)
 {
 	std::map<std::string, std::pair<uint32_t, uint32_t>> result;
 
+	//Add the base values
+	auto skill_end = this->skills_.end();
+	for(auto& skill : creature->GetSkills())
+	{
+		auto skill_itr = this->skills_.find(skill.name);
+		if(skill_itr != skills_.end())
+		{
+			for(auto& mod : skill_itr->second->skill_mods_)
+			{
+				addMod(result, mod.first, mod.second, 0);
+			}
+		}
+	}
 
+	//Add the mod values
+	creature->ViewObjects(creature, 1, true, [&] (std::shared_ptr<Object> child) {
+		for(auto& mod : result)
+		{
+			auto modifier = child->GetAttributeRecursive(mod.first);
+			if(modifier.which() == 1)
+			{
+				mod.second.second += boost::get<int32_t>(modifier);
+			}
+		}
+	});
 
 	return result;
 }
