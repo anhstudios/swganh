@@ -24,7 +24,7 @@
 :: -- Prepare the Command Processor
 	SETLOCAL ENABLEEXTENSIONS
 	SETLOCAL ENABLEDELAYEDEXPANSION
-	MODE con:cols=72 lines=38
+	--MODE con:cols=72 lines=38
 
 :: Set initial VARS
 	SET db_user=----

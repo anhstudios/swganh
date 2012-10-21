@@ -587,7 +587,7 @@ void SimulationService::RegisterObjectFactories()
     object_manager->RegisterObjectType<Object>();
 	object_manager->RegisterObjectType<Static>();
 	object_manager->RegisterObjectType<Tangible>();
-	object_manager->RegisterObjectType<Intangible>();
+	//object_manager->RegisterObjectType<Intangible>();
 	object_manager->RegisterObjectType<Installation>();
 	object_manager->RegisterObjectType<HarvesterInstallation>();
 	object_manager->RegisterObjectType<Mission>();

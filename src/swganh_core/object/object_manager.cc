@@ -96,6 +96,8 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
 		std::string key = result->getString("iff_template");
 
 		std::shared_ptr<Object> obj = factory->CreateObjectFromStorage(id);
+		obj->SetDatabasePersisted(false);
+		obj->SetInSnapshot(false);
 
 		if(obj)
 		{
