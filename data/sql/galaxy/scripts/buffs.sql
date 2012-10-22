@@ -5,5 +5,5 @@ CREATE TABLE `buffs` (
 	`id` BIGINT(20) NOT NULL,
 	`name` VARCHAR(50),
 	`duration` INT(11),
-	PRIMARY KEY (`id`)
+	INDEX `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
