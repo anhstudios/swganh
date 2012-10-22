@@ -4,9 +4,11 @@
 #include "combat_data.h"
 
 #include "swganh/command/base_combat_command.h"
+#include "swganh/scripting/utilities.h"
 
 using namespace swganh::combat;
 using namespace boost::python;
+using namespace swganh::scripting;
 
 bool CombatData::IsRandomPool()
 {
