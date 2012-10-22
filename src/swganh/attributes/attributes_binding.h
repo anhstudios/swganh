@@ -45,7 +45,7 @@ namespace attributes {
 			{
 				return this->get_override("buildAttributeTemplate")(object);
 			}
-			catch (bp::error_already_set& )
+			catch (bp::error_already_set&)
 			{
 				PyErr_Print();
 			}

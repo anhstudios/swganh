@@ -11,6 +11,16 @@ namespace swganh {
 namespace messages {
 namespace controllers {
 
+	enum Trails {
+		NOTRAIL = 0x00,
+		LEFT_FOOT_TRAIL = 0x01,
+		RIGHT_FOOT_TRAIL = 0x02,
+		LEFT_HAND_FOOT_TRAIL = 0x04,
+		RIGHT_HAND_TRAIL = 0x08,
+		WEAPON_TRAIL = 0x10,
+		DEFAULT_TRAIL = 0xFF
+	};
+
     struct CombatDefender{
 		CombatDefender()
 			: defender_id(0)
@@ -31,7 +41,7 @@ namespace controllers {
             , action_crc(0)
             , attacker_id(0)
             , attacker_end_posture(0)
-            , trails_bit_flag(0xFF)
+            , trails_bit_flag(DEFAULT_TRAIL)
             , combat_special_move_effect(0)
     		, defender_list(std::vector<CombatDefender>())
         {}
