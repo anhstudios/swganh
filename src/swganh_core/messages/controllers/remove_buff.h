@@ -13,15 +13,15 @@ namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class RemoveBuff : public ObjControllerMessage
+    class RemoveBuffMessage : public ObjControllerMessage
     {
     public:
-        explicit RemoveBuff(uint32_t controller_type = 0x0000000B)
+        explicit RemoveBuffMessage(uint32_t controller_type = 0x0000000B)
             : ObjControllerMessage(controller_type, message_type())
             , buff("")
         {}
 
-		RemoveBuff(const ObjControllerMessage& base)
+		RemoveBuffMessage(const ObjControllerMessage& base)
 			: ObjControllerMessage(base)
 		{
 		}
@@ -32,7 +32,7 @@ namespace controllers {
         
         void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
-            buffer.write(buff);
+            buffer.write<uint32_t>(buff);
         }
 
         void OnControllerDeserialize(swganh::ByteBuffer& buffer)

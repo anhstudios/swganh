@@ -8,10 +8,18 @@
 #include "swganh_core/object/tangible/tangible.h"
 
 #include <boost/python.hpp>
+#include <boost/python/overloads.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
+
+boost::python::tuple AddBuff(std::string buff_name, uint32_t duration=0)
+{
+	return boost::python::make_tuple(buff_name, duration);
+}
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addBuffOverload, AddBuff, 1, 2)
 
 void exportCreature()
 {
@@ -172,7 +180,9 @@ void exportCreature()
         .add_property("pvp_status", &Creature::GetPvpStatus, &Creature::SetPvPStatus, "Gets and Sets the :class:`.PVPSTATUS` of the creature")
         .def("inDuelList", &Creature::InDuelList, "Returns a boolean based on if the creature is currently dueling the target")
         .def("addDuelList", &Creature::AddToDuelList, "Adds the creature id to the duel list")
-        .def("removeDuelList", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")        
+        .def("removeDuelList", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")
+		.def("addBuff", &Creature::AddBuff, addBuffOverload(args("buff_name", "duration", "force"), "Adds a new buff to the creature"))
+		.def("removeBuff", &Creature::RemoveBuff, "Instantly removes a buff from the creature")
         ;
 
 	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Tangible>>();

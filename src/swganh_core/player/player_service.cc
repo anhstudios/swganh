@@ -17,6 +17,17 @@
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh_core/equipment/equipment_service.h"
 
+#include "swganh_core/messages/controllers/add_buff.h"
+#include "swganh/combat/buff_interface.h"
+
+#include "swganh/database/database_manager.h"
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+
 using namespace std;
 using namespace swganh;
 using namespace swganh::service;
@@ -41,6 +52,42 @@ ServiceDescription PlayerService::GetServiceDescription()
 PlayerService::PlayerService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 {
+	kernel_->GetEventDispatcher()->Subscribe(
+		"ObjectReadyEvent",
+		[this] (shared_ptr<EventInterface> incoming_event)
+	{
+		auto creature = static_pointer_cast<ValueEvent<shared_ptr<Creature>>>(incoming_event)->Get();
+
+		//Reload buffs from last login
+		auto controller = creature->GetController();
+		auto object_id = creature->GetObjectId();
+		
+		//Resend buffs we current have left over
+		creature->ViewBuffs([&, this] (std::pair<boost::posix_time::ptime, std::shared_ptr<swganh::combat::BuffInterface>> entry) {
+			uint32_t duration = (entry.first - boost::posix_time::second_clock::local_time()).total_seconds();
+
+			swganh::messages::controllers::AddBuffMessage msg;
+			msg.buff = entry.second->GetName();
+			msg.duration = static_cast<float>(duration);
+			controller->Notify(&msg);
+		});
+
+		//Re-Add buffs from the db we still need.
+		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+		auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        
+        stringstream ss;
+        ss << "SELECT b.name, b.duration FROM buffs b WHERE b.id=" << object_id << ";" ;
+        statement->execute(ss.str());
+		
+		unique_ptr<sql::ResultSet> result(statement->getResultSet());
+
+		while(result->next())
+		{
+			creature->AddBuff(result->getString(1), result->getUInt(2));
+		}
+	});
+
 	player_removed_ = kernel_->GetEventDispatcher()->Subscribe(
 		"Connection::PlayerRemoved",
 		[this] (shared_ptr<EventInterface> incoming_event)
@@ -156,6 +203,24 @@ void PlayerService::RemoveClientTimerHandler_(
             DLOG(info) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
 
             simulation_service_->RemoveObject(object);
+
+			//Persist buffs
+			auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+			auto object_id = object->GetObjectId();
+			auto creature = std::static_pointer_cast<Creature>(object);
+			creature->ViewBuffs([this,&conn,&object_id] (std::pair<boost::posix_time::ptime, std::shared_ptr<swganh::combat::BuffInterface>> entry) {
+				std::shared_ptr<sql::PreparedStatement> statement(conn->prepareStatement("INSERT INTO buffs VALUES (?,?,?)"));
+
+				uint32_t duration = (entry.first - boost::posix_time::second_clock::local_time()).total_seconds();
+
+				statement->setUInt64(1, object_id);
+				statement->setString(2, entry.second->filename);
+				statement->setInt(3, duration);
+
+				statement->execute();
+			});
+
+			creature->CleanUpBuffs();
 
             kernel_->GetEventDispatcher()->Dispatch(
                 make_shared<ValueEvent<shared_ptr<swganh::object::Object>>>("ObjectRemovedEvent", object));
