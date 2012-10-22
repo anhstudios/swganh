@@ -1,9 +1,9 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Server version:               5.1.63-community - MySQL Community Server (GPL)
+-- Server version:               5.5.27-MariaDB-log - mariadb.org binary distribution
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-10-14 17:59:15
+-- Date/time:                    2012-10-21 17:51:31
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS `attributes` (
   UNIQUE KEY `pk_attributes_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2087 DEFAULT CHARSET=utf8 COMMENT='SWG Attribute / Modifier List';
 
--- Dumping data for table swganh_static.attributes: ~1,447 rows (approximately)
+-- Dumping data for table swganh_static.attributes: ~1,352 rows (approximately)
+DELETE FROM `attributes`;
 /*!40000 ALTER TABLE `attributes` DISABLE KEYS */;
 INSERT INTO `attributes` (`id`, `name`, `internal`, `attribute_internal_description`, `item_tool_internal`, `item_tool_internal_2`) VALUES
-	(1, 'volume', 0, 'Volume:', 0, 0),
 	(2, 'travel_departure_planet', 0, 'Departure Planet', 0, 0),
 	(3, 'travel_departure_point', 0, 'Departure Location', 0, 0),
 	(4, 'travel_arrival_planet', 0, 'Arrival Planet', 0, 0),
@@ -223,7 +223,6 @@ INSERT INTO `attributes` (`id`, `name`, `internal`, `attribute_internal_descript
 	(195, 'combat_rating', 0, 'Combat Rating', 0, 0),
 	(196, 'con_dur', 0, 'Constitution Duration', 0, 0),
 	(197, 'con_e', 0, 'Constitution Effectiveness', 0, 0),
-	(198, 'condition', 0, 'Condition:', 0, 0),
 	(199, 'conduithpmax', 0, 'Maximum Conduit Hitpoints', 0, 0),
 	(200, 'consider', 0, 'Combat Difficulty', 0, 0),
 	(201, 'constitution', 0, 'Constitution', 0, 0),
@@ -591,7 +590,6 @@ INSERT INTO `attributes` (`id`, `name`, `internal`, `attribute_internal_descript
 	(563, 'orange_rug_thread_05', 0, 'Orange Rug Thread - Fifth Section', 0, 0),
 	(564, 'orange_rug_thread_06', 0, 'Orange Rug Thread - Sixth Section', 0, 0),
 	(565, 'orange_rug_thread_07', 0, 'Orange Rug Thread - Seventh Section', 0, 0),
-	(566, 'original_name', 0, 'Variation Of:', 0, 0),
 	(567, 'original_name_creature', 0, 'Type', 0, 0),
 	(568, 'owner', 0, 'Master', 0, 0),
 	(569, 'parking_spot', 0, 'Hangar Location:', 0, 0),

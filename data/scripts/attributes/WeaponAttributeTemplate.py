@@ -7,10 +7,11 @@ class WeaponAttributeTemplate(BaseAttributeTemplate):
 		attribute_list_message = AttributeListMessage()
 		attribute_list_message.object_id = object.id
 		attributes = AttributeList()
+		if len(object.custom_name) > 0:
+			attributes.append("@obj_attr_n:original_name", "@" + object.stf_file + ":" + object.stf_name)
 		attributes.extend([
-			Attribute("@obj_attr_n:original_name", object.getStringAttribute("original_name")),
 			Attribute("@obj_attr_n:weapon_cert_status", object.getStringAttribute("weapon_cert_status")),
-			Attribute("@obj_attr_n:condition", str(object.max_condition - object.condition_damage) + "/" + str(object.max_condition)),
+			Attribute("@obj_attr_n:condition", str(object.condition_damage) + "/" + str(object.max_condition)),
 			Attribute("@obj_attr_n:volume", str(object.volume))
 		])
 		SetOptionalAttribute(attributes, "obj_attr_n:wpn_armor_pierce_rating", "wpn_armor_pierce_rating", object, True)
