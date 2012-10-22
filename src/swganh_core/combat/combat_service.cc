@@ -189,9 +189,13 @@ CombatDefender CombatService::DoCombat(
 		float initial_damage = CalculateDamage(attacker, target, combat_data);
 		total_damage = ApplyDamage(attacker, target, weapon, combat_data, (int)(initial_damage), hit_location);		
 	}
+	else
+		SystemMessage::FlyText(target,  CombatData::COMBAT_EFFECTS() + combat_spam, color);
+
 	BroadcastCombatSpam(attacker, target, weapon, combat_data, total_damage, combat_spam);
 	CombatSpecialMoveEffect csme = ApplyStates(attacker, target, combat_data);
-	SystemMessage::FlyText(attacker, combat_spam, color);
+	
+	
 
 	// Set Defender values
 	defender.defender_id = target->GetObjectId();
@@ -558,7 +562,7 @@ bool CombatService::ApplySpecialCost(
 	return true;
 }
 CombatSpecialMoveEffect CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Tangible>& target, std::shared_ptr<CombatData> combat_data) {
-	return TARGET_HEAD;
+	return NONE;
     //auto states = move(combat_data->getStates());
     //for_each(begin(states), end(states),[=](pair<float, string> state){
     //    int generated = generator_.Rand(1, 100);
@@ -729,11 +733,12 @@ void CombatService::SendCombatActionMessage(
 			{
 				// Temp
 				if ((uint32_t)command_property->animation_crc == 0)
-					cam.action_crc = 1349426508;
+					cam.action_crc = 1349426508;					
 				else
-					cam.action_crc = command_property->animation_crc;
+					cam.action_crc = command_property->animation_crc;				
 			}
 			cam.weapon_id = weapon->GetObjectId();
+			cam.trails_bit_flag = WEAPON_TRAIL;
 		}
 		else
 		{

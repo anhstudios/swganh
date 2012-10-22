@@ -13,6 +13,22 @@ enum WeaponType {
 	MELEE = 0,
 	RANGED
 };
+enum WeaponGroup {
+	UNARMED = 1,
+	ONEHANDED,
+	TWOHANDED,
+	POLEARM,
+	RIFLE,
+	PISTOL,
+	CARBINE,
+	FLAME_THROWER,
+	HEAVY_ACID_BEAM,
+	HEAVY_ACID_RIFLE,
+	HEAVY_PARTICLE_BEAM,
+	HEAVY_ROCKET_LAUNCHER,
+	THROWN_WEAPON,
+	SABER
+};
 class Weapon : public swganh::object::Tangible
 {
 public:

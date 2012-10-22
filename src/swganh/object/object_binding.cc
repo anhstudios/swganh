@@ -21,6 +21,7 @@ BOOST_PYTHON_MODULE(py_object)
     exportTangible();
     exportCreature();
     exportPlayer();
+	exportWeapon();
     exportObjectController();
     exportOutOfBand();
 }

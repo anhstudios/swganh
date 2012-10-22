@@ -90,7 +90,7 @@ struct CombatData : public swganh::command::CommandProperties
 
     bool IsRandomPool();
     int GetDamagingPool();
-    
+	static std::string COMBAT_EFFECTS() { return "@combat_effects:"; }
     static std::string HIT_spam() { return "hit"; }
     static std::string BLOCK_spam() { return "block"; }
     static std::string DODGE_spam() { return "evade"; }
