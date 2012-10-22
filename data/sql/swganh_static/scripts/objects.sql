@@ -1,8 +1,16 @@
-/* 
-	This file is part of SWGANH which is released under the MIT license.
-	See file LICENSE or go to http://swganh.com/LICENSE
-*/
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               5.1.63-community - MySQL Community Server (GPL)
+-- Server OS:                    Win64
+-- HeidiSQL version:             7.0.0.4053
+-- Date/time:                    2012-10-14 17:59:18
+-- --------------------------------------------------------
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
+
+-- Dumping structure for table swganh_static.objects
 DROP TABLE IF EXISTS `objects`;
 CREATE TABLE IF NOT EXISTS `objects` (
   `id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -24,8 +32,7 @@ CREATE TABLE IF NOT EXISTS `objects` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table swganh_static.objects: ~15,139 rows (approximately)
-DELETE FROM `objects`;
+-- Dumping data for table swganh_static.objects: ~15,165 rows (approximately)
 /*!40000 ALTER TABLE `objects` DISABLE KEYS */;
 INSERT INTO `objects` (`id`, `object_string`, `objectName_1`, `objectName_2`, `detailedDescription_1`, `detailedDescription_2`, `lookAtText_1`, `lookAtText_2`, `object_type`, `bazaar_category`, `equip_slots`, `equip_restrictions`, `is_sittable`, `container`, `crate_size`, `crate_type`) VALUES
 	(2, 'object/battlefield_marker/shared_battlefield_marker.iff', 'battlefield', 'battlefield_marker_name', '', '', 'battlefield', 'battlefield_marker_name', 0, 0, 0, 0, 0, 0, 0, 0),
@@ -15885,3 +15892,6 @@ INSERT INTO `objects` (`id`, `object_string`, `objectName_1`, `objectName_2`, `d
 	(15853, 'object/weapon/ranged/turret/shared_turret_block_large.iff', 'weapon_name', 'turret_wpn', 'weapon_name', 'turret_wpn', 'string_id_table', '', 16, 0, 0, 0, 0, 0, 0, 0),
 	(15854, 'object/weapon/ranged/vehicle/shared_vehicle_atst_ranged.iff', 'obj_n', 'unknown_weapon', 'string_id_table', '', 'string_id_table', '', 16, 0, 0, 0, 0, 0, 0, 0),
 	(15855, 'object/weapon/trap/shared_eqp_weapon_auto_laser_trap.iff', 'wpn_d', 'laser trap', 'string_id_table', '', 'string_id_table', '', 16, 0, 0, 0, 0, 0, 0, 0);
+/*!40000 ALTER TABLE `objects` ENABLE KEYS */;
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

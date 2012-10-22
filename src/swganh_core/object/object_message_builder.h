@@ -13,7 +13,7 @@
 namespace swganh {
 namespace messages {
     struct BaselinesMessage;
-    class DeltasMessage;
+    struct DeltasMessage;
 }} // swganh::messages
 
 namespace swganh {

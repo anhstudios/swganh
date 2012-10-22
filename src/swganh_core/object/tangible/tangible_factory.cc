@@ -51,7 +51,8 @@ void TangibleFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 
@@ -140,16 +141,7 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
     return tangible;
 }
 
-shared_ptr<Object> TangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> TangibleFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//@TODO: Create me with help from db
-		return make_shared<Tangible>();
-	}
-	else
-	{
-		return make_shared<Tangible>();
-	}
-
+	return make_shared<Tangible>();
 }

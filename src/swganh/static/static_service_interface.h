@@ -7,10 +7,13 @@
 
 #include "swganh/service/service_interface.h"
 
-
-
 namespace swganh
 {
+namespace object
+{
+	class Creature;
+}
+
 namespace statics
 {
 	struct ElevatorData
@@ -25,7 +28,22 @@ namespace statics
 	class StaticServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
+
+		//Returns the elevator data for a particular terminal.
 		virtual std::vector<std::shared_ptr<ElevatorData>> GetElevatorDataForObject(uint64_t terminal_id) = 0;
+
+		/*
+		 * @brief Gets a given skill mod and any affected Attributes if exist
+		 * @return a pair of base, modifier
+		 */
+		virtual std::pair<uint32_t, uint32_t> GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name) = 0;
+		
+		/*
+		 * @brief Gets All SkillMods that are applicable for this creature.
+		 * @return a map of pairs of base, modifier
+		 */
+		virtual std::map<std::string, std::pair<uint32_t, uint32_t>> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature) = 0;
+
 	};
 }
 }

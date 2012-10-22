@@ -91,7 +91,7 @@ uint32_t Creature::GetBankCredits(void)
 
 void Creature::SetCashCredits(uint32_t cash_credits)
 {
-    cash_credits = cash_credits;
+    cash_credits_ = cash_credits;
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
         ("Creature::Cash",static_pointer_cast<Creature>(shared_from_this())));
 }
@@ -141,10 +141,10 @@ void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
         ("Creature::StatBase",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetBaseStats(void)
+std::vector<Stat> Creature::GetBaseStats(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return stat_base_list_;
+    return std::move(stat_base_list_.Get());
 }
 
 int32_t Creature::GetStatBase(StatIndex stat_index)
@@ -184,10 +184,10 @@ void Creature::RemoveSkill(std::string skill)
         ("Creature::Skill",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkList<Skill> Creature::GetSkills(void)
+std::list<Skill> Creature::GetSkills(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return skills_;
+    return std::move(skills_.Get());
 }
 
 bool Creature::HasSkill(std::string skill)
@@ -399,10 +399,10 @@ void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
         ("Creature::StatWound",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetStatWounds(void)
+std::vector<Stat> Creature::GetStatWounds(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return stat_wound_list_;
+    return std::move(stat_wound_list_.Get());
 }
 
 int32_t Creature::GetStatWound(StatIndex stat_index)
@@ -484,10 +484,10 @@ void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
         ("Creature::StatEncumberance",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetStatEncumberances(void)
+std::vector<Stat> Creature::GetStatEncumberances(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return stat_encumberance_list_;
+    return std::move(stat_encumberance_list_.Get());
 }
 
 int32_t Creature::GetStatEncumberance(StatIndex stat_index)
@@ -546,10 +546,10 @@ void Creature::ClearSkillMods(void)
         ("Creature::SkillMod",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkMap<std::string, SkillMod> Creature::GetSkillMods(void)
+std::map<std::string, SkillMod> Creature::GetSkillMods()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return skill_mod_list_;
+    return std::move(skill_mod_list_.Get());
 }
 
 SkillMod Creature::GetSkillMod(std::string identifier)
@@ -760,10 +760,10 @@ MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uin
         return MissionCriticalObject(0, 0);
 }
 
-NetworkList<MissionCriticalObject> Creature::GetMissionCriticalObjects(void)
+std::list<MissionCriticalObject> Creature::GetMissionCriticalObjects(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return mission_critical_object_list_;
+    return std::move(mission_critical_object_list_.Get());
 }
 
 void Creature::SetCombatLevel(uint16_t combat_level)
@@ -971,10 +971,10 @@ void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
         ("Creature::StatCurrent", static_pointer_cast<Creature>(static_pointer_cast<Creature>(shared_from_this()))));
 }
 
-NetworkArray<Stat> Creature::GetCurrentStats(void)
+std::vector<Stat> Creature::GetCurrentStats(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return stat_current_list_;
+    return std::move(stat_current_list_.Get());
 }
 
 int32_t Creature::GetStatCurrent(StatIndex stat_index)
@@ -1021,10 +1021,10 @@ void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
         ("Creature::StatMax",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkArray<Stat> Creature::GetMaxStats(void)
+std::vector<Stat> Creature::GetMaxStats(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return stat_max_list_;
+    return std::move(stat_max_list_.Get());
 }
 
 int32_t Creature::GetStatMax(StatIndex stat_index)
@@ -1074,10 +1074,13 @@ void Creature::UpdateEquipmentItem(EquipmentItem& item)
         ("Creature::EquipmentItem",static_pointer_cast<Creature>(shared_from_this())));
 }
 
-NetworkSortedList<EquipmentItem> Creature::GetEquipment(void)
+std::list<EquipmentItem> Creature::GetEquipment(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return equipment_list_;
+	std::list<EquipmentItem> result;
+	for(auto& v : equipment_list_)
+		result.push_back(v.second);
+    return std::move(result);
 }
 
 EquipmentItem Creature::GetEquipmentItem(uint64_t object_id)
@@ -1360,4 +1363,117 @@ void Creature::CleanUpBuffs()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	buffs_.clear();
+}
+
+std::shared_ptr<Object> Creature::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Creature>();
+	Clone(other);
+	return other;
+}
+
+void Creature::Clone(std::shared_ptr<Creature> other)
+{
+	other->bank_credits_.store(bank_credits_);
+    other->cash_credits_.store(cash_credits_);
+    other->stat_base_list_ = stat_base_list_;
+    other->skills_ = skills_;
+    other->skill_commands_ = skill_commands_;
+    other->posture_.store(posture_);
+    other->faction_rank_.store(faction_rank_);
+    other->owner_id_.store(owner_id_);
+    other->scale_ = scale_;
+    other->battle_fatigue_.store(battle_fatigue_);
+    other->state_bitmask_.store(state_bitmask_);
+	other->stat_wound_list_ = stat_wound_list_;
+	other->acceleration_multiplier_base_ = acceleration_multiplier_base_;
+	other->acceleration_multiplier_modifier_ = acceleration_multiplier_modifier_;
+	other->stat_encumberance_list_ = stat_encumberance_list_;
+    other->skill_mod_list_ = skill_mod_list_;
+	other->speed_multiplier_base_ = speed_multiplier_base_;
+	other->speed_multiplier_modifier_ =  speed_multiplier_modifier_;
+	other->listen_to_id_.store(listen_to_id_);
+    other->run_speed_ = run_speed_;
+	other->slope_modifier_angle_ = slope_modifier_angle_;
+    other->slope_modifier_percent_ = slope_modifier_percent_;
+    other->turn_radius_ = turn_radius_;
+    other->walking_speed_ = walking_speed_;
+	other->water_modifier_percent_ = water_modifier_percent_;
+	other->mission_critical_object_list_ = mission_critical_object_list_;
+	other->combat_level_.store(combat_level_);
+    other->animation_ = animation_;
+    other->mood_animation_ = mood_animation_;
+    other->weapon_id_.store(weapon_id_);
+    other->group_id_.store(group_id_);
+	other->invite_sender_id_.store(invite_sender_id_);
+    other->invite_counter_.store(invite_counter_);
+    other->guild_id_.store(guild_id_);
+    other->target_id_.store(target_id_);
+    other->mood_id_.store(mood_id_);
+    other->performance_counter_.store(performance_counter_);
+    other->performance_id_.store(performance_id_);
+	other->stat_current_list_ = stat_current_list_;
+	other->stat_max_list_ = stat_max_list_;
+    other->equipment_list_ =  equipment_list_;
+	other->disguise_ = disguise_;
+	other->stationary_.store(stationary_);
+	other->pvp_status_ = pvp_status_;
+    other->duel_list_ = duel_list_;
+
+	Tangible::Clone(other);
+}
+
+void Creature::SerializeBaseStats(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	stat_base_list_.Serialize(message);
+}
+
+void Creature::SerializeSkills(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	skills_.Serialize(message);
+}
+
+void Creature::SerializeStatWounds(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	stat_wound_list_.Serialize(message);
+}
+
+void Creature::SerializeStatEncumberances(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	stat_encumberance_list_.Serialize(message);
+}
+
+void Creature::SerializeSkillMods(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	skill_mod_list_.Serialize(message);
+}
+
+void Creature::SerializeMissionCriticalObjects(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	mission_critical_object_list_.Serialize(message);
+}
+
+void Creature::SerializeCurrentStats(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	stat_current_list_.Serialize(message);
+}
+
+void Creature::SerializeMaxStats(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	stat_max_list_.Serialize(message);
+}
+
+void Creature::SerializeEquipment(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	equipment_list_.Serialize(message);
 }

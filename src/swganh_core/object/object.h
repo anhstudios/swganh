@@ -55,6 +55,8 @@ typedef std::map<
 	std::shared_ptr<SlotInterface>
 > ObjectSlots;
 
+typedef boost::variant<float, int32_t, std::wstring, boost::blank> AttributeVariant;
+
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
 typedef swganh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
@@ -115,7 +117,7 @@ public:
     
 	typedef std::shared_ptr<ContainerPermissionsInterface> PermissionsObject;
 
-    Object();
+	Object();
     virtual ~Object() {}
 
     /**
@@ -266,6 +268,11 @@ public:
 	* @return bool if the object is in range
 	*/
 	bool InRange(glm::vec3 target, float range);
+
+	/**
+	* @return float of the range to the given target
+	*/
+	float RangeTo(glm::vec3 target);
 
     /**
      * @return The object orientation as a quaternion.
@@ -521,38 +528,49 @@ public:
 	T GetAttribute(const std::string& name)
 	{
 		auto val = GetAttribute(name);
-		return boost::get<T>(val);
+		// Return if not blank
+		if (val.which() != 3)
+			return boost::get<T>(val);
+		return 0;
 	}
 	/**
 	 * @brief Gets an attribute value and then converts it to a wstring for printing
 	 */
 	std::wstring GetAttributeAsString(const std::string& name);
-	boost::variant<float, int32_t, std::wstring> GetAttribute(const std::string& name);
+	AttributeVariant GetAttribute(const std::string& name);
 
 	std::wstring GetAttributeRecursiveAsString(const std::string& name);
-	boost::variant<float, int32_t, std::wstring> GetAttributeRecursive(const std::string& name);
+	AttributeVariant GetAttributeRecursive(const std::string& name);
 	template<typename T>
 	T GetAttributeRecursive(const std::string& name)
 	{
 		auto val = GetAttributeRecursive(name);
-		return boost::get<T>(val);
+		// Return if not blank
+		if (val.which() != 3)
+			return boost::get<T>(val);
+		return 0;
 	}
 	template<typename T>
 	T AddAttributeRecursive(T val, const std::string& name)
 	{
 		ViewObjects(nullptr, 1, false, [&](std::shared_ptr<Object> recurse)
 		{
-			T found_val = recurse->GetAttribute<T>(name);
-			// Add Values
-			val += found_val;
+			if (recurse->HasAttribute(name))
+			{
+				// Add Values
+				val += recurse->GetAttribute<T>(name);
+			}
 		});
 
 		return val;
 	}
+	boost::variant<float, int32_t, std::wstring> AddAttributeRecursive(boost::variant<float, int32_t, std::wstring> val, const std::string& name);
 
 	int8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(int8_t attribute_template_id);
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Object> other);
 
 protected:
 	std::atomic<uint64_t> object_id_;                // create
@@ -596,7 +614,6 @@ private:
 	bool database_persisted_;
 	bool in_snapshot_;
 
-    boost::mutex flags_mutex_;
     std::set<std::string> flags_;
 };
 

@@ -24,7 +24,7 @@
 :: -- Prepare the Command Processor
 	SETLOCAL ENABLEEXTENSIONS
 	SETLOCAL ENABLEDELAYEDEXPANSION
-	MODE con:cols=72 lines=38
+	--MODE con:cols=72 lines=38
 
 :: Set initial VARS
 	SET db_user=----
@@ -188,13 +188,10 @@ GOTO:MainMenu
 			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy_manager --default-character-set=utf8 < "%%A"
 		ECHO. Installing %%A [Done]
 		)
-	
-		cd "%PROJECT_BASE%swganh_static"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
 		
 	:: (swganh_static)
-	
 	cd "%PROJECT_BASE%"
+	
 	cd "%PROJECT_BASE%swganh_static\scripts"
 		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
 			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=swganh_static --default-character-set=utf8 < "%%A"

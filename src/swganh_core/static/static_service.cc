@@ -21,9 +21,11 @@
 #include "swganh/service/service_manager.h"
 #include "swganh/object/permissions/permission_type.h"
 
-#include "swganh_core/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh_core/simulation/scene_events.h"
 #include "swganh_core/object/object.h"
+
+#include "swganh/spawn/spawn_service_interface.h"
 
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
@@ -33,6 +35,7 @@ using namespace swganh::statics;
 using namespace swganh::service;
 using namespace swganh::app;
 using namespace swganh::simulation;
+using namespace swganh::spawn;
 
 enum PERSISTENT_NPC_TYPE
 {
@@ -56,9 +59,9 @@ StaticService::StaticService(SwganhKernel* kernel)
 		auto conn = database_manager->getConnection("swganh_static");
 
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+		auto spawn_service = kernel_->GetServiceManager()->GetService<SpawnServiceInterface>("SpawnService");
 
 		try {
-
 			std::stringstream ss;
 			ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
 
@@ -95,18 +98,51 @@ StaticService::StaticService(SwganhKernel* kernel)
 			_loadTicketCollectors(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
 				real_event->scene_id, real_event->scene_label);
 		
-			statement->getMoreResults();
-			_loadNPCS(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
+		statement->getMoreResults();
+		_loadNPCS(simulation_service, spawn_service,  std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+			real_event->scene_id, real_event->scene_label);
 		
-			statement->getMoreResults();
-			_loadShuttles(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-				real_event->scene_id, real_event->scene_label);
+		statement->getMoreResults();
+		_loadShuttles(simulation_service, spawn_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
+			real_event->scene_id, real_event->scene_label);
 
 		} catch(std::exception& e) {
 			LOG(warning) << e.what();
 		}
+		if (real_event->scene_id-1 == 0)
+		{
+			// Create a combat dummy
+			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_juvenile_canyon_krayt.iff", CREATURE_PERMISSION, false, false);
+			auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
+			creature_dummy->SetPosition(glm::vec3(-146, 28,-4702));
+			creature_dummy->SetCustomName(L"Combat Dummy");
+			creature_dummy->SetStatMax(HEALTH, 9999);
+			creature_dummy->SetStatCurrent(HEALTH, 9999);
+			creature_dummy->SetStatMax(ACTION, 9999);
+			creature_dummy->SetStatCurrent(ACTION, 9999);
+			creature_dummy->SetStatMax(MIND, 9999);
+			creature_dummy->SetStatCurrent(MIND, 9999);
+			creature_dummy->SetScale(0.5);
+			
+			creature_dummy->SetPvPStatus(PvPStatus_Attackable);
+			simulation_service->AddObjectToScene(combat_dummy, "corellia");
+		}
 	});
+}
+
+void StaticService::Startup()
+{
+	auto database_manager = kernel_->GetDatabaseManager();
+	auto conn = database_manager->getConnection("swganh_static");
+
+	std::stringstream ss;
+	ss << "CALL sp_GetStaticData();";
+
+	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+	statement->execute(ss.str());
+
+	skill_mod_manager_.Start(statement);
 }
 
 StaticService::~StaticService()
@@ -150,7 +186,8 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 		object->SetPosition(glm::vec3(result->getDouble(6), result->getDouble(7), result->getDouble(8)));
 		object->SetStfName(result->getString(12), result->getString(13));
 		object->SetSceneId(scene_id);
-		object->SetInSnapshot(true);		
+		object->SetInSnapshot(true);
+		object->SetDatabasePersisted(false);
 			
 		//Put it into the scene
 		simulation_service->AddObjectToScene(object, scene_name);
@@ -171,7 +208,8 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
 
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(true);
-		
+		object->SetDatabasePersisted(false);
+
 		auto parent = simulation_service->GetObjectById(result->getInt64(2));
 		if(parent != nullptr)
 		{
@@ -219,6 +257,8 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 		if(object->GetObjectId() < 4294967297)
 			object->SetInSnapshot(true);
 
+		object->SetDatabasePersisted(false);
+
 		//Put it into the scene
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
@@ -232,6 +272,12 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 			{
 				parent->AddObject(nullptr, object);
 			}
+		}
+		// Check if it's a bank
+		// TODO: Remove once prototypes are in..
+		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_bank.iff") == 0)
+		{
+			object->SetAttribute("radial_filename", L"radials.bank");
 		}
 	}
 }
@@ -304,6 +350,8 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 
 		object->SetStfName(result->getString(13), result->getString(12));
 
+		object->SetDatabasePersisted(false);
+
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
 		{
@@ -320,7 +368,7 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 	}
 }
 
-void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, SpawnServiceInterface* spawn_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
 	simulation_service->PrepareToAccomodate(result->rowsCount());
@@ -378,6 +426,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(false);
+		object->SetDatabasePersisted(false);
 		
 		//Put it into the scene
 		uint64_t parent_id = result->getUInt64(2);
@@ -396,7 +445,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 	}
 }
 
-void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service, SpawnServiceInterface* spawn_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
 	simulation_service->PrepareToAccomodate(result->rowsCount());
@@ -426,6 +475,8 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 		object->SetPvPStatus(PvPStatus_None);
 		object->SetOptionsMask(OPTION_NO_HAM);
 		
+		object->SetDatabasePersisted(false);
+
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
 		{
@@ -439,6 +490,8 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		spawn_service->StartManagingObject(object, L"shuttle");
 	}
 }
 
@@ -450,4 +503,14 @@ std::vector<std::shared_ptr<ElevatorData>> StaticService::GetElevatorDataForObje
 		return find_itr->second;
 	}
 	return std::vector<std::shared_ptr<ElevatorData>>();
+}
+
+std::pair<uint32_t, uint32_t> StaticService::GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+{
+	return skill_mod_manager_.GetSkillMod(creature, skill_mod_name);
+}
+		
+std::map<std::string, std::pair<uint32_t, uint32_t>> StaticService::GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature)
+{
+	return skill_mod_manager_.GetSkillMods(creature);
 }

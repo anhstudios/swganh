@@ -96,14 +96,12 @@ void TangibleMessageBuilder::BuildCustomizationDelta(const shared_ptr<Tangible>&
 }
 void TangibleMessageBuilder::BuildComponentCustomizationDelta(const shared_ptr<Tangible>& tangible)
 {
-    if (tangible->HasObservers())
+	if (tangible->HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 5);
-        tangible->GetComponentCustomization().Serialize(message);
-        tangible->AddDeltasUpdate(&message);
-    }
-    else
-        tangible->GetComponentCustomization().ClearDeltas();
+		DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 5);
+		tangible->SerializeComponentCustomization(&message);
+		tangible->AddDeltasUpdate(&message);
+	}
 }
 void TangibleMessageBuilder::BuildOptionsMaskDelta(const shared_ptr<Tangible>& tangible)
 {
@@ -156,7 +154,7 @@ void TangibleMessageBuilder::BuildDefendersDelta(const shared_ptr<Tangible>& tan
     if (tangible->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_6, 1);
-        tangible->GetDefenders().Serialize(message);
+        tangible->SerializeDefenders(&message);
         tangible->AddDeltasUpdate(&message);
     }
 }
@@ -167,7 +165,7 @@ BaselinesMessage TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangibl
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_3, 11);
     message.data.append(ObjectMessageBuilder::BuildBaseline3(tangible).data);
     message.data.write<std::string>(tangible->GetCustomization());
-    tangible->GetComponentCustomization().Serialize(message);
+    tangible->SerializeComponentCustomization(&message);
     message.data.write<uint32_t>(tangible->GetOptionsMask());
     message.data.write<uint32_t>(tangible->GetIncapTimer());
     message.data.write<uint32_t>(tangible->GetCondition());
@@ -179,7 +177,7 @@ BaselinesMessage TangibleMessageBuilder::BuildBaseline6(const shared_ptr<Tangibl
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_6, 2);
     message.data.append(ObjectMessageBuilder::BuildBaseline6(tangible).data);
-    tangible->GetDefenders().Serialize(message);
+    tangible->SerializeDefenders(&message);
     return BaselinesMessage(std::move(message));
 }
 BaselinesMessage TangibleMessageBuilder::BuildBaseline7(const shared_ptr<Tangible>& tangible)

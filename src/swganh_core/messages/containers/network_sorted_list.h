@@ -4,7 +4,7 @@
 
 #include <list>
 #include <map>
-
+#include <boost/noncopyable.hpp>
 #include "swganh/byte_buffer.h"
 
 namespace swganh {
@@ -28,16 +28,26 @@ public:
     
     NetworkSortedList()
         : update_counter_(0)
-        , items_(std::map<uint16_t, T>())
-        , items_added_(std::list<uint16_t>())
-        , items_removed_(std::list<uint16_t>())
-        , items_changed_(std::list<uint16_t>())
         , clear_(false)
         , reinstall_(false)
     {}
 
+	NetworkSortedList(std::list<T> orig)
+		: clear_(false)
+		, reinstall_(false)
+		, update_counter_(0)
+	{
+		uint16_t i = 0;
+		for(auto& v : orig)
+			items_.insert(make_pair(++i, v));
+	}
     ~NetworkSortedList()
     {}
+
+	std::map<uint16_t, T> Get() const
+	{
+		return items_;
+	}
 
     /**
      *
@@ -169,56 +179,74 @@ public:
     iterator begin() { return items_.begin(); }
     iterator end() { return items_.end(); }
 
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
+
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
-        std::for_each(items_.begin(), items_.end(), [=, &message](std::pair<uint16_t, T> item) {
+        for(auto& item : items_)
+		{
             item.second.Serialize(message);
-        });
+        }
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
-        message.data.write<uint32_t>(++update_counter_);
+		{
+			message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
+			message.data.write<uint32_t>(++update_counter_);
 
-        // Removed Items
-        std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](uint16_t index) {
-            message.data.write<uint8_t>(0);         // Update Type: 0 (Remove)
-            message.data.write<uint16_t>(index);    // Index
-        });
+			// Removed Items
+			for(auto& index :items_removed_)
+			{
+				message.data.write<uint8_t>(0);         // Update Type: 0 (Remove)
+				message.data.write<uint16_t>(index);    // Index
+			}
 
-        // Added Items
-        std::for_each(items_added_.begin(), items_added_.end(), [=, &message](uint16_t index) {
-            message.data.write<uint8_t>(1);         // Update Type: 1 (Add)
-            message.data.write<uint16_t>(index);
-            items_[index].Serialize(message);
-        });
+			// Added Items
+			for(auto& index : items_added_)
+			{
+				message.data.write<uint8_t>(1);         // Update Type: 1 (Add)
+				message.data.write<uint16_t>(index);
+				items_[index].Serialize(message);
+			}
 
-        // Changed Items
-        std::for_each(items_changed_.begin(), items_changed_.end(), [=, &message](uint16_t index) {
-            message.data.write<uint8_t>(2);
-            message.data.write<uint16_t>(index);
-            items_[index].Serialize(message);
-        });
+			// Changed Items
+			for(auto& index : items_changed_)
+			{
+				message.data.write<uint8_t>(2);
+				message.data.write<uint16_t>(index);
+				items_[index].Serialize(message);
+			}
 
-        // Reinstall Items
-        if(reinstall_)
-        {
-            message.data.write<uint8_t>(3);
-            message.data.write<uint16_t>(items_.size());
-            std::for_each(items_.begin(), items_.end(), [=, &message](std::pair<uint16_t, T> item) {
-                item.second.Serialize(message);
-            });
-        }
+			// Reinstall Items
+			if(reinstall_)
+			{
+				message.data.write<uint8_t>(3);
+				message.data.write<uint16_t>(items_.size());
+				for(auto& item : items_)
+				{
+					item.second.Serialize(message);
+				}
+			}
 
-        // Clear Items
-        if(clear_)
-        {
-            message.data.write<uint8_t>(4);
-        }
-
+			// Clear Items
+			if(clear_)
+			{
+				message.data.write<uint8_t>(4);
+			}
+		}
         ClearDeltas();
     }
 

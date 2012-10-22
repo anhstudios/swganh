@@ -73,7 +73,8 @@ void PlayerFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
@@ -111,7 +112,6 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
         PersistDraftSchematics_(player);
         PersistForceSensitiveQuests_(player);
         PersistQuestJournal_(player);
-        PersistWaypoints_(player);
     }
     catch(sql::SQLException &e)
     {
@@ -190,7 +190,7 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
     return player;
 }
 
-shared_ptr<Object> PlayerFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> PlayerFactory::CreateObject()
 {
 	//@TODO: Create me with help from db
 	return make_shared<Player>();
@@ -293,12 +293,7 @@ void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, const std::shared_
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
-void PlayerFactory::PersistWaypoints_(const shared_ptr<Player>& player)
-{
-    auto waypoints = player->GetWaypoints();
-    GetEventDispatcher()->Dispatch(make_shared<swganh::ValueEvent<swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer>>>
-                                ("PersistWaypoints", waypoints));
-}
+
 void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
 {
     try 
@@ -332,8 +327,8 @@ void PlayerFactory::PersistDraftSchematics_(const shared_ptr<Player>& player)
         {
             auto statement = conn->prepareStatement("CALL sp_UpdateDraftSchematic(?,?,?);");
             statement->setUInt64(1, player->GetObjectId());
-            statement->setUInt(2,schematic.second.schematic_id);
-            statement->setUInt(3, schematic.second.schematic_crc);
+            statement->setUInt(2,schematic.schematic_id);
+            statement->setUInt(3, schematic.schematic_crc);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
         };
     }

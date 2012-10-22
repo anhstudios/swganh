@@ -336,8 +336,9 @@ void Installation::ToggleUpdating()
         ("Installation::IsUpdating",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-NetworkSortedVector<Installation::HopperItem> Installation::GetHopperContents() const
+NetworkSortedVector<Installation::HopperItem>& Installation::GetHopperContents()
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return hopper_;
 }
 
@@ -449,19 +450,19 @@ void Installation::SetConditionPercentage(uint8_t condition)
         ("Installation::ConditionPercent",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-NetworkSortedVector<ResourceId> Installation::GetResourceIds_()
+NetworkSortedVector<ResourceId>& Installation::GetResourceIds_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_pool_ids_;
 }
 
-NetworkSortedVector<ResourceString> Installation::GetResourceNames_()
+NetworkSortedVector<ResourceString>& Installation::GetResourceNames_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_names_;
 }
 
-NetworkSortedVector<ResourceString> Installation::GetResourceTypes_()
+NetworkSortedVector<ResourceString>& Installation::GetResourceTypes_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_types_;
@@ -478,4 +479,31 @@ void Installation::SetSelectedResourceId(uint64_t new_id)
 
 	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
         ("Installation::SelectedResource",static_pointer_cast<Installation>(shared_from_this())));
+}
+
+std::shared_ptr<Object> Installation::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Installation>();
+	Clone(other);
+	return other;
+}
+
+void Installation::Clone(std::shared_ptr<Installation> other)
+{
+	other->is_active_.store(is_active_);
+	other->power_reserve_ = power_reserve_;
+	other->power_cost_ = power_cost_;
+	other->resource_pool_ids_ = resource_pool_ids_;
+	other->resource_names_ = resource_names_;
+	other->resource_types_ = resource_types_;
+	other->selected_resource_.store(selected_resource_);
+	other->displayed_max_extraction_rate_.store(displayed_max_extraction_rate_);
+	other->max_extraction_rate_ = max_extraction_rate_;
+	other->current_extraction_rate_ = current_extraction_rate_;
+	other->current_hopper_size_ = current_hopper_size_;
+	other->max_hopper_size_.store(max_hopper_size_);
+	other->is_updating_.store(is_updating_);
+	other->hopper_ = hopper_;
+	other->condition_percent_.store(condition_percent_);
 }

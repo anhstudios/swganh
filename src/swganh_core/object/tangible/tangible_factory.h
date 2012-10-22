@@ -33,7 +33,7 @@ namespace object {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
         void CreateTangible(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+        std::shared_ptr<swganh::object::Object> CreateObject();
         
         virtual void RegisterEventHandlers();
     private:
