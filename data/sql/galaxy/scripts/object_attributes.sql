@@ -3,7 +3,7 @@
 -- Server version:               5.5.27-MariaDB-log - mariadb.org binary distribution
 -- Server OS:                    Win64
 -- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-10-22 00:23:04
+-- Date/time:                    2012-10-22 09:15:11
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `object_attributes` (
   CONSTRAINT `FK_object_attributes_swganh_static.attributes` FOREIGN KEY (`attribute_id`) REFERENCES `swganh_static`.`attributes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=32814 DEFAULT CHARSET=latin1 COMMENT='stores attributes for objects';
 
--- Dumping data for table galaxy.object_attributes: ~16,321 rows (approximately)
+-- Dumping data for table galaxy.object_attributes: ~16,067 rows (approximately)
 DELETE FROM `object_attributes`;
 /*!40000 ALTER TABLE `object_attributes` DISABLE KEYS */;
 INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_value`) VALUES
@@ -14908,7 +14908,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18498, 15807, 781, ''),
 	(18499, 15807, 789, 'None'),
 	(18500, 15807, 793, '3.2'),
-	(18501, 15807, 1268, '32'),
 	(18502, 15807, 1270, '0'),
 	(18503, 15807, 2000, 'Energy'),
 	(18504, 15807, 2001, '17'),
@@ -14927,7 +14926,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18519, 15808, 781, ''),
 	(18520, 15808, 789, 'None'),
 	(18521, 15808, 793, '3.5'),
-	(18522, 15808, 1268, '32'),
 	(18523, 15808, 1270, '0'),
 	(18524, 15808, 2000, 'Energy'),
 	(18525, 15808, 2001, '25'),
@@ -14946,7 +14944,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18540, 15809, 781, ''),
 	(18541, 15809, 789, 'None'),
 	(18542, 15809, 793, '4'),
-	(18543, 15809, 1268, '32'),
 	(18544, 15809, 1270, '0'),
 	(18545, 15809, 2000, 'Energy'),
 	(18546, 15809, 2001, '50'),
@@ -14965,7 +14962,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18561, 15810, 781, ''),
 	(18562, 15810, 789, 'None'),
 	(18563, 15810, 793, '3'),
-	(18564, 15810, 1268, '32'),
 	(18565, 15810, 1270, '0'),
 	(18566, 15810, 2000, 'Energy'),
 	(18567, 15810, 2001, '15'),
@@ -14984,7 +14980,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18582, 15811, 781, ''),
 	(18583, 15811, 789, 'None'),
 	(18584, 15811, 793, '38'),
-	(18585, 15811, 1268, '32'),
 	(18586, 15811, 1270, '0'),
 	(18587, 15811, 2000, 'Energy'),
 	(18588, 15811, 2001, '45'),
@@ -15003,7 +14998,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18603, 15812, 781, ''),
 	(18604, 15812, 789, 'None'),
 	(18605, 15812, 793, '3.2'),
-	(18606, 15812, 1268, '32'),
 	(18607, 15812, 1270, '0'),
 	(18608, 15812, 2000, 'Energy'),
 	(18609, 15812, 2001, '50'),
@@ -15022,7 +15016,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18624, 15813, 781, ''),
 	(18625, 15813, 789, 'None'),
 	(18626, 15813, 793, '3.4'),
-	(18627, 15813, 1268, '32'),
 	(18628, 15813, 1270, '0'),
 	(18629, 15813, 2000, 'Energy'),
 	(18630, 15813, 2001, '20'),
@@ -15041,7 +15034,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18645, 15814, 781, ''),
 	(18646, 15814, 789, 'None'),
 	(18647, 15814, 793, '3.4'),
-	(18648, 15814, 1268, '32'),
 	(18649, 15814, 1270, '0'),
 	(18650, 15814, 2000, 'Energy'),
 	(18651, 15814, 2001, '20'),
@@ -15060,7 +15052,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18666, 15815, 781, ''),
 	(18667, 15815, 789, 'None'),
 	(18668, 15815, 793, '3.5'),
-	(18669, 15815, 1268, '32'),
 	(18670, 15815, 1270, '0'),
 	(18671, 15815, 2000, 'Acid'),
 	(18672, 15815, 2001, '60'),
@@ -15079,7 +15070,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18687, 15816, 781, ''),
 	(18688, 15816, 789, 'None'),
 	(18689, 15816, 793, '3.5'),
-	(18690, 15816, 1268, '32'),
 	(18691, 15816, 1270, '0'),
 	(18692, 15816, 2000, 'Heat'),
 	(18693, 15816, 2001, '20'),
@@ -15098,7 +15088,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18708, 15817, 781, ''),
 	(18709, 15817, 789, '-'),
 	(18710, 15817, 793, '-'),
-	(18711, 15817, 1268, '32'),
 	(18712, 15817, 1270, '0'),
 	(18713, 15817, 2000, '-'),
 	(18714, 15817, 2001, '-'),
@@ -15117,7 +15106,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18729, 15818, 781, ''),
 	(18730, 15818, 789, '-'),
 	(18731, 15818, 793, '-'),
-	(18732, 15818, 1268, '32'),
 	(18733, 15818, 1270, '0'),
 	(18734, 15818, 2000, '-'),
 	(18735, 15818, 2001, '-'),
@@ -15136,7 +15124,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18750, 15819, 781, ''),
 	(18751, 15819, 789, 'None'),
 	(18752, 15819, 793, '4.2'),
-	(18753, 15819, 1268, '32'),
 	(18754, 15819, 1270, '0'),
 	(18755, 15819, 2000, 'Kinetic'),
 	(18756, 15819, 2001, '25'),
@@ -15155,7 +15142,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18771, 15820, 781, ''),
 	(18772, 15820, 789, 'None'),
 	(18773, 15820, 793, '3.6'),
-	(18774, 15820, 1268, '32'),
 	(18775, 15820, 1270, '0'),
 	(18776, 15820, 2000, 'Energy'),
 	(18777, 15820, 2001, '25'),
@@ -15174,7 +15160,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18792, 15821, 781, ''),
 	(18793, 15821, 789, 'None'),
 	(18794, 15821, 793, '3.5'),
-	(18795, 15821, 1268, '32'),
 	(18796, 15821, 1270, '0'),
 	(18797, 15821, 2000, 'Energy'),
 	(18798, 15821, 2001, '30'),
@@ -15193,7 +15178,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18813, 15822, 781, ''),
 	(18814, 15822, 789, '-'),
 	(18815, 15822, 793, '-'),
-	(18816, 15822, 1268, '32'),
 	(18817, 15822, 1270, '0'),
 	(18818, 15822, 2000, '-'),
 	(18819, 15822, 2001, '-'),
@@ -15212,7 +15196,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18834, 15823, 781, ''),
 	(18835, 15823, 789, 'None'),
 	(18836, 15823, 793, '3.7'),
-	(18837, 15823, 1268, '32'),
 	(18838, 15823, 1270, '0'),
 	(18839, 15823, 2000, 'Acid'),
 	(18840, 15823, 2001, '70'),
@@ -15231,7 +15214,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18855, 15824, 781, ''),
 	(18856, 15824, 789, 'None'),
 	(18857, 15824, 793, '3.1'),
-	(18858, 15824, 1268, '32'),
 	(18859, 15824, 1270, '0'),
 	(18860, 15824, 2000, 'Energy'),
 	(18861, 15824, 2001, '35'),
@@ -15245,7 +15227,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18869, 15824, 2009, '10'),
 	(18871, 15825, 11, '0'),
 	(18872, 15825, 566, '@weapon_name:pistol_scout_blaster_ammo_test_2'),
-	(18873, 15825, 1268, '32'),
 	(18874, 15825, 1270, '0'),
 	(18876, 15826, 11, '0'),
 	(18877, 15826, 16, ''),
@@ -15254,7 +15235,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18881, 15826, 781, ''),
 	(18882, 15826, 789, '-'),
 	(18883, 15826, 793, '-'),
-	(18884, 15826, 1268, '32'),
 	(18885, 15826, 1270, '0'),
 	(18886, 15826, 2000, '-'),
 	(18887, 15826, 2001, '-'),
@@ -15273,7 +15253,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18902, 15827, 781, ''),
 	(18903, 15827, 789, 'Light'),
 	(18904, 15827, 793, '3.75'),
-	(18905, 15827, 1268, '32'),
 	(18906, 15827, 1270, '0'),
 	(18907, 15827, 2000, 'Energy'),
 	(18908, 15827, 2001, '45'),
@@ -15292,7 +15271,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18923, 15828, 781, ''),
 	(18924, 15828, 789, 'None'),
 	(18925, 15828, 793, '3.4'),
-	(18926, 15828, 1268, '32'),
 	(18927, 15828, 1270, '0'),
 	(18928, 15828, 2000, 'Kinetic'),
 	(18929, 15828, 2001, '35'),
@@ -15311,7 +15289,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18944, 15829, 781, ''),
 	(18945, 15829, 789, 'None'),
 	(18946, 15829, 793, '5'),
-	(18947, 15829, 1268, '32'),
 	(18948, 15829, 1270, '0'),
 	(18949, 15829, 2000, 'Energy'),
 	(18950, 15829, 2001, '20'),
@@ -15330,7 +15307,6 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(18965, 15830, 781, ''),
 	(18966, 15830, 789, 'None'),
 	(18967, 15830, 793, '3.7'),
-	(18968, 15830, 1268, '32'),
 	(18969, 15830, 1270, '0'),
 	(18970, 15830, 2000, 'Stun'),
 	(18971, 15830, 2001, '45'),
@@ -16092,7 +16068,7 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(33227, 15796, 1268, '13'),
 	(33228, 15797, 1268, '13'),
 	(33229, 15798, 1268, '13'),
-	(33230, 15799, 1268, '13');
+	(33230, 15799, 1268, '13')
 /*!40000 ALTER TABLE `object_attributes` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

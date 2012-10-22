@@ -6,6 +6,7 @@
 
 #include "swganh/object/object_binding.h"
 #include "swganh_core/object/tangible/tangible.h"
+#include "swganh_core/object/weapon/weapon.h"
 
 #include <boost/python.hpp>
 
@@ -42,6 +43,13 @@ void exportTangible()
 
 	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<Object>>();
 	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<ContainerInterface>>();
+}
+void exportWeapon()
+{
+	class_<Weapon, bases<Tangible>, std::shared_ptr<Weapon>, boost::noncopyable>("Weapon")
+		.add_property("weapon_type", &Weapon::GetWeaponType)
+		;
+	implicitly_convertible<std::shared_ptr<Weapon>, std::shared_ptr<Tangible>>();
 }
 
 #endif // SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_

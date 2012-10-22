@@ -30,7 +30,7 @@ void WeaponFactory::PersistChangedObjects()
 
 uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
 {
-	return 1;
+	return TangibleFactory::PersistObject(object);
 }
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
@@ -40,7 +40,10 @@ void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 
 shared_ptr<Object> WeaponFactory::CreateObjectFromStorage(uint64_t object_id)
 {
-    return make_shared<Weapon>();
+	auto weapon = make_shared<Weapon>();
+	weapon->SetObjectId(object_id);
+	TangibleFactory::CreateTangibleFromStorage(weapon);
+	return weapon;
 }
 
 shared_ptr<Object> WeaponFactory::CreateObject()
