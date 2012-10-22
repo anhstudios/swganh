@@ -237,7 +237,8 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     // Load core services
     LoadCoreServices_();
-    
+   
+
     initialized_ = true;
 }
 
@@ -410,8 +411,6 @@ void SwganhApp::LoadCoreServices_()
 			LOG(info) << "Loaded Service " << name;
         }
     });
-
-    auto app_config = kernel_->GetAppConfig();
 }
 
 void SwganhApp::SetupLogging_()

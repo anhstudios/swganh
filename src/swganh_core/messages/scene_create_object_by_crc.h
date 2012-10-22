@@ -15,8 +15,9 @@ namespace messages {
     
     struct SceneCreateObjectByCrc : public BaseSwgMessage
     {
+		const static uint32_t opcode = 0xFE89DDEA;
         uint16_t Opcount() const { return 5; }
-        uint32_t Opcode() const { return 0xFE89DDEA; }
+        uint32_t Opcode() const { return opcode; }
         
         uint64_t object_id;
         glm::quat orientation;
