@@ -8,12 +8,98 @@
 
 #include "swganh/python_shared_ptr.h"
 #include "swganh/combat/combat_service_interface.h"
+#include "swganh/combat/buff_interface.h"
+#include "swganh/scripting/utilities.h"
 
 #include <boost/python.hpp>
 
 using namespace swganh::combat;
 using namespace boost::python;
 using namespace std;
+using swganh::scripting::ScopedGilLock;
+
+class BuffWrap : public BuffInterface, wrapper<BuffInterface>
+{
+public:
+
+	BuffWrap(PyObject* p) 
+		: self_(handle<>(borrowed(p)))
+	{
+		ScopedGilLock lock;
+		boost::python::detail::initialize_wrapper(p, this);
+	}
+
+	virtual void ApplyBuff(std::shared_ptr<swganh::object::Creature> creature)
+	{
+		ScopedGilLock lock;
+        try 
+        {
+            if (boost::python::override run = this->get_override("applyBuff"))
+            {
+                run(creature);
+            }
+        }
+        catch(boost::python::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }
+	}
+
+	virtual void RemoveBuff(std::shared_ptr<swganh::object::Creature> creature)
+	{
+		ScopedGilLock lock;
+        try 
+        {
+            if (boost::python::override run = this->get_override("removeBuff"))
+            {
+                run(creature);
+            }
+        }
+        catch(boost::python::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }
+	}
+
+	virtual std::string GetName()
+	{
+		ScopedGilLock lock;
+        try 
+        {
+            if (boost::python::override run = this->get_override("getName"))
+            {
+                return run().as<std::string>();
+            }
+        }
+        catch(boost::python::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }
+
+		return "";
+	}
+
+	virtual uint32_t GetDuration()
+	{
+		ScopedGilLock lock;
+        try 
+        {
+            if (boost::python::override run = this->get_override("getDuration"))
+            {
+                return run();
+            }
+        }
+        catch(boost::python::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }
+
+		return 0;
+	}
+
+private:
+	object self_;
+};
 
 void exportCombatService()
 {
@@ -23,4 +109,11 @@ void exportCombatService()
         .def("endDuel", &CombatServiceInterface::EndDuel, "Ends the duel between the two players")
         .def("endCombat", &CombatServiceInterface::EndCombat, "Ends combat between the attacker and target")
         ;
+
+	class_<BuffInterface, BuffWrap,  boost::noncopyable>("Buff")
+		.def("applyBuff", boost::python::pure_virtual(&BuffInterface::ApplyBuff))
+		.def("removeBuff", boost::python::pure_virtual(&BuffInterface::RemoveBuff))
+		.def("getName", boost::python::pure_virtual(&BuffInterface::GetName), "Gets or sets the name of this buff")
+		.def("getDuration", boost::python::pure_virtual(&BuffInterface::GetDuration))
+		;
 }

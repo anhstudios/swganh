@@ -9,10 +9,15 @@
 #include "swganh_core/object/player/player.h"
 #include "creature_message_builder.h"
 
+#include "swganh/combat/buff_interface.h"
+#include "swganh/combat/buff_events.h"
+#include "swganh_core/messages/controllers/add_buff.h"
+#include "swganh_core/messages/controllers/remove_buff.h"
 
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::messages::containers;
+using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::object;
@@ -1227,6 +1232,137 @@ void Creature::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
 
     GetEventDispatcher()->Dispatch(make_shared<swganh::object::ObserverEvent>
         ("Creature::Baselines", shared_from_this(), observer));
+}
+
+bool Creature::HasBuff(std::string buff_name)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto find_itr = std::find_if(buffs_.begin(), buffs_.end(), [&] (BuffMap::value_type& entry) {
+		if(entry.second->GetName() == buff_name)
+		{
+			return true;
+		}
+		return false;
+	});
+	return find_itr != buffs_.end();
+}
+
+void Creature::AddBuff(std::string buff_name, uint32_t duration)
+{
+	if(!HasBuff(buff_name))
+		GetEventDispatcher()->Dispatch(std::make_shared<swganh::combat::BuffEvent>
+			("CombatService::AddBuff", std::static_pointer_cast<Creature>(shared_from_this()), buff_name, duration));
+}
+
+void Creature::__AddBuffInternal(boost::posix_time::ptime time, std::shared_ptr<swganh::combat::BuffInterface> buff, uint32_t duration)
+{
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		buffs_.insert(BuffMap::value_type(time, buff));
+	}
+
+	auto controller = GetController();
+	if(controller)
+	{
+		AddBuffMessage msg;
+		msg.buff = buff->GetName();
+		msg.duration = static_cast<float>(duration);
+		controller->Notify(&msg);
+
+		buff->ApplyBuff(std::static_pointer_cast<Creature>(shared_from_this()));
+	}
+}
+
+void Creature::RemoveBuff(std::string name)
+{
+	std::shared_ptr<swganh::combat::BuffInterface> interface_;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto find_itr = std::find_if(buffs_.begin(), buffs_.end(), [&] (BuffMap::value_type& entry) {
+			if(entry.second->GetName() == name)
+			{
+				interface_ = entry.second;
+				return true;
+			}
+			return false;
+		});
+
+		if(find_itr != buffs_.end())
+		{
+			buffs_.erase(find_itr);
+		}
+	}
+
+	auto controller = GetController();
+	if(interface_)
+	{
+		RemoveBuffMessage msg;
+		msg.buff = name;
+		controller->Notify(&msg);
+
+		interface_->RemoveBuff(std::static_pointer_cast<Creature>(shared_from_this()));
+	}
+}
+
+void Creature::ClearBuffs()
+{
+	std::set<std::shared_ptr<swganh::combat::BuffInterface>> removed_buffs_;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+
+		std::for_each(buffs_.begin(), buffs_.end(), [&] (BuffMap::value_type& entry) {
+			if(controller_)
+			{
+				RemoveBuffMessage msg;
+				msg.buff = entry.second->GetName();
+				controller_->Notify(&msg);
+
+				removed_buffs_.insert(entry.second);
+			}
+		});
+
+		buffs_.clear();
+	}
+
+	for(auto& v : removed_buffs_)
+	{
+		v->RemoveBuff(std::static_pointer_cast<Creature>(shared_from_this()));
+	}
+}
+
+void Creature::ClearBuffs(boost::posix_time::ptime current_time)
+{
+	std::set<std::shared_ptr<swganh::combat::BuffInterface>> removed_buffs_;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lower_bound = buffs_.lower_bound(current_time);
+		auto end = buffs_.end();
+
+		auto begin = buffs_.begin();
+		while(begin != end && begin != lower_bound)
+		{
+			removed_buffs_.insert(begin->second);
+			buffs_.erase(begin);
+			begin = buffs_.begin();
+		}
+	}
+
+	for(auto& v : removed_buffs_)
+	{
+		v->RemoveBuff(std::static_pointer_cast<Creature>(shared_from_this()));
+	}
+}
+
+void Creature::ViewBuffs(BuffIterator functor)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	for_each(buffs_.begin(), buffs_.end(), functor);
+}
+
+void Creature::CleanUpBuffs()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	buffs_.clear();
 }
 
 std::shared_ptr<Object> Creature::Clone()

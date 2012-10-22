@@ -20,6 +20,11 @@ BEGIN
     LEFT JOIN mood ON (creature.mood_id = mood.id)
     WHERE creature.id = object_id;
 
+	-- Get the buffs, and clear them out for next time
+	SELECT b.name, b.duration FROM buffs b
+	WHERE b.id = object_id;
+	DELETE FROM buffs WHERE id = object_id;
+	
     call sp_GetCreatureSkills(object_id);
     call sp_GetCreatureSkillMods(object_id);
 	call sp_GetCreatureSkillCommands(object_id);
