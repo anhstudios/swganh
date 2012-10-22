@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <map>
 
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/python.hpp>
@@ -34,12 +35,24 @@ namespace Concurrency {
 #include "swganh/command/command_properties.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
-
 namespace swganh {
+namespace statics {
+	class StaticServiceInterface;	
+}
+namespace object {
+	class Weapon;
+	class Player;
+}
+namespace equipment {
+	class EquipmentServiceInterface;
+}
+namespace messages {
+namespace controllers {
+	struct CombatDefender;
+}}
 namespace combat {
-    
     struct CombatData;
-	typedef std::function<boost::python::object (
+    typedef std::function<boost::python::object (
         swganh::app::SwganhKernel*,
 		const std::shared_ptr<swganh::object::Object>&, // creature object
 		const std::shared_ptr<swganh::object::Tangible>&,	// target object
@@ -47,12 +60,39 @@ namespace combat {
     > CombatHandler;
 
 	enum HIT_TYPE {
-        HIT = 0,
-        BLOCK,
-        DODGE,
-        COUNTER,
-        MISS
+		MISS = 0x1,
+        HIT = 0x2,
+        BLOCK = 0x3,
+        DODGE = 0x5,
+        COUNTER = 0x7,
+        RICHOCHET = 0x8,
+		REFLECT = 0x9,
     };
+
+	enum HIT_LOCATION {
+		HEALTH = 0,
+		ACTION = 2,
+		MIND = 4,
+		SPREAD = 8
+	};
+
+	enum CombatSpecialMoveEffect {
+		NONE = 0,
+		TARGET = 0x1,
+		BLINDED = 0x2,
+		DAMAGE = 0x3,
+		DIZZIED = 0x4,
+		DUCK = 0x5,
+		INTIMIDATED = 0x6,
+		KNOCKDOWN = 0x7,
+		STARTLE = 0x8,
+		STARTLED = 0x9,
+		STUNNED = 0xA,
+		SUPRISED = 0xB,
+		TARGET_BODY = 0xC,
+		TARGET_HEAD = 0xD,
+		TARGET_LEG = 0xE
+	};
 
 	/**
 	* The service used for combat
@@ -113,38 +153,50 @@ namespace combat {
     private:
 		typedef Concurrency::concurrent_unordered_map<uint32_t, CombatHandler> HandlerMap;
       
-        bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::HashString& command);
-    
-        bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
-		void SendCombatAction(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
-        void SendCombatActionMessage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, CombatData& properties, std::string animation = std::string(""));
-        int SingleTargetCombatAction(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, CombatData& properties);
-        int SingleTargetCombatAction(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature> & target, CombatData& properties);
-
+        bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const std::shared_ptr<swganh::object::Weapon>& weapon, const std::shared_ptr<CombatData> combat_data);
+		
+		std::vector<std::shared_ptr<swganh::object::Tangible>> GetCombatTargets(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data);
+		
+		swganh::messages::controllers::CombatDefender DoCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data);
+		// Performs the intial combat damage calculation before reduction and mitigation stages
+		// Damage calculated to be done to the target using a particular weapon and/or ability. 
+		// This stage calculates all weapon, buff, and ability modifiers to calculate the aggregate damage
+		float CalculateDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, std::shared_ptr<CombatData> combat_data);
+		//
+        void SendCombatActionMessage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data, std::vector<swganh::messages::controllers::CombatDefender> defenders);
+        
         uint16_t GetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker);
         uint16_t GetTargetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
-        uint16_t GetAccuracyModifier(const std::shared_ptr<swganh::object::Tangible>& attacker);
-        uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::Tangible>& attacker);
-        float GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence);
-        uint16_t GetHitResult(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature> & target, int damage, int accuracy_bonus);
-        void ApplyStates(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& defender, CombatData& properties);
-        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& defender, CombatData& properties, int damage, int pool);
-        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, CombatData& properties, int damage, int pool);
-        int GetDamagingPool(CombatData& properties);
+        uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data);
+        
+		/// HIT
+		float GetHitChance(int attacker_accuracy, int attacker_bonus, int target_defence);
+        HIT_TYPE GetHitResult(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature> & target, const std::shared_ptr<swganh::object::Weapon>& weapon,std::shared_ptr<CombatData> combat_data);
+		HIT_LOCATION GetHitLocation(std::shared_ptr<CombatData> combat_data);
+		float GetWeaponRangeModifier(const std::shared_ptr<swganh::object::Weapon>& weapon, float range_to_target);
+
+		///
+        CombatSpecialMoveEffect ApplyStates(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& defender, std::shared_ptr<CombatData> combat_data);
+        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& defender, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data, int damage, HIT_LOCATION pool);
+        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data, int damage, HIT_LOCATION pool);
+
+		bool ApplySpecialCost(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Weapon>& weapon, std::shared_ptr<CombatData> combat_data);
         // Message Helpers
-        void BroadcastCombatSpam(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, const CombatData& properties, uint32_t damage, const std::string& string_file);
+        void BroadcastCombatSpam(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, const std::shared_ptr<swganh::object::Weapon>& weapon, const std::shared_ptr<CombatData> combat_data, uint32_t damage, const std::string& string_file);
 
         swganh::simulation::SimulationServiceInterface* simulation_service_;
 		swganh::command::CommandServiceInterface* command_service_;
 
         HandlerMap	combat_handlers_;
 
-		swganh::command::CommandPropertiesMap combat_properties_map_;
+		swganh::command::CommandPropertiesMap combat_data_map_;
 
         swganh::RandomGenerator generator_;
 
         swganh::ActiveObject active_;
-        swganh::app::SwganhKernel* kernel_;
+        swganh::app::SwganhKernel* kernel_;			
+		std::shared_ptr<swganh::equipment::EquipmentServiceInterface> equipment_service_;
+		swganh::statics::StaticServiceInterface* static_service_;
     };
 
 }}  // namespace swganh::combat

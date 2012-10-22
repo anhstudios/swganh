@@ -10,17 +10,65 @@
 namespace swganh {
 namespace command {
 
+	enum CommandGroup 
+	{
+		COMBAT_MELEE  = 0,
+		BASE_PLAYER,
+		COMBAT_NON_LOOP,
+		COMBAT_GENERAL,
+		CRAFTING,
+		SHIP,
+		COMBAT_RANGED,
+		POSTURE,
+		RESOURCE,
+		ENTERTAINER
+	};
+
 	struct CommandProperties
     {
+		CommandProperties()
+			: command_name("")
+			, default_priority(0)
+			, default_time(1.0)
+			, character_ability("")
+			, client_effect_self("")
+			, client_effect_target("")
+			, allow_in_locomotion(0)
+			, allow_in_state(0)
+			, target_type(0)
+			, call_on_target(0)
+			, command_group(COMBAT_MELEE)
+			, max_range_to_target(0.0f)
+			, god_level(0)
+			, add_to_combat_queue(0)
+		{}
+		CommandProperties(const CommandProperties& properties)
+			: command_name(properties.command_name)
+			, default_priority(properties.default_priority)
+			, default_time(properties.default_time)
+			, character_ability(properties.character_ability)
+			, client_effect_self(properties.client_effect_self)
+			, client_effect_target(properties.client_effect_target)
+			, allow_in_locomotion(properties.allow_in_locomotion)
+			, allow_in_state(properties.allow_in_state)
+			, target_type(properties.target_type)
+			, call_on_target(properties.call_on_target)
+			, command_group((CommandGroup)properties.command_group)
+			, max_range_to_target(properties.max_range_to_target)
+			, god_level(properties.god_level)
+			, add_to_combat_queue(properties.add_to_combat_queue)
+		{}
         swganh::HashString command_name;
         uint32_t default_priority;
         float default_time;
         swganh::HashString character_ability;
+		std::string client_effect_self;
+		std::string client_effect_target;
         uint64_t allow_in_locomotion;
         uint64_t allow_in_state;
         uint32_t target_type;
         uint32_t call_on_target;
-        uint32_t command_group;
+        CommandGroup command_group;
         float max_range_to_target;
         uint32_t god_level;
         uint32_t add_to_combat_queue;
@@ -38,15 +86,15 @@ namespace command {
         //uint8_t add_to_combat_queue;
         //uint8_t target_type;
         //uint32_t health_cost;
-        //uint32_t health_cost_multiplier;
+        float health_cost_multiplier;
         //uint32_t action_cost;
-        //uint32_t action_cost_multiplier;
+        float action_cost_multiplier;
         //uint32_t mind_cost;
-        //uint32_t mind_cost_multiplier;
+        float mind_cost_multiplier;
         //float damage_multiplier;
-        //float delay_multiplier;
+        float delay_multiplier;
         //uint32_t force_cost;
-        //uint32_t force_cost_multiplier;
+        float force_cost_multiplier;
         //uint32_t animation_crc;
         //uint32_t required_weapon_group;
         //std::string combat_spam;

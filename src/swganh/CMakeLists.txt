@@ -2,10 +2,12 @@
 set(ANH_PYTHON_BINDINGS "")
 
 add_subdirectory(app)
+add_subdirectory(attributes)
 add_subdirectory(command)
 add_subdirectory(combat)
 add_subdirectory(equipment)
 add_subdirectory(object)
+add_subdirectory(player)
 add_subdirectory(social)
 add_subdirectory(simulation)
 add_subdirectory(static)

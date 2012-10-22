@@ -98,10 +98,10 @@ void Tangible::AddComponentCustomization(uint32_t customization)
         ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
 }
 
-NetworkList<ComponentCustomization> Tangible::GetComponentCustomization(void)
+std::list<ComponentCustomization> Tangible::GetComponentCustomization(void)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return component_customization_list_;
+    return std::move(component_customization_list_.Get());
 }
 
 void Tangible::ClearComponentCustomization()
@@ -217,7 +217,7 @@ void Tangible::RemoveDefender(uint64_t defender)
             return (x.object_id == defender);
         });
 
-        if(iter != end(defender_list_))
+        if(iter == end(defender_list_))
         {
             return;
         }
@@ -242,10 +242,10 @@ void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
         ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
 }
 
-NetworkSortedVector<Defender> Tangible::GetDefenders()
+std::vector<Defender> Tangible::GetDefenders()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return defender_list_;
+    return std::move(defender_list_.Get());
 }
 
 void Tangible::ClearDefenders()
@@ -274,4 +274,38 @@ void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
 {
     GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
         ("Tangible::Baselines",shared_from_this(), observer));
+}
+
+std::shared_ptr<Object> Tangible::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Tangible>();
+	Clone(other);
+	return other;
+}
+
+void Tangible::Clone(std::shared_ptr<Tangible> other)
+{
+	other->customization_ =  customization_;
+	other->component_customization_list_ = component_customization_list_;
+	other->options_bitmask_.store(options_bitmask_);
+    other->incap_timer_.store(incap_timer_);
+	other->condition_damage_.store(condition_damage_);
+    other->max_condition_.store(max_condition_);
+    other->is_static_.store(is_static_);
+
+	//Call the method in the super class
+	Object::Clone(other);
+}
+
+void Tangible::SerializeComponentCustomization(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	component_customization_list_.Serialize(message);
+}
+
+void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	defender_list_.Serialize(message);
 }

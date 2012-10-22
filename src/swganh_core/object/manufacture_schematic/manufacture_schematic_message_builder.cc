@@ -228,7 +228,7 @@ void ManufactureSchematicMessageBuilder::BuildExperimentDelta(const std::shared_
 	if (manufacture_schematic->HasObservers())
 	{
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_7, 1);
-		manufacture_schematic->GetSlots().Serialize(message);
+		manufacture_schematic->SerializeSlots(&message);
 
 		manufacture_schematic->AddDeltasUpdate(&message);
 	}

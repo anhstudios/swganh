@@ -82,7 +82,7 @@ namespace object {
         template<typename T>
         void RegisterObjectType(uint32_t object_type = T::type)
         {
-            auto factory = std::make_shared<typename T::FactoryType>(kernel_->GetDatabaseManager(), kernel_->GetEventDispatcher());
+            auto factory = std::make_shared<typename T::FactoryType>(kernel_);
             factory->SetObjectManager(this);
 
             RegisterObjectType(object_type, factory);
@@ -281,10 +281,7 @@ namespace object {
             std::shared_ptr<ObjectMessageBuilder>
         > ObjectMessageBuilderMap;
 
-		typedef std::map<
-			std::string,
-			uint32_t
-		> TemplateTypeMap;
+		typedef std::map<std::string, std::shared_ptr<swganh::object::Object>> PrototypeMap;
 
         /**
          * Registers a message builder for a specific object type
@@ -313,11 +310,13 @@ namespace object {
 
         ObjectFactoryMap factories_;
         ObjectMessageBuilderMap message_builders_;
-        TemplateTypeMap type_lookup_;
+        
+		PrototypeMap prototypes_; 
 
 		uint64_t next_dynamic_id_;
 
         boost::shared_mutex object_map_mutex_;
+		boost::shared_mutex object_factories_mutex_;
 		std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
 		std::shared_ptr<boost::asio::deadline_timer> persist_timer_;
 		

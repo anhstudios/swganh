@@ -10,9 +10,8 @@
 #include "swganh_core/object/tangible/tangible.h"
 
 #include "swganh_core/messages/containers/network_array.h"
-#include "swganh_core/messages/containers/network_sorted_list.h"
-#include "swganh_core/messages/containers/network_list.h"
 #include "swganh_core/messages/containers/network_map.h"
+#include "swganh_core/messages/containers/network_sorted_list.h"
 
 namespace swganh {
 namespace object {
@@ -378,14 +377,16 @@ public:
     void SetStatBase(StatIndex stat_index, int32_t value);
     void AddStatBase(StatIndex stat_index, int32_t value);
     void DeductStatBase(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void);
+	std::vector<Stat> GetBaseStats();
     int32_t GetStatBase(StatIndex stat_index);
+	void SerializeBaseStats(swganh::messages::BaseSwgMessage* message);
 
     // Skills
     void AddSkill(std::string skill);
     void RemoveSkill(std::string skill);
-    swganh::messages::containers::NetworkList<Skill> GetSkills(void);
+    std::list<Skill> GetSkills();
     bool HasSkill(std::string skill);
+	void SerializeSkills(swganh::messages::BaseSwgMessage* message);
 
     // Skill Commands
     std::map<uint32_t, std::string> GetSkillCommands();
@@ -430,8 +431,9 @@ public:
     void DeductStatWound(StatIndex stat_index, int32_t value);
     void AddStatWound(StatIndex stat_index, int32_t value);
     void SetStatWound(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void);
+	std::vector<Stat> GetStatWounds(void);
     int32_t GetStatWound(StatIndex stat_index);
+	void SerializeStatWounds(swganh::messages::BaseSwgMessage* message);
 
     // Acceleration Multiplier Base
     void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
@@ -445,16 +447,18 @@ public:
     void AddStatEncumberance(StatIndex stat_index, int32_t value);
     void DeductStatEncumberance(StatIndex stat_index, int32_t value);
     void SetStatEncumberance(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void);
+	std::vector<Stat> GetStatEncumberances(void);
     int32_t GetStatEncumberance(StatIndex stat_index);
+	void SerializeStatEncumberances(swganh::messages::BaseSwgMessage* message);
 
     // Skill Mods
     void AddSkillMod(SkillMod mod);
     void RemoveSkillMod(std::string identifier);
     void SetSkillMod(SkillMod mod);
     void ClearSkillMods(void);
-    swganh::messages::containers::NetworkMap<std::string, SkillMod> GetSkillMods(void);
+	std::map<std::string, SkillMod> GetSkillMods(void);
     SkillMod GetSkillMod(std::string identifier);
+	void SerializeSkillMods(swganh::messages::BaseSwgMessage* message);
 
     // Speed Multiplier Base
     void SetSpeedMultiplierBase(float speed_multiplier_base);
@@ -496,7 +500,8 @@ public:
     void AddMissionCriticalObject(MissionCriticalObject& object);
     void RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id);
     MissionCriticalObject GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner);
-    swganh::messages::containers::NetworkList<MissionCriticalObject> GetMissionCriticalObjects(void);
+    std::list<MissionCriticalObject> GetMissionCriticalObjects(void);
+	void SerializeMissionCriticalObjects(swganh::messages::BaseSwgMessage* message);
 
     // Combat Level
     void SetCombatLevel(uint16_t);
@@ -552,22 +557,25 @@ public:
     void SetStatCurrent(StatIndex stat_index, int32_t value);
     void AddStatCurrent(StatIndex stat_index, int32_t value);
     void DeductStatCurrent(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void);
+	std::vector<Stat> GetCurrentStats(void);
     int32_t GetStatCurrent(StatIndex stat_index);
+	void SerializeCurrentStats(swganh::messages::BaseSwgMessage* message);
 
     // Max Stats
     void SetStatMax(StatIndex stat_index, int32_t value);
     void AddStatMax(StatIndex stat_index, int32_t value);
     void DeductStatMax(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void);
-    int32_t GetStatMax(StatIndex stat_index);
+	std::vector<Stat> GetMaxStats(void);
+	int32_t GetStatMax(StatIndex stat_index);
+	void SerializeMaxStats(swganh::messages::BaseSwgMessage* message);
 
     // Equipment List
     void AddEquipmentItem(EquipmentItem& item);
     void RemoveEquipmentItem(uint64_t object_id);
     void UpdateEquipmentItem(EquipmentItem& item);
-    swganh::messages::containers::NetworkSortedList<EquipmentItem> GetEquipment();
+    std::list<EquipmentItem> GetEquipment();
     EquipmentItem GetEquipmentItem(uint64_t object_id);
+	void SerializeEquipment(swganh::messages::BaseSwgMessage* message);
 
     // Disguise
     void SetDisguise(std::string disguise);
@@ -594,6 +602,10 @@ public:
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 	
     typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
+
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Creature> other);
+
 private:
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
     std::atomic<uint32_t>    cash_credits_;                                                             // update 1 variable 1

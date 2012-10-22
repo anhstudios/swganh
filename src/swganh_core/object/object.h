@@ -55,6 +55,8 @@ typedef std::map<
 	std::shared_ptr<SlotInterface>
 > ObjectSlots;
 
+typedef boost::variant<float, int32_t, std::wstring, boost::blank> AttributeVariant;
+
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
 typedef swganh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
@@ -115,7 +117,7 @@ public:
     
 	typedef std::shared_ptr<ContainerPermissionsInterface> PermissionsObject;
 
-    Object();
+	Object();
     virtual ~Object() {}
 
     /**
@@ -260,12 +262,17 @@ public:
 	 * @param contained object
 	 * @param position of the updated position
 	 */
-	void UpdatePosition(std::shared_ptr<Object> contained_object, const glm::vec3& new_position, const glm::quat& quaternion);
+	void UpdatePosition(const glm::vec3& new_position, const glm::quat& quaternion, std::shared_ptr<Object> parent=nullptr);
 
 	/**
 	* @return bool if the object is in range
 	*/
 	bool InRange(glm::vec3 target, float range);
+
+	/**
+	* @return float of the range to the given target
+	*/
+	float RangeTo(glm::vec3 target);
 
     /**
      * @return The object orientation as a quaternion.
@@ -390,6 +397,10 @@ public:
      * @param scene_id The id of the scene this object belongs to.
      */
 	void SetSceneId(uint32_t scene_id);
+
+	uint32_t GetInstanceId();
+
+	void SetInstanceId(uint32_t instance_id);
 
     /**
      * Stores a deltas message update for the object.
@@ -517,43 +528,55 @@ public:
 	T GetAttribute(const std::string& name)
 	{
 		auto val = GetAttribute(name);
-		return boost::get<T>(val);
+		// Return if not blank
+		if (val.which() != 3)
+			return boost::get<T>(val);
+		return 0;
 	}
 	/**
 	 * @brief Gets an attribute value and then converts it to a wstring for printing
 	 */
 	std::wstring GetAttributeAsString(const std::string& name);
-	boost::variant<float, int32_t, std::wstring> GetAttribute(const std::string& name);
+	AttributeVariant GetAttribute(const std::string& name);
 
 	std::wstring GetAttributeRecursiveAsString(const std::string& name);
-	boost::variant<float, int32_t, std::wstring> GetAttributeRecursive(const std::string& name);
+	AttributeVariant GetAttributeRecursive(const std::string& name);
 	template<typename T>
 	T GetAttributeRecursive(const std::string& name)
 	{
 		auto val = GetAttributeRecursive(name);
-		return boost::get<T>(val);
+		// Return if not blank
+		if (val.which() != 3)
+			return boost::get<T>(val);
+		return 0;
 	}
 	template<typename T>
 	T AddAttributeRecursive(T val, const std::string& name)
 	{
 		ViewObjects(nullptr, 1, false, [&](std::shared_ptr<Object> recurse)
 		{
-			T found_val = recurse->GetAttribute<T>(name);
-			// Add Values
-			val += found_val;
+			if (recurse->HasAttribute(name))
+			{
+				// Add Values
+				val += recurse->GetAttribute<T>(name);
+			}
 		});
 
 		return val;
 	}
+	boost::variant<float, int32_t, std::wstring> AddAttributeRecursive(boost::variant<float, int32_t, std::wstring> val, const std::string& name);
 
 	int8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(int8_t attribute_template_id);
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Object> other);
 
 protected:
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
-    std::string template_string_;                    // create
+    std::atomic<uint32_t> instance_id_;
+	std::string template_string_;                    // create
     glm::vec3 position_;                             // create
     glm::quat orientation_;                          // create
     float complexity_;                               // update 3
@@ -590,7 +613,6 @@ private:
 	bool database_persisted_;
 	bool in_snapshot_;
 
-    boost::mutex flags_mutex_;
     std::set<std::string> flags_;
 };
 

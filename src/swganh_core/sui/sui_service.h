@@ -1,5 +1,9 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #pragma once
 
+#include <boost/thread/mutex.hpp>
 #include <map>
 
 #include "swganh/sui/sui_service_interface.h"
@@ -81,6 +85,8 @@ namespace sui
 		//Get Window
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> GetSUIWindowById(std::shared_ptr<swganh::object::Object> owner, int32_t windowId);
 
+		virtual std::shared_ptr<SUIWindowInterface> GetSUIWindowByScriptName(std::shared_ptr<swganh::object::Object> owner, std::string script);
+
 		//Forcefully closes a previously opened window.
 		virtual void CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId);
 
@@ -116,6 +122,8 @@ namespace sui
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		WindowMap window_lookup_;
 		int32_t window_id_counter_;
+
+		boost::mutex sui_mutex_;
 	};
 
 }

@@ -1,7 +1,12 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #pragma once
 
 #include "swganh/terrain/terrain_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
+
+#include <boost/thread/mutex.hpp>
 #include <map>
 #include <list>
 #include <memory>
@@ -61,6 +66,7 @@ namespace terrain
 		float processLayerHeight(swganh::tre::ContainerLayer* layer, float x, float z, float& base_value, float affector_transform, std::map<uint32_t, swganh::tre::Fractal*>& fractals);
 		float calculateFeathering(float value, int featheringType);
 
+		boost::mutex terrain_mutex_;
 		SceneMap scenes_;
 		swganh::app::SwganhKernel* kernel_;
 	};

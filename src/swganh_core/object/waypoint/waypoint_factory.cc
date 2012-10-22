@@ -27,15 +27,14 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh::messages::containers;
 
-WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
-                                 EventDispatcher* event_dispatcher)
-    : IntangibleFactory(db_manager, event_dispatcher)
+WaypointFactory::WaypointFactory(swganh::app::SwganhKernel* kernel)
+    : IntangibleFactory(kernel)
 {
     RegisterEventHandlers();
 }
 void WaypointFactory::RegisterEventHandlers()
 {
-	event_dispatcher_->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
 }
 void WaypointFactory::PersistChangedObjects()
 {
@@ -46,7 +45,8 @@ void WaypointFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 
@@ -80,7 +80,7 @@ uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object)
         try 
         {			
             auto waypoint = static_pointer_cast<Waypoint>(object);
-            auto conn = db_manager_->getConnection("galaxy");
+            auto conn = GetDatabaseManager()->getConnection("galaxy");
             auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?,?,?,?,?);");
             statement->setDouble(counter++,waypoint->GetComplexity());
             statement->setString(counter++, waypoint->GetStfNameFile());
@@ -121,7 +121,7 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
     auto waypoint = make_shared<Waypoint>();
     waypoint->SetObjectId(object_id);
     try{
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
         stringstream ss;
         ss << "CALL sp_GetWaypoint(" << object_id << ");";
@@ -137,6 +137,12 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
                 waypoint->SetColor(result->getString("color"));
             }
         }
+
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(waypoint);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {
@@ -146,8 +152,7 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
     return waypoint;
 }
 
-shared_ptr<Object> WaypointFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> WaypointFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
 	return make_shared<Waypoint>();
 }

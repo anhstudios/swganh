@@ -19,15 +19,14 @@ namespace object {
     public:
 		typedef Waypoint ObjectType;
 
-        WaypointFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        WaypointFactory(swganh::app::SwganhKernel* kernel);
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 		void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 		virtual void PersistChangedObjects();
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+        std::shared_ptr<swganh::object::Object> CreateObject();
 
         void LoadWaypoints(const std::shared_ptr<swganh::object::Player>& player, const std::shared_ptr<sql::ResultSet> result_set);
 

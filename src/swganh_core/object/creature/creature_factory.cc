@@ -25,52 +25,51 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 
-CreatureFactory::CreatureFactory(DatabaseManagerInterface* db_manager,
-                             swganh::EventDispatcher* event_dispatcher)
-    : TangibleFactory(db_manager, event_dispatcher)
+CreatureFactory::CreatureFactory(swganh::app::SwganhKernel* kernel)
+    : TangibleFactory(kernel)
 {
 }
 void CreatureFactory::RegisterEventHandlers()
 {
-	event_dispatcher_->Subscribe("Creature::Bank", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Creature::Cash", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Creature::StatBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Creature::Skill", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::Posture", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::OwnerId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::Scale", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::BattleFatigue", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::StateBitmask", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::StatWound", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::AccelerationMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Creature::AccelerationMultiplierModifier", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Creature::StatEncumberance", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Creature::SkillMod", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::SpeedMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::SpeedMultiplierModifer", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::ListenToId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::RunSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::SlopeModifierAngle", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::SlopeModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::TurnRadius", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::WalkingSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::WaterModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::MissionCriticalObject", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::CombatLevel", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::Animation", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::WeaponId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::GroupId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::InviteSenderId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::GuildId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::TargetId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::MoodId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::PerformanceId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::StatCurrent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::StatMax", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::EquipmentItem", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::Disguise", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::Stationary", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Creature::PvPStatus", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::Bank", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Cash", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::StatBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Skill", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::Posture", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::OwnerId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::Scale", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::BattleFatigue", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::StateBitmask", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::StatWound", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::AccelerationMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::AccelerationMultiplierModifier", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::StatEncumberance", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::SkillMod", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierModifer", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::ListenToId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::RunSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::SlopeModifierAngle", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::SlopeModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::TurnRadius", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::WalkingSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::WaterModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::MissionCriticalObject", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::CombatLevel", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::Animation", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::WeaponId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::GroupId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::InviteSenderId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::GuildId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::TargetId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::MoodId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::PerformanceId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::StatCurrent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::StatMax", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::EquipmentItem", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::Disguise", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::Stationary", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Creature::PvPStatus", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
 }
 void CreatureFactory::PersistChangedObjects()
 {
@@ -81,7 +80,8 @@ void CreatureFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)
@@ -90,7 +90,7 @@ uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)
 	// Now for the biggy
     try
     {	
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         // 65 of these
         string sql = "CALL sp_PersistCreature(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
             "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
@@ -187,7 +187,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
     auto creature = make_shared<Creature>();
     creature->SetObjectId(object_id);
     try {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
         unique_ptr<sql::ResultSet> result;
         stringstream ss;
@@ -283,6 +283,12 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
         LoadSkillCommands_(creature, statement);
 
 		LoadContainedObjects(creature, statement);
+
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(creature);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {
@@ -292,17 +298,9 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
     return creature;
 }
 
-shared_ptr<Object> CreatureFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> CreatureFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//TODO: Have to hit the db to make this
-		return make_shared<Creature>();
-	}
-	else
-	{
-		return make_shared<Creature>();
-	}
+	return make_shared<Creature>();
 }
 
 void CreatureFactory::LoadSkills_(
@@ -344,7 +342,7 @@ void CreatureFactory::LoadSkillMods_(
 
             creature->AddSkillMod( 
                 SkillMod(skill_mod_name, skill_mod_value, 0)
-                );
+				);			
         }
     }
 }

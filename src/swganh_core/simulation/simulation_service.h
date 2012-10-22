@@ -5,6 +5,10 @@
 #include "swganh/simulation/simulation_service_interface.h"
 
 namespace swganh {
+namespace object {
+	class ObjectManager;
+}
+
 namespace simulation {
     
     class SimulationServiceImpl;
@@ -71,7 +75,10 @@ namespace simulation {
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, 
 			bool is_initialized=true, uint64_t object_id=0);
 		
+		virtual const std::shared_ptr<swganh::equipment::EquipmentServiceInterface>& GetEquipmentService();
+
 		virtual void PrepareToAccomodate(uint32_t delta);
+		std::shared_ptr<swganh::object::ObjectManager> GetObjectManager();
 
 		void Startup();
 

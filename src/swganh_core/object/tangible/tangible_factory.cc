@@ -23,23 +23,22 @@ using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
- TangibleFactory::TangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, event_dispatcher)
+ TangibleFactory::TangibleFactory(swganh::app::SwganhKernel* kernel)
+    : ObjectFactory(kernel)
 {	
 }
 
  void TangibleFactory::RegisterEventHandlers()
  {
-	event_dispatcher_->Subscribe("Tangible::Customization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::ComponentCustomization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::OptionsMask", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::IncapTimer", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::ConditionDamage", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::UpdateAttribute", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::MaxCondition", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::Static", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::Defenders", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::Customization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::ComponentCustomization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::OptionsMask", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::IncapTimer", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::ConditionDamage", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::UpdateAttribute", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::MaxCondition", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::Static", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::Defenders", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
  }
 
  
@@ -52,7 +51,8 @@ void TangibleFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 
@@ -61,7 +61,7 @@ uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
 	uint32_t counter = 1;
     try 
     {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?);"));
         // cast to tangible
@@ -106,6 +106,12 @@ void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const
                 tangible->SetStatic(result->getBoolean("is_static"));
             }
         }
+
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(tangible);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {
@@ -118,7 +124,7 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
     auto tangible = make_shared<Tangible>();
     tangible->SetObjectId(object_id);
     try {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
         
         stringstream ss;
@@ -135,16 +141,7 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
     return tangible;
 }
 
-shared_ptr<Object> TangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> TangibleFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//@TODO: Create me with help from db
-		return make_shared<Tangible>();
-	}
-	else
-	{
-		return make_shared<Tangible>();
-	}
-
+	return make_shared<Tangible>();
 }

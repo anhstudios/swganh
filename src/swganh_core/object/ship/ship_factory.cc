@@ -25,8 +25,7 @@ shared_ptr<Object> ShipFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Ship>();
 }
 
-shared_ptr<Object> ShipFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> ShipFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
     return make_shared<Ship>();
 }

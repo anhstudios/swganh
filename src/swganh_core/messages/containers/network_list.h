@@ -3,6 +3,7 @@
 #pragma once
 
 #include <list>
+#include <boost/noncopyable.hpp>
 
 #include "swganh/byte_buffer.h"
 
@@ -23,15 +24,31 @@ public:
     typedef typename std::list<T>::iterator iterator;
     
     NetworkList()
-        : update_counter_(0)
-        , items_(std::list<T>())
-        , added_items_(std::list<T>())
-        , removed_items_(std::list<T>())
+        :  update_counter_(0)
         , clear_(false)
     {}
 
+	NetworkList(std::list<T> orig)
+		: items_(orig.begin(), orig.end())
+		, clear_(false)
+		, update_counter_(0)
+	{
+	}
+
+	NetworkList(std::vector<T> orig)
+		: items_(orig.begin(), orig.end())
+		, clear_(false)
+		, update_counter_(0)
+	{
+	}
+
     ~NetworkList()
     {}
+
+	std::list<T> Get() const
+	{
+		return items_;
+	}
 
     /**
      * Inserts the item and queues a change to the added_items_ list.
@@ -111,38 +128,54 @@ public:
 
     uint16_t Size(void) const { return items_.size(); }
 
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
+
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
-        std::for_each(items_.begin(), items_.end(), [=, &message](T item) {
+        for(auto& item : items_)
+		{
             item.Serialize(message);
-        });
+        }
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(added_items_.size() + removed_items_.size());
-        message.data.write<uint32_t>(++update_counter_);
+		{
+			message.data.write<uint32_t>(added_items_.size() + removed_items_.size());
+			message.data.write<uint32_t>(++update_counter_);
 
-        // Removed Items
-        std::for_each(removed_items_.begin(), removed_items_.end(), [=, &message](T x) {
-            message.data.write<uint8_t>(0);         // Update Type: 0 (Remove)
-            x.Serialize(message);
-        });
+			// Removed Items
+			for (auto& x : removed_items_)
+			{
+				message.data.write<uint8_t>(0);         // Update Type: 0 (Remove)
+				x.Serialize(message);
+			}
 
-        // Added Items
-        std::for_each(added_items_.begin(), added_items_.end(), [=, &message](T x) {
-            message.data.write<uint8_t>(1);              // Update Type: 1 (Add)
-            x.Serialize(message);
-        });
+			// Added Items
+			for (auto& x : added_items_)
+			{
+				message.data.write<uint8_t>(1);              // Update Type: 1 (Add)
+				x.Serialize(message);
+			}
 
-        // Clear Items
-        if(clear_ == true)
-        {
-            message.data.write<uint8_t>(2);
-        }
-
+			// Clear Items
+			if(clear_ == true)
+			{
+				message.data.write<uint8_t>(2);
+			}
+		}
         ClearDeltas();
     }
 

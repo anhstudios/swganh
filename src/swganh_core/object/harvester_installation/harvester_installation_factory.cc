@@ -10,7 +10,12 @@ using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::object;
 
-HarvesterInstallationFactory::HarvesterInstallationFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
-	: InstallationFactory(db_manager, event_dispatcher)
+HarvesterInstallationFactory::HarvesterInstallationFactory(swganh::app::SwganhKernel* kernel)
+	: InstallationFactory(kernel)
 {
+}
+
+std::shared_ptr<Object> HarvesterInstallationFactory::CreateObject()
+{
+	return std::make_shared<HarvesterInstallation>();
 }

@@ -62,7 +62,16 @@ struct ProsePackage {
      */
     ProsePackage(std::string stf_file, std::string stf_label);
 
-    /// Default deconstructor.
+	
+	/// Helper functions for AddProsePackage
+
+	ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, int32_t di_integer);
+
+	ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, uint64_t t_object_id, const std::string& t_stf_file = "", const std::string& t_stf_label ="", const std::wstring& t_custom_string = L"");	
+
+	ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, float df_val);
+
+	/// Default deconstructor.
     ~ProsePackage();
     
     std::string  base_stf_file;  ///< File containing the STF message.
@@ -266,6 +275,6 @@ protected:
 
     uint16_t count_;
 
-    swganh::ByteBuffer* data_;
+    std::shared_ptr<swganh::ByteBuffer> data_;
 };
 }} // swganh::messages

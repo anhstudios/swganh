@@ -277,10 +277,10 @@ void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
 		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
-NetworkSortedVector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const
+std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return slots_;
+    return std::move(slots_.Get());
 }
 
 void ManufactureSchematic::RemoveSlot(uint16_t index)
@@ -393,10 +393,10 @@ void ManufactureSchematic::ClearAllSlots()
 	("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
-NetworkSortedVector<ManufactureSchematic::Experiment> ManufactureSchematic::GetExperiments() const
+std::vector<ManufactureSchematic::Experiment> ManufactureSchematic::GetExperiments() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return experiments_;
+    return std::move(experiments_.Get());
 }
 
 void ManufactureSchematic::RemoveExperiment(uint16_t index)
@@ -530,10 +530,10 @@ void ManufactureSchematic::ClearAllExperiments()
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
-NetworkSortedVector<ManufactureSchematic::Customization> ManufactureSchematic::GetCustomizations() const
+std::vector<ManufactureSchematic::Customization> ManufactureSchematic::GetCustomizations() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return customizations_;
+    return std::move(customizations_.Get());
 }
 
 void ManufactureSchematic::RemoveCustomization(uint16_t index)
@@ -665,3 +665,28 @@ void ManufactureSchematic::ToggleReady()
     is_ready_ = !is_ready_;
 }
 
+std::shared_ptr<Object> ManufactureSchematic::Clone()	
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<ManufactureSchematic>();
+	Clone(other);
+	return other;
+}
+
+void ManufactureSchematic::Clone(std::shared_ptr<ManufactureSchematic> other)
+{
+	other->properties_ = properties_;
+    other->creator_ = creator_;
+	other->complexity_.store(complexity_);
+	other->schematic_data_size_ = schematic_data_size_;
+	other->customization_ = customization_;
+	other->customization_model_ = customization_model_;
+	other->prototype_model_ = prototype_model_;
+	other->is_active_ =is_active_;
+	other->slot_count_.store(slot_count_);
+	other->slots_ = slots_;
+    other->experiments_ = experiments_;
+    other->customizations_ = customizations_;
+    other->risk_factor_ = risk_factor_;
+    other->is_ready_.store(is_ready_);
+}

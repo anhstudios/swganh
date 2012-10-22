@@ -40,6 +40,7 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyByName(const std::string& name) con
 
         // if no results are found return a nullptr
         if (!result->next()) {
+			statement->getMoreResults();
             return nullptr;
         }
 
@@ -78,6 +79,7 @@ std::shared_ptr<Galaxy> Datastore::createGalaxy(
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
 
         if (!result->next()) {
+			statement->getMoreResults();
             return nullptr;
         }
 

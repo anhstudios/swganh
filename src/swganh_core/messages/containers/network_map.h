@@ -4,6 +4,7 @@
 
 #include <map>
 #include <list>
+#include <boost/noncopyable.hpp>
 
 #include "swganh/byte_buffer.h"
 
@@ -25,16 +26,25 @@ public:
     
     NetworkMap()
         : update_counter_(0)
-        , items_(std::map<I, T>())
-        , items_added_(std::list<I>())
-        , items_removed_(std::list<T>())
-        , items_changed_(std::list<I>())
         , clear_(false)
         , reinstall_(false)
     {}
 
+	NetworkMap(std::map<I, T> orig)
+		: items_(orig.begin(), orig.end())
+		, clear_(false)
+		, reinstall_(false)
+		, update_counter_(0)
+	{
+	}
+
     ~NetworkMap()
     {}
+
+	std::map<I, T> Get() const
+	{
+		return items_;
+	}
 
     /**
      * Inserts a new entry into the NetworkMap without
@@ -163,53 +173,71 @@ public:
     iterator begin() { return items_.begin(); }
     iterator end() { return items_.end(); }
 
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
+
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
-        std::for_each(items_.begin(), items_.end(), [=, &message](std::pair<I, T> item) {
+        for(auto& item : items_)
+		{
             item.second.Serialize(message);
-        });
+        }
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        uint32_t size = items_added_.size() + items_removed_.size() + items_changed_.size() + reinstall_ + clear_;
-        message.data.write<uint32_t>(size);
-        message.data.write<uint32_t>(++update_counter_);
+		{
+			uint32_t size = items_added_.size() + items_removed_.size() + items_changed_.size() + reinstall_ + clear_;
+			message.data.write<uint32_t>(size);
+			message.data.write<uint32_t>(++update_counter_);
 
-        // Added Items
-        std::for_each(items_added_.begin(), items_added_.end(), [=, &message](I index){
-            message.data.write<uint8_t>(0);
-            items_[index].Serialize(message);
-        });
+			// Added Items
+			for (auto& index : items_added_)
+			{
+				message.data.write<uint8_t>(0);
+				items_[index].Serialize(message);
+			}
 
-        // Removed Items
-        std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](T item){
-            message.data.write<uint8_t>(1);
-            item.Serialize(message);
-        });
+			// Removed Items
+			for (auto& item : items_removed_)
+			{
+				message.data.write<uint8_t>(1);
+				item.Serialize(message);
+			}
 
-        // Changed Items
-        std::for_each(items_changed_.begin(), items_changed_.end(), [=, &message](I index){
-            message.data.write<uint8_t>(2);
-            items_[index].Serialize(message);
-        });
+			// Changed Items
+			for(auto& index : items_changed_)
+			{
+				message.data.write<uint8_t>(2);
+				items_[index].Serialize(message);
+			}
 
-        if(reinstall_)
-        {
-            message.data.write<uint8_t>(3);
-            message.data.write<uint16_t>(items_.size());
-            std::for_each(items_.begin(), items_.end(), [=, &message](std::pair<I, T> item) {
-                item.second.Serialize(message);
-            });
-        }
+			if(reinstall_)
+			{
+				message.data.write<uint8_t>(3);
+				message.data.write<uint16_t>(items_.size());
+				for(auto& item : items_)
+				{
+					item.second.Serialize(message);
+				}
+			}
 
-        if(clear_)
-        {
-            message.data.write<uint8_t>(4);
-        }
-
+			if(clear_)
+			{
+				message.data.write<uint8_t>(4);
+			}
+		}
         ClearDeltas();
     }
 

@@ -24,8 +24,7 @@ namespace object {
     public:
 		typedef Creature ObjectType;
 
-        CreatureFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        CreatureFactory(swganh::app::SwganhKernel* kernel);
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
@@ -34,7 +33,7 @@ namespace object {
 		virtual void RegisterEventHandlers();
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+        std::shared_ptr<swganh::object::Object> CreateObject();
         
     private:
         void LoadSkills_(const std::shared_ptr<Creature>& creature, 

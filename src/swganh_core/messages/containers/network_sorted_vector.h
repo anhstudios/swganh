@@ -3,6 +3,7 @@
 #pragma once
 
 #include <vector>
+#include <boost/noncopyable.hpp>
 
 #include "swganh_core/messages/baselines_message.h"
 #include "swganh_core/messages/deltas_message.h"
@@ -22,23 +23,32 @@ public:
     typedef typename std::vector<T>::iterator iterator;
 
     NetworkSortedVector(uint16_t capacity)
-        : items_(std::vector<T>())
-        , items_added_(std::list<uint16_t>())
-        , items_removed_(std::list<uint16_t>())
-        , items_changed_(std::list<uint16_t>())
-        , clear_(false)
+        : clear_(false)
         , reinstall_(false)
         , update_counter_(0)
     {
         items_.reserve(capacity);
     }
+	
+	NetworkSortedVector(std::vector<T> orig)
+		: items_(orig.begin(), orig.end())
+		, update_counter_(0)
+		, clear_(false)
+		, reinstall_(false)
+	{
+	}
 
     ~NetworkSortedVector(void)
     {}
 
+	std::vector<T> Get() const
+	{
+		return items_;
+	}
+
     void Add(const T& item)
     {
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
+		auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
             return (i == item);
         });
 
@@ -57,14 +67,14 @@ public:
 
     void Remove(iterator iter)
     {
-        uint16_t distance = std::distance<const_iterator>(items_.begin(), iter);
+		uint16_t distance = std::distance<const_iterator>(items_.begin(), iter);
         items_removed_.push_back(distance);
         items_.erase(iter);
     }
 
     void Insert(const T& item)
     {
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
+		auto iter = std::find_if(items_.begin(), items_.end(), [=](T& i) {
             return (i == item);
         });
 
@@ -76,12 +86,12 @@ public:
 
     void Erase(iterator iter)
     {
-        items_.erase(iter);
+		items_.erase(iter);
     }
 
     void Update(iterator iter, T& item)
     {
-        uint16_t index = std::distance<const_iterator>(items_.begin(), iter);
+		uint16_t index = std::distance<const_iterator>(items_.begin(), iter);
         items_[index] = item;
         items_changed_.push_back(index);
     }
@@ -146,60 +156,77 @@ public:
     iterator begin() { return items_.begin(); }
     iterator end() { return items_.end(); } 
 
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
+
 	void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
-        std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
+        for (auto& item : items_)
+		{
             item.Serialize(message);
-        });
+        }
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
-        message.data.write<uint32_t>(++update_counter_);
+		{
+			message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
+			message.data.write<uint32_t>(++update_counter_);
 
-        // Remove Items
-        std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](const uint16_t& index) {
-            message.data.write<uint8_t>(0);
-            message.data.write<uint16_t>(index);
-        });
+			// Remove Items
+			for(auto& index : items_removed_)
+			{
+				message.data.write<uint8_t>(0);
+				message.data.write<uint16_t>(index);
+			}
 
-        // Added Items
-        std::for_each(items_added_.begin(), items_added_.end(), [=, &message](const uint16_t& index) {
-            message.data.write<uint8_t>(1);
-            message.data.write<uint16_t>(index);
-            items_[index].Serialize(message);
-        });
+			// Added Items
+			for(auto& index : items_added_)
+			{
+				message.data.write<uint8_t>(1);
+				message.data.write<uint16_t>(index);
+				items_[index].Serialize(message);
+			}
 
-        // Changed Items
-        std::for_each(items_changed_.begin(), items_changed_.end(), [=, &message](const uint16_t& index) {
-            message.data.write<uint8_t>(2);
-            message.data.write<uint16_t>(index);
-            items_[index].Serialize(message);
-        });
+			// Changed Items
+			for(auto& index : items_changed_)
+			{
+				message.data.write<uint8_t>(2);
+				message.data.write<uint16_t>(index);
+				items_[index].Serialize(message);
+			}
 
-        // Reinstall
-        if(reinstall_)
-        {
-            message.data.write<uint8_t>(3);
-            message.data.write<uint16_t>(items_.size());
-            std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
-                item.Serialize(message);
-            });            
-        }
+			// Reinstall
+			if(reinstall_)
+			{
+				message.data.write<uint8_t>(3);
+				message.data.write<uint16_t>(items_.size());
+				for(auto& item : items_)
+				{
+					item.Serialize(message);
+				}
+			}
 
-        // Clear
-        if(clear_)
-        {
-            message.data.write<uint8_t>(4);
-            items_.clear();
-        }
-
+			// Clear
+			if(clear_)
+			{
+				message.data.write<uint8_t>(4);
+				items_.clear();
+			}
+		}
         ClearDeltas();
-    }
-
+    }	
 private:
     std::vector<T> items_;
     std::list<uint16_t> items_added_;

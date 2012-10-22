@@ -184,6 +184,7 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 	std::cout << "      \"888 88888P Y88888 888    888   d88P   888 888  Y88888 888    888 " << std::endl;
 	std::cout << "Y88b  d88P 8888P   Y8888 Y88b  d88P  d8888888888 888   Y8888 888    888 " << std::endl;
 	std::cout << " \"Y8888P\"  888P     Y888  \"Y8888P88 d88P     888 888    Y888 888    888 " << std::endl << std::endl;
+	std::cout << "                             Release 0.5.1 "<< std::endl << std::endl << std::endl;
  
     
     // Load the configuration    
@@ -265,9 +266,34 @@ void SwganhApp::Start() {
     
     kernel_->GetServiceManager()->Start();
 
-	//Now that we've loaded core services, start planets.
+	//Now that services are started, start the scenes.
 	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	
+	//Ground Zones
 	simulation_service->StartScene("corellia");
+	//simulation_service->StartScene("dantooine");
+	//simulation_service->StartScene("dathomir");
+	//simulation_service->StartScene("endor");
+	//simulation_service->StartScene("lok");
+	//simulation_service->StartScene("naboo");
+	//simulation_service->StartScene("rori");
+	//simulation_service->StartScene("talus");
+	//simulation_service->StartScene("tatooine");
+	//simulation_service->StartScene("yavin4");
+	//simulation_service->StartScene("taanab");
+
+	//Space Zones
+	//simulation_service->StartScene("space_corellia");
+	//simulation_service->StartScene("space_dantooine");
+	//simulation_service->StartScene("space_dathomir");
+	//simulation_service->StartScene("space_endor");
+	//simulation_service->StartScene("space_lok");
+	//simulation_service->StartScene("space_naboo");
+	//simulation_service->StartScene("space_tatooine");
+	//simulation_service->StartScene("space_yavin4");
+	
+	//Special
+	//simulation_service->StartScene("tutorial");
 }
 
 void SwganhApp::Stop() {
@@ -385,6 +411,11 @@ void SwganhApp::LoadCoreServices_()
 			LOG(info) << "Loaded Service " << name;
         }
     });
+<<<<<<< HEAD
+=======
+
+    auto app_config = kernel_->GetAppConfig();
+>>>>>>> develop
 }
 
 void SwganhApp::SetupLogging_()

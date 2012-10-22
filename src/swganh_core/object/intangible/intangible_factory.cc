@@ -24,9 +24,8 @@ using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
-IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
-                             swganh::EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, event_dispatcher)
+IntangibleFactory::IntangibleFactory(swganh::app::SwganhKernel* kernel)
+    : ObjectFactory(kernel)
 {
 }
 
@@ -37,7 +36,7 @@ uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
 
 	try 
     {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?);"));
         auto tangible = static_pointer_cast<Intangible>(object);
@@ -64,39 +63,42 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     auto intangible = make_shared<Intangible>();
     intangible->SetObjectId(object_id);
     try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?);"));
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?)"));
         
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+		statement->setUInt64(1, object_id);
 
-		CreateBaseObjectFromStorage(intangible, result);
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+		CreateBaseObjectFromStorage(intangible, std::move(result));
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
 				intangible->SetStfName(result->getString("stf_detail_file"), result->getString("stf_detail_string"));
                 intangible->SetGenericInt(result->getInt("generic_int"));
             }
         }
+
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(intangible);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+		if(e.getErrorCode() != 0)
+		{
+			LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+			LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+		}
     }
     return intangible;
 }
 
-shared_ptr<Object> IntangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> IntangibleFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//@TODO: Create me with help from db
-		return make_shared<Intangible>();
-	}
-	else
-	{
-		return make_shared<Intangible>();
-	}
+	return make_shared<Intangible>();
 }

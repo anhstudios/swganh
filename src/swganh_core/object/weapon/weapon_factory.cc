@@ -9,8 +9,8 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object;
 
-WeaponFactory::WeaponFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
-	: TangibleFactory(db_manager, event_dispatcher)
+WeaponFactory::WeaponFactory(swganh::app::SwganhKernel* kernel)
+	: TangibleFactory(kernel)
 {
 }
 
@@ -23,7 +23,8 @@ void WeaponFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		if(object->IsDatabasePersisted())
+			PersistObject(object);
 	}
 }
 
@@ -42,8 +43,7 @@ shared_ptr<Object> WeaponFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Weapon>();
 }
 
-shared_ptr<Object> WeaponFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> WeaponFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
     return make_shared<Weapon>();
 }

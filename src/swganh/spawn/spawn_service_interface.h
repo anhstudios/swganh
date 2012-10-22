@@ -1,5 +1,6 @@
-#ifndef SWGANH_SPAWN_SERVICE_INTERFACE_H_
-#define SWGANH_SPAWN_SERVICE_INTERFACE_H_
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
 #include <swganh/service/service_interface.h>
 
@@ -20,5 +21,3 @@ namespace spawn
 	};
 }
 }
-
-#endif

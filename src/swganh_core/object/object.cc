@@ -30,6 +30,7 @@ using namespace swganh::messages;
 
 Object::Object()
     : object_id_(0)
+	, instance_id_(0)
     , template_string_("")
     , position_(glm::vec3(0,0,0))
     , orientation_(glm::quat(0,0,0,0))
@@ -188,17 +189,25 @@ void Object::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t m
 {
 	if(requester == nullptr || container_permissions_->canView(shared_from_this(), requester))
 	{
+		uint32_t requester_instance = 0;
+		if(requester)
+			requester_instance = requester->GetInstanceId();
+
 		for(auto& slot : slot_descriptor_)
 		{
 			slot.second->view_objects([&] (const std::shared_ptr<Object>& object) {
-				if(topDown)
-					func(object);
+				uint32_t object_instance = object->GetInstanceId();
+				if(object_instance == 0 || object_instance == requester_instance)
+				{
+					if(topDown)
+						func(object);
 
-				if(max_depth != 1)
-					object->__InternalViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
+					if(max_depth != 1)
+						object->__InternalViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
 
-				if(!topDown)
-					func(object);
+					if(!topDown)
+						func(object);
+				}
 			});
 		}
 	}
@@ -519,12 +528,12 @@ void Object::SetPosition(glm::vec3 position)
     GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Position",shared_from_this()));
 }
-void Object::UpdatePosition(shared_ptr<Object> contained_object, const glm::vec3& new_position, const glm::quat& orientation)
+void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& quaternion, std::shared_ptr<Object> parent)
 {
-	SetOrientation(orientation);
+	SetOrientation(quaternion);
 	// Call an Event that gets handled by the movement manager
 	GetEventDispatcher()->Dispatch(make_shared<UpdatePositionEvent>
-		("Object::UpdatePosition", contained_object, shared_from_this(), new_position));
+		("Object::UpdatePosition", parent, shared_from_this(), new_position));
 }
 
 glm::vec3 Object::GetPosition()
@@ -539,6 +548,10 @@ bool Object::InRange(glm::vec3 target, float range)
 		return false;
 	}
 	return true;
+}
+float Object::RangeTo(glm::vec3 target)
+{
+	return glm::distance(GetPosition(), target);
 }
 void Object::SetOrientation(glm::quat orientation)
 {
@@ -697,6 +710,19 @@ uint32_t Object::GetSceneId()
 	return scene_id_;
 }
 
+uint32_t Object::GetInstanceId()
+{
+	return instance_id_;
+}
+
+void Object::SetInstanceId(uint32_t instance_id)
+{
+	instance_id_ = instance_id;
+
+	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::InstanceId",shared_from_this()));
+}
+
 int32_t Object::GetArrangementId()
 {
 	return arrangement_id_;
@@ -767,19 +793,19 @@ void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> ob
 
 void Object::SetFlag(std::string flag)
 {
-    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    boost::lock_guard<boost::mutex> lg(object_mutex_);
     flags_.insert(flag);
 }
 
 void Object::RemoveFlag(std::string flag)
 {
-    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    boost::lock_guard<boost::mutex> lg(object_mutex_);
     flags_.erase(flag);
 }
 
 bool Object::HasFlag(std::string flag)
 {
-    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    boost::lock_guard<boost::mutex> lg(object_mutex_);
 
     return flags_.find(flag) != flags_.end();
 }
@@ -870,12 +896,9 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 	if (slot_iter != slot_descriptor_.end())
 	{
 		auto slot = slot_iter->second;
-		if (!slot->is_filled())
-		{			
-			slot->view_objects([&](shared_ptr<Object> object){
-				found = object;
-			});
-		}
+		slot->view_objects([&](shared_ptr<Object> object){
+			found = object;
+		});
 	}
 	return found;
 }
@@ -908,7 +931,7 @@ AttributesMap Object::GetAttributeMap()
 	return attributes_map_;
 }
 
-boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::string& name)
+AttributeVariant Object::GetAttribute(const std::string& name)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
@@ -919,8 +942,8 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 	{
 		return find_iter->second;
 	}	
-	LOG(error) << "Attribute "<< name << " does not exist";	
-	return L"";
+	//DLOG(event) << "Attribute "<< name << " does not exist";	
+	return boost::blank();
 	//throw std::runtime_error("Attribute " + name + " does not exist");
 }
 
@@ -940,7 +963,6 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 				break;
 			case 2:
 				return boost::get<wstring>(val);
-
 		}
 	} catch (std::exception& e) {
 		LOG(error) << "Attribute " << name << " could not be converted to wstring";
@@ -975,11 +997,15 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 			case 2:
 				ss << boost::get<wstring>(val);
 				break;
+			case 3:
+				ss << L"";
+				break;
 		}		
 	
 	return ss.str();
 }
-boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
+
+AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 {
 	auto val = GetAttribute(name);
 	{
@@ -991,7 +1017,7 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const
 		{
 			// float
 			case 0:
-				 float_val = boost::get<float>(val);
+				float_val = boost::get<float>(val);
 				return AddAttributeRecursive<float>(float_val, name);			
 			case 1:
 				int_val = boost::get<int32_t>(val);
@@ -999,12 +1025,50 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const
 			case 2:
 				attr_val = boost::get<wstring>(val);
 				return AddAttributeRecursive<wstring>(attr_val, name);			
+			case 3:
+				return boost::blank();				
 		}	
-		return boost::get<wstring>(val);
+		return boost::get<wstring>(val);	
 	}
+	// Doesn't Exist
+	return boost::blank();
 }
 
 bool Object::HasAttribute(const std::string& name)
 {
 	return attributes_map_.find(name) != attributes_map_.end();
+}
+
+std::shared_ptr<Object> Object::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Object>();
+	Clone(other);
+	return other;
+}
+
+void Object::Clone(std::shared_ptr<Object> other)
+{
+	other->object_id_.store(object_id_);
+	other->scene_id_.store(scene_id_);
+    other->instance_id_.store(instance_id_);
+	other->template_string_ = template_string_;
+    other->position_ = position_;
+    other->orientation_ = orientation_;
+    other->complexity_ = complexity_;
+    other->stf_name_file_ = stf_name_file_;
+    other->stf_name_string_ = stf_name_string_;
+    other->custom_name_ = custom_name_;
+    other->volume_.store(volume_);
+    other->arrangement_id_.store(arrangement_id_);
+	other->attributes_template_id.store(attributes_template_id);
+	other->attributes_map_ = attributes_map_;
+	other->database_persisted_ = database_persisted_;
+	other->in_snapshot_ = in_snapshot_;
+    other->flags_ = flags_;
+	other->slot_arrangements_ = slot_arrangements_;
+
+	__InternalViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
+		other->AddObject(nullptr, object->Clone());
+	});
 }

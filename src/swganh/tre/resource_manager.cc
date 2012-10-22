@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "swganh/byte_buffer.h"
 #include "resource_manager.h"
@@ -18,6 +20,7 @@ void ResourceManager::LoadResourceByName(const std::string& name, std::shared_pt
 	iff_file::loadIFF(archive_->GetResource(name), type);
 	if(is_cached)
 	{
+		boost::lock_guard<boost::mutex> lock(resource_mutex_);
 		loadedResources_.insert(ResourceCache::value_type(name, type));
 	}
 }
