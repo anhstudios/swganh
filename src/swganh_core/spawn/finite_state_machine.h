@@ -2,6 +2,8 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include "swganh/spawn/finite_state_machine_interface.h"
+
 #include <atomic>
 #include <map>
 #include <set>
@@ -33,7 +35,7 @@ namespace spawn
 
 	typedef std::function<std::shared_ptr<FsmBundleInterface>(std::shared_ptr<FsmStateInterface>)> BundleGenerator;
 
-	class FiniteStateMachine
+	class FiniteStateMachine : public FiniteStateMachineInterface
 	{
 	public:
 	

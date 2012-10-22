@@ -7,7 +7,7 @@
 #include "swganh/spawn/spawn_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/permissions/permission_type.h"
-#include "fsm_manager.h"
+#include "swganh/spawn/fsm_manager.h"
 
 namespace swganh
 {

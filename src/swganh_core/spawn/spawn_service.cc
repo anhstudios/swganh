@@ -43,7 +43,7 @@ using namespace swganh::scripting;
 
 SpawnService::SpawnService(SwganhKernel* kernel) 
 	: kernel_(kernel)
-	, fsm_manager_(kernel)
+	, fsm_manager_(kernel->GetEventDispatcher())
 	, timer_(kernel_->GetIoService(), boost::posix_time::seconds(60))
 {
 }
@@ -70,8 +70,8 @@ ServiceDescription SpawnService::GetServiceDescription()
 void SpawnService::Startup()
 {
 	//Load some defaults from python
-	uint32_t SHUTTLE_AWAY_TIME_SECONDS = 60;
-	uint32_t SHUTTLE_IN_PORT_TIME_SECONDS = 60;
+	uint32_t SHUTTLE_AWAY_TIME_SECONDS = 300;
+	uint32_t SHUTTLE_IN_PORT_TIME_SECONDS = 300;
 
 	ScopedGilLock lock;
     try 

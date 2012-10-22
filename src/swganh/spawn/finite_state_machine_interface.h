@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 namespace swganh
 {
 namespace object
@@ -9,14 +11,14 @@ namespace object
 
 namespace spawn
 {
-class FsmControllerInterface;
+class FsmController;
 class FiniteStateMachineInterface
 {
 public:
-	void StartManagingObject(std::shared_ptr<swganh::object::Object> object);
-	void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
+	virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object) = 0;
+	virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object) = 0;
 
-	void MarkDirty(std::shared_ptr<FsmControllerInterface> controller_);
+	virtual void MarkDirty(std::shared_ptr<FsmController> controller_) = 0;
 };
 }
 }
