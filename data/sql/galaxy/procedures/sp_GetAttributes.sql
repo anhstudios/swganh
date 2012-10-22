@@ -12,11 +12,7 @@ BEGIN
 		from object_attributes
 		left join swganh_static.attributes on (swganh_static.attributes.id = object_attributes.attribute_id)
 		where object_attributes.id = iff_template_id)
-	UNION
-(select swganh_static.object_attribute_defaults.attribute_value, swganh_static.attributes.name
-	from swganh_static.object_attribute_defaults
-	left join swganh_static.attributes on (swganh_static.attributes.id = swganh_static.object_attribute_defaults.attribute_id)
-	where swganh_static.object_attribute_defaults.id = iff_template_id);
+;
 END//
 DELIMITER ;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
