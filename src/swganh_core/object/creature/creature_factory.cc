@@ -278,6 +278,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
             }
         }
         
+		LoadBuffs_(creature, statement);
         LoadSkills_(creature, statement);
         LoadSkillMods_(creature, statement);
         LoadSkillCommands_(creature, statement);
@@ -301,6 +302,21 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
 shared_ptr<Object> CreatureFactory::CreateObject()
 {
 	return make_shared<Creature>();
+}
+
+void CreatureFactory::LoadBuffs_(
+	const shared_ptr<Creature>& creature,
+	const shared_ptr<sql::Statement>& statement)
+{
+	if(statement->getMoreResults())
+	{
+		unique_ptr<sql::ResultSet> result(statement->getResultSet());
+
+		while(result->next())
+		{
+			creature->AddBuff(result->getString("name"), result->getUInt("duration"));
+		}
+	}
 }
 
 void CreatureFactory::LoadSkills_(

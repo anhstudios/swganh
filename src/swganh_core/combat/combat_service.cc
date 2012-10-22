@@ -62,6 +62,7 @@ CombatService::CombatService(SwganhKernel* kernel)
 : generator_(1, 100)
 , active_(kernel->GetIoService())
 , kernel_(kernel)
+, buff_manager_(kernel)
 {
 }
 
@@ -104,6 +105,8 @@ void CombatService::Startup()
     command_service_->AddCommandCreator("prone", swganh::command::PythonCommandCreator("commands.prone", "ProneCommand"));
     command_service_->AddCommandCreator("sitserver", swganh::command::PythonCommandCreator("commands.sitserver", "SitServerCommand"));
     command_service_->AddCommandCreator("stand", swganh::command::PythonCommandCreator("commands.stand", "StandCommand"));
+
+	buff_manager_.Start();
 }
 
 void CombatService::SendCombatAction(BaseCombatCommand* command)
