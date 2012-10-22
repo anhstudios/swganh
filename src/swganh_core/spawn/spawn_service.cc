@@ -44,6 +44,7 @@ using namespace swganh::scripting;
 SpawnService::SpawnService(SwganhKernel* kernel) 
 	: kernel_(kernel)
 	, fsm_manager_(kernel)
+	, timer_(kernel_->GetIoService(), boost::posix_time::seconds(60))
 {
 }
 
@@ -85,14 +86,14 @@ void SpawnService::Startup()
     }
 
 	//Build the default machines
-	_buildCreatureMachine(kernel_, fsm_manager_);
-	_buildLairMachine(kernel_, fsm_manager_);
-	_buildNpcFactionedMachine(kernel_, fsm_manager_);
-	_buildNpcNeutralMachine(kernel_, fsm_manager_);
+	//_buildCreatureMachine(kernel_, fsm_manager_);
+	//_buildLairMachine(kernel_, fsm_manager_);
+	//_buildNpcFactionedMachine(kernel_, fsm_manager_);
+	//_buildNpcNeutralMachine(kernel_, fsm_manager_);
 	_buildShuttleMachine(kernel_, fsm_manager_, SHUTTLE_AWAY_TIME_SECONDS, SHUTTLE_IN_PORT_TIME_SECONDS);
 
-	timer_.async_wait(_timerTick);
 	timer_.expires_from_now(boost::posix_time::seconds(60));
+	timer_.async_wait(std::bind(&SpawnService::_timerTick, this, std::placeholders::_1));
 }
 
 void SpawnService::_timerTick(const boost::system::error_code& e)
@@ -101,6 +102,6 @@ void SpawnService::_timerTick(const boost::system::error_code& e)
 		//If the spawn group can handle more spawns
 			//Trigger Spawn
 
-	timer_.async_wait(_timerTick);
 	timer_.expires_from_now(boost::posix_time::seconds(60));
+	timer_.async_wait(std::bind(&SpawnService::_timerTick, this, std::placeholders::_1));
 }

@@ -44,5 +44,3 @@ namespace spawn
 	};
 }
 }
-
-#endif

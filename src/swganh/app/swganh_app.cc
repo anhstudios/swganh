@@ -411,11 +411,6 @@ void SwganhApp::LoadCoreServices_()
 			LOG(info) << "Loaded Service " << name;
         }
     });
-<<<<<<< HEAD
-=======
-
-    auto app_config = kernel_->GetAppConfig();
->>>>>>> develop
 }
 
 void SwganhApp::SetupLogging_()
