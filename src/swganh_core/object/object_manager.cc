@@ -4,6 +4,7 @@
 #include "object_manager.h"
 
 #include <boost/asio.hpp>
+#include <boost/python.hpp>
 
 #include "swganh/logger.h"
 
@@ -15,6 +16,9 @@
 #include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
 #include "swganh_core/object/slot_exclusive.h"
 #include "swganh_core/object/slot_container.h"
+#include "swganh/object/template_interface.h"
+
+#include "swganh/scripting/utilities.h"
 
 #include "swganh/database/database_manager_interface.h"
 #include <cppconn/exception.h>
@@ -37,6 +41,7 @@ using namespace swganh;
 using namespace swganh::tre;
 using namespace swganh::object;
 using namespace swganh::messages;
+namespace bp = boost::python;
 
 #define DYNAMIC_ID_START 17596481011712
 
@@ -63,6 +68,8 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 
 	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
+
+	LoadPythonObjectTemplates();
 }
 
 ObjectManager::~ObjectManager()
@@ -81,32 +88,6 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
 	}
 
 	factory->RegisterEventHandlers();
-
-	//Load Object Prototypes For this ObjectType
-	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
-    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-
-	std::stringstream ss;
-	ss << "SELECT i.id, i.iff_template FROM iff_templates i WHERE i.has_prototype=1 and i.object_type ="<< object_type <<";";
-    statement->execute(ss.str());
-
-	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-
-	while(result->next())
-	{
-		uint64_t id = result->getUInt64("id");
-		std::string key = result->getString("iff_template");
-
-		std::shared_ptr<Object> obj = factory->CreateObjectFromStorage(id);
-		obj->SetDatabasePersisted(false);
-		obj->SetInSnapshot(false);
-
-		if(obj)
-		{
-			boost::lock_guard<boost::shared_mutex> lock(object_map_mutex_);
-			prototypes_.insert(make_pair(key, obj));
-		}
-	}
 }
 
 void ObjectManager::UnregisterObjectType(uint32_t object_type)
@@ -476,4 +457,22 @@ void ObjectManager::PrepareToAccomodate(uint32_t delta)
 {
 	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
 	object_map_.reserve(object_map_.size() + delta);
+}
+
+void ObjectManager::LoadPythonObjectTemplates()
+{
+	swganh::scripting::ScopedGilLock lock;
+	try {		
+		// ensure object_list.py gets executed
+		auto module = bp::import("load_objects");
+		auto python_template = module.attr("templates");
+		object_templates_ = bp::extract<PythonTemplateMap>(python_template);	
+		auto python_prototypes = module.attr("prototypes");
+		prototypes_ = bp::extract<PrototypeMap>(python_prototypes);
+	}
+	catch(bp::error_already_set&)
+	{
+		PyErr_Print();
+		LOG(error) << "Error Loading object templates from python with error: ";
+	}
 }
