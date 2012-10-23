@@ -34,6 +34,8 @@
 
 #include "swganh/object/slot_interface.h"
 
+#define DISPATCH(a) if(event_dispatcher_ != nullptr) event_dispatcher_->Dispatch(a) 
+
 namespace swganh {
 namespace object {
 
@@ -590,6 +592,8 @@ protected:
 
 	std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 
+	swganh::EventDispatcher* event_dispatcher_;
+
 private:
     
     typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
@@ -607,7 +611,6 @@ private:
     DeltasCacheContainer deltas_;
 
     std::shared_ptr<ContainerInterface> container_;
-    swganh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;
 

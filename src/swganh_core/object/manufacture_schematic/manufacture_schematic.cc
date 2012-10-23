@@ -45,7 +45,7 @@ void ManufactureSchematic::SetSchematicQuantity(uint32_t quantity)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		generic_int_ = (quantity > 1000) ? 1000 : quantity;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Quantity", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -56,7 +56,7 @@ void ManufactureSchematic::IncrementSchematicQuantity(int32_t increment_by)
 		uint32_t tmp = generic_int_ + increment_by;
 		generic_int_ = (tmp > 1000) ? 1000 : tmp;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Quantity", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -74,7 +74,7 @@ void ManufactureSchematic::AddProperty(
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		//properties_.Add(property_stf_file + ":" + property_stf_name, value);
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Property", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
 }
@@ -92,7 +92,7 @@ void ManufactureSchematic::RemoveProperty(
 		else*/
 			return;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Property", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -109,7 +109,7 @@ void ManufactureSchematic::UpdateProperty(
 		else*/
 			return;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Property", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -125,7 +125,7 @@ void ManufactureSchematic::SetCreatorName(std::wstring creator)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		creator_ = move(creator);
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::CreatorName", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -140,7 +140,7 @@ void ManufactureSchematic::SetSchematicComplexity(uint32_t complexity)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		complexity_ = complexity;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Complexity", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -156,7 +156,7 @@ void ManufactureSchematic::SetSchematicDataSize(float schematic_data_size)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		schematic_data_size_ = schematic_data_size;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::DataSize", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -172,7 +172,7 @@ void ManufactureSchematic::SetCustomizationString(const std::string& customizati
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		customization_.append(customization_string);
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::CustomizationString", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -189,7 +189,7 @@ void ManufactureSchematic::SetCustomizationModel(std::string customization_model
 		customization_model_ = customization_model;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::CustomizationModel", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -211,7 +211,7 @@ void ManufactureSchematic::SetPrototypeModel(std::string prototype_model)
 		prototype_model_ = move(prototype_model);
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::PrototypeModel", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -242,7 +242,7 @@ void ManufactureSchematic::ToggleActive()
 		is_active_ ^= true;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Active", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -257,7 +257,7 @@ void ManufactureSchematic::IncreaseSlotCount()
 		++slot_count_;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -265,7 +265,7 @@ void ManufactureSchematic::DecreaseSlotCount()
 {
 	--slot_count_;
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -273,7 +273,7 @@ void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
 {
 	slot_count_ = slot_count;
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -292,7 +292,7 @@ void ManufactureSchematic::RemoveSlot(uint16_t index)
 		slots_.Remove(iter);
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -323,7 +323,7 @@ uint16_t ManufactureSchematic::AddSlot(
 		slots_.Add(slot);
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
     return index;
@@ -362,7 +362,7 @@ void ManufactureSchematic::UpdateSlot(
 		find_iter->clean = clean;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -378,7 +378,7 @@ void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> sl
 		slots_.Reinstall();
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -389,7 +389,7 @@ void ManufactureSchematic::ClearAllSlots()
 		slots_.Clear();
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 	("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -419,7 +419,7 @@ void ManufactureSchematic::RemoveExperiment(uint16_t index)
 
 		experiments_.Erase(find_iter);
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -463,7 +463,7 @@ uint16_t ManufactureSchematic::AddExperiment(
 
 		experiments_.Add(experiment);
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
     return index;
@@ -501,7 +501,7 @@ void ManufactureSchematic::UpdateExperiment(
 		find_iter->size = size;
 		find_iter->max_value = max_value;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -516,7 +516,7 @@ void ManufactureSchematic::ResetExperiments(std::vector<ManufactureSchematic::Ex
 		}
 		experiments_.Reinstall();
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -526,7 +526,7 @@ void ManufactureSchematic::ClearAllExperiments()
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		experiments_.Clear();
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -556,7 +556,7 @@ void ManufactureSchematic::RemoveCustomization(uint16_t index)
 
 		customizations_.Erase(find_iter);
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Experiment", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -596,7 +596,7 @@ uint16_t ManufactureSchematic::AddCustomization(
 
 		customizations_.Add(customization);
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Customization", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
     return index;
@@ -630,7 +630,7 @@ void ManufactureSchematic::UpdateCustomization(
 		find_iter->pallet_start_index = pallet_start_index;
 		find_iter->pallet_end_index = pallet_end_index;
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Customization", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
@@ -645,7 +645,7 @@ void ManufactureSchematic::ResetCustomizations(std::vector<Customization> custom
 		}
 		customizations_.Reinstall();
 	}
-	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+	DISPATCH(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Customization", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
