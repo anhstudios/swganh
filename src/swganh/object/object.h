@@ -661,6 +661,9 @@ public:
 		std::cout << "collision_length_ " << length << ":" << height << std::endl;
 	}
 
+	void SetCollidable(bool collidable) { collidable_ = collidable; }
+	bool IsCollidable(void) const { return collidable_; }
+
 protected:
 	// Radials
 	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
@@ -691,16 +694,12 @@ protected:
 
 	float collision_length_;
 	float collision_height_;
+	bool collidable_;
 
 	virtual void __BuildCollisionBox(void)
 	{
 			local_collision_box_.clear();
-			//boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
-			//boost::geometry::append(local_collision_box_, Point(-1.0f, 1.0f));
-			//boost::geometry::append(local_collision_box_, Point(1.0f, 1.0f));
-			//boost::geometry::append(local_collision_box_, Point(1.0f, -1.0f));
-
-			if(collision_length_ > 0)
+			if(collidable_)
 			{
 				boost::geometry::append(local_collision_box_, Point((-1.0f * collision_length_) / 2, (-1.0f * collision_length_) / 2));
 				boost::geometry::append(local_collision_box_, Point((-1.0f * collision_length_) / 2, collision_length_ / 2));

@@ -43,6 +43,7 @@ Object::Object()
 	, in_snapshot_(false)
 	, collision_height_(0.0f)
 	, collision_length_(0.0f)
+	, collidable_(false)
 {
 	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }

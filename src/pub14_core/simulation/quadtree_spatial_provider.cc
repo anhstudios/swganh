@@ -257,7 +257,7 @@ void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Ob
 	});
 
 	std::for_each(objects.begin(), objects.end(), [=](const std::shared_ptr<swganh::object::Object> other) {
-		if(other->GetObjectId() == object->GetObjectId())
+		if(other->GetObjectId() == object->GetObjectId() || other->IsCollidable() == false)
 			return;
 
 		if(boost::geometry::intersects(object->GetWorldCollisionBox(), other->GetWorldCollisionBox()))
