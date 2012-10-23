@@ -5,7 +5,7 @@
 # Description: Generates object templates from an output csv file
 
 # At the time of creation, the SQL command used to generate the csv was:
-# SELECT iff.iff_template, iff.object_type, 0, iff.iff_template, iff.attribute_template_id, o.objectName_1, o.objectName_2
+# SELECT iff.iff_template, iff.object_type, 0, iff.attribute_template_id, o.objectName_1, o.objectName_2
 #
 # INTO OUTFILE 'C:\\big.csv'
 # FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
@@ -116,13 +116,12 @@ def boolString(val):
 	return val != "0"
 	
 csv_replace_targets = []
-csv_replace_targets.append(("@TEMPLATE_NAME@", 0, str))
+csv_replace_targets.append(("@MODEL_STRING@", 0, str))
 csv_replace_targets.append(("@OBJECT_TYPE@", 1, objectType))
 csv_replace_targets.append(("@IS_PROTOTYPE@", 2, boolString))
-csv_replace_targets.append(("@MODEL_STRING@", 3, str))
-csv_replace_targets.append(("@ATTRIBUTE_ID@", 4, int))
-csv_replace_targets.append(("@STF_NAME@", 5, str))
-csv_replace_targets.append(("@STF_FILE@", 6, str))
+csv_replace_targets.append(("@ATTRIBUTE_ID@", 3, int))
+csv_replace_targets.append(("@STF_NAME@", 4, str))
+csv_replace_targets.append(("@STF_FILE@", 5, str))
 
 preserved_replace = ("#### BEGIN MODIFICATIONS ####", "####  END MODIFICATIONS  ####")
 
