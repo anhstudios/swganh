@@ -121,24 +121,9 @@ void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const
 }
 shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
-    auto tangible = make_shared<Tangible>();
-    tangible->SetObjectId(object_id);
-    try {
-        auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        
-        stringstream ss;
-        ss << "CALL sp_GetTangible(" << object_id << ");";   
-
-        statement->execute(ss.str());
-        CreateTangible(tangible, statement);  
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-    return tangible;
+   auto tangible = make_shared<Tangible>();
+   CreateTangibleFromStorage(tangible);
+   return tangible;
 }
 
 void TangibleFactory::CreateTangibleFromStorage(shared_ptr<Tangible> tangible)

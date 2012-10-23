@@ -16068,7 +16068,7 @@ INSERT INTO `object_attributes` (`id`, `object_id`, `attribute_id`, `attribute_v
 	(33227, 15796, 1268, '13'),
 	(33228, 15797, 1268, '13'),
 	(33229, 15798, 1268, '13'),
-	(33230, 15799, 1268, '13')
+	(33230, 15799, 1268, '13');
 /*!40000 ALTER TABLE `object_attributes` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
