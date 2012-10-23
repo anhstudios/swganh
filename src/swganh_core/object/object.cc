@@ -300,7 +300,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 					newObservers.insert(observer);
 				}
 			}
-		});
+		}, requester);
 
 		//Send Creates to only new
 		for(auto& observer : newObservers) {
@@ -407,8 +407,8 @@ void Object::SetTemplate(const string& template_string)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
 	    template_string_ = template_string;
     }
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Template",shared_from_this()));
+
+	DISPATCH(make_shared<ObjectEvent>("Object::Template",shared_from_this()));
 }
 void Object::SetObjectId(uint64_t object_id)
 {
@@ -432,8 +432,7 @@ void Object::SetCustomName(wstring custom_name)
         custom_name_ = custom_name;
     }
     
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::CustomName",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::CustomName",shared_from_this()));
 }
 
 bool Object::HasObservers()
@@ -524,16 +523,13 @@ void Object::SetPosition(glm::vec3 position)
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         position_ = position;
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Position",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::Position",shared_from_this()));
 }
 void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& quaternion, std::shared_ptr<Object> parent)
 {
 	SetOrientation(quaternion);
 	// Call an Event that gets handled by the movement manager
-	GetEventDispatcher()->Dispatch(make_shared<UpdatePositionEvent>
-		("Object::UpdatePosition", parent, shared_from_this(), new_position));
+	DISPATCH(make_shared<UpdatePositionEvent>("Object::UpdatePosition", parent, shared_from_this(), new_position));
 }
 
 glm::vec3 Object::GetPosition()
@@ -559,9 +555,7 @@ void Object::SetOrientation(glm::quat orientation)
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         orientation_ = orientation;
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Orientation",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::Orientation",shared_from_this()));
 }
 glm::quat Object::GetOrientation()
 {
@@ -592,8 +586,7 @@ void Object::FacePosition(const glm::vec3& position)
         orientation_.y = -orientation_.y;
         orientation_.w = -orientation_.w; 
     }
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Orientation",shared_from_this()));
+	DISPATCH(make_shared<ObjectEvent>("Object::Orientation",shared_from_this()));
 }
 
 uint8_t Object::GetHeading()
@@ -632,9 +625,7 @@ void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         container_ = container;		
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Container",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::Container",shared_from_this()));
 }
 
 shared_ptr<ContainerInterface> Object::GetContainer()
@@ -649,9 +640,7 @@ void Object::SetComplexity(float complexity)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         complexity_ = complexity;
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Complexity",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::Complexity",shared_from_this()));
 }
 
 float Object::GetComplexity()
@@ -667,9 +656,7 @@ void Object::SetStfName(const string& stf_file_name, const string& stf_string)
         stf_name_file_ = stf_file_name;
         stf_name_string_ = stf_string;
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::StfName",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::StfName",shared_from_this()));
 }
 
 string Object::GetStfNameFile()
@@ -687,9 +674,7 @@ string Object::GetStfNameString()
 void Object::SetVolume(uint32_t volume)
 {
     volume_ = volume;
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Volume",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::Volume",shared_from_this()));
 }
 
 uint32_t Object::GetVolume()
@@ -700,9 +685,7 @@ uint32_t Object::GetVolume()
 void Object::SetSceneId(uint32_t scene_id)
 {
     scene_id_ = scene_id;
-        
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::SceneId",shared_from_this()));
+    DISPATCH(make_shared<ObjectEvent>("Object::SceneId",shared_from_this()));
 }
 
 uint32_t Object::GetSceneId()
@@ -718,9 +701,7 @@ uint32_t Object::GetInstanceId()
 void Object::SetInstanceId(uint32_t instance_id)
 {
 	instance_id_ = instance_id;
-
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::InstanceId",shared_from_this()));
+	DISPATCH(make_shared<ObjectEvent>("Object::InstanceId",shared_from_this()));
 }
 
 int32_t Object::GetArrangementId()
@@ -745,8 +726,7 @@ void Object::SetEventDispatcher(swganh::EventDispatcher* dispatcher)
 
 void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-        ("Object::Baselines", shared_from_this(), observer));
+    DISPATCH(make_shared<ObserverEvent>("Object::Baselines", shared_from_this(), observer));
 }
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 

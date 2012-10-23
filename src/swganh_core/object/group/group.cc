@@ -37,7 +37,7 @@ void Group::AddGroupMember(uint64_t member, std::string name)
 		member_list_.Add(Member(member, name));
 	}
     
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
+    DISPATCH(make_shared<GroupEvent>
         ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
 }
 
@@ -57,7 +57,7 @@ void Group::RemoveGroupMember(uint64_t member)
 		member_list_.Remove(iter);
 	}
     
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
+    DISPATCH(make_shared<GroupEvent>
         ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
 }
     
@@ -71,7 +71,7 @@ void Group::SetLootMode(LootMode loot_mode)
 {
     loot_mode_ = loot_mode;
 
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
+    DISPATCH(make_shared<GroupEvent>
         ("Group::LootMode",static_pointer_cast<Group>(shared_from_this())));
 }
 
@@ -85,7 +85,7 @@ void Group::SetDifficulty(uint16_t difficulty)
 {
     difficulty_ = difficulty;
 
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
+    DISPATCH(make_shared<GroupEvent>
         ("Group::Difficulty",static_pointer_cast<Group>(shared_from_this())));
 }
 
@@ -98,7 +98,7 @@ void Group::SetLootMaster(uint64_t loot_master)
 {
     loot_master_ = loot_master;
 
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
+    DISPATCH(make_shared<GroupEvent>
         ("Group::LootMaster",static_pointer_cast<Group>(shared_from_this())));
 }
 

@@ -46,7 +46,7 @@ void Installation::ToggleActive()
 {
     is_active_ = !is_active_;
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::Active",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -63,7 +63,7 @@ void Installation::SetPowerReserve(float power_reserve)
 		power_reserve_ = power_reserve;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::PowerReserve",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -80,7 +80,7 @@ void Installation::SetPowerCost(float power_cost)
 		power_cost_ = power_cost;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::PowerCost",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -126,7 +126,7 @@ void Installation::AddAvailableResource(uint64_t global_id, std::string name, st
 
 	if(send_update)
 	{
-		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+		DISPATCH(make_shared<InstallationEvent>
         ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
 	}
 }
@@ -154,7 +154,7 @@ void Installation::RemoveAvailableResourceById(uint64_t global_id)
 
 	if(send_update)
 	{
-		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+		DISPATCH(make_shared<InstallationEvent>
         ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
 	}
 }
@@ -182,7 +182,7 @@ void Installation::UpdateResource(uint64_t global_id, std::string name, std::str
 
 	if(send_update)
 	{
-		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+		DISPATCH(make_shared<InstallationEvent>
         ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
 	}
 }
@@ -213,7 +213,7 @@ void Installation::ResetAvailableResources(std::vector<Installation::Resource> a
 		resource_names_.Reinstall();
 		resource_types_.Reinstall();
 	}
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -226,7 +226,7 @@ void Installation::ClearAllAvailableResources()
 		resource_types_.Clear();
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -234,7 +234,7 @@ void Installation::SetDisplayedMaxExtractionRate(uint32_t extraction_rate)
 {
 	displayed_max_extraction_rate_ = extraction_rate;
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::DisplayedMaxExtraction",static_pointer_cast<Installation>(shared_from_this())));
 }
     
@@ -256,7 +256,7 @@ void Installation::SetMaxExtractionRate(float extraction_rate)
 		max_extraction_rate_ = extraction_rate;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::MaxExtraction",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -273,7 +273,7 @@ void Installation::SetCurrentExtractionRate(float extraction_rate)
 		current_extraction_rate_ = extraction_rate;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::CurrentExtraction",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -290,7 +290,7 @@ void Installation::SetCurrentHopperSize(float hopper_size)
 		current_hopper_size_ = hopper_size;
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::CurrentHopperSize",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -303,7 +303,7 @@ void Installation::SetMaxHopperSize(uint32_t hopper_size)
 {
 	max_hopper_size_ = hopper_size;
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::MaxHopperSize",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -332,7 +332,7 @@ void Installation::ToggleUpdating()
 {
     is_updating_ = !is_updating_;
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::IsUpdating",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -352,7 +352,7 @@ void Installation::AddToHopper(uint64_t global_id, float quantity)
 		hopper_.Add(move(item));
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -374,7 +374,7 @@ void Installation::RemoveHopperItem(uint64_t global_id)
 
 	if(send_update)
 	{
-		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+		DISPATCH(make_shared<InstallationEvent>
         ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 	}
 }
@@ -401,7 +401,7 @@ void Installation::UpdateHopperItem(uint64_t global_id, float quantity)
 
 	if(send_update)
 	{
-		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+		DISPATCH(make_shared<InstallationEvent>
         ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 	}
 }
@@ -421,7 +421,7 @@ void Installation::ResetContents(std::vector<Installation::HopperItem> hopper)
 		hopper_.Reinstall();
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -432,7 +432,7 @@ void Installation::ClearAllHopperContents()
 		hopper_.Clear();
 	}
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -446,7 +446,7 @@ void Installation::SetConditionPercentage(uint8_t condition)
 	condition = (condition > 100) ? 100 : condition;
 	condition_percent_ = condition;
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::ConditionPercent",static_pointer_cast<Installation>(shared_from_this())));
 }
 
@@ -477,7 +477,7 @@ void Installation::SetSelectedResourceId(uint64_t new_id)
 {
 	selected_resource_ = new_id;
 
-	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+	DISPATCH(make_shared<InstallationEvent>
         ("Installation::SelectedResource",static_pointer_cast<Installation>(shared_from_this())));
 }
 
