@@ -984,6 +984,26 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 	
 	return ss.str();
 }
+
+void Object::UpdateWorldCollisionBox(void)
+{ 
+		auto rot = glm::yaw(orientation_);
+
+		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
+
+		if(rot <= DBL_MAX && rot >= -DBL_MAX) // glm::yaw sometimes results in a non-real float (-1.#IND) that will cause problems if not filted through.
+		{
+			//std::cout << "Orientation: " << rot << std::endl;
+			boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
+			boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
+			boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
+		}
+		else
+		{
+			boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
+		}
+}
+
 boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
 {
 	auto val = GetAttribute(name);

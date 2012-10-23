@@ -13,6 +13,7 @@ using namespace swganh::object::regions;
 
 BadgeRegion::BadgeRegion(void)
 {
+	SetCollidable(true);
 }
 
 BadgeRegion::~BadgeRegion(void)

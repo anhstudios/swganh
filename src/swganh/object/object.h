@@ -609,24 +609,7 @@ public:
 		boost::geometry::envelope(world_collision_box_, aabb_);
 	}
 
-	void UpdateWorldCollisionBox() 
-	{ 
-		auto rot = glm::yaw(orientation_);
-
-		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
-
-		if(rot <= DBL_MAX && rot >= -DBL_MAX) // glm::yaw sometimes results in a non-real float (-1.#IND) that will cause problems if not filted through.
-		{
-			//std::cout << "Orientation: " << rot << std::endl;
-			boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
-			boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
-			boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
-		}
-		else
-		{
-			boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
-		}
-	}
+	void UpdateWorldCollisionBox();
 
 	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
 	void AddCollidedObject(std::shared_ptr<Object> obj)
