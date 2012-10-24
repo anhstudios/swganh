@@ -249,7 +249,11 @@ bool Tangible::IsAutoAttacking()
 }
 void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    DISPATCH(Tangible, Baselines);
+    if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Tangible::Baseline", shared_from_this(), observer));
+	}
 }
 
 std::shared_ptr<Object> Tangible::Clone()

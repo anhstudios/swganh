@@ -44,6 +44,7 @@ Object::Object()
 	, in_snapshot_(false)
 	, attributes_template_id(-1)
 	, event_dispatcher_(nullptr)
+	, controller_(nullptr)
 {
 }
 
@@ -725,7 +726,11 @@ void Object::SetEventDispatcher(swganh::EventDispatcher* dispatcher)
 
 void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	DISPATCH(Object, Baselines);
+	if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Object::Baseline", shared_from_this(), observer));
+	}
 }
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 

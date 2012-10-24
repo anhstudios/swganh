@@ -1139,7 +1139,11 @@ std::vector<uint64_t> Creature::GetDuelList()
 
 void Creature::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	DISPATCH(Creature, Baselines);
+	if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Creature::Baseline", shared_from_this(), observer));
+	}
 }
 
 bool Creature::HasBuff(std::string buff_name)

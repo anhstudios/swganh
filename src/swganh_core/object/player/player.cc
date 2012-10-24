@@ -836,7 +836,11 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
 
 void Player::CreateBaselines(shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    DISPATCH(Player, Baselines);
+    if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Player::Baseline", shared_from_this(), observer));
+	}
 }
 
 std::shared_ptr<Object> Player::Clone()
