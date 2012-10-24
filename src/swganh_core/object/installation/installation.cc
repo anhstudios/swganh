@@ -45,9 +45,7 @@ void Installation::Deactivate()
 void Installation::ToggleActive()
 {
     is_active_ = !is_active_;
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::Active",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, Active);
 }
 
 float Installation::GetPowerReserve() const
@@ -62,9 +60,7 @@ void Installation::SetPowerReserve(float power_reserve)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		power_reserve_ = power_reserve;
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::PowerReserve",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, PowerReserve);
 }
 
 float Installation::GetPowerCost() const
@@ -79,9 +75,7 @@ void Installation::SetPowerCost(float power_cost)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		power_cost_ = power_cost;
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::PowerCost",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, PowerCost);
 }
 
 std::vector<Installation::Resource> Installation::GetAvailableResources()
@@ -126,8 +120,7 @@ void Installation::AddAvailableResource(uint64_t global_id, std::string name, st
 
 	if(send_update)
 	{
-		DISPATCH(make_shared<InstallationEvent>
-        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+		DISPATCH(Installation, AvailableResource);
 	}
 }
 
@@ -154,8 +147,7 @@ void Installation::RemoveAvailableResourceById(uint64_t global_id)
 
 	if(send_update)
 	{
-		DISPATCH(make_shared<InstallationEvent>
-        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+		DISPATCH(Installation, AvailableResource);
 	}
 }
 
@@ -182,8 +174,7 @@ void Installation::UpdateResource(uint64_t global_id, std::string name, std::str
 
 	if(send_update)
 	{
-		DISPATCH(make_shared<InstallationEvent>
-        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+		DISPATCH(Installation, AvailableResource);
 	}
 }
 
@@ -213,8 +204,7 @@ void Installation::ResetAvailableResources(std::vector<Installation::Resource> a
 		resource_names_.Reinstall();
 		resource_types_.Reinstall();
 	}
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, AvailableResource);
 }
 
 void Installation::ClearAllAvailableResources()
@@ -225,17 +215,13 @@ void Installation::ClearAllAvailableResources()
 		resource_names_.Clear();
 		resource_types_.Clear();
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, AvailableResource);
 }
 
 void Installation::SetDisplayedMaxExtractionRate(uint32_t extraction_rate)
 {
 	displayed_max_extraction_rate_ = extraction_rate;
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::DisplayedMaxExtraction",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, DisplayedMaxExtraction);
 }
     
 uint32_t Installation::GetDisplayedMaxExtractionRate() const
@@ -255,9 +241,7 @@ void Installation::SetMaxExtractionRate(float extraction_rate)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		max_extraction_rate_ = extraction_rate;
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::MaxExtraction",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, MaxExtraction);
 }
 
 float Installation::GetCurrentExtractionRate() const
@@ -272,9 +256,7 @@ void Installation::SetCurrentExtractionRate(float extraction_rate)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		current_extraction_rate_ = extraction_rate;
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::CurrentExtraction",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, CurrentExtraction);
 }
 
 float Installation::GetCurrentHopperSize() const
@@ -289,9 +271,7 @@ void Installation::SetCurrentHopperSize(float hopper_size)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		current_hopper_size_ = hopper_size;
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::CurrentHopperSize",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, CurrentHopperSize);
 }
 
 uint32_t Installation::GetMaxHopperSize() const
@@ -302,9 +282,7 @@ uint32_t Installation::GetMaxHopperSize() const
 void Installation::SetMaxHopperSize(uint32_t hopper_size)
 {
 	max_hopper_size_ = hopper_size;
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::MaxHopperSize",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, MaxHopperSize);
 }
 
 bool Installation::IsUpdating() const
@@ -331,9 +309,7 @@ void Installation::StopUpdating()
 void Installation::ToggleUpdating()
 {
     is_updating_ = !is_updating_;
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::IsUpdating",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, IsUpdating);
 }
 
 NetworkSortedVector<Installation::HopperItem>& Installation::GetHopperContents()
@@ -351,9 +327,7 @@ void Installation::AddToHopper(uint64_t global_id, float quantity)
 		item.quantity = quantity;
 		hopper_.Add(move(item));
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, Hopper);
 }
 
 void Installation::RemoveHopperItem(uint64_t global_id)
@@ -374,8 +348,7 @@ void Installation::RemoveHopperItem(uint64_t global_id)
 
 	if(send_update)
 	{
-		DISPATCH(make_shared<InstallationEvent>
-        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
+		DISPATCH(Installation, Hopper);
 	}
 }
 
@@ -401,8 +374,7 @@ void Installation::UpdateHopperItem(uint64_t global_id, float quantity)
 
 	if(send_update)
 	{
-		DISPATCH(make_shared<InstallationEvent>
-        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
+		DISPATCH(Installation, Hopper);
 	}
 }
 
@@ -420,9 +392,7 @@ void Installation::ResetContents(std::vector<Installation::HopperItem> hopper)
 		hopper_.ClearDeltas();
 		hopper_.Reinstall();
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, Hopper);
 }
 
 void Installation::ClearAllHopperContents()
@@ -431,9 +401,7 @@ void Installation::ClearAllHopperContents()
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		hopper_.Clear();
 	}
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, Hopper);
 }
 
 uint8_t Installation::GetConditionPercentage() const
@@ -445,9 +413,7 @@ void Installation::SetConditionPercentage(uint8_t condition)
 {
 	condition = (condition > 100) ? 100 : condition;
 	condition_percent_ = condition;
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::ConditionPercent",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, ConditionPercent);
 }
 
 NetworkSortedVector<ResourceId>& Installation::GetResourceIds_()
@@ -476,9 +442,7 @@ uint64_t Installation::GetSelectedResourceId()
 void Installation::SetSelectedResourceId(uint64_t new_id)
 {
 	selected_resource_ = new_id;
-
-	DISPATCH(make_shared<InstallationEvent>
-        ("Installation::SelectedResource",static_pointer_cast<Installation>(shared_from_this())));
+	DISPATCH(Installation, SelectedResource);
 }
 
 std::shared_ptr<Object> Installation::Clone()
