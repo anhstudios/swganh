@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/lightsaber/shared_lightsaber_refined_crystal_pack.iff"
 		result.attribute_template_id = -1
-		result.stfName("refined_crystal_pack","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","refined_crystal_pack")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_tumble_blender_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("tumble_blender","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","tumble_blender")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_hvy_disruptor_cannon_broken.iff"
 		result.attribute_template_id = -1
-		result.stfName("disruptor_broken","item_n")		
+		result.stfName("item_n","disruptor_broken")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

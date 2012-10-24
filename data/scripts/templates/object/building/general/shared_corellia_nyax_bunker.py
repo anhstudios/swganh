@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/general/shared_corellia_nyax_bunker.iff"
 		result.attribute_template_id = -1
-		result.stfName("bunker_imperial","building_name")		
+		result.stfName("building_name","bunker_imperial")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

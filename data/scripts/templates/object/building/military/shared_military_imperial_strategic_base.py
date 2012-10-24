@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/military/shared_military_imperial_strategic_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("military_imperial_strategic_base","building_name")		
+		result.stfName("building_name","military_imperial_strategic_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

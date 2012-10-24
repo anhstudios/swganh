@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/base/shared_installation_default.iff"
 		result.attribute_template_id = -1
-		result.stfName("unknown_installation","obj_n")		
+		result.stfName("obj_n","unknown_installation")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

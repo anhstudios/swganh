@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/misc/shared_mystical_powered_orb.iff"
 		result.attribute_template_id = -1
-		result.stfName("mystical_powered_orb","item_n")		
+		result.stfName("item_n","mystical_powered_orb")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

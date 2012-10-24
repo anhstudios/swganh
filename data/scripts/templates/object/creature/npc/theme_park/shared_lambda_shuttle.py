@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/npc/theme_park/shared_lambda_shuttle.iff"
 		result.attribute_template_id = 9
-		result.stfName("shuttle","theme_park_name")		
+		result.stfName("theme_park_name","shuttle")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

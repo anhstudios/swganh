@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/vehicle/shared_armor_panel_heat.iff"
 		result.attribute_template_id = -1
-		result.stfName("armor_panel_heat","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","armor_panel_heat")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

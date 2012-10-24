@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/misc/shared_dermal_analyxer.iff"
 		result.attribute_template_id = -1
-		result.stfName("dermal_analyzer","item_n")		
+		result.stfName("item_n","dermal_analyzer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

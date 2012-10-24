@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/gem/shared_default.iff"
 		result.attribute_template_id = -1
-		result.stfName("socket_gem","item_n")		
+		result.stfName("item_n","socket_gem")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

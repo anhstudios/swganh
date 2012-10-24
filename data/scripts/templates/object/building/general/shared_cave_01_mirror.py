@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/general/shared_cave_01_mirror.iff"
 		result.attribute_template_id = -1
-		result.stfName("Cave Style 02","building_name")		
+		result.stfName("building_name","Cave Style 02")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

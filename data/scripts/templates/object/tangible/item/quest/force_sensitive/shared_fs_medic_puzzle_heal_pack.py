@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_medic_puzzle_heal_pack.iff"
 		result.attribute_template_id = -1
-		result.stfName("fs_medic_puzzle_heal_pack","medicine_name")		
+		result.stfName("medicine_name","fs_medic_puzzle_heal_pack")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

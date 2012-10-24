@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/intangible/ship/base/shared_ship_control_device_base.iff"
 		result.attribute_template_id = 8
-		result.stfName("","string_id_table")		
+		result.stfName("string_id_table","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

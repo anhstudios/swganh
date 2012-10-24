@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/resource_container/shared_resource_container_organic_hide_lg.iff"
 		result.attribute_template_id = -1
-		result.stfName("organic_hide_large","resource_container_n")		
+		result.stfName("resource_container_n","organic_hide_large")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

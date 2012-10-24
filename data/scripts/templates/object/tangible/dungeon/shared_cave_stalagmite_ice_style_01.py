@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_cave_stalagmite_ice_style_01.iff"
 		result.attribute_template_id = -1
-		result.stfName("nightsister_trap_crystal","terminal_name")		
+		result.stfName("terminal_name","nightsister_trap_crystal")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

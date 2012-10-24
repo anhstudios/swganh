@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/booster/shared_bst_sorosuub_enhanced_liberator_mk4.iff"
 		result.attribute_template_id = 8
-		result.stfName("bst_sorosuub_enhanced_liberator_mk4_n","space/space_item")		
+		result.stfName("space/space_item","bst_sorosuub_enhanced_liberator_mk4_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

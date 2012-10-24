@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_syren2_blacksun_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("syren2_datapad","item_n")		
+		result.stfName("item_n","syren2_datapad")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

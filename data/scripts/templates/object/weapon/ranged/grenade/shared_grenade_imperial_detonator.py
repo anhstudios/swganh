@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/ranged/grenade/shared_grenade_imperial_detonator.iff"
 		result.attribute_template_id = 10
-		result.stfName("grenade_imperial_detonator","weapon_name")		
+		result.stfName("weapon_name","grenade_imperial_detonator")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

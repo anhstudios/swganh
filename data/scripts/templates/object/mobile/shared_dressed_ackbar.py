@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_ackbar.iff"
 		result.attribute_template_id = 9
-		result.stfName("admiral_ackbar","theme_park_name")		
+		result.stfName("theme_park_name","admiral_ackbar")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

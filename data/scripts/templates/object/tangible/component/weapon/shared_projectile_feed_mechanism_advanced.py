@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_projectile_feed_mechanism_advanced.iff"
 		result.attribute_template_id = -1
-		result.stfName("projectile_feed_mechanism_advanced","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","projectile_feed_mechanism_advanced")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

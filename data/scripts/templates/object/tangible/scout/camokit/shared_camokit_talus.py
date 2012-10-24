@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/scout/camokit/shared_camokit_talus.iff"
 		result.attribute_template_id = -1
-		result.stfName("camokit_talus","item_n")		
+		result.stfName("item_n","camokit_talus")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

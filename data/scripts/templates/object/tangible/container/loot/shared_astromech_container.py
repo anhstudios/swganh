@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/loot/shared_astromech_container.iff"
 		result.attribute_template_id = -1
-		result.stfName("astromech","container_name")		
+		result.stfName("container_name","astromech")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

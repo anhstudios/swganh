@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_geonosian_solidifying_agent.iff"
 		result.attribute_template_id = -1
-		result.stfName("geonosian_solidifying_agent","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","geonosian_solidifying_agent")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

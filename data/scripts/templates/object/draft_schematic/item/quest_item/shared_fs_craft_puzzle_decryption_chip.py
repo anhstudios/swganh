@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/item/quest_item/shared_fs_craft_puzzle_decryption_chip.iff"
 		result.attribute_template_id = -1
-		result.stfName("","string_id_table")		
+		result.stfName("string_id_table","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

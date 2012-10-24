@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/painting/shared_painting_schematic_weapon.iff"
 		result.attribute_template_id = -1
-		result.stfName("painting_schematic_weapon","frn_n")		
+		result.stfName("frn_n","painting_schematic_weapon")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

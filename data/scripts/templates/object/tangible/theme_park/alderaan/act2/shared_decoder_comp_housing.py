@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act2/shared_decoder_comp_housing.iff"
 		result.attribute_template_id = -1
-		result.stfName("decoder_comp_housing","item_n")		
+		result.stfName("item_n","decoder_comp_housing")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

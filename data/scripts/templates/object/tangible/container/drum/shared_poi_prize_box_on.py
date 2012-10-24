@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/drum/shared_poi_prize_box_on.iff"
 		result.attribute_template_id = -1
-		result.stfName("tatt_drum","container_name")		
+		result.stfName("container_name","tatt_drum")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

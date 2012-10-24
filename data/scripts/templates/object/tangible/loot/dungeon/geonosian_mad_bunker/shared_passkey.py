@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/geonosian_mad_bunker/shared_passkey.iff"
 		result.attribute_template_id = -1
-		result.stfName("biogenic_passkey","item_n")		
+		result.stfName("item_n","biogenic_passkey")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

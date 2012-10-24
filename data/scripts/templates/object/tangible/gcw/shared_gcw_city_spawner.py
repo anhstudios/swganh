@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/gcw/shared_gcw_city_spawner.iff"
 		result.attribute_template_id = -1
-		result.stfName("base_poi","item_n")		
+		result.stfName("item_n","base_poi")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_sculpture_2.iff"
 		result.attribute_template_id = -1
-		result.stfName("fs_sculpture_2","item_n")		
+		result.stfName("item_n","fs_sculpture_2")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

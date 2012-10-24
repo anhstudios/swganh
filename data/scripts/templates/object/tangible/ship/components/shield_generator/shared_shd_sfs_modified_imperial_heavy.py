@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_sfs_modified_imperial_heavy.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_sfs_modified_imperial_heavy_n","space/space_item")		
+		result.stfName("space/space_item","shd_sfs_modified_imperial_heavy_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

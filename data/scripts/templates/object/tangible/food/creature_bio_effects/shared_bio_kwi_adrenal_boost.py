@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/food/creature_bio_effects/shared_bio_kwi_adrenal_boost.iff"
 		result.attribute_template_id = 5
-		result.stfName("bio_kwi_adrenal_boost","food_name")		
+		result.stfName("food_name","bio_kwi_adrenal_boost")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

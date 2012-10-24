@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_ito_interrogator.iff"
 		result.attribute_template_id = 9
-		result.stfName("imperial_probot_base","droid_name")		
+		result.stfName("droid_name","imperial_probot_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

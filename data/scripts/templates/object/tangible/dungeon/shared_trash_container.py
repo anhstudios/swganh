@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_trash_container.iff"
 		result.attribute_template_id = -1
-		result.stfName("trash_container","obj_n")		
+		result.stfName("obj_n","trash_container")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

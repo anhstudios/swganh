@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_armek_plasma_shell_s1.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_armek_plasma_shell_s1_n","space/space_item")		
+		result.stfName("space/space_item","shd_armek_plasma_shell_s1_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

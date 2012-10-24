@@ -309,7 +309,6 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			//Set the required stuff
 			created_object->SetPermissions(permission_itr->second);
 			created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
-			created_object->SetTemplate(template_name);
 			created_object->SetDatabasePersisted(is_persisted);
 			LoadSlotsForObject(created_object);
 

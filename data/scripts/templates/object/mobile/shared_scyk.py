@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_scyk.iff"
 		result.attribute_template_id = 9
-		result.stfName("dune_lizard","monster_name")		
+		result.stfName("monster_name","dune_lizard")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/gcw/shared_flip_banner_onpole_imperial.iff"
 		result.attribute_template_id = -1
-		result.stfName("imperial_banner","obj_n")		
+		result.stfName("obj_n","imperial_banner")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

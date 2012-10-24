@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/resource_container/shared_resource_container_inorganic_minerals.iff"
 		result.attribute_template_id = -1
-		result.stfName("inorganic_minerals_small","resource_container_n")		
+		result.stfName("resource_container_n","inorganic_minerals_small")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_daclif_gallamby_q2_needed.iff"
 		result.attribute_template_id = -1
-		result.stfName("daclif_gallamby_q2_needed","loot_corl_n")		
+		result.stfName("loot_corl_n","daclif_gallamby_q2_needed")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

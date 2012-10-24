@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/battlefield/destructible/shared_turret_tower_small.iff"
 		result.attribute_template_id = -1
-		result.stfName("turret_tower_small","battlefield")		
+		result.stfName("battlefield","turret_tower_small")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

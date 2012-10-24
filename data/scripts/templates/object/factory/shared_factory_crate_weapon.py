@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/factory/shared_factory_crate_weapon.iff"
 		result.attribute_template_id = 4
-		result.stfName("clothing_factory_crate","factory_n")		
+		result.stfName("factory_n","clothing_factory_crate")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

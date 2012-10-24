@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/faction_perk/covert_detector/shared_detector_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("covert_detector","faction_perk_n")		
+		result.stfName("faction_perk_n","covert_detector")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

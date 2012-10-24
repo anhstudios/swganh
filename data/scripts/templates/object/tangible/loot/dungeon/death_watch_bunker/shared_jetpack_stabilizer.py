@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/death_watch_bunker/shared_jetpack_stabilizer.iff"
 		result.attribute_template_id = -1
-		result.stfName("jetpack_stabilizer","item_n")		
+		result.stfName("item_n","jetpack_stabilizer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

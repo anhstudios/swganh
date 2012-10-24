@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/engine/shared_engine_qualdex_kyromaster.iff"
 		result.attribute_template_id = 8
-		result.stfName("engine_qualdex_kyromaster_n","space/space_item")		
+		result.stfName("space/space_item","engine_qualdex_kyromaster_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

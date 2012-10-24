@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/trap/shared_eqp_weapon_auto_laser_trap.iff"
 		result.attribute_template_id = 10
-		result.stfName("laser trap","wpn_d")		
+		result.stfName("wpn_d","laser trap")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

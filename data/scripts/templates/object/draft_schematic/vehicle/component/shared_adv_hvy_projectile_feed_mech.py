@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/vehicle/component/shared_adv_hvy_projectile_feed_mech.iff"
 		result.attribute_template_id = -1
-		result.stfName("","string_id_table")		
+		result.stfName("string_id_table","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

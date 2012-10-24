@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_poison_stabilizer.iff"
 		result.attribute_template_id = -1
-		result.stfName("poison_stabilizer","obj_n")		
+		result.stfName("obj_n","poison_stabilizer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

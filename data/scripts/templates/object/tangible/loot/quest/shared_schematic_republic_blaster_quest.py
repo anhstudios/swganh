@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_schematic_republic_blaster_quest.iff"
 		result.attribute_template_id = -1
-		result.stfName("schematic_republic_blaster_quest","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","schematic_republic_blaster_quest")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

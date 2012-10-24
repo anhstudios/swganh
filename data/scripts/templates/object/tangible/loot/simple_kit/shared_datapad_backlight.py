@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_datapad_backlight.iff"
 		result.attribute_template_id = -1
-		result.stfName("datapad_backlight","loot_n")		
+		result.stfName("loot_n","datapad_backlight")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

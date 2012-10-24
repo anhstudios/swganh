@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/ranged/pistol/shared_pistol_geonosian_sonic_blaster_loot.iff"
 		result.attribute_template_id = 10
-		result.stfName("pistol_geonosian_sonic_blaster","weapon_name")		
+		result.stfName("weapon_name","pistol_geonosian_sonic_blaster")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

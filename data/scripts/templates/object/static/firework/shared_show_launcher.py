@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/static/firework/shared_show_launcher.iff"
 		result.attribute_template_id = -1
-		result.stfName("show","firework_n")		
+		result.stfName("firework_n","show")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

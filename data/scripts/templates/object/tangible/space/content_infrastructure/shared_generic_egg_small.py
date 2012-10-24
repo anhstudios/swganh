@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/content_infrastructure/shared_generic_egg_small.iff"
 		result.attribute_template_id = -1
-		result.stfName("small_egg","item_n")		
+		result.stfName("item_n","small_egg")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

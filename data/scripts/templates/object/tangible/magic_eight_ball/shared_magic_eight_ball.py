@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/magic_eight_ball/shared_magic_eight_ball.iff"
 		result.attribute_template_id = -1
-		result.stfName("magic_eight_ball","item_n")		
+		result.stfName("item_n","magic_eight_ball")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

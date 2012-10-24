@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_salacious_crumb.iff"
 		result.attribute_template_id = 9
-		result.stfName("salacious_crumb","theme_park_name")		
+		result.stfName("theme_park_name","salacious_crumb")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

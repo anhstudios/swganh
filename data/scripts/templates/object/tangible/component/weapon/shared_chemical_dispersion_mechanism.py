@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_chemical_dispersion_mechanism.iff"
 		result.attribute_template_id = -1
-		result.stfName("chemical_dispersion_mechanism","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","chemical_dispersion_mechanism")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

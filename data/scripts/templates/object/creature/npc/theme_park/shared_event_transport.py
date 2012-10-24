@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/npc/theme_park/shared_event_transport.iff"
 		result.attribute_template_id = 9
-		result.stfName("transport","theme_park_name")		
+		result.stfName("theme_park_name","transport")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

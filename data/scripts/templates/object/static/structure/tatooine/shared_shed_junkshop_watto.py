@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/static/structure/tatooine/shared_shed_junkshop_watto.iff"
 		result.attribute_template_id = -1
-		result.stfName("shed_junkshop_watto","string_table")		
+		result.stfName("string_table","shed_junkshop_watto")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

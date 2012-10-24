@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/general/shared_rori_hyperdrive_research_facility.iff"
 		result.attribute_template_id = -1
-		result.stfName("Hyperdrive Research Facility","building_name")		
+		result.stfName("building_name","Hyperdrive Research Facility")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

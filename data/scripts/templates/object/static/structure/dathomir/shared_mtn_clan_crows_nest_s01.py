@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/static/structure/dathomir/shared_mtn_clan_crows_nest_s01.iff"
 		result.attribute_template_id = -1
-		result.stfName("unknown_object","obj_n")		
+		result.stfName("obj_n","unknown_object")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

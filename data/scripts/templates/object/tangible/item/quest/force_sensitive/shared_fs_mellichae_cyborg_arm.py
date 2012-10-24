@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_mellichae_cyborg_arm.iff"
 		result.attribute_template_id = -1
-		result.stfName("fs_mellichae_cyborg_arm","item_n")		
+		result.stfName("item_n","fs_mellichae_cyborg_arm")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

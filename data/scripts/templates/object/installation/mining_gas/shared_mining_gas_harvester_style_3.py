@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/mining_gas/shared_mining_gas_harvester_style_3.iff"
 		result.attribute_template_id = -1
-		result.stfName("gas_mine_heavy","installation_n")		
+		result.stfName("installation_n","gas_mine_heavy")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

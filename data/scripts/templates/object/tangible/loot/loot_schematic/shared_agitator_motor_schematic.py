@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_agitator_motor_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("agitator_motor","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","agitator_motor")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

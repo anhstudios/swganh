@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/intangible/theater/shared_base_theater.iff"
 		result.attribute_template_id = -1
-		result.stfName("","string_id_table")		
+		result.stfName("string_id_table","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

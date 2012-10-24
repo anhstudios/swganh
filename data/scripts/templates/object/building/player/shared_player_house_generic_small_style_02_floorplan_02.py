@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/player/shared_player_house_generic_small_style_02_floorplan_02.iff"
 		result.attribute_template_id = -1
-		result.stfName("housing_general_small_style_2_floorplan_2","building_name")		
+		result.stfName("building_name","housing_general_small_style_2_floorplan_2")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

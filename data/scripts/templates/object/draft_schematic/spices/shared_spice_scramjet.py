@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/spices/shared_spice_scramjet.iff"
 		result.attribute_template_id = -1
-		result.stfName("","string_id_table")		
+		result.stfName("string_id_table","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

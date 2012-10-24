@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/polearm/shared_lance_controllerfp.iff"
 		result.attribute_template_id = 10
-		result.stfName("lance_controllerfp","weapon_name")		
+		result.stfName("weapon_name","lance_controllerfp")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

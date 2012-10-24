@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/player/shared_wookiee_male.iff"
 		result.attribute_template_id = -1
-		result.stfName("wookiee","species")		
+		result.stfName("species","wookiee")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

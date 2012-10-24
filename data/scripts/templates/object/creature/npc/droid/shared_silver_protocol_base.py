@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/npc/droid/shared_silver_protocol_base.iff"
 		result.attribute_template_id = 3
-		result.stfName("3po_base","droid_name")		
+		result.stfName("droid_name","3po_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

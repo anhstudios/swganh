@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_moncal_ionweb_a.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_moncal_ionweb_a_n","space/space_item")		
+		result.stfName("space/space_item","shd_moncal_ionweb_a_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

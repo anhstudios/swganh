@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/reverse_engineering/shared_retrofit_kit.iff"
 		result.attribute_template_id = 8
-		result.stfName("retrofit_kit","space_crafting_n")		
+		result.stfName("space_crafting_n","retrofit_kit")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

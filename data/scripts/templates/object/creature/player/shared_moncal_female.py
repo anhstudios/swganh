@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/player/shared_moncal_female.iff"
 		result.attribute_template_id = -1
-		result.stfName("moncalamari","species")		
+		result.stfName("species","moncalamari")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

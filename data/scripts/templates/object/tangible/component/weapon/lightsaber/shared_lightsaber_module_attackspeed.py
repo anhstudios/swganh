@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/lightsaber/shared_lightsaber_module_attackspeed.iff"
 		result.attribute_template_id = -1
-		result.stfName("lightsaber_module_atkspd","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","lightsaber_module_atkspd")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

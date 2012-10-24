@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dera_darklighter.iff"
 		result.attribute_template_id = 9
-		result.stfName("dera_darklighter","theme_park_name")		
+		result.stfName("theme_park_name","dera_darklighter")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

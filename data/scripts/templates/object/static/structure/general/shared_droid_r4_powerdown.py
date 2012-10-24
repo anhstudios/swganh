@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/static/structure/general/shared_droid_r4_powerdown.iff"
 		result.attribute_template_id = -1
-		result.stfName("unknown_object","obj_n")		
+		result.stfName("obj_n","unknown_object")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_regulator.iff"
 		result.attribute_template_id = -1
-		result.stfName("regulator","community_crafting_n")		
+		result.stfName("community_crafting_n","regulator")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

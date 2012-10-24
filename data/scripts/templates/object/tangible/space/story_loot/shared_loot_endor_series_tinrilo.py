@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/story_loot/shared_loot_endor_series_tinrilo.iff"
 		result.attribute_template_id = -1
-		result.stfName("loot_endor_series_tinrilo","space/story_loot_n")		
+		result.stfName("space/story_loot_n","loot_endor_series_tinrilo")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/tool/shared_sandstat_broken.iff"
 		result.attribute_template_id = -1
-		result.stfName("sandstat_broken","item_n")		
+		result.stfName("item_n","sandstat_broken")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

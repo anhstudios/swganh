@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/munition/shared_enhanced_fragmentation_sleeve.iff"
 		result.attribute_template_id = -1
-		result.stfName("enhanced_fragmentation_sleeve","craft_munition_ingredients_n")		
+		result.stfName("craft_munition_ingredients_n","enhanced_fragmentation_sleeve")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

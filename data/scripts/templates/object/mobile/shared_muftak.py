@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_muftak.iff"
 		result.attribute_template_id = 9
-		result.stfName("muftak","theme_park_name")		
+		result.stfName("theme_park_name","muftak")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

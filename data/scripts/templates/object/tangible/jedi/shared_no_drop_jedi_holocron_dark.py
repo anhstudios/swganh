@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/jedi/shared_no_drop_jedi_holocron_dark.iff"
 		result.attribute_template_id = -1
-		result.stfName("holocron_dark","item_n")		
+		result.stfName("item_n","holocron_dark")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

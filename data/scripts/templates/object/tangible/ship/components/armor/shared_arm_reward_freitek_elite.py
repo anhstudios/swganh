@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/armor/shared_arm_reward_freitek_elite.iff"
 		result.attribute_template_id = 8
-		result.stfName("armor_reward_freitek_elite","space/space_item")		
+		result.stfName("space/space_item","armor_reward_freitek_elite")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

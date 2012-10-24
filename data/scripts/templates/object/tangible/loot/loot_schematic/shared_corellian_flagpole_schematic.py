@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_corellian_flagpole_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("corellian_flagpole","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","corellian_flagpole")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dice/shared_eqp_chance_cube.iff"
 		result.attribute_template_id = -1
-		result.stfName("eqp_chance_cube_single","dice/dice_details")		
+		result.stfName("dice/dice_details","eqp_chance_cube_single")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

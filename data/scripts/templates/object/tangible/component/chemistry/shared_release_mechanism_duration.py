@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/chemistry/shared_release_mechanism_duration.iff"
 		result.attribute_template_id = -1
-		result.stfName("release_mech_duration","craft_chemical_ingredients_n")		
+		result.stfName("craft_chemical_ingredients_n","release_mech_duration")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

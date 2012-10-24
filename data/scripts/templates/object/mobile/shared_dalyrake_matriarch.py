@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dalyrake_matriarch.iff"
 		result.attribute_template_id = 9
-		result.stfName("dalyrake","monster_name")		
+		result.stfName("monster_name","dalyrake")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

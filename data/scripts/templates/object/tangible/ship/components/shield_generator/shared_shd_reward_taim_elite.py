@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_reward_taim_elite.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_reward_taim_elite","space/space_item")		
+		result.stfName("space/space_item","shd_reward_taim_elite")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

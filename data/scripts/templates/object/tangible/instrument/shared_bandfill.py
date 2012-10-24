@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/instrument/shared_bandfill.iff"
 		result.attribute_template_id = -1
-		result.stfName("obj_bandfill","obj_n")		
+		result.stfName("obj_n","obj_bandfill")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/scout/trap/shared_trap_sonic_pulse.iff"
 		result.attribute_template_id = -1
-		result.stfName("trap_sonic_pulse","item_n")		
+		result.stfName("item_n","trap_sonic_pulse")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

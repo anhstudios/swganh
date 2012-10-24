@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/yavin/shared_temple_woolamander.iff"
 		result.attribute_template_id = -1
-		result.stfName("temple_woolamander","building_name")		
+		result.stfName("building_name","temple_woolamander")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

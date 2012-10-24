@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/event_perk/shared_xwing.iff"
 		result.attribute_template_id = -1
-		result.stfName("xwing_n","event_perk_detail")		
+		result.stfName("event_perk_detail","xwing_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

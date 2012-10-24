@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_corellian_corvette_rifle_berserker_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("rifle_berserker_schematic","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","rifle_berserker_schematic")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

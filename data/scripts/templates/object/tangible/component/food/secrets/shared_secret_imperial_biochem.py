@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/food/secrets/shared_secret_imperial_biochem.iff"
 		result.attribute_template_id = -1
-		result.stfName("secret_imperial_biochem","craft_food_ingredients_n")		
+		result.stfName("craft_food_ingredients_n","secret_imperial_biochem")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

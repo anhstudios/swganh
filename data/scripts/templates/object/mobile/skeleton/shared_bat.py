@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/skeleton/shared_bat.iff"
 		result.attribute_template_id = 9
-		result.stfName("base_monster","monster_name")		
+		result.stfName("monster_name","base_monster")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

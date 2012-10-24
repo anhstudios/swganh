@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/item/theme_park/alderaan/act2/shared_dead_eye_decoder.iff"
 		result.attribute_template_id = -1
-		result.stfName("","string_id_table")		
+		result.stfName("string_id_table","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -126,8 +126,8 @@ csv_replace_targets.append(("@MODEL_STRING@", 0, str))
 csv_replace_targets.append(("@OBJECT_TYPE@", 1, objectType))
 csv_replace_targets.append(("@IS_PROTOTYPE@", 2, boolString))
 csv_replace_targets.append(("@ATTRIBUTE_ID@", 3, int))
-csv_replace_targets.append(("@STF_NAME@", 4, str))
-csv_replace_targets.append(("@STF_FILE@", 5, str))
+csv_replace_targets.append(("@STF_FILE@", 4, str))
+csv_replace_targets.append(("@STF_NAME@", 5, str))
 
 preserved_replace = ("#### BEGIN MODIFICATIONS ####", "####  END MODIFICATIONS  ####")
 

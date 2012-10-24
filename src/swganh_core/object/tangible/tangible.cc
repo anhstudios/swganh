@@ -252,7 +252,7 @@ void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
     if (event_dispatcher_)
 	{
 		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-			("Tangible::Baseline", shared_from_this(), observer));
+			("Tangible::Baselines", shared_from_this(), observer));
 	}
 }
 

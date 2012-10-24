@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_viewscreen_printer.iff"
 		result.attribute_template_id = -1
-		result.stfName("viewscreen_printer","loot_n")		
+		result.stfName("loot_n","viewscreen_printer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/vehicle/shared_dx_disruptor_array.iff"
 		result.attribute_template_id = -1
-		result.stfName("dx_disruptor_array","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","dx_disruptor_array")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

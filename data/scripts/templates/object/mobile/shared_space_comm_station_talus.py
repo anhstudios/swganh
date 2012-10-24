@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_space_comm_station_talus.iff"
 		result.attribute_template_id = 9
-		result.stfName("selonian_base_male","npc_name")		
+		result.stfName("npc_name","selonian_base_male")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/droid/shared_performer_effects_c.iff"
 		result.attribute_template_id = -1
-		result.stfName("performer_effects_c","craft_droid_ingredients_n")		
+		result.stfName("craft_droid_ingredients_n","performer_effects_c")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

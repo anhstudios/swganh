@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_rifle_quest_tusken.iff"
 		result.attribute_template_id = -1
-		result.stfName("rifle_quest_tusken","weapon_name")		
+		result.stfName("weapon_name","rifle_quest_tusken")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

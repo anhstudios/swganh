@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/terminal/shared_terminal_light_enclave_challenge.iff"
 		result.attribute_template_id = -1
-		result.stfName("terminal_light_enclave_challenge","terminal_name")		
+		result.stfName("terminal_name","terminal_light_enclave_challenge")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

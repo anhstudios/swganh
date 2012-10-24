@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_astromech_waiter.iff"
 		result.attribute_template_id = 9
-		result.stfName("r2_base","droid_name")		
+		result.stfName("droid_name","r2_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/death_watch_bunker/shared_passkey_hall.iff"
 		result.attribute_template_id = -1
-		result.stfName("passkey_hall","dungeon/death_watch")		
+		result.stfName("dungeon/death_watch","passkey_hall")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

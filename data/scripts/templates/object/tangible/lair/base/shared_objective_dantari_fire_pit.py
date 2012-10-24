@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/base/shared_objective_dantari_fire_pit.iff"
 		result.attribute_template_id = -1
-		result.stfName("fire_pit","lair_n")		
+		result.stfName("lair_n","fire_pit")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

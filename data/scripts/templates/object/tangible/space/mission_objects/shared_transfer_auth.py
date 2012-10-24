@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/mission_objects/shared_transfer_auth.iff"
 		result.attribute_template_id = -1
-		result.stfName("transfer_auth","space_item_n")		
+		result.stfName("space_item_n","transfer_auth")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

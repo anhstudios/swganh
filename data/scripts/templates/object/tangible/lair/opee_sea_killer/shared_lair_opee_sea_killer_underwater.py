@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/opee_sea_killer/shared_lair_opee_sea_killer_underwater.iff"
 		result.attribute_template_id = -1
-		result.stfName("opee_sea_killer_underwater","lair_n")		
+		result.stfName("lair_n","opee_sea_killer_underwater")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

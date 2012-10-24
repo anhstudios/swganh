@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/painting/shared_bestine_history_quest_painting.iff"
 		result.attribute_template_id = -1
-		result.stfName("bestine_history_quest_painting","frn_n")		
+		result.stfName("frn_n","bestine_history_quest_painting")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

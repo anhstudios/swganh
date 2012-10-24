@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/all/shared_frn_all_light_death_watch.iff"
 		result.attribute_template_id = 6
-		result.stfName("water_pressure_light","dungeon/death_watch")		
+		result.stfName("dungeon/death_watch","water_pressure_light")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

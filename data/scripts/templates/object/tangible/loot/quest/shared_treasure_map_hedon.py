@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_treasure_map_hedon.iff"
 		result.attribute_template_id = -1
-		result.stfName("treasure_map_hedon","item_n")		
+		result.stfName("item_n","treasure_map_hedon")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

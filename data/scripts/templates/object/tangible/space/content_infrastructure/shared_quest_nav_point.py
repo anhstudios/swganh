@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/content_infrastructure/shared_quest_nav_point.iff"
 		result.attribute_template_id = -1
-		result.stfName("quest_nav_point","item_n")		
+		result.stfName("item_n","quest_nav_point")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

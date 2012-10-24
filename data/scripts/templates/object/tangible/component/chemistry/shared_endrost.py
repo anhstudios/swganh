@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/chemistry/shared_endrost.iff"
 		result.attribute_template_id = -1
-		result.stfName("endrost","community_crafting_n")		
+		result.stfName("community_crafting_n","endrost")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

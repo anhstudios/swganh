@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/encoded_disk/shared_encoded_disk_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("encoded_disk_base","item_n")		
+		result.stfName("item_n","encoded_disk_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

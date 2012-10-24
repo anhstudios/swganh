@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_surlin_rolei_q6_spy_report.iff"
 		result.attribute_template_id = -1
-		result.stfName("surlin_rolei_q6_spy_report","quest_naboo_plc_quest_n")		
+		result.stfName("quest_naboo_plc_quest_n","surlin_rolei_q6_spy_report")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

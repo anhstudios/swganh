@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/instrument/shared_traz.iff"
 		result.attribute_template_id = -1
-		result.stfName("obj_traz","obj_n")		
+		result.stfName("obj_n","obj_traz")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

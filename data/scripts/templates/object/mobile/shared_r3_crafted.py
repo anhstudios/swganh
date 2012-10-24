@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_r3_crafted.iff"
 		result.attribute_template_id = 9
-		result.stfName("r3_base","droid_name")		
+		result.stfName("droid_name","r3_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

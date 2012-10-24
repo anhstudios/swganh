@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/waypoint/shared_world_waypoint_orange.iff"
 		result.attribute_template_id = -1
-		result.stfName("waypoint","obj_n")		
+		result.stfName("obj_n","waypoint")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

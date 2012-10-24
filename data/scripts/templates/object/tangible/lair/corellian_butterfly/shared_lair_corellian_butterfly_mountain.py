@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/corellian_butterfly/shared_lair_corellian_butterfly_mountain.iff"
 		result.attribute_template_id = -1
-		result.stfName("corellian_butterfly_mountain","lair_n")		
+		result.stfName("lair_n","corellian_butterfly_mountain")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

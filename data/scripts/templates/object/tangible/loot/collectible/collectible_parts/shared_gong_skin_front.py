@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/collectible/collectible_parts/shared_gong_skin_front.iff"
 		result.attribute_template_id = -1
-		result.stfName("gong_skin_front","collectible_loot_items_n")		
+		result.stfName("collectible_loot_items_n","gong_skin_front")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

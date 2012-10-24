@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/sign/shared_streetsign_upright_style_01.iff"
 		result.attribute_template_id = -1
-		result.stfName("sign","sign_name")		
+		result.stfName("sign_name","sign")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/scout/shared_item_trap_tranq_dart.iff"
 		result.attribute_template_id = -1
-		result.stfName("","string_id_table")		
+		result.stfName("string_id_table","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

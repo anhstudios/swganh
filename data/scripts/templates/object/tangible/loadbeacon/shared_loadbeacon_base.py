@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loadbeacon/shared_loadbeacon_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("waypoint","item_n")		
+		result.stfName("item_n","waypoint")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

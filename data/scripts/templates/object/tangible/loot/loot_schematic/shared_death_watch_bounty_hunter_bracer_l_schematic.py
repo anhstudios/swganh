@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_death_watch_bounty_hunter_bracer_l_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("armor_bounty_hunter_bracer","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","armor_bounty_hunter_bracer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

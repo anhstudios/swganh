@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_dathomir_nightsister_axkva.iff"
 		result.attribute_template_id = 9
-		result.stfName("axkva_min","theme_park_name")		
+		result.stfName("theme_park_name","axkva_min")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

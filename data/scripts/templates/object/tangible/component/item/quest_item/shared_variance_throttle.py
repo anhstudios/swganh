@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_variance_throttle.iff"
 		result.attribute_template_id = -1
-		result.stfName("variance_throttle","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","variance_throttle")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

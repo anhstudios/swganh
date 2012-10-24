@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/yavin/shared_light_enclave.iff"
 		result.attribute_template_id = -1
-		result.stfName("light_enclave","building_name")		
+		result.stfName("building_name","light_enclave")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

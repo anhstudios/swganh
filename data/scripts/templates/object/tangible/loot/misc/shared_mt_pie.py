@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/misc/shared_mt_pie.iff"
 		result.attribute_template_id = -1
-		result.stfName("mt_pie","item_n")		
+		result.stfName("item_n","mt_pie")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

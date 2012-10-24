@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/droid/shared_socket_bank.iff"
 		result.attribute_template_id = -1
-		result.stfName("socket_bank","craft_droid_ingredients_n")		
+		result.stfName("craft_droid_ingredients_n","socket_bank")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

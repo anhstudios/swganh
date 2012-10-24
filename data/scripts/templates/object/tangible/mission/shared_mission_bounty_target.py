@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/shared_mission_bounty_target.iff"
 		result.attribute_template_id = -1
-		result.stfName("bounty_target","item_n")		
+		result.stfName("item_n","bounty_target")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

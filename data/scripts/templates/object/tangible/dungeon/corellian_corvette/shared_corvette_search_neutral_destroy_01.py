@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/corellian_corvette/shared_corvette_search_neutral_destroy_01.iff"
 		result.attribute_template_id = -1
-		result.stfName("frn_chest","frn_n")		
+		result.stfName("frn_n","frn_chest")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

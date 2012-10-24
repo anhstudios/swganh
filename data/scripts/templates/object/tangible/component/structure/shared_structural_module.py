@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_structural_module.iff"
 		result.attribute_template_id = -1
-		result.stfName("structural_module","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","structural_module")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

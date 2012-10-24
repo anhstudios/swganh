@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/death_watch_bunker/shared_viewscreen_s2.iff"
 		result.attribute_template_id = -1
-		result.stfName("viewscreen_s2","item_n")		
+		result.stfName("item_n","viewscreen_s2")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

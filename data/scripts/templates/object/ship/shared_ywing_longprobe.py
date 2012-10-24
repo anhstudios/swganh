@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/ship/shared_ywing_longprobe.iff"
 		result.attribute_template_id = -1
-		result.stfName("ywing_lp","")		
+		result.stfName("","ywing_lp")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

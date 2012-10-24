@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_huff_darklighter.iff"
 		result.attribute_template_id = 9
-		result.stfName("base_npc_theme_park","theme_park_name")		
+		result.stfName("theme_park_name","base_npc_theme_park")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

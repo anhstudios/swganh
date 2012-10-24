@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/ship/shared_rebel_gunboat.iff"
 		result.attribute_template_id = -1
-		result.stfName("rebel_gunboat","space_ship")		
+		result.stfName("space_ship","rebel_gunboat")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

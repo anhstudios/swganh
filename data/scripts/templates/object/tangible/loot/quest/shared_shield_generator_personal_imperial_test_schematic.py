@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_shield_generator_personal_imperial_test_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("shield_generator_personal_imperial_test_schematic","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","shield_generator_personal_imperial_test_schematic")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

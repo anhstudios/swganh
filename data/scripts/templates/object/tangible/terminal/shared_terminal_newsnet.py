@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/terminal/shared_terminal_newsnet.iff"
 		result.attribute_template_id = -1
-		result.stfName("newsnet_terminal","gcw")		
+		result.stfName("gcw","newsnet_terminal")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

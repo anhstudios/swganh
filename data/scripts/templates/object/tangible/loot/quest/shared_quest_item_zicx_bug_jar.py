@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_quest_item_zicx_bug_jar.iff"
 		result.attribute_template_id = -1
-		result.stfName("zicx_bug_jar","item_n")		
+		result.stfName("item_n","zicx_bug_jar")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

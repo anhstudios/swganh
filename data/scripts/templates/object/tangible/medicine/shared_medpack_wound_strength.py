@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/medicine/shared_medpack_wound_strength.iff"
 		result.attribute_template_id = 7
-		result.stfName("medpack_wound_strength","medicine_name")		
+		result.stfName("medicine_name","medpack_wound_strength")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

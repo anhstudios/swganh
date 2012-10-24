@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_ajuva_vamasterin_q2_needed.iff"
 		result.attribute_template_id = -1
-		result.stfName("ajuva_vanasterin_q2_needed","loot_rori_n")		
+		result.stfName("loot_rori_n","ajuva_vanasterin_q2_needed")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

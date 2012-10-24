@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_space_starfighter_engineer_trainer_01.iff"
 		result.attribute_template_id = 9
-		result.stfName("chiss_base_female","npc_name")		
+		result.stfName("npc_name","chiss_base_female")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

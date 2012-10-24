@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/quest/quest_start/shared_ep3_clone_relics_jedi_starfighter_container.iff"
 		result.attribute_template_id = -1
-		result.stfName("placable_loot_crate_skeleton","container_name")		
+		result.stfName("container_name","placable_loot_crate_skeleton")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

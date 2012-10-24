@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/corellian_corvette/shared_bootdisk.iff"
 		result.attribute_template_id = -1
-		result.stfName("corvette_bootdisk_4","item_n")		
+		result.stfName("item_n","corvette_bootdisk_4")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

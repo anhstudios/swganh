@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/armor/shared_armor_freitek_es4_durasteel.iff"
 		result.attribute_template_id = 8
-		result.stfName("armor_freitek_es4_durasteel_n","space/space_item")		
+		result.stfName("space/space_item","armor_freitek_es4_durasteel_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

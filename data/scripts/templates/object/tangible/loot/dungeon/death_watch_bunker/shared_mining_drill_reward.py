@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/death_watch_bunker/shared_mining_drill_reward.iff"
 		result.attribute_template_id = -1
-		result.stfName("alum_reward","item_n")		
+		result.stfName("item_n","alum_reward")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/engine/shared_eng_mission_reward_imperial_cygnus_megadrive.iff"
 		result.attribute_template_id = 8
-		result.stfName("eng_mission_reward_imperial_cygnus_megadrive_n","space/space_item")		
+		result.stfName("space/space_item","eng_mission_reward_imperial_cygnus_megadrive_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

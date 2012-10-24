@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/encoded_disk/shared_dead_eye_decoder.iff"
 		result.attribute_template_id = -1
-		result.stfName("dead_eye_decoder","item_n")		
+		result.stfName("item_n","dead_eye_decoder")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

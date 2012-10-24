@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_kai_tok.iff"
 		result.attribute_template_id = 9
-		result.stfName("kai_tok","monster_name")		
+		result.stfName("monster_name","kai_tok")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

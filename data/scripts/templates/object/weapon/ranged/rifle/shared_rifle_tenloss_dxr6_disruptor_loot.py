@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/ranged/rifle/shared_rifle_tenloss_dxr6_disruptor_loot.iff"
 		result.attribute_template_id = 10
-		result.stfName("rifle_tenloss_dxr6_disruptor","weapon_name")		
+		result.stfName("weapon_name","rifle_tenloss_dxr6_disruptor")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

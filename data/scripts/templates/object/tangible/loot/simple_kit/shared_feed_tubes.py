@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_feed_tubes.iff"
 		result.attribute_template_id = -1
-		result.stfName("feed_tubes","loot_n")		
+		result.stfName("loot_n","feed_tubes")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

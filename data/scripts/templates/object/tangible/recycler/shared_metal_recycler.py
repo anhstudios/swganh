@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/recycler/shared_metal_recycler.iff"
 		result.attribute_template_id = -1
-		result.stfName("metal_recycler","item_n")		
+		result.stfName("item_n","metal_recycler")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

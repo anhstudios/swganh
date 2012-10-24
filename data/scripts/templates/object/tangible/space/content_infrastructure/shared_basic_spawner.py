@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/content_infrastructure/shared_basic_spawner.iff"
 		result.attribute_template_id = -1
-		result.stfName("spawner","item_n")		
+		result.stfName("item_n","spawner")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

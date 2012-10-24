@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/mining_organic/base/shared_mining_organic_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("organic_harvester","installation_n")		
+		result.stfName("installation_n","organic_harvester")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

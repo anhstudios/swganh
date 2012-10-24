@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act3/shared_alderaan_flora.iff"
 		result.attribute_template_id = -1
-		result.stfName("alderaan_flora","item_n")		
+		result.stfName("item_n","alderaan_flora")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

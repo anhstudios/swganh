@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_kessel_rebel_incom_rayshield_overdriver.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_kessel_rebel_incom_rayshield_overdriver_n","space/space_item")		
+		result.stfName("space/space_item","shd_kessel_rebel_incom_rayshield_overdriver_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

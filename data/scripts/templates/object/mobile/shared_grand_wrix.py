@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_grand_wrix.iff"
 		result.attribute_template_id = 9
-		result.stfName("gurreck","monster_name")		
+		result.stfName("monster_name","gurreck")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

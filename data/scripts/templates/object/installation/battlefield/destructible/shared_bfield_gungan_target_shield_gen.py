@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/battlefield/destructible/shared_bfield_gungan_target_shield_gen.iff"
 		result.attribute_template_id = -1
-		result.stfName("gungan_shield_generator","battlefield")		
+		result.stfName("battlefield","gungan_shield_generator")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

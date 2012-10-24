@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/corellia/shared_hospital_corellia_s02.iff"
 		result.attribute_template_id = -1
-		result.stfName("hospital_corellia","building_name")		
+		result.stfName("building_name","hospital_corellia")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

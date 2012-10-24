@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/instrument/shared_ommni_box.iff"
 		result.attribute_template_id = -1
-		result.stfName("obj_ommni_box","obj_n")		
+		result.stfName("obj_n","obj_ommni_box")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

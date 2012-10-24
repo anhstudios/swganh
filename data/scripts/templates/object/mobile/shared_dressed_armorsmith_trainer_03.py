@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_armorsmith_trainer_03.iff"
 		result.attribute_template_id = 9
-		result.stfName("armorsmith_trainer","theme_park_name")		
+		result.stfName("theme_park_name","armorsmith_trainer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

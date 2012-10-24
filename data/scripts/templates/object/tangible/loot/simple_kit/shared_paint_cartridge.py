@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_paint_cartridge.iff"
 		result.attribute_template_id = -1
-		result.stfName("paint_cartridge","loot_n")		
+		result.stfName("loot_n","paint_cartridge")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

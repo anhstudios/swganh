@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/armor/shared_arm_koensayr_limited_heavy_durasteel.iff"
 		result.attribute_template_id = 8
-		result.stfName("arm_koensayr_limited_heavy_durasteel_n","space/space_item")		
+		result.stfName("space/space_item","arm_koensayr_limited_heavy_durasteel_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

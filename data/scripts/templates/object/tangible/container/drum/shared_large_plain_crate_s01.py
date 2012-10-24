@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/drum/shared_large_plain_crate_s01.iff"
 		result.attribute_template_id = -1
-		result.stfName("large_plain_crate","container_name")		
+		result.stfName("container_name","large_plain_crate")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

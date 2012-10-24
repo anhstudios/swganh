@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_reinforced_wall_module.iff"
 		result.attribute_template_id = -1
-		result.stfName("reinforced_wall_module","community_crafting_n")		
+		result.stfName("community_crafting_n","reinforced_wall_module")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/painting/shared_painting_victorious_reign.iff"
 		result.attribute_template_id = -1
-		result.stfName("victorious_reign","frn_n")		
+		result.stfName("frn_n","victorious_reign")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

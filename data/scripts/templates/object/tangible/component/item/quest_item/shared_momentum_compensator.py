@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_momentum_compensator.iff"
 		result.attribute_template_id = -1
-		result.stfName("momentum_compensator","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","momentum_compensator")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

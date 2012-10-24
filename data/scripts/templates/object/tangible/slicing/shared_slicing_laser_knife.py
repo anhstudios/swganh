@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/slicing/shared_slicing_laser_knife.iff"
 		result.attribute_template_id = -1
-		result.stfName("laser_knife","item_n")		
+		result.stfName("item_n","laser_knife")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

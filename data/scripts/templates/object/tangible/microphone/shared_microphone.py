@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/microphone/shared_microphone.iff"
 		result.attribute_template_id = -1
-		result.stfName("microphone","item_n")		
+		result.stfName("item_n","microphone")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

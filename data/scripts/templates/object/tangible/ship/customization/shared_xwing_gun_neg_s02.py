@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/customization/shared_xwing_gun_neg_s02.iff"
 		result.attribute_template_id = 8
-		result.stfName("socket_gem","item_n")		
+		result.stfName("item_n","socket_gem")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

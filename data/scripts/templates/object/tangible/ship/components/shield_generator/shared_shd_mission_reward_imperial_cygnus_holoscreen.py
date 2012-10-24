@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_mission_reward_imperial_cygnus_holoscreen.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_mission_reward_imperial_cygnus_holoscreen_n","space/space_item")		
+		result.stfName("space/space_item","shd_mission_reward_imperial_cygnus_holoscreen_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

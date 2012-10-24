@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/ship/shared_tie_in.iff"
 		result.attribute_template_id = -1
-		result.stfName("tie_in","")		
+		result.stfName("","tie_in")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

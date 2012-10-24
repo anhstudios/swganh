@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_loam_redge.iff"
 		result.attribute_template_id = 9
-		result.stfName("loam_redge","theme_park_name")		
+		result.stfName("theme_park_name","loam_redge")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

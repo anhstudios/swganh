@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_connections.iff"
 		result.attribute_template_id = -1
-		result.stfName("connections","community_crafting_n")		
+		result.stfName("community_crafting_n","connections")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

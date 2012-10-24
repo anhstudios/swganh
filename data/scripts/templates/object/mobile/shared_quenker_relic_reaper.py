@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_quenker_relic_reaper.iff"
 		result.attribute_template_id = 9
-		result.stfName("quenker","monster_name")		
+		result.stfName("monster_name","quenker")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

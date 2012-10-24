@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/battlefield/destructible/shared_imperial_gate_house.iff"
 		result.attribute_template_id = -1
-		result.stfName("gate_house","battlefield")		
+		result.stfName("battlefield","gate_house")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

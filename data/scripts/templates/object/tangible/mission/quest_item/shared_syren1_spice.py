@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_syren1_spice.iff"
 		result.attribute_template_id = -1
-		result.stfName("syren1_spice_sample","item_n")		
+		result.stfName("item_n","syren1_spice_sample")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_lassin_dedge.iff"
 		result.attribute_template_id = 9
-		result.stfName("lassin_dedge","npc_name")		
+		result.stfName("npc_name","lassin_dedge")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

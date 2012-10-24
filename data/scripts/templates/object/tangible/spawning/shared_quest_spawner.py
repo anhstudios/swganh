@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/spawning/shared_quest_spawner.iff"
 		result.attribute_template_id = -1
-		result.stfName("quest_spawner","item_n")		
+		result.stfName("item_n","quest_spawner")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

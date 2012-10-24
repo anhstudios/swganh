@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_jinkins.iff"
 		result.attribute_template_id = 9
-		result.stfName("jinkins","theme_park_name")		
+		result.stfName("theme_park_name","jinkins")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

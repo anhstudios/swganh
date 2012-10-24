@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/ship/shared_firespray.iff"
 		result.attribute_template_id = -1
-		result.stfName("firespray swg-sw test","")		
+		result.stfName("","firespray swg-sw test")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

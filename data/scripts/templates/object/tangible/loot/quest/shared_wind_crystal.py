@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_wind_crystal.iff"
 		result.attribute_template_id = -1
-		result.stfName("wind_crystal","item_n")		
+		result.stfName("item_n","wind_crystal")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

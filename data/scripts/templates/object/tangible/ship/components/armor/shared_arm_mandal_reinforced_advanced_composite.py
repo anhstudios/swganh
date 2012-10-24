@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/armor/shared_arm_mandal_reinforced_advanced_composite.iff"
 		result.attribute_template_id = 8
-		result.stfName("arm_mandal_reinforced_advanced_composite_n","space/space_item")		
+		result.stfName("space/space_item","arm_mandal_reinforced_advanced_composite_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

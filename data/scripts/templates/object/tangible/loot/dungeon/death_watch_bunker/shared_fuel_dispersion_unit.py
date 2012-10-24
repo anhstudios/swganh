@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/death_watch_bunker/shared_fuel_dispersion_unit.iff"
 		result.attribute_template_id = -1
-		result.stfName("jetpack_fuel_dispersion_unit","item_n")		
+		result.stfName("item_n","jetpack_fuel_dispersion_unit")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

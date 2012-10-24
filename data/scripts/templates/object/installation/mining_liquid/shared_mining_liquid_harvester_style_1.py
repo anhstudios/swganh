@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/mining_liquid/shared_mining_liquid_harvester_style_1.iff"
 		result.attribute_template_id = -1
-		result.stfName("liquid_mine","installation_n")		
+		result.stfName("installation_n","liquid_mine")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

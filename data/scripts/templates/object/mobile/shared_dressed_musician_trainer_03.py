@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_musician_trainer_03.iff"
 		result.attribute_template_id = 9
-		result.stfName("max_rebo","theme_park_name")		
+		result.stfName("theme_park_name","max_rebo")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

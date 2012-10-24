@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_loop_auditor.iff"
 		result.attribute_template_id = -1
-		result.stfName("loop_auditor","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","loop_auditor")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

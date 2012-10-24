@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_dark_force_crystal_hunter.iff"
 		result.attribute_template_id = 9
-		result.stfName("trandoshan_base_female","npc_name")		
+		result.stfName("npc_name","trandoshan_base_female")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

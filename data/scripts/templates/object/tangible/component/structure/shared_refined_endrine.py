@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_refined_endrine.iff"
 		result.attribute_template_id = -1
-		result.stfName("refined_endrine","community_crafting_n")		
+		result.stfName("community_crafting_n","refined_endrine")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

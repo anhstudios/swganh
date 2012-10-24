@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_geonosian_power_cube_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("geonosian_power_cube_base","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","geonosian_power_cube_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

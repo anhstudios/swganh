@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/event_perk/shared_military_outpost_guard_tower_1.iff"
 		result.attribute_template_id = -1
-		result.stfName("military_guard_tower_1","building_name")		
+		result.stfName("building_name","military_guard_tower_1")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

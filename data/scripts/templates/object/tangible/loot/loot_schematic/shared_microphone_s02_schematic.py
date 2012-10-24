@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_microphone_s02_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("microphone","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","microphone")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

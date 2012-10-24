@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/event_perk/shared_sandcrawler.iff"
 		result.attribute_template_id = -1
-		result.stfName("sandcrawler_n","event_perk_detail")		
+		result.stfName("event_perk_detail","sandcrawler_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

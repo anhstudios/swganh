@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/deed/generator_deed/shared_generator_solar_deed.iff"
 		result.attribute_template_id = 2
-		result.stfName("solar_generator_deed_name","deed")		
+		result.stfName("deed","solar_generator_deed_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

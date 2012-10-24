@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_melee_core_enhancement.iff"
 		result.attribute_template_id = -1
-		result.stfName("melee_core_enhancement","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","melee_core_enhancement")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/terminal/shared_terminal_mission_imperial.iff"
 		result.attribute_template_id = -1
-		result.stfName("terminal_mission_imperial","terminal_name")		
+		result.stfName("terminal_name","terminal_mission_imperial")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

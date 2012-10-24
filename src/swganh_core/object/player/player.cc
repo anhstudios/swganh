@@ -839,7 +839,7 @@ void Player::CreateBaselines(shared_ptr<swganh::observer::ObserverInterface> obs
     if (event_dispatcher_)
 	{
 		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-			("Player::Baseline", shared_from_this(), observer));
+			("Player::Baselines", shared_from_this(), observer));
 	}
 }
 

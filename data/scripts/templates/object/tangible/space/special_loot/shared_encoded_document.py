@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/special_loot/shared_encoded_document.iff"
 		result.attribute_template_id = -1
-		result.stfName("encoded_document","space_item_n")		
+		result.stfName("space_item_n","encoded_document")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

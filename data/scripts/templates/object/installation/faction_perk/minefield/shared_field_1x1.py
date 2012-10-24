@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/faction_perk/minefield/shared_field_1x1.iff"
 		result.attribute_template_id = -1
-		result.stfName("minefield","faction_perk_n")		
+		result.stfName("faction_perk_n","minefield")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

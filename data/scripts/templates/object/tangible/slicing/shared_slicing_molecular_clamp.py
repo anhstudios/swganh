@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/slicing/shared_slicing_molecular_clamp.iff"
 		result.attribute_template_id = -1
-		result.stfName("molecular_clamp","item_n")		
+		result.stfName("item_n","molecular_clamp")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

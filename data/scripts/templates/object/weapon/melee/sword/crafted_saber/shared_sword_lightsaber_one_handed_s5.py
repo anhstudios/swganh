@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/sword/crafted_saber/shared_sword_lightsaber_one_handed_s5.iff"
 		result.attribute_template_id = 10
-		result.stfName("sword_lightsaber_type5","weapon_name")		
+		result.stfName("weapon_name","sword_lightsaber_type5")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

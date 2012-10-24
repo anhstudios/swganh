@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_gloves.iff"
 		result.attribute_template_id = 0
-		result.stfName("ith_armor_s02_gloves","wearables_name")		
+		result.stfName("wearables_name","ith_armor_s02_gloves")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

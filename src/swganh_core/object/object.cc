@@ -729,7 +729,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 	if (event_dispatcher_)
 	{
 		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-			("Object::Baseline", shared_from_this(), observer));
+			("Object::Baselines", shared_from_this(), observer));
 	}
 }
 

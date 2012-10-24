@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/vehicle/shared_proton_torpedo_array.iff"
 		result.attribute_template_id = -1
-		result.stfName("proton_torpedo_array","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","proton_torpedo_array")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_space_greeter_bestine_bookie.iff"
 		result.attribute_template_id = 9
-		result.stfName("jabba_enforcer","theme_park_name")		
+		result.stfName("theme_park_name","jabba_enforcer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_wall_terminal_s1.iff"
 		result.attribute_template_id = -1
-		result.stfName("terminal_gas_valve","terminal_name")		
+		result.stfName("terminal_name","terminal_gas_valve")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

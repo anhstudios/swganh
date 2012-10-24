@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/hero_of_tatooine/shared_squill_skull.iff"
 		result.attribute_template_id = -1
-		result.stfName("squill_skull","item_n")		
+		result.stfName("item_n","squill_skull")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

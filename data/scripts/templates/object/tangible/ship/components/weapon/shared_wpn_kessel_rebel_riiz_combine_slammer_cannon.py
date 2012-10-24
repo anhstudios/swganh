@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon/shared_wpn_kessel_rebel_riiz_combine_slammer_cannon.iff"
 		result.attribute_template_id = 8
-		result.stfName("wpn_kessel_rebel_riiz_combine_slammer_cannon_n","space/space_item")		
+		result.stfName("space/space_item","wpn_kessel_rebel_riiz_combine_slammer_cannon_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

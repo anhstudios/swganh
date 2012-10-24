@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/corellian_corvette/shared_neutral_assassin_intel.iff"
 		result.attribute_template_id = -1
-		result.stfName("neutral_assassin_intel","item_n")		
+		result.stfName("item_n","neutral_assassin_intel")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

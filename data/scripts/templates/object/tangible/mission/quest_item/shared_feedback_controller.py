@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_feedback_controller.iff"
 		result.attribute_template_id = -1
-		result.stfName("feedback_controller","item_n")		
+		result.stfName("item_n","feedback_controller")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_craft_puzzle_gyro_receiver.iff"
 		result.attribute_template_id = -1
-		result.stfName("fs_craft_puzzle_gyro_receiver","quest_item_n")		
+		result.stfName("quest_item_n","fs_craft_puzzle_gyro_receiver")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

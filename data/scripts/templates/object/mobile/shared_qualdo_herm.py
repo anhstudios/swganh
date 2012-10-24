@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_qualdo_herm.iff"
 		result.attribute_template_id = 9
-		result.stfName("qualdo_herm","theme_park_name")		
+		result.stfName("theme_park_name","qualdo_herm")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

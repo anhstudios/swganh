@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/static/terrain/corellia/shared_rock_crystal_arch_agrilat_medium.iff"
 		result.attribute_template_id = -1
-		result.stfName("unknown_object","obj_n")		
+		result.stfName("obj_n","unknown_object")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

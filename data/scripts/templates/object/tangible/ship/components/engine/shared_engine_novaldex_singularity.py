@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/engine/shared_engine_novaldex_singularity.iff"
 		result.attribute_template_id = 8
-		result.stfName("engine_novaldex_singularity_n","space/space_item")		
+		result.stfName("space/space_item","engine_novaldex_singularity_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

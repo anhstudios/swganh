@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/datapad/shared_droid_datapad_2.iff"
 		result.attribute_template_id = -1
-		result.stfName("datapad","item_n")		
+		result.stfName("item_n","datapad")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

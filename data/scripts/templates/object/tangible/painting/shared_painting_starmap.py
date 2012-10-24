@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/painting/shared_painting_starmap.iff"
 		result.attribute_template_id = -1
-		result.stfName("starmap","frn_n")		
+		result.stfName("frn_n","starmap")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

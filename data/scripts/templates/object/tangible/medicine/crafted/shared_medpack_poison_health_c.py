@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/medicine/crafted/shared_medpack_poison_health_c.iff"
 		result.attribute_template_id = 7
-		result.stfName("medic_poison_health_c","medicine_name")		
+		result.stfName("medicine_name","medic_poison_health_c")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

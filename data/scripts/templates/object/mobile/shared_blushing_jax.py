@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_blushing_jax.iff"
 		result.attribute_template_id = 9
-		result.stfName("bearded_jax","monster_name")		
+		result.stfName("monster_name","bearded_jax")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

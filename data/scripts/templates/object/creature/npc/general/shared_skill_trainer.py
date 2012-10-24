@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/npc/general/shared_skill_trainer.iff"
 		result.attribute_template_id = 9
-		result.stfName("skill_trainer","npc_name")		
+		result.stfName("npc_name","skill_trainer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

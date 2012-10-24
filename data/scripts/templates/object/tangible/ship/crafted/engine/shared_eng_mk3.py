@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/engine/shared_eng_mk3.iff"
 		result.attribute_template_id = 8
-		result.stfName("eng_mk3","space_crafting_n")		
+		result.stfName("space_crafting_n","eng_mk3")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

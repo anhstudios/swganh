@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_image_designer_trainer_02.iff"
 		result.attribute_template_id = 9
-		result.stfName("twilek_base_female","npc_name")		
+		result.stfName("npc_name","twilek_base_female")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

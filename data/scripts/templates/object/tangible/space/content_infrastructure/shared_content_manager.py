@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/content_infrastructure/shared_content_manager.iff"
 		result.attribute_template_id = -1
-		result.stfName("space_content_manager","item_n")		
+		result.stfName("item_n","space_content_manager")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

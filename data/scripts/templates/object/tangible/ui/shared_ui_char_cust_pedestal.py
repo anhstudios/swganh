@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ui/shared_ui_char_cust_pedestal.iff"
 		result.attribute_template_id = -1
-		result.stfName("char_cust_pedestal","item_n")		
+		result.stfName("item_n","char_cust_pedestal")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

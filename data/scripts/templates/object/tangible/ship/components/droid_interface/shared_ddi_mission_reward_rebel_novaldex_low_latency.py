@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/droid_interface/shared_ddi_mission_reward_rebel_novaldex_low_latency.iff"
 		result.attribute_template_id = 8
-		result.stfName("ddi_mission_reward_rebel_novaldex_low_latency_n","space/space_item")		
+		result.stfName("space/space_item","ddi_mission_reward_rebel_novaldex_low_latency_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

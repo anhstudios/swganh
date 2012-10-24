@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/booster/shared_bst_rss_special.iff"
 		result.attribute_template_id = 8
-		result.stfName("bst_rss_special_n","space/space_item")		
+		result.stfName("space/space_item","bst_rss_special_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

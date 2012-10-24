@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_sfs_polyweb_advanced.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_sfs_polyweb_advanced_n","space/space_item")		
+		result.stfName("space/space_item","shd_sfs_polyweb_advanced_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

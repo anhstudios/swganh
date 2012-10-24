@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_spin_alignment_inducer.iff"
 		result.attribute_template_id = -1
-		result.stfName("spin_alignment_inducer","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","spin_alignment_inducer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

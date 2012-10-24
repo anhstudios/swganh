@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/intangible/data_item/shared_droid_command.iff"
 		result.attribute_template_id = -1
-		result.stfName("droid_command_n","space/space_item")		
+		result.stfName("space/space_item","droid_command_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

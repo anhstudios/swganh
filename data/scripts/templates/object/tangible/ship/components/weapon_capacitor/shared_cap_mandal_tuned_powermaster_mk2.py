@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon_capacitor/shared_cap_mandal_tuned_powermaster_mk2.iff"
 		result.attribute_template_id = 8
-		result.stfName("cap_mandal_tuned_powermaster_mk2_n","space/space_item")		
+		result.stfName("space/space_item","cap_mandal_tuned_powermaster_mk2_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

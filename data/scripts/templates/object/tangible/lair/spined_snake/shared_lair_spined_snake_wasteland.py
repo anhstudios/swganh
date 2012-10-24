@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/spined_snake/shared_lair_spined_snake_wasteland.iff"
 		result.attribute_template_id = -1
-		result.stfName("spined_snake_wasteland","lair_n")		
+		result.stfName("lair_n","spined_snake_wasteland")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

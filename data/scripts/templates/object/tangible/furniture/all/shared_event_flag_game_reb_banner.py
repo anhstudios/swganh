@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/all/shared_event_flag_game_reb_banner.iff"
 		result.attribute_template_id = 6
-		result.stfName("flag_game_reb_flag","event_perk")		
+		result.stfName("event_perk","flag_game_reb_flag")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_vibro_unit_enhancement_max_damage.iff"
 		result.attribute_template_id = -1
-		result.stfName("blade_vibro_unit_enhancement_max_damage","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","blade_vibro_unit_enhancement_max_damage")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

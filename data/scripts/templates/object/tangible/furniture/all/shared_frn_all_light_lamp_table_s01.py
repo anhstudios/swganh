@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/all/shared_frn_all_light_lamp_table_s01.iff"
 		result.attribute_template_id = 6
-		result.stfName("frn_lamp_table_tatooine","frn_n")		
+		result.stfName("frn_n","frn_lamp_table_tatooine")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

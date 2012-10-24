@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/test/shared_test_jwatson.iff"
 		result.attribute_template_id = -1
-		result.stfName("belt_s20","wearables_name")		
+		result.stfName("wearables_name","belt_s20")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

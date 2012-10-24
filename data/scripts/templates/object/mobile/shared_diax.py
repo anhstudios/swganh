@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_diax.iff"
 		result.attribute_template_id = 9
-		result.stfName("diax","theme_park_name")		
+		result.stfName("theme_park_name","diax")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

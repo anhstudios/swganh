@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_signal_rerouter.iff"
 		result.attribute_template_id = -1
-		result.stfName("signal_rerouter","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","signal_rerouter")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/droid_interface/shared_ddi_seinar_interface_mk4.iff"
 		result.attribute_template_id = 8
-		result.stfName("ddi_seinar_interface_mk4","space/space_item")		
+		result.stfName("space/space_item","ddi_seinar_interface_mk4")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

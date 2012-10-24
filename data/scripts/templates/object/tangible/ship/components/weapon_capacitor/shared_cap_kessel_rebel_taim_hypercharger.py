@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon_capacitor/shared_cap_kessel_rebel_taim_hypercharger.iff"
 		result.attribute_template_id = 8
-		result.stfName("cap_kessel_rebel_taim_hypercharger_n","space/space_item")		
+		result.stfName("space/space_item","cap_kessel_rebel_taim_hypercharger_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

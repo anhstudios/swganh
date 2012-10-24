@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/droid/shared_droid_space_memory_module_base.iff"
 		result.attribute_template_id = 3
-		result.stfName("blank_memory_chip_n","space/space_item")		
+		result.stfName("space/space_item","blank_memory_chip_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/survey_tool/base/shared_survey_tool_base.iff"
 		result.attribute_template_id = 1
-		result.stfName("unidentified_survey_tool","item_n")		
+		result.stfName("item_n","unidentified_survey_tool")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

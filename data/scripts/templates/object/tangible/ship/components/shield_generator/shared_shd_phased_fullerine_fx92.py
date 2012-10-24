@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_phased_fullerine_fx92.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_phased_fullerine_fx92_n","space/space_item")		
+		result.stfName("space/space_item","shd_phased_fullerine_fx92_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

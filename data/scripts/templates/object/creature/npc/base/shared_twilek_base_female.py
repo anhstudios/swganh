@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/npc/base/shared_twilek_base_female.iff"
 		result.attribute_template_id = 9
-		result.stfName("twilek_base_female","npc_name")		
+		result.stfName("npc_name","twilek_base_female")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

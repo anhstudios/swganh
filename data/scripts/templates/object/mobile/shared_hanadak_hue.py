@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_hanadak_hue.iff"
 		result.attribute_template_id = 9
-		result.stfName("hanadak","monster_name")		
+		result.stfName("monster_name","hanadak")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

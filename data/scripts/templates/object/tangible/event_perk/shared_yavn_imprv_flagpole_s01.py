@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/event_perk/shared_yavn_imprv_flagpole_s01.iff"
 		result.attribute_template_id = -1
-		result.stfName("yavn_flag_n","event_perk_detail")		
+		result.stfName("event_perk_detail","yavn_flag_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

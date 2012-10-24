@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_warren_device_encryption_key.iff"
 		result.attribute_template_id = -1
-		result.stfName("device_encryption_key","warren_item_n")		
+		result.stfName("warren_item_n","device_encryption_key")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

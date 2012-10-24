@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_swirl_prong.iff"
 		result.attribute_template_id = 9
-		result.stfName("swirl_prong","monster_name")		
+		result.stfName("monster_name","swirl_prong")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

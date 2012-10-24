@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act3/shared_encoded_data_disk.iff"
 		result.attribute_template_id = -1
-		result.stfName("coa3_encoded_data_disk","item_n")		
+		result.stfName("item_n","coa3_encoded_data_disk")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

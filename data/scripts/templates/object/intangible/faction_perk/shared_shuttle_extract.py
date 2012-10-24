@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/intangible/faction_perk/shared_shuttle_extract.iff"
 		result.attribute_template_id = -1
-		result.stfName("shuttle_extract","faction_recruiter")		
+		result.stfName("faction_recruiter","shuttle_extract")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

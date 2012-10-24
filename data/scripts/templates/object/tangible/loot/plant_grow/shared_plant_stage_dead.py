@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/plant_grow/shared_plant_stage_dead.iff"
 		result.attribute_template_id = -1
-		result.stfName("plant_stage_dead","plant_grow")		
+		result.stfName("plant_grow","plant_stage_dead")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

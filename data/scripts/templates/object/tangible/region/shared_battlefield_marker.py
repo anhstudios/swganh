@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/region/shared_battlefield_marker.iff"
 		result.attribute_template_id = -1
-		result.stfName("battlefield_marker_name","battlefield")		
+		result.stfName("battlefield","battlefield_marker_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_space_imperial_tier2_corellia.iff"
 		result.attribute_template_id = 9
-		result.stfName("bothan_base_male","npc_name")		
+		result.stfName("npc_name","bothan_base_male")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

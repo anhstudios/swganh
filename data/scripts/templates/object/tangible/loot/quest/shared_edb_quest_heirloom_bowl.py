@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_edb_quest_heirloom_bowl.iff"
 		result.attribute_template_id = -1
-		result.stfName("heirloom_bowl","item_n")		
+		result.stfName("item_n","heirloom_bowl")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

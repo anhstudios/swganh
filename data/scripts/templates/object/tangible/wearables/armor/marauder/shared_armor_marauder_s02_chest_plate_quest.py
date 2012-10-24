@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/wearables/armor/marauder/shared_armor_marauder_s02_chest_plate_quest.iff"
 		result.attribute_template_id = 0
-		result.stfName("armor_marauder_s02_chest_plate","wearables_name")		
+		result.stfName("wearables_name","armor_marauder_s02_chest_plate")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

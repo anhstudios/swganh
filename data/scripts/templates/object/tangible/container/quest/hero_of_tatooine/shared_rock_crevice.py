@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/quest/hero_of_tatooine/shared_rock_crevice.iff"
 		result.attribute_template_id = -1
-		result.stfName("hero_of_tatooine_rock_crevice","quest_item_n")		
+		result.stfName("quest_item_n","hero_of_tatooine_rock_crevice")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ui/shared_ui_planet_privateer.iff"
 		result.attribute_template_id = -1
-		result.stfName("privateer","loc_n")		
+		result.stfName("loc_n","privateer")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

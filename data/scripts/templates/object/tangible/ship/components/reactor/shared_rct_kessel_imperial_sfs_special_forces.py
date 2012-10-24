@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/reactor/shared_rct_kessel_imperial_sfs_special_forces.iff"
 		result.attribute_template_id = 8
-		result.stfName("rct_kessel_imperial_sfs_special_forces_n","space/space_item")		
+		result.stfName("space/space_item","rct_kessel_imperial_sfs_special_forces_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/force_sensitive/sharred_force_crystal.iff"
 		result.attribute_template_id = -1
-		result.stfName("crystal_name","quest/force_sensitive/intro")		
+		result.stfName("quest/force_sensitive/intro","crystal_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

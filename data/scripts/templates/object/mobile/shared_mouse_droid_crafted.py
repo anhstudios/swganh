@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_mouse_droid_crafted.iff"
 		result.attribute_template_id = 9
-		result.stfName("mse_6_base","droid_name")		
+		result.stfName("droid_name","mse_6_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

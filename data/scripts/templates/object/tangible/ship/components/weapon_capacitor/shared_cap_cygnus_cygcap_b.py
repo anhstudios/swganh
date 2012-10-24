@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon_capacitor/shared_cap_cygnus_cygcap_b.iff"
 		result.attribute_template_id = 8
-		result.stfName("cap_cygnus_cygcap_b_n","space/space_item")		
+		result.stfName("space/space_item","cap_cygnus_cygcap_b_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/player/city/shared_bank_corellia.iff"
 		result.attribute_template_id = -1
-		result.stfName("bank","building_name")		
+		result.stfName("building_name","bank")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

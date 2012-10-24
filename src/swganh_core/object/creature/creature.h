@@ -381,6 +381,9 @@ public:
     void SetCashCredits(uint32_t cash_credits);
     uint32_t GetCashCredits(void);
 
+	// Helper to set all stats to a given value
+	void SetAllStats(int32_t value);
+
     // Stat Base
     void SetStatBase(StatIndex stat_index, int32_t value);
     void AddStatBase(StatIndex stat_index, int32_t value);

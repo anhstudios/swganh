@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/intangible/vehicle/shared_speederbike_flash_pcd.iff"
 		result.attribute_template_id = -1
-		result.stfName("speederbike_flash","monster_name")		
+		result.stfName("monster_name","speederbike_flash")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

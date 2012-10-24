@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_wedge_antilles.iff"
 		result.attribute_template_id = 9
-		result.stfName("wedge_antilles","theme_park_name")		
+		result.stfName("theme_park_name","wedge_antilles")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

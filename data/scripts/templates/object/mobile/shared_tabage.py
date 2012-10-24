@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_tabage.iff"
 		result.attribute_template_id = 9
-		result.stfName("langlatch","monster_name")		
+		result.stfName("monster_name","langlatch")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

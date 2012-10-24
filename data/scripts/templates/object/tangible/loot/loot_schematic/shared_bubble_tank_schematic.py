@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_bubble_tank_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("bubble_tank","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","bubble_tank")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/ship/shared_civspeeder2.iff"
 		result.attribute_template_id = -1
-		result.stfName("xwing swg-sw test","")		
+		result.stfName("","xwing swg-sw test")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

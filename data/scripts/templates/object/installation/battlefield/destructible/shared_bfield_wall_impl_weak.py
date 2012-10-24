@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/battlefield/destructible/shared_bfield_wall_impl_weak.iff"
 		result.attribute_template_id = -1
-		result.stfName("weak_wall","battlefield")		
+		result.stfName("battlefield","weak_wall")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

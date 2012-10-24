@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ui/shared_ui_planet_naboo.iff"
 		result.attribute_template_id = -1
-		result.stfName("naboo","loc_n")		
+		result.stfName("loc_n","naboo")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

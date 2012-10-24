@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/tool/shared_taloscope_broken.iff"
 		result.attribute_template_id = -1
-		result.stfName("taloscope_broken","item_n")		
+		result.stfName("item_n","taloscope_broken")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

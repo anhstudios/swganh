@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/hair/wookiee/base/shared_hair_wookiee_male_base.iff"
 		result.attribute_template_id = -1
-		result.stfName("hair","hair_name")		
+		result.stfName("hair_name","hair")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

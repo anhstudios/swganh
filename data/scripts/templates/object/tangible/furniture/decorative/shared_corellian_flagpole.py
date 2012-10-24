@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/decorative/shared_corellian_flagpole.iff"
 		result.attribute_template_id = 6
-		result.stfName("flag_corellia","item_n")		
+		result.stfName("item_n","flag_corellia")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

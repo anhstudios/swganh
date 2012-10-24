@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/bestine/shared_bestine_painting_schematic_house.iff"
 		result.attribute_template_id = -1
-		result.stfName("painting_schematic_house","craft_furniture_ingredients_n")		
+		result.stfName("craft_furniture_ingredients_n","painting_schematic_house")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

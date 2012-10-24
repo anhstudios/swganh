@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_bib_fortuna.iff"
 		result.attribute_template_id = 9
-		result.stfName("bib_fortuna","theme_park_name")		
+		result.stfName("theme_park_name","bib_fortuna")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

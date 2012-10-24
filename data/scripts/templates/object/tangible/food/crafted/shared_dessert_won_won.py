@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/food/crafted/shared_dessert_won_won.iff"
 		result.attribute_template_id = 5
-		result.stfName("won_won","food_name")		
+		result.stfName("food_name","won_won")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

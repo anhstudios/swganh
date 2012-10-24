@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/faction_perk/turret/shared_tower_lg.iff"
 		result.attribute_template_id = -1
-		result.stfName("tower_large","turret_n")		
+		result.stfName("turret_n","tower_large")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/engine/shared_eng_freitek_dual_jet.iff"
 		result.attribute_template_id = 8
-		result.stfName("eng_freitek_dual_jet_n","space/space_item")		
+		result.stfName("space/space_item","eng_freitek_dual_jet_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

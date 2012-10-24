@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/intangible/ship/shared_blacksun_light_s04_pcd.iff"
 		result.attribute_template_id = 8
-		result.stfName("blacksun_light_pcd","space_item_n")		
+		result.stfName("space_item_n","blacksun_light_pcd")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

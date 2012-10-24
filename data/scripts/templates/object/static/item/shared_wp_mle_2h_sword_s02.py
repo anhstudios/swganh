@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/static/item/shared_wp_mle_2h_sword_s02.iff"
 		result.attribute_template_id = -1
-		result.stfName("unknown_object","obj_n")		
+		result.stfName("obj_n","unknown_object")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

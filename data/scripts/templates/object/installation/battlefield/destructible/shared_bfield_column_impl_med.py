@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/battlefield/destructible/shared_bfield_column_impl_med.iff"
 		result.attribute_template_id = -1
-		result.stfName("column","battlefield")		
+		result.stfName("battlefield","column")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

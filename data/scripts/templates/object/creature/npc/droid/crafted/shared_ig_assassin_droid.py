@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/npc/droid/crafted/shared_ig_assassin_droid.iff"
 		result.attribute_template_id = 3
-		result.stfName("ig_assassin_droid_crafted","droid_name")		
+		result.stfName("droid_name","ig_assassin_droid_crafted")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

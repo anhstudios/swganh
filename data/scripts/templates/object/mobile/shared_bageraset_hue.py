@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_bageraset_hue.iff"
 		result.attribute_template_id = 9
-		result.stfName("bageraset","monster_name")		
+		result.stfName("monster_name","bageraset")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/droid/repair/shared_repair_unit_casing_advanced.iff"
 		result.attribute_template_id = -1
-		result.stfName("repair_unit_casing_advanced","craft_droid_ingredients_n")		
+		result.stfName("craft_droid_ingredients_n","repair_unit_casing_advanced")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

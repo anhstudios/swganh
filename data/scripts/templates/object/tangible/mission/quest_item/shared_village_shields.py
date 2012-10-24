@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_village_shields.iff"
 		result.attribute_template_id = -1
-		result.stfName("village_shields","community_crafting_n")		
+		result.stfName("community_crafting_n","village_shields")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

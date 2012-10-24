@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/resource_container/shared_resource_container_energy_solid_lg.iff"
 		result.attribute_template_id = -1
-		result.stfName("energy_solid_large","resource_container_n")		
+		result.stfName("resource_container_n","energy_solid_large")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

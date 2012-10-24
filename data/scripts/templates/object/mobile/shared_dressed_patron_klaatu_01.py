@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_patron_klaatu_01.iff"
 		result.attribute_template_id = 9
-		result.stfName("klaatu_patron","npc_name")		
+		result.stfName("npc_name","klaatu_patron")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -136,6 +136,7 @@ void exportCreature()
 		.def("addStatMax", &Creature::AddStatMax, "adds to the given MAX :class:`.STATS`")
 		.def("deductStatMax", &Creature::DeductStatMax, "deducts from the given MAX :class:`.STATS`")
 		.def("getStatMax", &Creature::GetStatMax, "gets the value of the current MAX :class:`.STATS`")
+		.def("setAllStats", &Creature::SetAllStats, "Sets HAM of base/current/max to a given value")
 		//
 		.def("addSkill", &Creature::AddSkill, "adds skill to the creature")
 		.def("removeSkill", &Creature::RemoveSkill, "removes skill from the creature")

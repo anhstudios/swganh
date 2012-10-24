@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_capacitor_bank.iff"
 		result.attribute_template_id = -1
-		result.stfName("capacitor_bank","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","capacitor_bank")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/base/shared_lair_base_imperial_guard.iff"
 		result.attribute_template_id = -1
-		result.stfName("generic_imperial_guard","lair_n")		
+		result.stfName("lair_n","generic_imperial_guard")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

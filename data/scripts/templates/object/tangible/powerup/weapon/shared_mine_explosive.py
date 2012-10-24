@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/powerup/weapon/shared_mine_explosive.iff"
 		result.attribute_template_id = -1
-		result.stfName("weapon_mine_explosive","powerup_n")		
+		result.stfName("powerup_n","weapon_mine_explosive")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

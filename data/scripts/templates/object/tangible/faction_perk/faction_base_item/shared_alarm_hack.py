@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/faction_perk/faction_base_item/shared_alarm_hack.iff"
 		result.attribute_template_id = -1
-		result.stfName("alarm_hack_n","faction_perk")		
+		result.stfName("faction_perk","alarm_hack_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/installation/generators/shared_power_generator_solar_style_1.iff"
 		result.attribute_template_id = -1
-		result.stfName("solar_generator","installation_n")		
+		result.stfName("installation_n","solar_generator")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

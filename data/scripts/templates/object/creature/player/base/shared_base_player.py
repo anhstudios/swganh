@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/player/base/shared_base_player.iff"
 		result.attribute_template_id = -1
-		result.stfName("Base Player","string_table")		
+		result.stfName("string_table","Base Player")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

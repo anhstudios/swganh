@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/deed/city_deed/shared_bank_tatooine_deed.iff"
 		result.attribute_template_id = 2
-		result.stfName("tatooine_bank_deed","deed")		
+		result.stfName("deed","tatooine_bank_deed")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

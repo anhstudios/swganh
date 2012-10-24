@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/droid_battery/base/shared_base_battery.iff"
 		result.attribute_template_id = -1
-		result.stfName("droid_battery","obj_n")		
+		result.stfName("obj_n","droid_battery")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

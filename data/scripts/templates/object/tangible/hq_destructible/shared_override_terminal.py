@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/hq_destructible/shared_override_terminal.iff"
 		result.attribute_template_id = -1
-		result.stfName("override_terminal","hq")		
+		result.stfName("hq","override_terminal")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

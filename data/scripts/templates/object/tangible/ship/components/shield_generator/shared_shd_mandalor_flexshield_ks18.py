@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_mandalor_flexshield_ks18.iff"
 		result.attribute_template_id = 8
-		result.stfName("shd_mandalor_flexshield_ks18_n","space/space_item")		
+		result.stfName("space/space_item","shd_mandalor_flexshield_ks18_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

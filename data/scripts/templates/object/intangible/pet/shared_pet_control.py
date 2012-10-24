@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/intangible/pet/shared_pet_control.iff"
 		result.attribute_template_id = -1
-		result.stfName("pet_control_device","item_n")		
+		result.stfName("item_n","pet_control_device")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

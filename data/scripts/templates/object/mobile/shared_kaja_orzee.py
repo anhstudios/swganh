@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_kaja_orzee.iff"
 		result.attribute_template_id = 9
-		result.stfName("kaja_orzee","theme_park_name")		
+		result.stfName("theme_park_name","kaja_orzee")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

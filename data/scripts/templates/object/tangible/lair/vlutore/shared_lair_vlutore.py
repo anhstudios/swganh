@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/vlutore/shared_lair_vlutore.iff"
 		result.attribute_template_id = -1
-		result.stfName("vlutore","lair_n")		
+		result.stfName("lair_n","vlutore")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

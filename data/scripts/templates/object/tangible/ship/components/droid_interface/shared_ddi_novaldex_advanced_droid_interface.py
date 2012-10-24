@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/droid_interface/shared_ddi_novaldex_advanced_droid_interface.iff"
 		result.attribute_template_id = 8
-		result.stfName("ddi_novaldex_advanced_droid_interface_n","space/space_item")		
+		result.stfName("space/space_item","ddi_novaldex_advanced_droid_interface_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

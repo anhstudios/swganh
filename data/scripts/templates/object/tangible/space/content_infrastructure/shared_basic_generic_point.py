@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/content_infrastructure/shared_basic_generic_point.iff"
 		result.attribute_template_id = -1
-		result.stfName("patrol_point","item_n")		
+		result.stfName("item_n","patrol_point")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

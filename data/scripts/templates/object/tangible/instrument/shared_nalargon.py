@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/instrument/shared_nalargon.iff"
 		result.attribute_template_id = -1
-		result.stfName("obj_nalargon","obj_n")		
+		result.stfName("obj_n","obj_nalargon")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/force_sensitive/shared_theater_datapad.iff"
 		result.attribute_template_id = -1
-		result.stfName("datapad_name","quest/force_sensitive/intro")		
+		result.stfName("quest/force_sensitive/intro","datapad_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

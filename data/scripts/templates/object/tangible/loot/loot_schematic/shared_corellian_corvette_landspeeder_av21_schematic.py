@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_corellian_corvette_landspeeder_av21_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("landspeeder_av21_schematic","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","landspeeder_av21_schematic")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

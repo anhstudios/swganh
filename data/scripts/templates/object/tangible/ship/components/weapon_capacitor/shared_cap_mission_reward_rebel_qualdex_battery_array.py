@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon_capacitor/shared_cap_mission_reward_rebel_qualdex_battery_array.iff"
 		result.attribute_template_id = 8
-		result.stfName("cap_mission_reward_rebel_qualdex_battery_array_n","space/space_item")		
+		result.stfName("space/space_item","cap_mission_reward_rebel_qualdex_battery_array_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

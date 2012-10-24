@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_dressed_tatooine_scavenger.iff"
 		result.attribute_template_id = 9
-		result.stfName("scavenger","theme_park_name")		
+		result.stfName("theme_park_name","scavenger")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

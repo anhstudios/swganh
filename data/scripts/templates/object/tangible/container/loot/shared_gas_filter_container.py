@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/loot/shared_gas_filter_container.iff"
 		result.attribute_template_id = -1
-		result.stfName("gas_filter","container_name")		
+		result.stfName("container_name","gas_filter")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

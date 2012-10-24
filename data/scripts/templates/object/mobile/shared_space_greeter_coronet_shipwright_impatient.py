@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_space_greeter_coronet_shipwright_impatient.iff"
 		result.attribute_template_id = 9
-		result.stfName("moncal_base_female","npc_name")		
+		result.stfName("npc_name","moncal_base_female")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act3/shared_dead_eye_prototype.iff"
 		result.attribute_template_id = -1
-		result.stfName("dead_eye_prototype","item_n")		
+		result.stfName("item_n","dead_eye_prototype")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

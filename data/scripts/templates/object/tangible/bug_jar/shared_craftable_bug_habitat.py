@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/bug_jar/shared_craftable_bug_habitat.iff"
 		result.attribute_template_id = -1
-		result.stfName("bug_habitat","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","bug_habitat")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

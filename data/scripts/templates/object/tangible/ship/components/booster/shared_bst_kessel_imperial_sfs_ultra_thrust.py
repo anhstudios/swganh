@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/booster/shared_bst_kessel_imperial_sfs_ultra_thrust.iff"
 		result.attribute_template_id = 8
-		result.stfName("bst_kessel_imperial_sfs_ultra_thrust_n","space/space_item")		
+		result.stfName("space/space_item","bst_kessel_imperial_sfs_ultra_thrust_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

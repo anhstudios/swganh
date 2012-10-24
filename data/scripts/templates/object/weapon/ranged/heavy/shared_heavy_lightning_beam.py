@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/ranged/heavy/shared_heavy_lightning_beam.iff"
 		result.attribute_template_id = 10
-		result.stfName("heavy_lightning_beam","weapon_name")		
+		result.stfName("weapon_name","heavy_lightning_beam")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

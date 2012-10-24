@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/destructible/wreckage/shared_wreck_starship_small_01.iff"
 		result.attribute_template_id = -1
-		result.stfName("newbie_tutorial_debris","container_name")		
+		result.stfName("container_name","newbie_tutorial_debris")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

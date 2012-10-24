@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_transductive_shunt.iff"
 		result.attribute_template_id = -1
-		result.stfName("transductive_shunt","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","transductive_shunt")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

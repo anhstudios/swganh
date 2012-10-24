@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/brackaset/shared_lair_brackaset.iff"
 		result.attribute_template_id = -1
-		result.stfName("brackaset","lair_n")		
+		result.stfName("lair_n","brackaset")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

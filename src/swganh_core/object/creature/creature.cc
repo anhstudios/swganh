@@ -98,7 +98,24 @@ uint32_t Creature::GetCashCredits(void)
 {
     return cash_credits_;
 }
-
+void Creature::SetAllStats(int32_t value)
+{
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		stat_base_list_.Update(HEALTH, value);
+		stat_base_list_.Update(ACTION, value);
+		stat_base_list_.Update(MIND, value);
+		stat_current_list_.Update(HEALTH, value);
+		stat_current_list_.Update(ACTION, value);
+		stat_current_list_.Update(MIND, value);
+		stat_max_list_.Update(HEALTH, value);
+		stat_max_list_.Update(ACTION, value);
+		stat_max_list_.Update(MIND, value);
+	}
+	DISPATCH(Creature, StatBase);
+	DISPATCH(Creature, StatCurrent);
+	DISPATCH(Creature, StatMax);
+}
 void Creature::SetStatBase(StatIndex stat_index, int32_t value)
 {
     {
@@ -1142,7 +1159,7 @@ void Creature::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
 	if (event_dispatcher_)
 	{
 		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-			("Creature::Baseline", shared_from_this(), observer));
+			("Creature::Baselines", shared_from_this(), observer));
 	}
 }
 

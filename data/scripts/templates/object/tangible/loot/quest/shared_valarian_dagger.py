@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_valarian_dagger.iff"
 		result.attribute_template_id = -1
-		result.stfName("valarian_dagger","item_n")		
+		result.stfName("item_n","valarian_dagger")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

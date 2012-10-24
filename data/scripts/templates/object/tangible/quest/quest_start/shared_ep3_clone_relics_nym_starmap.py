@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/quest/quest_start/shared_ep3_clone_relics_nym_starmap.iff"
 		result.attribute_template_id = -1
-		result.stfName("starmap_piece","item_n")		
+		result.stfName("item_n","starmap_piece")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

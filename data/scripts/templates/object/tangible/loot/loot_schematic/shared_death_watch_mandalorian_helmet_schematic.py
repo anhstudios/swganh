@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_death_watch_mandalorian_helmet_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("armor_mandalorian_helmet","craft_item_ingredients_n")		
+		result.stfName("craft_item_ingredients_n","armor_mandalorian_helmet")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

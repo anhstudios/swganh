@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_palpatine.iff"
 		result.attribute_template_id = 9
-		result.stfName("emperor_palpatine","theme_park_name")		
+		result.stfName("theme_park_name","emperor_palpatine")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

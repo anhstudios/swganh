@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/corellian_corvette/shared_rebel_destroy_intel.iff"
 		result.attribute_template_id = -1
-		result.stfName("rebel_destroy_intel","item_n")		
+		result.stfName("item_n","rebel_destroy_intel")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

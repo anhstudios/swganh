@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/mobile/shared_wed_treadwell.iff"
 		result.attribute_template_id = 9
-		result.stfName("wed_treadwell_base","droid_name")		
+		result.stfName("droid_name","wed_treadwell_base")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

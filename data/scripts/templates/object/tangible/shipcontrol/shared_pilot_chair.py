@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/shipcontrol/shared_pilot_chair.iff"
 		result.attribute_template_id = 8
-		result.stfName("pilot_chair","space_item")		
+		result.stfName("space_item","pilot_chair")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

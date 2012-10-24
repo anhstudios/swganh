@@ -13,7 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_geonosian_tenloss_dxr6_schematic.iff"
 		result.attribute_template_id = -1
-		result.stfName("geonosian_tenloss_dxr6_schematic","craft_weapon_ingredients_n")		
+		result.stfName("craft_weapon_ingredients_n","geonosian_tenloss_dxr6_schematic")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####
