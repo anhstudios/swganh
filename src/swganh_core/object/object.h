@@ -34,7 +34,8 @@
 
 #include "swganh/object/slot_interface.h"
 
-#define DISPATCH(a) if(event_dispatcher_ != nullptr) event_dispatcher_->Dispatch(a) 
+#define DISPATCH(BIG, LITTLE) if(event_dispatcher_) \
+{GetEventDispatcher()->Dispatch(make_shared<BIG ## Event>(#BIG "::" #LITTLE, static_pointer_cast<BIG>(shared_from_this())));}
 
 namespace swganh {
 namespace object {
