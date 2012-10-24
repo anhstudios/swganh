@@ -11,18 +11,14 @@ class Template(BaseTemplate):
 	
 	def create(self, params):
 		result = Object()
-		print(result)
 		result.id = 5
-		print(result.id)
-		#print(result.template)
-		#result.template = "blahblah.iff"
-		#print(result.template)
+		result.template = "blahblah.iff"
+		print(result.template)
 		result.attribute_template_id = 12
 		print(result.attribute_template_id)
-		#result.stfName("test","test2")
-		#print(result.stf_name_file)
-		#print(result.stf_name_string)
-		#print(result.template)
+		result.stfName("test","test2")
+		print(result.stf_name_file)
+		print(result.stf_name_string)
 		
 		##### BEGIN INIT #####
 		#####  END INIT  #####
@@ -30,7 +26,7 @@ class Template(BaseTemplate):
 		return result
 
 def loadTemplates(templates, prototypes):
-	print('hi')
 	template = Template()
 	prototypes["TemplateTest"]= template.create({})
+	print('hi')
 	#templates["TemplateTest"] = template

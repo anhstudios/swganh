@@ -6,19 +6,19 @@
 
 # At the time of creation, the SQL command used to generate the csv was:
 # SELECT iff.iff_template, iff.object_type, 0, iff.attribute_template_id, o.objectName_1, o.objectName_2
+# FROM iff_templates iff
+# INNER JOIN objects o ON o.object_string = iff.iff_template
+# WHERE iff.object_type != 0;
 #
-# INTO OUTFILE 'C:\\big.csv'
+# INTO OUTFILE 'C:\\templates.csv'
 # FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 # ESCAPED BY '\\'
 # LINES TERMINATED BY '\n'
 # 
-# FROM iff_templates iff
-# INNER JOIN objects o ON o.object_string = iff.iff_template
-# WHERE iff.object_type != 0;
 
 import os, sys
 
-CSV_FILENAME = "big.csv"
+CSV_FILENAME = "templates.csv"
 TEMPLATE_FILENAME = "template_template.txt"
 
 def main(force):

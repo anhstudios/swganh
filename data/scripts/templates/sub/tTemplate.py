@@ -7,16 +7,22 @@
 from swgpy.object import *
 
 class Template(BaseTemplate):
-	
 	is_prototype = True
 	
 	def create(self, params):
 		result = Object()
-	
-		result.template = "blahblah.iff"
+		print(result)
+		result.id = 5
+		print(result.id)
+		#print(result.template)
+		#result.template = "blahblah.iff"
+		#print(result.template)
 		result.attribute_template_id = 12
-		result.stf_name_file = "test"
-		result.stf_name_string = "test2"
+		print(result.attribute_template_id)
+		#result.stfName("test","test2")
+		#print(result.stf_name_file)
+		#print(result.stf_name_string)
+		#print(result.template)
 		
 		##### BEGIN INIT #####
 		#####  END INIT  #####
@@ -24,9 +30,6 @@ class Template(BaseTemplate):
 		return result
 
 def loadTemplates(templates, prototypes):
-	print('hi')
-	template = Template() 
-	print('hi')
-	templates["TemplateTest"] = template
-	print('hi')
-	prototypes["TemplateTest"]= template.create({})
+	template = Template()
+	prototypes["TTemplateTest"]= template.create({})
+	#templates["TemplateTest"] = template
