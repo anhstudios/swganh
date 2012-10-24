@@ -122,6 +122,7 @@ void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const
 shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
    auto tangible = make_shared<Tangible>();
+   tangible->SetObjectId(object_id);
    CreateTangibleFromStorage(tangible);
    return tangible;
 }
