@@ -472,7 +472,6 @@ void ObjectManager::LoadPythonObjectTemplates()
 	}
 	catch(bp::error_already_set&)
 	{
-		PyErr_Print();
-		LOG(error) << "Error Loading object templates from python with error: ";
+		PyErr_Print();		
 	}
 }

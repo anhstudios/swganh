@@ -18,5 +18,6 @@ for p in sys.path:
 
 for file in files:
 	file = file.replace('./','').replace(os.sep, '.').replace('.py', '')
-	exec('import ' + file + ' as module')
-	module.loadTemplates(templates, prototypes)
+	if file != '__init__.py':
+		exec('import ' + file)
+		file.loadTemplates(templates, prototypes)
