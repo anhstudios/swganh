@@ -23,9 +23,7 @@ void Mission::SetDifficultyLevel(uint32_t difficulty_level)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		difficulty_level_ = difficulty_level;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::DifficultyLevel", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, DifficultyLevel);
 }
 
 vec3 Mission::GetStartingPosition() const
@@ -40,9 +38,7 @@ void Mission::SetStartingPosition(vec3 starting_position)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		starting_position_ = starting_position;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::StartLocation", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, StartLocation);
 }
 
 uint32_t Mission::GetStartingSceneCrc() const
@@ -57,9 +53,7 @@ void Mission::SetStartingSceneCrc(uint32_t scene_crc)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		starting_scene_ = scene_crc;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::StartLocation", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, StartLocation);
 }
 
 wstring Mission::GetMissionCreator() const
@@ -74,9 +68,7 @@ void Mission::SetMissionCreator(wstring mission_creator)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		creator_ = mission_creator;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::CreatorName", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, CreatorName);
 }
 
 uint32_t Mission::GetMissionReward() const
@@ -91,9 +83,7 @@ void Mission::SetMissionReward(uint32_t mission_reward)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		reward_ = mission_reward;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::CreditReward", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, CreditReward);
 }
 
 vec3 Mission::GetDestinationPosition() const
@@ -108,9 +98,7 @@ void Mission::SetDestinationPosition(vec3 destination_position)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		destination_position_ = destination_position;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::DestinationLocation", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, DestinationLocation);
 }
 
 uint32_t Mission::GetDestinationSceneCrc() const
@@ -125,9 +113,7 @@ void Mission::SetDestinationSceneCrc(uint32_t scene_crc)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		destination_scene_ = scene_crc;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::DestinationLocation", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, DestinationLocation);
 }
 
 std::string Mission::GetTargetObjectTemplate() const
@@ -148,9 +134,7 @@ void Mission::SetTargetObjectTemplate(std::string object_template)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		target_object_template_ = object_template;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::TargetIff", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, TargetIff);
 }
 
 std::string Mission::GetMissionDescriptionStfFile() const
@@ -172,9 +156,7 @@ void Mission::SetMissionDescription(const std::string& stf_file_name, const std:
 		mission_description_stf_file_ = stf_file_name;
 		mission_description_stf_name_ = stf_string;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::MissionDescription", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, MissionDescription);
 }
 
 std::string Mission::GetMissionTitleStfFile() const
@@ -196,9 +178,7 @@ void Mission::SetMissionTitle(const std::string& stf_file_name, const std::strin
 		mission_title_stf_file_ = stf_file_name;
 		mission_title_stf_name_ = stf_string;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::MissionTitle", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, MissionTitle);
 }
 
 uint32_t Mission::GetRepeatCounter() const
@@ -213,9 +193,7 @@ void Mission::IncrementRepeatCounter()
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		++repeat_counter_;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::RepeatCounter", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, RepeatCounter);
 }
 
 void Mission::SetRepeatCounter(uint32_t counter)
@@ -224,9 +202,7 @@ void Mission::SetRepeatCounter(uint32_t counter)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		repeat_counter_ = counter;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::RepeatCounter", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, RepeatCounter);
 }
 
 std::string Mission::GetMissionType()
@@ -247,9 +223,7 @@ void Mission::SetMissionType(std::string mission_type)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		mission_type_ = mission_type;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::MissionType", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, MissionType);
 }
 
 std::string Mission::GetTargetName() const
@@ -264,9 +238,7 @@ void Mission::SetTargetName(std::string target_name)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		target_name_ = target_name;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::TargetName", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, TargetName);
 }
 
 std::shared_ptr<swganh::object::Waypoint> Mission::GetMissionWaypoint()
@@ -281,9 +253,7 @@ void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypo
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		waypoint_ = waypoint;
 	}
-
-	DISPATCH(make_shared<MissionEvent>
-        ("Mission::Waypoint", static_pointer_cast<Mission>(shared_from_this())));
+	DISPATCH(Mission, Waypoint);
 }
 
 
