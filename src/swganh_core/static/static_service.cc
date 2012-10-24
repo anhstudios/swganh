@@ -113,7 +113,7 @@ StaticService::StaticService(SwganhKernel* kernel)
 		{
 			// Create a combat dummy
 			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_juvenile_canyon_krayt.iff", CREATURE_PERMISSION, false, false);
+			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_juvenile_canyon_krayt.iff", CREATURE_PERMISSION, false, true);
 			auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
 			creature_dummy->SetPosition(glm::vec3(-146, 28,-4702));
 			creature_dummy->SetCustomName(L"Combat Dummy");
@@ -272,6 +272,12 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 			{
 				parent->AddObject(nullptr, object);
 			}
+		}
+		// Check if it's a bank
+		// TODO: Remove once prototypes are in..
+		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_bank.iff") == 0)
+		{
+			object->SetAttribute("radial_filename", L"radials.bank");
 		}
 	}
 }

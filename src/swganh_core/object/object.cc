@@ -43,6 +43,7 @@ Object::Object()
 	, database_persisted_(true)
 	, in_snapshot_(false)
 	, attributes_template_id(-1)
+	, event_dispatcher_(nullptr)
 {
 }
 

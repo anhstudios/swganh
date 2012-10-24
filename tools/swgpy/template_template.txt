@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "@MODEL_STRING@"
 		result.attribute_template_id = @ATTRIBUTE_ID@
-		result.stf_name_file = "@STF_FILE@"
-		result.stf_name_string = "@STF_NAME@"
+		result.stfName("@STF_FILE@","@STF_NAME@")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####
