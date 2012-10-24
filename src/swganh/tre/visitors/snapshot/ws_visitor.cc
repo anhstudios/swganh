@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "ws_visitor.h"
-#include <anh/byte_buffer.h>
+#include <swganh/byte_buffer.h>
 
 using namespace std;
 using namespace swganh::tre;
@@ -16,7 +16,7 @@ void WsVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {
 }
 
-void WsVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void WsVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	if(name == "0000DATA")
 	{
@@ -28,7 +28,7 @@ void WsVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh:
 	}
 }
 
-void WsVisitor::_handleOTNL(anh::ByteBuffer& buffer)
+void WsVisitor::_handleOTNL(swganh::ByteBuffer& buffer)
 {
 
 	uint32_t count = buffer.read<uint32_t>();
@@ -38,7 +38,7 @@ void WsVisitor::_handleOTNL(anh::ByteBuffer& buffer)
 	}
 }
 
-void WsVisitor::_handle0000DATA(anh::ByteBuffer& buffer)
+void WsVisitor::_handle0000DATA(swganh::ByteBuffer& buffer)
 {
 	CHUNK c;
 

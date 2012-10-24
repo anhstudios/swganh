@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "python_command_creator.h"
 
@@ -6,8 +8,8 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_interface.h"
 #include "swganh/command/command_properties.h"
-#include "pub14_core/messages/controllers/command_queue_enqueue.h"
-#include "swganh/object/object_controller.h"
+#include "swganh_core/messages/controllers/command_queue_enqueue.h"
+#include "swganh/observer/observer_interface.h"
 #include "swganh/scripting/utilities.h"
 
 namespace bp = boost::python;
@@ -56,6 +58,7 @@ std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
         {
             CommandInterface* obj_pointer = bp::extract<CommandInterface*>(new_instance);
             command.reset(obj_pointer, [new_instance] (CommandInterface*) {});
+			command->SetCommandProperties(properties);
         }
     }
     catch(bp::error_already_set& /*e*/)

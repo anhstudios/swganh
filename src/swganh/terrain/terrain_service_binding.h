@@ -6,8 +6,8 @@
 #include <Python.h>
 #endif
 
-#include "anh/logger.h"
-#include "anh/python_shared_ptr.h"
+#include "swganh/logger.h"
+#include "swganh/python_shared_ptr.h"
 
 #include <memory>
 #include <boost/python.hpp>
@@ -39,7 +39,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(IsWaterOverload, IsWater, 3, 4)
 void exportTerrainService()
 {
 	class_<TerrainServiceInterface, std::shared_ptr<TerrainServiceInterface>, boost::noncopyable>("TerrainService", "The terrain service allows fetching of terrain height and water at x z coordinates.", no_init)
-		.def("GetHeight", &TerrainServiceInterface::GetHeight, GetHeightOverload(args("scene_id", "x", "z", "raw"), "Returns the height of a particular x, z coordinate"))
-		.def("GetWaterHeight", &TerrainServiceInterface::GetWaterHeight, GetWaterHeightOverload(args("scene_id", "x", "z", "raw"), "Returns the water height at a particular x, z coordinate. This is probably not necessary for external code."))
-		.def("IsWater", &TerrainServiceInterface::IsWater, IsWaterOverload(args("scene_id", "x", "z", "raw"), "Returns true iff the x, z is water."));
+		.def("getHeight", &TerrainServiceInterface::GetHeight, GetHeightOverload(args("scene_id", "x", "z", "raw"), "Returns the height of a particular x, z coordinate"))
+		.def("getWaterHeight", &TerrainServiceInterface::GetWaterHeight, GetWaterHeightOverload(args("scene_id", "x", "z", "raw"), "Returns the water height at a particular x, z coordinate. This is probably not necessary for external code."))
+		.def("isWater", &TerrainServiceInterface::IsWater, IsWaterOverload(args("scene_id", "x", "z", "raw"), "Returns true iff the x, z is water."));
 }

@@ -10,7 +10,7 @@ BEGIN
 -- First get our template_id
     DECLARE iff_template INT;
 
-    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE template_string INTO iff_template;
+    SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE template_string INTO iff_template;
 -- Now update our values
     UPDATE object SET scene_id = in_scene_id, parent_id = in_parent_id, iff_template_id = iff_template, 
         x_position = posX, y_position = posY, z_position = posZ, x_orientation = oX, y_orientation = oY, z_orientation = oZ,

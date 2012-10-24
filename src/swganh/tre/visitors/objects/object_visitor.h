@@ -12,7 +12,7 @@
 #include <memory>
 #include <boost/any.hpp>
 
-namespace anh
+namespace swganh
 {
 namespace resource
 {
@@ -29,7 +29,7 @@ namespace tre
 	//End Forward Declarations
 
 	//Begin Typedefs
-	typedef std::function<void(ObjectVisitor*, std::string&, anh::ByteBuffer&)> AttributeFunctor;
+	typedef std::function<void(ObjectVisitor*, std::string&, swganh::ByteBuffer&)> AttributeFunctor;
 	typedef std::map<std::string, AttributeFunctor> AttributeHandlerIndex;
 	typedef std::map<std::string, AttributeFunctor>::const_iterator AttributeHandlerIndexIterator;
 	typedef std::map<std::string, std::shared_ptr<boost::any>> AttributeMap;
@@ -52,7 +52,7 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this visitor.
@@ -79,12 +79,12 @@ namespace tre
 			@return a boost::any casted shared_ptr<T> that was requested
 		*/
 		template <class T> T attribute(const std::string& key);
-				
+		
+		bool has_attribute(const std::string& key);
+
 		std::uint32_t attribute_uint32(std::string& key);
 		float attribute_float(std::string& key);
 		bool attribute_bool(std::string& key);
-
-		bool has_attribute(std::string key);
 
 
 		/**
@@ -100,16 +100,16 @@ namespace tre
 		static AttributeHandlerIndex attributeHandler_;
 
 		//Internal Datatype handling functions used to parse the object files
-		static void _handleUnhandled(ObjectVisitor* dst, std::string& name, anh::ByteBuffer& buf);
-		static void _handleClientString(ObjectVisitor* dst, std::string& name, anh::ByteBuffer& buf);
-		static void _handleString(ObjectVisitor* dst, std::string& name, anh::ByteBuffer& buf);
-		static void _handleInt(ObjectVisitor* dst, std::string& name, anh::ByteBuffer& buf);
-		static void _handleFloat(ObjectVisitor* dst, std::string& name, anh::ByteBuffer& buf);
-		static void _handleBool(ObjectVisitor* dst, std::string& name, anh::ByteBuffer& buf);
+		static void _handleUnhandled(ObjectVisitor* dst, std::string& name, swganh::ByteBuffer& buf);
+		static void _handleClientString(ObjectVisitor* dst, std::string& name, swganh::ByteBuffer& buf);
+		static void _handleString(ObjectVisitor* dst, std::string& name, swganh::ByteBuffer& buf);
+		static void _handleInt(ObjectVisitor* dst, std::string& name, swganh::ByteBuffer& buf);
+		static void _handleFloat(ObjectVisitor* dst, std::string& name, swganh::ByteBuffer& buf);
+		static void _handleBool(ObjectVisitor* dst, std::string& name, swganh::ByteBuffer& buf);
 
 		//Internal Node Handling functions
-		void _handleXXXX(anh::ByteBuffer& buf);
-		void _handleDERVXXXX(anh::ByteBuffer& buf);
+		void _handleXXXX(swganh::ByteBuffer& buf);
+		void _handleDERVXXXX(swganh::ByteBuffer& buf);
 
 		//Attributes this object iff might have
 		AttributeMap attributes_;

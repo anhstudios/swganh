@@ -8,12 +8,12 @@
 #include <boost/thread.hpp>
 #include <boost/python.hpp>
 
-#include "anh/logger.h"
-#include "anh/utilities.h"
+#include "swganh/logger.h"
+#include "swganh/utilities.h"
 
 #include "swganh/app/swganh_app.h"
 #include "swganh/app/swganh_kernel.h"
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 #include "swganh/scripting/utilities.h"
 
 using namespace boost;
@@ -33,10 +33,10 @@ int main(int argc, char* argv[])
 
         for (;;) {
 
-            if (anh::KeyboardHit())
+            if (swganh::KeyboardHit())
             {
-                char input = anh::GetHitKey();
-                if (input == '`')
+                char input = swganh::GetHitKey();
+                if (input == '`' || input =='~')
                 {
                     app.StartInteractiveConsole();
                 }
@@ -51,12 +51,11 @@ int main(int argc, char* argv[])
 
                     if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
                         LOG(info) << "Exit command received from command line. Shutting down.";
-        
                         break;
                     }
 					else if(cmd.compare("si_dump") == 0) {
 						LOG(info) << "[SVGDump] Dumping Spatial Indexing SVG...";
-						app.GetAppKernel()->GetEventDispatcher()->Dispatch(std::make_shared<anh::BaseEvent>("SpatialIndexSvgDump"));
+						app.GetAppKernel()->GetEventDispatcher()->Dispatch(std::make_shared<swganh::BaseEvent>("SpatialIndexSvgDump"));
 						LOG(info) << "[SVGDump] Done.";
 					}
 					else {

@@ -1,3 +1,6 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #pragma once
 
 #include "boundary_layer.h"
@@ -19,7 +22,7 @@ namespace tre
 
 		virtual LayerType GetType() { return LAYER_TYPE_BOUNDARY_POLYGON; }
 
-		virtual void Deserialize(anh::ByteBuffer& buffer);
+		virtual void Deserialize(swganh::ByteBuffer& buffer);
 		virtual bool IsContained(float px, float pz);
 		virtual float Process(float px, float pz);
 		

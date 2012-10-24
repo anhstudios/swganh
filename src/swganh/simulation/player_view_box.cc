@@ -3,7 +3,6 @@
 #pragma once
 
 #include <swganh/simulation/player_view_box.h>
-#include <swganh/object/object.h>
 
 using namespace swganh::simulation;
 using namespace swganh::object;

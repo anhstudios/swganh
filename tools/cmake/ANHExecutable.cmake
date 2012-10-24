@@ -99,8 +99,7 @@ FUNCTION(AddANHExecutable name)
         SET(__project_library "${name}_lib")
 
         list(REMOVE_ITEM SOURCES ${MAIN_EXISTS})
-
-        AddANHLibrary(${name}
+		AddANHLibrary(${name}
             DEPENDS
                 ${ANHEXE_DEPENDS}
             SOURCES

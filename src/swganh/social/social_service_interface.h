@@ -6,34 +6,26 @@
 #include <map>
 #include <memory>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 
 namespace swganh {
 namespace object {
-    class Object;
-namespace player {
     class Player;
-}
 }}  // namespace swganh::object
-
-namespace swganh {
-namespace character {
-class CharacterProviderInterface;
-}} // namespace swganh::character
 
 namespace swganh {
 namespace social {
     
-    class SocialServiceInterface : public anh::service::ServiceInterface
+    class SocialServiceInterface : public swganh::service::ServiceInterface
     {
     public:
         
-        virtual bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name) = 0;
+        virtual bool AddFriend(const std::shared_ptr<swganh::object::Player>& player, const std::string& friend_name) = 0;
         
-		virtual bool AddIgnore(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& player_name) = 0;
+		virtual bool AddIgnore(const std::shared_ptr<swganh::object::Player>& player, const std::string& player_name) = 0;
         
     };
 

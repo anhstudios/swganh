@@ -4,10 +4,16 @@
 
 #include <memory>
 
-#include "pub14_core/messages/controllers/command_queue_enqueue.h"
+#include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
 #include "command_interface.h"
 #include "command_properties.h"
+
+namespace swganh {
+namespace observer {
+	class ObserverInterface;
+}
+}
 
 namespace swganh {
 namespace app {
@@ -15,13 +21,9 @@ namespace app {
 }
 
 namespace object {
-    class ObjectController;
-namespace creature {
-    class Creature;
-}  // namespace creature
-namespace tangible {
-    class Tangible;
-}}  // namespace object::tangible
+	class Object;
+	class Creature;
+}
 
 namespace messages {
 namespace controllers {
@@ -39,9 +41,8 @@ namespace command {
 
         ~BaseSwgCommand();
 
-        virtual const std::shared_ptr<object::ObjectController>& GetController() const;
-
-        virtual void SetController(const std::shared_ptr<object::ObjectController>& controller);
+        const std::shared_ptr<swganh::observer::ObserverInterface> GetController() const;
+		void SetController(std::shared_ptr<swganh::observer::ObserverInterface> controller);
 
         virtual bool Validate();
         
@@ -53,11 +54,13 @@ namespace command {
 
         uint32_t GetPriority() const;
 
-        uint32_t GetCommandGroup() const;
+        CommandGroup GetCommandGroup() const;
         
         uint32_t GetTargetRequiredType() const;
 
         uint64_t GetAllowedStateBitmask() const;
+
+		uint64_t GetAllowedLocomotionBitmask() const;
         
         float GetMaxRangeToTarget() const;
         
@@ -67,26 +70,28 @@ namespace command {
 
         bool IsQueuedCommand() const;
 
-        const std::shared_ptr<object::creature::Creature>& GetActor() const;
+        const std::shared_ptr<object::Object>& GetActor() const;
+		void SetActor(std::shared_ptr<object::Object> object);
 
-        const std::shared_ptr<object::tangible::Tangible>& GetTarget() const;
-
-		const std::shared_ptr<object::creature::Creature>& GetTargetCreature() const;
+        const std::shared_ptr<object::Object>& GetTarget() const;
+		std::shared_ptr<object::Creature> GetTargetCreature();
+		void SetTarget(std::shared_ptr<object::Object> target);
 
         const std::wstring& GetCommandString() const;
 
-        void SetCommandProperties(const CommandProperties& properties);
-        
+        virtual void SetCommandProperties(const CommandProperties& properties);
+        virtual void PostRun(bool success) {}
+
         const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
 
-        void SetCommandRequest(const swganh::messages::controllers::CommandQueueEnqueue& command_request);
+        void SetCommandRequest(swganh::messages::controllers::CommandQueueEnqueue command_request);
+		
     private:    
         swganh::app::SwganhKernel* kernel_;
         const CommandProperties* properties_;
-        std::shared_ptr<object::ObjectController> controller_;
-        mutable std::shared_ptr<object::creature::Creature> actor_;
-        mutable std::shared_ptr<object::tangible::Tangible> target_;
-		mutable std::shared_ptr<object::creature::Creature> creature_target_;
+        std::shared_ptr<swganh::observer::ObserverInterface> controller_;
+		mutable std::shared_ptr<object::Object> actor_;
+        mutable std::shared_ptr<object::Object> target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;
     };
 

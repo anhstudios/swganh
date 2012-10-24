@@ -13,7 +13,7 @@
 
 namespace swganh {
 namespace tre {
-    
+
     /**
      * TreArchive is a simple utility for accessing resource files from
      * a collection of .tre files.
@@ -66,7 +66,7 @@ namespace tre {
          * \param resource_name The name of the resource.
          * \return The file in binary format (move constructable).
          */
-        anh::ByteBuffer GetResource(const std::string& resource_name);
+        swganh::ByteBuffer GetResource(const std::string& resource_name);
         
         /**
          * Retrieves the requested resource in binary format.
@@ -77,18 +77,7 @@ namespace tre {
          * \param resource_name The name of the resource.
          * \param buffer The buffer to store the resource.
          */
-        void GetResource(const std::string& resource_name, anh::ByteBuffer& buffer);
-        
-        /**
-         * Returns the md5 hash of the requested resource.
-         *
-         * Searches for the most recent version of the file and returns its 
-         * md5 hash string.
-         *
-         * \param resource_name The name of the resource.
-         * \return The md5 hash of the requseted resource.
-         */
-        std::string GetMd5Hash(const std::string& resource_name) const;
+        void GetResource(const std::string& resource_name, swganh::ByteBuffer& buffer);
         
         /**
          * Returns a list of the available tre files.
@@ -118,7 +107,9 @@ namespace tre {
 
         void CreateReaders(const std::vector<std::string>& resource_files);
 
+		
         typedef std::vector<std::unique_ptr<TreReader>> ReaderList;
         ReaderList readers_;
+		ResourceLookup lookup_;
     };
 }}  // namespace swganh::tre

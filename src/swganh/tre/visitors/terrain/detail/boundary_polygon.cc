@@ -1,8 +1,11 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #include "boundary_polygon.h"
 
 using namespace swganh::tre;
 
-void BoundaryPolygon::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryPolygon::Deserialize(swganh::ByteBuffer& buffer)
 {
 	uint32_t sizeTemp = buffer.read<uint32_t>();
 

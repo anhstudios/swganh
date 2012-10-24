@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 
-namespace anh
+namespace swganh
 {
 	class ByteBuffer;
 }
@@ -25,7 +25,7 @@ namespace tre
 	public:
 		static const VisitorType Type = POB_VISITOR;
 
-		typedef std::function<void(PobVisitor*, anh::ByteBuffer& buffer)> NodeFunctor;
+		typedef std::function<void(PobVisitor*, swganh::ByteBuffer& buffer)> NodeFunctor;
 		typedef std::map<std::string, NodeFunctor> NodeNameIndex;
 		typedef std::map<std::string, NodeFunctor>::iterator NodeNameIndexIterator;
 
@@ -38,7 +38,7 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this interpreter.
@@ -147,12 +147,12 @@ namespace tre
 	private:
 
 		//Internal Node Handling functions
-		static void _handle0003DATA(PobVisitor*, anh::ByteBuffer& data);
-		static void _handlePRTL(PobVisitor*, anh::ByteBuffer& data);
-		static void _handle0005DATA(PobVisitor*, anh::ByteBuffer& data);
-		static void _handle0000VERT(PobVisitor*, anh::ByteBuffer& data);
-		static void _handleINDX(PobVisitor*, anh::ByteBuffer& data);
-		static void _handlePRTL0004(PobVisitor*, anh::ByteBuffer& data);
+		static void _handle0003DATA(PobVisitor*, swganh::ByteBuffer& data);
+		static void _handlePRTL(PobVisitor*, swganh::ByteBuffer& data);
+		static void _handle0005DATA(PobVisitor*, swganh::ByteBuffer& data);
+		static void _handle0000VERT(PobVisitor*, swganh::ByteBuffer& data);
+		static void _handleINDX(PobVisitor*, swganh::ByteBuffer& data);
+		static void _handlePRTL0004(PobVisitor*, swganh::ByteBuffer& data);
 
 		//Internal Containers for portals and cells
 		std::vector<Portal> portals_;

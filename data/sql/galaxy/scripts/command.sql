@@ -1,11 +1,16 @@
-
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               5.1.63-community - MySQL Community Server (GPL)
+-- Server OS:                    Win64
+-- HeidiSQL version:             7.0.0.4053
+-- Date/time:                    2012-10-14 17:58:57
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
-# Dumping structure for table galaxy.command
+-- Dumping structure for table galaxy.command
 DROP TABLE IF EXISTS `command`;
 CREATE TABLE IF NOT EXISTS `command` (
   `id` int(10) unsigned NOT NULL,
@@ -51,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `command` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.command: ~781 rows (approximately)
+-- Dumping data for table galaxy.command: ~781 rows (approximately)
 /*!40000 ALTER TABLE `command` DISABLE KEYS */;
 INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`, `fail_script_hook`, `default_time`, `command_group`, `max_range_to_target`, `add_to_combat_queue`, `health_cost`, `health_cost_multiplier`, `action_cost`, `action_cost_multiplier`, `mind_cost`, `mind_cost_multiplier`, `damage_multiplier`, `delay_multiplier`, `accuracy_bonus`, `force_cost`, `force_cost_multiplier`, `animation_crc`, `required_weapon_group`, `combat_spam`, `trail1`, `trail2`, `allow_in_posture`, `health_hit_chance`, `action_hit_chance`, `mind_hit_chance`, `knockdown_chance`, `dizzy_chance`, `blind_chance`, `stun_chance`, `intimidate_chance`, `posture_down_chance`, `extended_range`, `cone_angle`, `posture_up_chance`, `deny_in_locomotion`) VALUES
 	(1, 'actionShot1', 'actionShot1', 3894805552, '', 'failSpecialAttack', 2000, 1, 64, 1, 0, 2, 0, 1, 0, 1, 2, 2, 25, 0, 0, 3749773518, 64, 'impairingshot', 0, 0, 15, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
@@ -828,6 +833,5 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 	(2100, 'shutdownGalaxy', 'admin_shutdownGalaxy', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(2101, 'cancelShutdownGalaxy', 'admin_cancelShutdownGalaxy', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 /*!40000 ALTER TABLE `command` ENABLE KEYS */;
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

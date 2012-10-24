@@ -1,6 +1,8 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include <anh/byte_buffer.h>
+#include <swganh/byte_buffer.h>
 #include <iostream>
 
 namespace swganh
@@ -21,14 +23,14 @@ namespace tre
 	{
 	public:
 
-		virtual void SetData(anh::ByteBuffer& buffer)
+		virtual void SetData(swganh::ByteBuffer& buffer)
 		{
 			enabled = buffer.read<uint32_t>() == 1;
 		}
 
 		virtual LayerType GetType() = 0;
 		
-		virtual void Deserialize(anh::ByteBuffer& buffer) = 0;
+		virtual void Deserialize(swganh::ByteBuffer& buffer) = 0;
 
 		bool enabled;
 

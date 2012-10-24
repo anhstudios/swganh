@@ -1,3 +1,6 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #pragma once
 
 #include "layer.h"
@@ -15,7 +18,7 @@ namespace tre
 	{
 	public:
 
-		virtual void Deserialize(anh::ByteBuffer& buffer)
+		virtual void Deserialize(swganh::ByteBuffer& buffer)
 		{
 			//Read ADTA
 			invert_boundaries = buffer.read<uint32_t>() == 1;

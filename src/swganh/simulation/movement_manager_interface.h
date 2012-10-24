@@ -15,19 +15,18 @@ namespace Concurrency {
 
 #endif
 
-#include "pub14_core/messages/controllers/data_transform.h"
-#include "pub14_core/messages/controllers/data_transform_with_parent.h"
+#include "swganh_core/messages/controllers/data_transform.h"
+#include "swganh_core/messages/controllers/data_transform_with_parent.h"
 
-namespace anh {
+namespace swganh {
     class EventDispatcher;
 namespace event_dispatcher {
     class EventDispatcherInterface;
-}}  // namespace anh::event_dispatcher
+}}  // namespace swganh::event_dispatcher
 
 namespace swganh {
 namespace object {
     class Object;
-    class ObjectController;
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -38,16 +37,25 @@ namespace simulation {
     {
     public:
 		virtual void HandleDataTransform(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const std::shared_ptr<swganh::object::Object>& controller, 
             swganh::messages::controllers::DataTransform message) = 0;
 
         virtual void HandleDataTransformWithParent(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const std::shared_ptr<swganh::object::Object>& controller, 
             swganh::messages::controllers::DataTransformWithParent message) = 0;
         
         virtual void SendDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B) = 0;
         virtual void SendUpdateDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object) = 0;
         
+		virtual void HandleDataTransformServer(
+			const std::shared_ptr<swganh::object::Object>& object,
+			const glm::vec3& new_position) = 0;
+
+		virtual void HandleDataTransformWithParentServer(
+			const std::shared_ptr<swganh::object::Object>& parent, 
+			const std::shared_ptr<swganh::object::Object>& object,
+			const glm::vec3& new_position) = 0;
+
         virtual void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B) = 0;
         virtual void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object) = 0;
 		virtual void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider) = 0;

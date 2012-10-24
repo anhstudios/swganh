@@ -4,7 +4,7 @@
 #include "tre_archive.h"
 
 #include "config_reader.h"
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
     
 using namespace swganh::tre;
 
@@ -53,41 +53,24 @@ uint32_t TreArchive::GetResourceSize(const string& resource_name) const
     throw runtime_error("Requested unknown resource " + resource_name);
 }
 
-anh::ByteBuffer TreArchive::GetResource(const string& resource_name)
+swganh::ByteBuffer TreArchive::GetResource(const string& resource_name)
 {
-    for (auto& reader : readers_)
-    {
-        if (reader->ContainsResource(resource_name))
-        {
-            return reader->GetResource(resource_name);
-        }
-    }
+	auto find_itr = lookup_.find(resource_name.c_str());
+	if(find_itr != lookup_.end())
+	{
+		return readers_[find_itr->second]->GetResource(resource_name);
+	}
 
     throw runtime_error("Requested unknown resource " + resource_name);
 }
 
-void TreArchive::GetResource(const std::string& resource_name, anh::ByteBuffer& buffer)
+void TreArchive::GetResource(const std::string& resource_name, swganh::ByteBuffer& buffer)
 {
-    for (auto& reader : readers_)
-    {
-        if (reader->ContainsResource(resource_name))
-        {
-            return reader->GetResource(resource_name, buffer);
-        }
-    }
-
-    throw runtime_error("Requested unknown resource " + resource_name);
-}
-
-string TreArchive::GetMd5Hash(const string& resource_name) const
-{
-    for (auto& reader : readers_)
-    {
-        if (reader->ContainsResource(resource_name))
-        {
-            return reader->GetMd5Hash(resource_name);
-        }
-    }
+	auto find_itr = lookup_.find(resource_name.c_str());
+	if(find_itr != lookup_.end())
+	{
+		return readers_[find_itr->second]->GetResource(resource_name, buffer);
+	}
 
     throw runtime_error("Requested unknown resource " + resource_name);
 }
@@ -103,7 +86,6 @@ vector<string> TreArchive::GetTreFilenames() const
 
     return filenames;
 }
-
 
 vector<string> TreArchive::GetAvailableResources() const
 {
@@ -136,8 +118,8 @@ std::vector<std::string> TreArchive::GetAvailableResources(std::function<void (i
 
  void TreArchive::CreateReaders(const vector<string>& resource_files)
  { 
-    for (auto& filename : resource_files)
-    {
-        readers_.push_back(std::unique_ptr<TreReader>(new TreReader(filename)));
-    }
+	uint32_t index = 0;
+	std::for_each(resource_files.rbegin(), resource_files.rend(), [&, this] (std::string name) {
+        readers_.push_back(std::unique_ptr<TreReader>(new TreReader(name, lookup_, index++)));
+	});
  }

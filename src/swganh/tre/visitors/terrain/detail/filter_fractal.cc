@@ -1,10 +1,13 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #include "filter_fractal.h"
 
 #include "fractal.h"
 
 using namespace swganh::tre;
 
-void FractalFilter::Deserialize(anh::ByteBuffer& buffer)
+void FractalFilter::Deserialize(swganh::ByteBuffer& buffer)
 {
 	fractal_id = buffer.read<uint32_t>();
 	

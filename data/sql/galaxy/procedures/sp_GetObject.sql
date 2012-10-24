@@ -10,7 +10,9 @@ DELIMITER //
 CREATE PROCEDURE `sp_GetObject`(IN `object_id` BIGINT)
     COMMENT 'Get''s the base object that all game objects have'
 BEGIN
-    SELECT * FROM object LEFT JOIN iff_templates ON (object.iff_template_id = iff_templates.id) WHERE (object.id = object_id);
+    SELECT *
+	FROM object LEFT JOIN swganh_static.iff_templates 
+	ON (object.iff_template_id = swganh_static.iff_templates.id) WHERE (object.id = object_id);
 END//
 DELIMITER ;
 

@@ -24,7 +24,7 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this visitor.
@@ -51,9 +51,9 @@ namespace tre
 		std::list<DATA_ROW>::iterator end_itr() { return rows_.end(); }
 
 	private:
-		void _handle0001COLS(anh::ByteBuffer& buf);
-		void _handleTYPE(anh::ByteBuffer& buf);
-		void _handleROWS(anh::ByteBuffer& buf);
+		void _handle0001COLS(swganh::ByteBuffer& buf);
+		void _handleTYPE(swganh::ByteBuffer& buf);
+		void _handleROWS(swganh::ByteBuffer& buf);
 
 		std::vector<char> column_types_;
 		std::vector<std::string> column_names_;

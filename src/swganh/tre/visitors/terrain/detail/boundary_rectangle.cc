@@ -1,8 +1,11 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #include "boundary_rectangle.h"
 
 using namespace swganh::tre;
 
-void BoundaryRectangle::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryRectangle::Deserialize(swganh::ByteBuffer& buffer)
 {
 	x1 = buffer.read<float>();
 	z1 = buffer.read<float>();

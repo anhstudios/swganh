@@ -53,6 +53,10 @@ charCreate:BEGIN
     DECLARE mind INT;
     DECLARE focus INT;
     DECLARE willpower INT;
+	
+	-- 
+	-- Transactional Support
+	--	
 
     SELECT sf_CharacterNameInUseCheck(start_firstname) INTO nameCheck;
     IF nameCheck <> 666 THEN
@@ -72,10 +76,10 @@ charCreate:BEGIN
     SET oZ = 0;
     SET oW = 0;
 
-    START TRANSACTION;
+    
         SELECT MAX(id) + 10 FROM object INTO object_id FOR UPDATE;
 
-        IF object_id IS NULL THEN
+        IF object_id IS NULL OR object_id < 8589934593 THEN
             SET object_id = 8589934593;
         END IF;
 
@@ -88,9 +92,9 @@ charCreate:BEGIN
         SELECT id from species where species.name like shortSpecies into race_id;
 
         SET longSpecies = REPLACE(base_model_string, 'object/creature/player/', 'object/creature/player/shared_');
-        SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
+        SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
 
-        SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE 'object/player/shared_player.iff' INTO player_iff_template_id;
+        SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE 'object/player/shared_player.iff' INTO player_iff_template_id;
 
         SELECT creation_attributes.health, creation_attributes.strength, creation_attributes.constitution, creation_attributes.action,
         creation_attributes.quickness, creation_attributes.stamina, creation_attributes.mind, creation_attributes.focus, creation_attributes.willpower
@@ -109,34 +113,31 @@ charCreate:BEGIN
             VALUES (object_id, parent_id, 2000, 0, 0, start_scale, 1, 1, 1, 1, 5.75, 1, 1, 1, 1,
                 health, strength, constitution, action, quickness, stamina, mind, focus, willpower,
                 health, strength, constitution, action, quickness, stamina, mind, focus, willpower );
-        -- APPEARANCE
-        INSERT INTO `appearance` VALUES (object_id, scale, gender, shortSpecies, start_appearance_customization);
         -- DATAPAD 2 -- 9357
-        INSERT INTO `object` VALUES (object_id+2, start_scene, object_id, 9357, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'datapad', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+        INSERT INTO `object` VALUES (object_id+2, start_scene, object_id, 9357, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'datapad', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+2, '', 0, 0, 0, 0, 1);
         -- INVENTORY 3 -- 10708
-		INSERT INTO `object` VALUES (object_id+3, start_scene, object_id, 10708, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'inventory', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+		INSERT INTO `object` VALUES (object_id+3, start_scene, object_id, 10708, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'inventory', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+3, '', 0, 0, 0, 0, 1);
         -- BANK 4 -- 8571
-		INSERT INTO `object` VALUES (object_id+4, start_scene, object_id, 8571, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'bank', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+		INSERT INTO `object` VALUES (object_id+4, start_scene, object_id, 8571, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'bank', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+4, '', 0, 0, 0, 0, 1);
         -- MISSION 5 -- 12386
-		INSERT INTO `object` VALUES (object_id+5, start_scene, object_id, 12386, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'mission_bag', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
+		INSERT INTO `object` VALUES (object_id+5, start_scene, object_id, 12386, start_x,start_y,start_z,0,0,0,1, 0, 'item_n', 'mission_bag', '', 0, NOW(), NOW(), null, 1413566031, -2, 6);
         INSERT INTO `tangible` VALUES (object_id+5, '', 0, 0, 0, 0, 1);
         -- HAIR 6
 
         IF start_hair_model != '' THEN
             SET longHair = REPLACE(start_hair_model, '/hair_', '/shared_hair_');
-            SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
+            SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
 
             INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031, -2, 1);
             INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);
-            INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
         END IF;
 
         -- EQUIPED ??
         -- PLAYER 1
-        INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', start_custom_name,0, NOW(), NOW(), null, 1347174745, -2, 1);
+        INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', '',0, NOW(), NOW(), null, 1347174745, -2, 1);
         INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
             VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
         -- PLAYER ACCOUNT
@@ -149,7 +150,7 @@ charCreate:BEGIN
             CALL sp_CharacterXpCreate(object_id,base_skill_id);
         END IF;
 
-        CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
+        CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender, start_scene);
     COMMIT;
 END//
 DELIMITER ;

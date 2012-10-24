@@ -2,4 +2,6 @@ from swgpy.command import BaseCombatCommand
 from swgpy import ACTION
 
 class AttackCommand(BaseCombatCommand):
-    base_attack_speed = 0.25
+	def setup(self, properties):
+		properties.max_range_to_target = 7.5
+		

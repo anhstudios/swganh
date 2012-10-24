@@ -164,8 +164,7 @@ FUNCTION(AddANHLibrary name)
         TARGET_LINK_LIBRARIES(${name}_test
             ${ANHLIB_DEPENDS})
         add_dependencies(${name}_test DEPS)
-
-        IF(_debug_list_length GREATER 0)
+		IF(_debug_list_length GREATER 0)
             FOREACH(debug_library ${ANHLIB_DEBUG_LIBRARIES})
                 if (NOT ${debug_library} MATCHES ".*NOTFOUND")
                     TARGET_LINK_LIBRARIES(${name}_test debug ${debug_library})
@@ -192,12 +191,12 @@ FUNCTION(AddANHLibrary name)
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
         ENDIF()
 
-        add_custom_command(
-            TARGET ${name}_test
-            POST_BUILD
-            COMMAND $<TARGET_FILE:${name}_test>
-            WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${configuration}
-        )
+        # add_custom_command(
+            # TARGET ${name}_test
+            # POST_BUILD
+            # COMMAND $<TARGET_FILE:${name}_test>
+            # WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${configuration}
+        # )
 
         add_test(
             NAME all_${name}_tests

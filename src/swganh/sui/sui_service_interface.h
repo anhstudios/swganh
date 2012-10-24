@@ -1,7 +1,9 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
 #include <memory>
-#include <anh/service/service_interface.h>
+#include <swganh/service/service_interface.h>
 
 
 namespace swganh
@@ -33,7 +35,7 @@ namespace sui
 		INPUT_BOX_OKCANCEL
 	};
 
-	class SUIServiceInterface : public anh::service::ServiceInterface
+	class SUIServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
 
@@ -45,6 +47,8 @@ namespace sui
 
 		//Get Window
 		virtual std::shared_ptr<SUIWindowInterface> GetSUIWindowById(std::shared_ptr<swganh::object::Object> owner, int32_t windowId) = 0;
+
+		virtual std::shared_ptr<SUIWindowInterface> GetSUIWindowByScriptName(std::shared_ptr<swganh::object::Object> owner, std::string script) = 0;
 
 		//Forcefully closes a previously opened window.
 		virtual void CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId) = 0;

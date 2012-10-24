@@ -1,8 +1,11 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #include "boundary_circle.h"
 
 using namespace swganh::tre;
 
-void BoundaryCircle::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryCircle::Deserialize(swganh::ByteBuffer& buffer)
 {
 	this->x = buffer.read<float>();
 	this->z = buffer.read<float>();

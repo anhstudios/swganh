@@ -1,6 +1,8 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #include "layer_loader.h"
 
-#include <anh/byte_buffer.h>
+#include <swganh/byte_buffer.h>
 
 #include "container_layer.h"
 #include "boundary_circle.h"

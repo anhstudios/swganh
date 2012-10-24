@@ -9,10 +9,12 @@
 #include <boost/optional.hpp>
 
 namespace swganh {
-namespace object {
-    class ObjectController;
+namespace observer {
+	class ObserverInterface;
+}
 }
 
+namespace swganh {
 namespace command {
 
     struct CommandProperties;
@@ -58,12 +60,7 @@ namespace command {
         /**
          * @return The controller associated with this command invocation.
          */
-        virtual const std::shared_ptr<object::ObjectController>& GetController() const = 0;
-
-        /**
-         * @return The controller associated with this command invocation.
-         */
-        virtual void SetController(const std::shared_ptr<object::ObjectController>&) = 0;
+        virtual const std::shared_ptr<swganh::observer::ObserverInterface> GetController() const = 0;
         
         virtual void SetCommandProperties(const CommandProperties& properties) = 0;
 
@@ -79,7 +76,14 @@ namespace command {
          *
          * @return Optional callback to be invoked after a given amount of time.
          */
-        virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;
+        virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;		
+
+		/**
+         * Executes the Post Run handler for the request
+         *
+         * @param success if the Run command was process successfully
+         */
+		virtual void PostRun(bool success) = 0;
     };
 
 }}

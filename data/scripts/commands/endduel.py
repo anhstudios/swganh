@@ -1,12 +1,16 @@
+import swgpy
+from swgpy.object import *
 from swgpy.command import BaseSwgCommand
 from swgpy import combat
 class EndDuelCommand(BaseSwgCommand):
-    def Run(self):
-        actor = self.GetActor()
-        target = self.GetTargetCreature()
-        
-        service_mgr = self.GetKernel().service_manager()
-        
-        combat_svc = service_mgr.combat_service()
-        if (actor and target):
-            combat_svc.end_duel(actor, target)
+	def run(self):
+		actor = self.getActor()
+		target = self.getTargetCreature()
+		
+		service_mgr = self.getKernel().serviceManager()
+		combat_svc = service_mgr.combatService()
+		print(combat_svc)
+		print(target)
+		if (actor and target):
+			print(combat_svc.endDuel)
+			combat_svc.endDuel(actor, target)

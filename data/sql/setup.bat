@@ -24,7 +24,7 @@
 :: -- Prepare the Command Processor
 	SETLOCAL ENABLEEXTENSIONS
 	SETLOCAL ENABLEDELAYEDEXPANSION
-	MODE con:cols=72 lines=38
+	--MODE con:cols=72 lines=38
 
 :: Set initial VARS
 	SET db_user=----
@@ -70,14 +70,14 @@ TITLE %title%
 	ECHO.                                   ^|
 	ECHO.   (2) galaxy                      ^|  (c) Complete Database Backup
 	ECHO.   (3) galaxy_manager              ^|  (d) Delete Databases
-	ECHO.                                   ^|  (e) Create new Galaxy
-	ECHO.        Server Configuration       ^|  (f) ----
-	ECHO.                                   ^|  (g) ----
-	ECHO.   (-) -------------------         ^|
+	ECHO.   (7) swganh_static               ^|  (e) Create new Galaxy
+	ECHO.                                   ^|  (f) ----
+	ECHO.        Server Configuration       ^|  (g) ----
+	ECHO.                                   ^|
 	ECHO.   (-) -------------------         ^|               Help
 	ECHO.   (-) -------------------         ^|
 	ECHO.   (-) -------------------         ^|  (h) Help
-	ECHO.                                   ^|  (s) Stats
+	ECHO.   (-) -------------------         ^|  (s) Stats
 	ECHO.                                   ^|
 	ECHO.                                   ^|
 	ECHO.                                   ^|
@@ -142,6 +142,8 @@ GOTO:MainMenu
 		mysql --password=%db_pass% --host=%db_host% --user=%db_user% < "create.sql"
 	cd "%PROJECT_BASE%galaxy_manager"
 		mysql --password=%db_pass% --host=%db_host% --user=%db_user% < "create.sql"
+	cd "%PROJECT_BASE%swganh_static"
+		mysql --password=%db_pass% --host=%db_host% --user=%db_user% < "create.sql"
 
 	:: Populate the data
 	
@@ -184,6 +186,27 @@ GOTO:MainMenu
 	cd "%PROJECT_BASE%galaxy_manager\procedures"
 		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
 			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy_manager --default-character-set=utf8 < "%%A"
+		ECHO. Installing %%A [Done]
+		)
+		
+	:: (swganh_static)
+	cd "%PROJECT_BASE%"
+	
+	cd "%PROJECT_BASE%swganh_static\scripts"
+		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=swganh_static --default-character-set=utf8 < "%%A"
+		ECHO. Installing %%A [Done]
+		)
+		
+	cd "%PROJECT_BASE%swganh_static\functions"
+		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=swganh_static --default-character-set=utf8 < "%%A"
+		ECHO. Installing %%A [Done]
+		)
+		
+	cd "%PROJECT_BASE%swganh_static\procedures"
+		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=swganh_static --default-character-set=utf8 --comments < "%%A"
 		ECHO. Installing %%A [Done]
 		)
 	
@@ -243,6 +266,32 @@ GOTO:MainMenu
 	cd "%PROJECT_BASE%galaxy_manager\procedures"
 		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
 			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy_manager --default-character-set=utf8 --comments < "%%A"
+		ECHO. Installing %%A [Done]
+		)
+	GOTO:MainMenu
+	
+:SchemaSWGANH_STATIC
+	cd "%PROJECT_BASE%swganh_static"
+		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
+		
+	:: (swganh_static)
+	
+	cd "%PROJECT_BASE%"
+	cd "%PROJECT_BASE%swganh_static\scripts"
+		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=swganh_static --default-character-set=utf8 < "%%A"
+		ECHO. Installing %%A [Done]
+		)
+		
+	cd "%PROJECT_BASE%swganh_static\functions"
+		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=swganh_static --default-character-set=utf8 < "%%A"
+		ECHO. Installing %%A [Done]
+		)
+		
+	cd "%PROJECT_BASE%swganh_static\procedures"
+		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=swganh_static --default-character-set=utf8 --comments < "%%A"
 		ECHO. Installing %%A [Done]
 		)
 	GOTO:MainMenu

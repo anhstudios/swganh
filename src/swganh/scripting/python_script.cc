@@ -8,7 +8,7 @@
 #include <iostream>
 #include <iterator>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include <boost/python.hpp>
 #include <Python.h>
@@ -46,14 +46,14 @@ PythonScript::PythonScript(const string& filename)
 
 void PythonScript::Run()
 {
+	swganh::scripting::ScopedGilLock lock;
 	try
     {
 #ifdef _DEBUG
         ReadFileContents();
 #endif
         LOG(info) << "Executing script: " << filename_;
-        swganh::scripting::ScopedGilLock lock;
-		file_object_ = exec(filecontents_.c_str(), globals_, globals_);
+        file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     }
     catch (error_already_set &)
     {

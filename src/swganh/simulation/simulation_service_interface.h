@@ -6,36 +6,59 @@
 #include <map>
 #include <memory>
 
-#include "anh/network/soe/server.h"
-#include "anh/service/service_interface.h"
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+#include "swganh/network/soe/server.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/object/object_controller_interface.h"
 #include "swganh/object/permissions/permission_type.h"
 
-namespace anh {
+namespace swganh {
 	class ByteBuffer;
 }
 
 namespace swganh {
 namespace connection {
     class ConnectionClient;
-}}  // namespace swganh::network
+}
 
-namespace swganh {
+namespace messages
+{
+	struct BaseSwgMessage;
+}
+
+namespace equipment {
+	class EquipmentServiceInterface;
+}
+
 namespace object {
+
+	typedef std::function<
+        void (std::shared_ptr<swganh::object::Object>, swganh::messages::ObjControllerMessage*)
+    > ObjControllerHandler;
+
+    typedef Concurrency::concurrent_unordered_map<
+        uint32_t, 
+        ObjControllerHandler
+    > ObjControllerHandlerMap;
+
     class Object;
 	class ObjectManager;
-}}  // namespace swganh::object
+}
 
-namespace swganh {
 namespace simulation {
     
-    class SimulationServiceInterface : public anh::service::ServiceInterface
+    class SimulationServiceInterface : public swganh::service::ServiceInterface
     {
     public:
         virtual void StartScene(const std::string& scene_label) = 0;
         virtual void StopScene(const std::string& scene_label) = 0;
+
+		virtual uint32_t SceneIdByName(const std::string& scene_label) = 0;
+		virtual std::string SceneNameById(uint32_t scene_id) = 0;
 
 		virtual void AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label) = 0;
 
@@ -89,7 +112,7 @@ namespace simulation {
         virtual void RemoveObjectById(uint64_t object_id) = 0;
         virtual void RemoveObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
         
-        virtual std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
+        virtual std::shared_ptr<swganh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client) = 0;
 
@@ -99,7 +122,7 @@ namespace simulation {
         struct GenericControllerHandler
         {
             typedef std::function<void (
-                const std::shared_ptr<swganh::object::ObjectController>&, MessageType)
+                std::shared_ptr<swganh::object::Object>, MessageType*)
             > HandlerType;
         };
         
@@ -117,7 +140,7 @@ namespace simulation {
          * \param instance An instance of a class that implements memfunc.
          */
         template<typename T, typename U, typename MessageType>
-        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType), U instance)
+        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::Object>&, MessageType*), U instance)
         {
             RegisterControllerHandler<MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
@@ -136,12 +159,13 @@ namespace simulation {
             auto shared_handler = std::make_shared<typename GenericControllerHandler<MessageType>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
-                const std::shared_ptr<swganh::object::ObjectController>& controller,
-                swganh::messages::ObjControllerMessage message)
+                std::shared_ptr<swganh::object::Object> object,
+                swganh::messages::ObjControllerMessage* message)
             {
-                MessageType tmp(std::move(message));
+                MessageType tmp(*message);
+				tmp.OnControllerDeserialize(message->data);
 
-                (*shared_handler)(controller, std::move(tmp));
+				(*shared_handler)(object, &tmp);
             };
 
             RegisterControllerHandler(MessageType::message_type(), std::move(wrapped_handler));
@@ -157,35 +181,21 @@ namespace simulation {
          * \param handler The object controller handler.
          */
         virtual void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler) = 0;
-
         virtual void UnregisterControllerHandler(uint32_t handler_id) = 0;
 
-        virtual void SendToAll(anh::ByteBuffer message) = 0;
-
-        template <typename T>
-        void SendToAll(const T& message)
-        {
-            anh::ByteBuffer message_buffer;
-            message.Serialize(message_buffer);
-
-            SendToAll(message_buffer);
-        }
-
-        virtual void SendToAllInScene(anh::ByteBuffer message, uint32_t scene_id) = 0;
-
-        template<typename T>
-        void SendToAllInScene(const T& message, uint32_t scene_id)
-        {
-            anh::ByteBuffer message_buffer;
-            message.Serialize(message_buffer);
-
-            SendToAllInScene(message_buffer, scene_id);
-        }
+        virtual void SendToAll(swganh::messages::BaseSwgMessage* message) = 0;
+        virtual void SendToScene(swganh::messages::BaseSwgMessage* message, uint32_t scene_id) = 0;
+		virtual void SendToScene(swganh::messages::BaseSwgMessage* message, std::string scene_name) = 0;
+		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, uint32_t scene_id, glm::vec3 position, float radius) = 0;
+		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, std::string scene_name, glm::vec3 position, float radius) = 0;
 
 		virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0) = 0;
 
 		virtual void PrepareToAccomodate(uint32_t delta) = 0;
+		
+		virtual const std::shared_ptr<swganh::equipment::EquipmentServiceInterface>& GetEquipmentService() = 0;
+
     };
 
 }}  // namespace swganh::simulation

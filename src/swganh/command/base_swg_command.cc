@@ -3,20 +3,19 @@
 
 #include "base_swg_command.h"
 
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/creature/creature.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
+using swganh::observer::ObserverInterface;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandProperties;
+using swganh::command::CommandGroup;
+using swganh::object::Object;
+using swganh::object::Creature;
 using swganh::messages::controllers::CommandQueueEnqueue;
-using swganh::object::ObjectController;
-using swganh::object::creature::Creature;
-using swganh::object::tangible::Tangible;
 using swganh::simulation::SimulationServiceInterface;
 
 BaseSwgCommand::BaseSwgCommand(
@@ -31,14 +30,14 @@ BaseSwgCommand::BaseSwgCommand(
 BaseSwgCommand::~BaseSwgCommand()
 {}
 
-const std::shared_ptr<ObjectController>& BaseSwgCommand::GetController() const
+const std::shared_ptr<ObserverInterface> BaseSwgCommand::GetController() const
 {
-    return controller_;
+	return controller_;
 }
 
-void BaseSwgCommand::SetController(const std::shared_ptr<ObjectController>& controller)
+void BaseSwgCommand::SetController(std::shared_ptr<swganh::observer::ObserverInterface> controller)
 {
-    controller_ = controller;
+	controller_ = controller;
 }
 
 bool BaseSwgCommand::Validate()
@@ -66,7 +65,7 @@ uint32_t BaseSwgCommand::GetPriority() const
     return properties_->default_priority;
 }
 
-uint32_t BaseSwgCommand::GetCommandGroup() const
+CommandGroup BaseSwgCommand::GetCommandGroup() const
 {
     return properties_->command_group;
 }
@@ -79,6 +78,10 @@ uint32_t BaseSwgCommand::GetTargetRequiredType() const
 uint64_t BaseSwgCommand::GetAllowedStateBitmask() const
 {
     return properties_->allow_in_state;
+}
+uint64_t BaseSwgCommand::GetAllowedLocomotionBitmask() const
+{
+	return properties_->allow_in_locomotion;
 }
 
 float BaseSwgCommand::GetMaxRangeToTarget() const
@@ -101,41 +104,42 @@ bool BaseSwgCommand::IsQueuedCommand() const
     return properties_->add_to_combat_queue != 0;
 }
 
-const std::shared_ptr<Creature>& BaseSwgCommand::GetActor() const
+const std::shared_ptr<Object>& BaseSwgCommand::GetActor() const
 {
     if (!actor_)
     {
         auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-        actor_ = simulation_service->GetObjectById<Creature>(command_request_.observable_id);
+        actor_ = simulation_service->GetObjectById(command_request_.observable_id);
     }
 
     return actor_;
 }
 
-const std::shared_ptr<Tangible>& BaseSwgCommand::GetTarget() const
+void BaseSwgCommand::SetActor(std::shared_ptr<Object> object)
+{
+	actor_ = object;
+}
+
+const std::shared_ptr<Object>& BaseSwgCommand::GetTarget() const
 {
     if (!target_)
     {
         auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-        target_ = simulation_service->GetObjectById<Tangible>(command_request_.target_id);
+        target_ = simulation_service->GetObjectById(command_request_.target_id);
     }
 
     return target_;
 }
+std::shared_ptr<Creature> BaseSwgCommand::GetTargetCreature()
+{
+	auto creatureTarget = std::static_pointer_cast<Creature>(GetTarget());
 
-const std::shared_ptr<Creature>& BaseSwgCommand::GetTargetCreature() const
-{	
-    if (!creature_target_)
-    {
-        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-        creature_target_ = simulation_service->GetObjectById<Creature>(command_request_.target_id);
-    }
-	else
-	{
-		creature_target_ = std::static_pointer_cast<Creature>(target_);
-	}
+	return creatureTarget;
+}
 
-    return creature_target_;
+void BaseSwgCommand::SetTarget(std::shared_ptr<Object> object)
+{
+	target_ = object;
 }
 
 void BaseSwgCommand::SetCommandProperties(const CommandProperties& properties)
@@ -153,7 +157,7 @@ const CommandQueueEnqueue& BaseSwgCommand::GetCommandRequest() const
     return command_request_;
 }
 
-void BaseSwgCommand::SetCommandRequest(const swganh::messages::controllers::CommandQueueEnqueue& command_request)
+void BaseSwgCommand::SetCommandRequest(swganh::messages::controllers::CommandQueueEnqueue command_request)
 {
     command_request_ = command_request;
 }

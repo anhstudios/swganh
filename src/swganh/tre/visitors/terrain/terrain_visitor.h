@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
 #include "swganh/tre/visitors/visitor_interface.h"
@@ -29,7 +31,7 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this visitor.

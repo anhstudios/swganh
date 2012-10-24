@@ -9,22 +9,21 @@
 
 #include <boost/optional.hpp>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 
 #include "command_factory_interface.h"
 #include "command_validator_interface.h"
 #include "command_properties_manager_interface.h"
 
 namespace swganh {
+namespace observer {
+	class ObserverInterface;
+}
 namespace object {
     class Object;
-    class ObjectController;
-namespace tangible {
-    class Tangible;
-}
-namespace creature {
+	class Tangible;
 	class Creature;
-}} // namespace object::creature
+} // namespace object
 
 namespace simulation {
     class SimulationServiceInterface;
@@ -42,7 +41,7 @@ namespace command {
      * The command service is responsible for the handling of incoming command
      * requests for game objects.
      */
-    class CommandServiceInterface: public anh::service::ServiceInterface
+    class CommandServiceInterface: public swganh::service::ServiceInterface
     {
     public:
         virtual ~CommandServiceInterface() {}
@@ -64,22 +63,22 @@ namespace command {
          * @param command The name/crc of the command.
          * @param creator The creator associated with the specified command.
          */
-        virtual void AddCommandCreator(anh::HashString command, CommandCreator&& creator) = 0;
+        virtual void AddCommandCreator(swganh::HashString command, CommandCreator&& creator) = 0;
         
         /**
          * Removes the creator for a given command type if one is set.
          *
          * @param command The name/crc of the command.
          */
-        virtual void RemoveCommandCreator(anh::HashString command) = 0;
+        virtual void RemoveCommandCreator(swganh::HashString command) = 0;
 
-        virtual std::shared_ptr<CommandInterface> CreateCommand(anh::HashString command) = 0;
+        virtual std::shared_ptr<CommandInterface> CreateCommand(swganh::HashString command) = 0;
                 
         virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
 
         virtual void EnqueueCommandRequest(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
-            swganh::messages::controllers::CommandQueueEnqueue message) = 0;
+            const std::shared_ptr<swganh::object::Object>& object,
+            swganh::messages::controllers::CommandQueueEnqueue* message) = 0;
 
         /**
          * Sends a command queue removal message to the specified controller client.
@@ -91,7 +90,7 @@ namespace command {
          * @param action An action flag associated with the error.
          */
         virtual void SendCommandQueueRemove(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            const std::shared_ptr<swganh::object::Object>& controller,
             uint32_t action_counter,
             float default_time_sec,
             uint32_t error,
@@ -129,7 +128,7 @@ namespace command {
          * @param command A command name/crc to find.
          * @return An optional value containing a reference to the properties requested.
          */
-        virtual boost::optional<const CommandProperties&> FindPropertiesForCommand(anh::HashString command) = 0;
+        virtual boost::optional<const CommandProperties&> FindPropertiesForCommand(swganh::HashString command) = 0;
         
         virtual void SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command) = 0;
         

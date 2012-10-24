@@ -1,8 +1,11 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #include "boundary_polyline.h"
 
 using namespace swganh::tre;
 
-void BoundaryPolyline::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryPolyline::Deserialize(swganh::ByteBuffer& buffer)
 {
 	unsigned int sizeTemp = buffer.read<uint32_t>();
 	

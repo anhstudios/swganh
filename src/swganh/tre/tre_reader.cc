@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "tre_reader.h"
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
 #include <array>
 #include <algorithm>
@@ -28,14 +28,14 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-TreReader::TreReader(const string& filename)
+TreReader::TreReader(const string& filename, ResourceLookup& lookup_, uint32_t index)
 : filename_(filename)
 {
     input_stream_.exceptions(ifstream::failbit | ifstream::badbit);
     input_stream_.open(filename_.c_str(), ios_base::binary);
 
     ReadHeader();
-    ReadIndex();
+    ReadIndex(lookup_, index);
 }
 
 TreReader::~TreReader()
@@ -61,26 +61,26 @@ vector<string> TreReader::GetResourceNames() const
     vector<string> resource_names;
 
     for_each(
-        begin(resource_block_),
-        end(resource_block_),
-        [this, &resource_names] (const TreResourceInfo& info)
+        begin(resource_lookup_),
+        end(resource_lookup_),
+		[this, &resource_names] (const std::pair<const char*, TreResourceInfo>& info)
     {
-        resource_names.push_back(reinterpret_cast<const char*>(&name_block_[info.name_offset]));
+        resource_names.push_back(info.first);
     });
 
     return resource_names;
 }
 
-anh::ByteBuffer TreReader::GetResource(const std::string& resource_name)
+swganh::ByteBuffer TreReader::GetResource(const std::string& resource_name)
 {
-    anh::ByteBuffer data; 
+    swganh::ByteBuffer data; 
     
     GetResource(resource_name, data);
 
     return data;
 }
 
-void TreReader::GetResource(const std::string& resource_name, anh::ByteBuffer& buffer)
+void TreReader::GetResource(const std::string& resource_name, swganh::ByteBuffer& buffer)
 {    
     auto file_info = GetResourceInfo(resource_name);
 
@@ -103,83 +103,31 @@ void TreReader::GetResource(const std::string& resource_name, anh::ByteBuffer& b
 
 bool TreReader::ContainsResource(const string& resource_name) const
 {
-    auto find_iter = find_if(
-        begin(resource_block_),
-        end(resource_block_),
-        [this, &resource_name] (const TreResourceInfo& info)
-    {
-        return resource_name.compare(&name_block_[info.name_offset]) == 0;
-    });
-
-    return find_iter != end(resource_block_);
-}
-
-string TreReader::GetMd5Hash(const string& resource_name) const
-{
-    auto find_iter = find_if(
-        begin(resource_block_),
-        end(resource_block_),
-        [this, &resource_name] (const TreResourceInfo& info)
-    {
-        return resource_name.compare(&name_block_[info.name_offset]) == 0;
-    });
-
-    if (find_iter == resource_block_.end())
-    {
-        throw std::runtime_error("File name invalid");
-    }
-
-    stringstream ss;
-
-    ss.flags(ss.hex);
-    ss.fill('0');
-    ss.width(2);
-    
-    for_each(
-        begin(md5sum_block_[find_iter - begin(resource_block_)]), 
-        begin(md5sum_block_[find_iter - begin(resource_block_)]) + sizeof(Md5Sum),
-        [&ss] (char c) 
-    {
-        ss << static_cast<unsigned>(c);
-    });
-
-    return ss.str();
+	auto find_iter = resource_lookup_.find(resource_name.c_str());
+    return find_iter != end(resource_lookup_);
 }
 
 uint32_t TreReader::GetResourceSize(const string& resource_name) const
 {
-    auto find_iter = find_if(
-        begin(resource_block_),
-        end(resource_block_),
-        [this, &resource_name] (const TreResourceInfo& info)
-    {
-        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
-    });
+    auto find_iter = resource_lookup_.find(resource_name.c_str());
 
-    if (find_iter == resource_block_.end())
+    if (find_iter == resource_lookup_.end())
     {
         throw std::runtime_error("File name invalid");
     }
          
-    return find_iter->data_size;
+    return find_iter->second.data_size;
 }
 
 const TreResourceInfo& TreReader::GetResourceInfo(const string& resource_name) const
 {
-    auto find_iter = find_if(
-        begin(resource_block_),
-        end(resource_block_),
-        [this, &resource_name] (const TreResourceInfo& info)
-    {
-        return resource_name.compare(&name_block_[info.name_offset]) == 0;
-    });
-    
-    if (find_iter == end(resource_block_))
+    auto find_iter = resource_lookup_.find(resource_name.c_str());
+    if (find_iter == end(resource_lookup_))
     {
         throw std::runtime_error("Requested info for invalid file: " + resource_name);
     }
 
-    return *find_iter;
+    return find_iter->second;
 }
 
 void TreReader::ReadHeader()
@@ -193,11 +141,28 @@ void TreReader::ReadHeader()
     ValidateFileVersion(string(header_.file_version, 4));        
 }
 
-void TreReader::ReadIndex()
+void TreReader::ReadIndex(ResourceLookup& lookup_, uint32_t index)
 {
-    resource_block_ = ReadResourceBlock();
+	std::vector<TreResourceInfo> resource_block_ = ReadResourceBlock();
     name_block_ = ReadNameBlock();
-    md5sum_block_ = ReadMd5SumBlock();
+
+	for(auto& info : resource_block_)
+	{
+		//Insert into the global index pointing to this reader
+		char* name = &name_block_[info.name_offset];
+		auto lb = lookup_.lower_bound(name);
+		if(lb != lookup_.end() && !(lookup_.key_comp()(name, lb->first)))
+		{
+			lb->second = index;
+		}
+		else
+		{
+			lookup_.insert(lb, std::make_pair(name, index));
+		}
+
+		//Insert into the local index pointing to the info.
+		resource_lookup_.insert(std::make_pair(name, info));
+	}
 }
 
 vector<TreResourceInfo> TreReader::ReadResourceBlock()
@@ -227,24 +192,6 @@ vector<char> TreReader::ReadNameBlock()
         header_.name_compressed_size, 
         header_.name_uncompressed_size, 
         &data[0]);
-
-    return data;
-}
-        
-vector<TreReader::Md5Sum> TreReader::ReadMd5SumBlock()
-{    
-    uint32_t offset = header_.info_offset
-        + header_.info_compressed_size
-        + header_.name_compressed_size;
-    uint32_t size = header_.resource_count * 16; // where 16 is the length of a md5 sum
-        
-    vector<Md5Sum> data(size);
-    
-    {
-        boost::lock_guard<boost::mutex> lg(mutex_);
-        input_stream_.seekg(offset, ios_base::beg);
-        input_stream_.read(reinterpret_cast<char*>(&data[0]), size);
-    }
 
     return data;
 }

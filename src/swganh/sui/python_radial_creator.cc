@@ -1,8 +1,11 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "python_radial_creator.h"
 
 #include <boost/python.hpp>
 
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/sui/radial_interface.h"
 #include "swganh/scripting/utilities.h"
 
@@ -27,7 +30,7 @@ PythonRadialCreator::PythonRadialCreator(std::string module_name, std::string cl
     }
 }
 
-std::shared_ptr<RadialInterface> PythonRadialCreator::operator() ()
+std::shared_ptr<RadialInterface> PythonRadialCreator::operator() (swganh::app::SwganhKernel* kernel)
 {
     std::shared_ptr<RadialInterface> radial = nullptr;
     
@@ -40,7 +43,7 @@ std::shared_ptr<RadialInterface> PythonRadialCreator::operator() ()
         module_ = bp::object(bp::handle<>(PyImport_ReloadModule(module_.ptr())));
 #endif
         
-        auto new_instance = module_.attr(class_name_.c_str())();
+        auto new_instance = module_.attr(class_name_.c_str())(bp::ptr(kernel));
 
         if (!new_instance.is_none())
         {

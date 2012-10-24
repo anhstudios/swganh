@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #include "terrain_visitor.h"
 
 #include "detail/fractal.h"
@@ -7,7 +9,7 @@
 
 #include "detail/layer_loader.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 #include "detail/header.h"
 
 using namespace swganh::tre;
@@ -32,7 +34,7 @@ TerrainVisitor::~TerrainVisitor()
 	}
 }
 
-void TerrainVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void TerrainVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	if(name == "MFAMDATA")
 	{

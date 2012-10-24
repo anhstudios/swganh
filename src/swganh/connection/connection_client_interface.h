@@ -4,17 +4,18 @@
 
 #include <cstdint>
 
-#include "anh/network/soe/session.h"
+#include "swganh/network/soe/session.h"
 
 namespace swganh {
-namespace object {
-    class ObjectController;
-}}  // namespace swganh::object
+namespace observer {
+	class ObserverInterface;
+}
+}
 
 namespace swganh {
 namespace connection {
 
-class ConnectionClientInterface : public anh::network::soe::Session
+class ConnectionClientInterface : public swganh::network::soe::Session
 {
 public:
     enum State
@@ -25,7 +26,7 @@ public:
         DISCONNECTING
     };
    
-	ConnectionClientInterface(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, 
+	ConnectionClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, 
 									boost::asio::ip::udp::endpoint remote_endpoint) 
 		: Session(server, io_service, remote_endpoint)
 	{
@@ -39,9 +40,9 @@ public:
 
     virtual void Connect(uint32_t account_id, uint64_t player_id) = 0;
     
-    virtual const std::shared_ptr<swganh::object::ObjectController>& GetController() const = 0;
+    virtual const std::shared_ptr<swganh::observer::ObserverInterface>& GetController() const = 0;
 
-    virtual void SetController(const std::shared_ptr<swganh::object::ObjectController>& controller) = 0;
+    virtual void SetController(const std::shared_ptr<swganh::observer::ObserverInterface>& controller) = 0;
 
 };
 

@@ -1,9 +1,11 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #include "height_fractal.h"
 #include "fractal.h"
 
 using namespace swganh::tre;
 
-void HeightFractal::Deserialize(anh::ByteBuffer& buffer)
+void HeightFractal::Deserialize(swganh::ByteBuffer& buffer)
 {
 	this->fractal_id = buffer.read<uint32_t>();
 	this->transform_type = buffer.read<uint32_t>();

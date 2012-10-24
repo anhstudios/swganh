@@ -4,16 +4,22 @@
 #ifndef SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_
 #define SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 #include <boost/python.hpp>
+#include <boost/python/overloads.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::creature;
-using namespace swganh::object::tangible;
+
+boost::python::tuple AddBuff(std::string buff_name, uint32_t duration=0)
+{
+	return boost::python::make_tuple(buff_name, duration);
+}
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addBuffOverload, AddBuff, 1, 2)
 
 void exportCreature()
 {
@@ -112,45 +118,45 @@ void exportCreature()
 		;
 	class_<Creature, bases<Tangible>, std::shared_ptr<Creature>, boost::noncopyable>("Creature", "Object that describes the creature object, child of Tangible")
 		// STATS
-		.def("set_stat_base", &Creature::SetStatBase, "sets the base :class:`.STATS` value")
-		.def("add_stat_base", &Creature::AddStatBase, "adds to the given :class:`.STATS`")
-		.def("deduct_stat_base", &Creature::DeductStatBase, "deducts from the :class:`.STATS`")
-		.def("get_stat_base", &Creature::GetStatBase, "gets the value of the :class:`.STATS`")
-		.def("set_stat_current", &Creature::SetStatCurrent, "sets the current :class:`.STATS`")
-		.def("add_stat_current", &Creature::AddStatCurrent, "adds to the given :class:`.STATS`")
-		.def("deduct_stat_current", &Creature::DeductStatCurrent, "deducts from the current :class:`.STATS`")
-		.def("get_stat_current", &Creature::GetStatCurrent, "gets the value of the current :class:`.STATS`")
-		.def("add_stat_wound", &Creature::AddStatWound, "adds to the given wound :class:`.STATS`")
-		.def("deduct_stat_wound", &Creature::DeductStatWound, "deducts from the given wound :class:`.STATS`")
-		.def("get_stat_wound", &Creature::GetStatWound, "gets the value of the current wound :class:`.STATS`")
-		.def("add_stat_encumberance", &Creature::AddStatEncumberance, "adds to the given encumberance :class:`.STATS`")
-		.def("deduct_stat_encumberance", &Creature::DeductStatEncumberance, "deducts from the given encumberance :class:`.STATS`")
-		.def("get_stat_encumberance", &Creature::GetStatEncumberance, "gets the value of the current encumberance :class:`.STATS`")
-		.def("set_stat_max", &Creature::SetStatMax, "sets the given MAX :class:`.STATS`")
-		.def("add_stat_max", &Creature::AddStatMax, "adds to the given MAX :class:`.STATS`")
-		.def("deduct_stat_max", &Creature::DeductStatMax, "deducts from the given MAX :class:`.STATS`")
-		.def("get_stat_max", &Creature::GetStatMax, "gets the value of the current MAX :class:`.STATS`")
+		.def("setStatBase", &Creature::SetStatBase, "sets the base :class:`.STATS` value")
+		.def("addStatBase", &Creature::AddStatBase, "adds to the given :class:`.STATS`")
+		.def("deductStatBase", &Creature::DeductStatBase, "deducts from the :class:`.STATS`")
+		.def("getStatBase", &Creature::GetStatBase, "gets the value of the :class:`.STATS`")
+		.def("setStatCurrent", &Creature::SetStatCurrent, "sets the current :class:`.STATS`")
+		.def("addStatCurrent", &Creature::AddStatCurrent, "adds to the given :class:`.STATS`")
+		.def("deductStatCurrent", &Creature::DeductStatCurrent, "deducts from the current :class:`.STATS`")
+		.def("getStatCurrent", &Creature::GetStatCurrent, "gets the value of the current :class:`.STATS`")
+		.def("addStatWound", &Creature::AddStatWound, "adds to the given wound :class:`.STATS`")
+		.def("deductStatWound", &Creature::DeductStatWound, "deducts from the given wound :class:`.STATS`")
+		.def("getStatWound", &Creature::GetStatWound, "gets the value of the current wound :class:`.STATS`")
+		.def("addStatEncumberance", &Creature::AddStatEncumberance, "adds to the given encumberance :class:`.STATS`")
+		.def("deductStatEncumberance", &Creature::DeductStatEncumberance, "deducts from the given encumberance :class:`.STATS`")
+		.def("getStatEncumberance", &Creature::GetStatEncumberance, "gets the value of the current encumberance :class:`.STATS`")
+		.def("setStatMax", &Creature::SetStatMax, "sets the given MAX :class:`.STATS`")
+		.def("addStatMax", &Creature::AddStatMax, "adds to the given MAX :class:`.STATS`")
+		.def("deductStatMax", &Creature::DeductStatMax, "deducts from the given MAX :class:`.STATS`")
+		.def("getStatMax", &Creature::GetStatMax, "gets the value of the current MAX :class:`.STATS`")
 		//
-		.def("add_skill", &Creature::AddSkill, "adds skill to the creature")
-		.def("remove_skill", &Creature::RemoveSkill, "removes skill from the creature")
-		.def("has_skill", &Creature::HasSkill, "returns true if the creature has the skill")
-		.def("add_skill_mod", &Creature::AddSkillMod, "adds skill mod to the creature")
-		.def("remove_skill_mod", &Creature::RemoveSkillMod, "removes skill mod from the creature")
-		.def("get_skill_mod", &Creature::GetSkillMod, "gets the current value of the skill mod")
+		.def("addSkill", &Creature::AddSkill, "adds skill to the creature")
+		.def("removeSkill", &Creature::RemoveSkill, "removes skill from the creature")
+		.def("hasSkill", &Creature::HasSkill, "returns true if the creature has the skill")
+		.def("addSkillMod", &Creature::AddSkillMod, "adds skill mod to the creature")
+		.def("removeSkillMod", &Creature::RemoveSkillMod, "removes skill mod from the creature")
+		.def("getSkillMod", &Creature::GetSkillMod, "gets the current value of the skill mod")
 		.add_property("bank_credits", &Creature::GetBankCredits, &Creature::SetBankCredits, "Gets and Sets the credits that a creature has in their bank")
 		.add_property("cash_credits", &Creature::GetCashCredits, &Creature::SetCashCredits, "Gets and Sets the credits that a creature has on themselves")
 		.add_property("posture", &Creature::GetPosture, &Creature::SetPosture, "Gets and Sets the posture of the creature, :class:`.POSTURE`")
-        .def("is_dead", &Creature::IsDead, "returns true if this creature is dead")
-        .def("is_incap", &Creature::IsIncapacitated, "returns true if this creature is incapacitated")
+        .def("isDead", &Creature::IsDead, "returns true if this creature is dead")
+        .def("isIncap", &Creature::IsIncapacitated, "returns true if this creature is incapacitated")
         .add_property("faction_rank", &Creature::GetFactionRank, &Creature::SetFactionRank, "Gets and Sets the faction rank for this creature")
 		.add_property("owner_id", &Creature::GetOwnerId, &Creature::SetOwnerId, "Gets and Sets the owner id for the creature")
 		.add_property("scale", &Creature::GetScale, &Creature::SetScale, "Gets and Sets the scale of the creature 1-10")
 		.add_property("battle_fatigue", &Creature::GetBattleFatigue, &Creature::SetBattleFatigue, "Gets and Sets the battle fatigue of the creature")
 		.add_property("state_bitmask", &Creature::GetStateBitmask, &Creature::SetStateBitmask, "Gets and Sets the state bitmask see :class:`.ACTION`")
-        .def("has_state", &Creature::HasState, "Checks to see if the state :class:`.ACTION` exists in the bitmask")
-        .def("toggle_state", &Creature::ToggleStateBitmask, "Toggles the provided :class:`.ACTION` State")
-        .def("toggle_state_on", &Creature::ToggleStateOn, "Toggles the provided :class:`.ACTION` State On")
-        .def("toggle_state_off", &Creature::ToggleStateOff, "Toggles the provided :class:`.ACTION` State Off")
+        .def("hasState", &Creature::HasState, "Checks to see if the state :class:`.ACTION` exists in the bitmask")
+        .def("toggleState", &Creature::ToggleStateBitmask, "Toggles the provided :class:`.ACTION` State")
+        .def("toggleStateOn", &Creature::ToggleStateOn, "Toggles the provided :class:`.ACTION` State On")
+        .def("toggleStateOff", &Creature::ToggleStateOff, "Toggles the provided :class:`.ACTION` State Off")
 		.add_property("acceleration_multiplayer_base", &Creature::GetAccelerationMultiplierBase, &Creature::SetAccelerationMultiplierBase, "Gets and Sets the base acceleration multiplier")
 		.add_property("acceleration_multiplayer_modifier", &Creature::GetAccelerationMultiplierModifier, &Creature::SetAccelerationMultiplierModifier, "Gets and Sets the acceleration multiplier modifier")
 		.add_property("listen_to_id", &Creature::GetListenToId, &Creature::SetListenToId, "Gets and Sets who this creature is listening to, see Entertainer")
@@ -172,9 +178,11 @@ void exportCreature()
 		.add_property("disguise", &Creature::GetDisguise, &Creature::SetDisguise, "Gets and Sets the disguise of the current creature, this makes the creature look like the given iff file")
 		.add_property("stationary", &Creature::SetStationary, &Creature::SetStationary, "Gets and Sets if the creature can move or not")
         .add_property("pvp_status", &Creature::GetPvpStatus, &Creature::SetPvPStatus, "Gets and Sets the :class:`.PVPSTATUS` of the creature")
-        .def("in_duel_list", &Creature::InDuelList, "Returns a boolean based on if the creature is currently dueling the target")
-        .def("add_duel_list", &Creature::AddToDuelList, "Adds the creature id to the duel list")
-        .def("remove_duel_list", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")        
+        .def("inDuelList", &Creature::InDuelList, "Returns a boolean based on if the creature is currently dueling the target")
+        .def("addDuelList", &Creature::AddToDuelList, "Adds the creature id to the duel list")
+        .def("removeDuelList", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")
+		.def("addBuff", &Creature::AddBuff, addBuffOverload(args("buff_name", "duration", "force"), "Adds a new buff to the creature"))
+		.def("removeBuff", &Creature::RemoveBuff, "Instantly removes a buff from the creature")
         ;
 
 	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Tangible>>();
