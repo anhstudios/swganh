@@ -40,6 +40,7 @@ namespace object {
     
 	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
 
+	class TemplateInterface;
     /**
      * ObjectManager is a general interface for managing the object lifecycles for
      * general user defined types. In order to manage an object type an implementation
@@ -282,6 +283,7 @@ namespace object {
         > ObjectMessageBuilderMap;
 
 		typedef std::map<std::string, std::shared_ptr<swganh::object::Object>> PrototypeMap;
+		typedef std::map<std::string, boost::shared_ptr<swganh::object::TemplateInterface>> PythonTemplateMap;
 
         /**
          * Registers a message builder for a specific object type
@@ -301,6 +303,10 @@ namespace object {
          * @param message_builder The message builder to store.
          */
         void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
+		/**
+		 *  Loads the python object templates and creates any objects inserting them as prototypes
+		 */
+		void LoadPythonObjectTemplates();
 
 		void ObjectManager::AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
 
@@ -312,6 +318,7 @@ namespace object {
         ObjectMessageBuilderMap message_builders_;
         
 		PrototypeMap prototypes_; 
+		PythonTemplateMap object_templates_;
 
 		uint64_t next_dynamic_id_;
 
