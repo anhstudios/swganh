@@ -34,6 +34,9 @@
 
 #include "swganh/object/slot_interface.h"
 
+#define DISPATCH(BIG, LITTLE) if(event_dispatcher_) \
+{GetEventDispatcher()->Dispatch(make_shared<BIG ## Event>(#BIG "::" #LITTLE, static_pointer_cast<BIG>(shared_from_this())));}
+
 namespace swganh {
 namespace object {
 
@@ -590,6 +593,8 @@ protected:
 
 	std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 
+	swganh::EventDispatcher* event_dispatcher_;
+
 private:
     
     typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
@@ -607,7 +612,6 @@ private:
     DeltasCacheContainer deltas_;
 
     std::shared_ptr<ContainerInterface> container_;
-    swganh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;
 

@@ -62,8 +62,7 @@ void Player::AddStatusFlag(StatusFlags flag, StatusIndex index)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::StatusBitmask", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, StatusBitmask);
 }
 
 void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
@@ -72,8 +71,7 @@ void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::StatusBitmask", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, StatusBitmask);
 }
 
 void Player::ClearStatusFlags()
@@ -89,8 +87,7 @@ void Player::ClearStatusFlags()
                 value = FlagBitmask(0);
             });
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::StatusBitmask", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, StatusBitmask);
 }
 
 std::array<FlagBitmask, 4> Player::GetProfileFlags() 
@@ -105,8 +102,7 @@ void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ProfileFlag", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ProfileFlag);
 }
 
 void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
@@ -115,8 +111,7 @@ void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ProfileFlag", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ProfileFlag);
 }
 
 void Player::ClearProfileFlags()
@@ -132,8 +127,7 @@ void Player::ClearProfileFlags()
             value = FlagBitmask(0);
         });
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ProfileFlag", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ProfileFlag);
 }
 
 std::string Player::GetProfessionTag() 
@@ -148,8 +142,7 @@ void Player::SetProfessionTag(string profession_tag)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         profession_tag_ = profession_tag;
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ProfessionTag", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ProfessionTag);
 }
 
 uint32_t Player::GetBornDate() 
@@ -160,9 +153,7 @@ uint32_t Player::GetBornDate()
 void Player::SetBornDate(uint32_t born_date)
 {
     born_date_ = born_date;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::BornDate", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, BornDate);
 }
 
 uint32_t Player::GetTotalPlayTime() 
@@ -173,17 +164,13 @@ uint32_t Player::GetTotalPlayTime()
 void Player::SetTotalPlayTime(uint32_t play_time)
 {
     total_playtime_ = play_time;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::TotalPlayTime", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, TotalPlayTime);
 }
 
 void Player::IncrementTotalPlayTime(uint32_t increment)
 {
     total_playtime_ += increment;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::TotalPlayTime", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, TotalPlayTime);
 }
 
 uint8_t Player::GetAdminTag() 
@@ -194,9 +181,7 @@ uint8_t Player::GetAdminTag()
 void Player::SetAdminTag(uint8_t tag)
 {
     admin_tag_ = tag;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::AdminTag", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, AdminTag);
 }
 
 std::map<string, XpData> Player::GetXp() 
@@ -211,8 +196,7 @@ void Player::AddExperience(XpData experience)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         experience_.Update(experience.type, experience);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Experience);
 }
 
 void Player::DeductXp(XpData experience)
@@ -221,8 +205,7 @@ void Player::DeductXp(XpData experience)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         experience_.Update(experience.type, experience);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Experience);
 }
 
 void Player::ClearXpType(string type)
@@ -239,9 +222,7 @@ void Player::ClearXpType(string type)
             
         experience_.Remove(iter);
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Experience);
 }
 
 void Player::ResetXp(std::map<std::string, XpData>& experience)
@@ -255,8 +236,7 @@ void Player::ResetXp(std::map<std::string, XpData>& experience)
         }
         experience_.Reinstall();
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Experience);
 }
 
 void Player::ClearAllXp()
@@ -265,8 +245,7 @@ void Player::ClearAllXp()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         experience_.Clear();
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Experience);
 }
 
 std::map<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
@@ -281,8 +260,7 @@ void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Waypoint);
 }
 
 void Player::RemoveWaypoint(uint64_t waypoint_id)
@@ -304,8 +282,7 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
 
         waypoints_.Remove(find_iter);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Waypoint);
 }
 
 void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
@@ -314,8 +291,7 @@ void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));;
+	DISPATCH(Player, Waypoint);
 }
 
 void Player::ClearAllWaypoints()
@@ -324,8 +300,7 @@ void Player::ClearAllWaypoints()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         waypoints_.Clear();
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Waypoint);
 }
 
 int32_t Player::GetCurrentForcePower() 
@@ -336,9 +311,7 @@ int32_t Player::GetCurrentForcePower()
 void Player::SetCurrentForcePower(int32_t force_power)
 {
     current_force_power_ = force_power;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ForcePower", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ForcePower);
 }
 
 void Player::IncrementForcePower(int32_t force_power)
@@ -346,9 +319,7 @@ void Player::IncrementForcePower(int32_t force_power)
     int32_t new_force_power = current_force_power_ + force_power;
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ForcePower", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, ForcePower);
 }
 
 int32_t Player::GetMaxForcePower() 
@@ -359,9 +330,7 @@ int32_t Player::GetMaxForcePower()
 void Player::SetMaxForcePower(int32_t force_power)
 {
     max_force_power_ = force_power;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::MaxForcePower", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, MaxForcePower);
 }
 
 uint32_t Player::GetCurrentForceSensitiveQuests()
@@ -372,25 +341,19 @@ uint32_t Player::GetCurrentForceSensitiveQuests()
 void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ | quest_mask;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, ForceSensitiveQuests);
 }
 
 void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ & ~quest_mask;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ForceSensitiveQuests);
 }
 
 void Player::ClearCurrentForceSensitiveQuests()
 {
     current_force_sensitive_quests_ = 0;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ForceSensitiveQuests);
 }
 
 uint32_t Player::GetCompletedForceSensitiveQuests()
@@ -401,25 +364,19 @@ uint32_t Player::GetCompletedForceSensitiveQuests()
 void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask)
 {
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ | quest_mask;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, CompletedForceSensitiveQuests);
 }
 
 void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask)
 {
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ & ~quest_mask;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, CompletedForceSensitiveQuests);
 }
 
 void Player::ClearCompletedForceSensitiveQuests()
 {
     completed_force_sensitive_quests_ = 0;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, CompletedForceSensitiveQuests);
 }
 
 std::map<uint32_t, QuestJournalData> Player::GetQuests() 
@@ -434,8 +391,7 @@ void Player::AddQuest(QuestJournalData quest)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         quest_journal_.Add(quest.quest_crc, quest);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, QuestJournal);
 }
 
 void Player::RemoveQuest(QuestJournalData quest)
@@ -458,8 +414,7 @@ void Player::RemoveQuest(QuestJournalData quest)
 
         quest_journal_.Remove(find_iter);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, QuestJournal);
 }
 
 void Player::UpdateQuest(QuestJournalData quest)
@@ -468,8 +423,7 @@ void Player::UpdateQuest(QuestJournalData quest)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         quest_journal_.Update(quest.quest_crc, quest);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, QuestJournal);
 }
 
 void Player::ClearAllQuests()
@@ -478,8 +432,7 @@ void Player::ClearAllQuests()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         quest_journal_.Clear();
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, QuestJournal);
 }
 
 std::vector<Ability> Player::GetAbilityList() 
@@ -518,9 +471,7 @@ uint32_t Player::GetExperimentationFlag()
 void Player::SetExperimentationFlag(uint32_t experimentation_flag)
 {
     experimentation_flag_ = experimentation_flag;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ExperimentationFlag", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ExperimentationFlag);
 }
 
 uint32_t Player::GetCraftingStage() 
@@ -531,9 +482,7 @@ uint32_t Player::GetCraftingStage()
 void Player::SetCraftingStage(uint32_t crafting_stage)
 {
     crafting_stage_ = crafting_stage;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CraftingStage", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, CraftingStage);
 }
 
 uint64_t Player::GetNearestCraftingStation() 
@@ -544,9 +493,7 @@ uint64_t Player::GetNearestCraftingStation()
 void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
 {
     nearest_crafting_station_ = crafting_station_id;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::NearestCraftingStation", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, NearestCraftingStation);
 }
 
 std::vector<DraftSchematicData> Player::GetDraftSchematics() 
@@ -568,8 +515,7 @@ void Player::AddDraftSchematic(DraftSchematicData schematic)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         draft_schematics_.Add(schematic);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::DraftSchematic", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, DraftSchematic);
 }
 
 void Player::RemoveDraftSchematic(uint32_t schematic_id)
@@ -584,8 +530,7 @@ void Player::RemoveDraftSchematic(uint32_t schematic_id)
             
         draft_schematics_.Remove(iter);
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::DraftSchematic", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, DraftSchematic);
 }
 
 void Player::ClearDraftSchematics()
@@ -594,8 +539,7 @@ void Player::ClearDraftSchematics()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         draft_schematics_.Clear();
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::DraftSchematic", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, DraftSchematic);
 }
 
 uint32_t Player::GetExperimentationPoints() 
@@ -606,25 +550,19 @@ uint32_t Player::GetExperimentationPoints()
 void Player::AddExperimentationPoints(uint32_t points)
 {
     experimentation_points_ += points;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ExperimentationPoints", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, ExperimentationPoints);
 }
 
 void Player::RemoveExperimentationPoints(uint32_t points)
 {
     experimentation_points_ -= points;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ExperimentationPoints", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ExperimentationPoints);
 }
 
 void Player::ResetExperimentationPoints(uint32_t points)
 {
     experimentation_points_ = points;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::ExperimentationPoints", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, ExperimentationPoints);
 }
 
 uint32_t Player::GetAccomplishmentCounter() 
@@ -635,17 +573,13 @@ uint32_t Player::GetAccomplishmentCounter()
 void Player::ResetAccomplishmentCounter(uint32_t counter)
 {
     accomplishment_counter_ = counter;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::AccomplishmentCounter", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, AccomplishmentCounter);
 }
 
 void Player::IncrementAccomplishmentCounter()
 {
     ++accomplishment_counter_;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::AccomplishmentCounter", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, AccomplishmentCounter);
 }
 
 std::vector<Name> Player::GetFriends()
@@ -671,9 +605,7 @@ void Player::AddFriend(string friend_name, uint64_t id)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         friends_.Add(Name(friend_name, id));
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Friend", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Friend);
 }
 
 void Player::RemoveFriend(string friend_name)
@@ -693,8 +625,7 @@ void Player::RemoveFriend(string friend_name)
         friends_.ClearDeltas();
         friends_.Remove(iter);
     }
-    GetEventDispatcher()->Dispatch(make_shared<NameEvent>
-        ("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), friend_id));
+	DISPATCH(Player, RemoveFriend);
 }
 
 void Player::ClearFriends()
@@ -703,8 +634,7 @@ void Player::ClearFriends()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         friends_.Clear();
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Friend", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Friend);
 }
 
 std::vector<Name> Player::GetIgnoredPlayers()
@@ -732,8 +662,7 @@ void Player::IgnorePlayer(string player_name, uint64_t player_id)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         ignored_players_.Add(Name(player_name, player_id));
     }
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::IgnorePlayer", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, IgnorePlayer);
 }
 
 void Player::StopIgnoringPlayer(string player_name)
@@ -752,8 +681,7 @@ void Player::StopIgnoringPlayer(string player_name)
         remove_id = iter->id;
         ignored_players_.Remove(iter); 
     } 
-    GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveIgnoredPlayer", static_pointer_cast<Player>(shared_from_this()), remove_id));
- 
+	DISPATCH(Player, RemoveIgnoredPlayer);
 }
 
 void Player::ClearIgnored()
@@ -762,9 +690,7 @@ void Player::ClearIgnored()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         ignored_players_.Clear();
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::IgnorePlayer", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, IgnorePlayer);
 }
 
 uint32_t Player::GetLanguage() 
@@ -775,9 +701,7 @@ uint32_t Player::GetLanguage()
 void Player::SetLanguage(uint32_t language_id)
 {
     language_ = language_id;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Language", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, Language);
 }
 
 uint32_t Player::GetCurrentStomach() 
@@ -790,25 +714,19 @@ void Player::IncreaseCurrentStomach(uint32_t stomach)
     uint32_t new_stomach = current_stomach_ + stomach;
 
     current_stomach_ = (new_stomach > GetMaxStomach()) ? GetMaxStomach() : new_stomach;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CurrentStomach", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, CurrentStomach);
 }
 
 void Player::DecreaseCurrentStomach(uint32_t stomach)
 {
     current_stomach_ -= stomach;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CurrentStomach", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, CurrentStomach);
 }
 
 void Player::ResetCurrentStomach(uint32_t stomach)
 {
     current_stomach_ = stomach;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CurrentStomach", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, CurrentStomach);
 }
 
 uint32_t Player::GetMaxStomach() 
@@ -819,9 +737,7 @@ uint32_t Player::GetMaxStomach()
 void Player::ResetMaxStomach(uint32_t stomach)
 {
     max_stomach_ = stomach;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::MaxStomach", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, MaxStomach);
 }
 
 uint32_t Player::GetCurrentDrink() 
@@ -834,25 +750,19 @@ void Player::IncreaseCurrentDrink(uint32_t drink)
     uint32_t new_drink = current_drink_ + drink;
 
     current_drink_ = (new_drink > GetMaxDrink()) ? GetMaxDrink() : new_drink;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CurrentDrink", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, CurrentDrink);
 }
 
 void Player::DecreaseCurrentDrink(uint32_t drink)
 {
     current_drink_ -= drink;
-    
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CurrentDrink", static_pointer_cast<Player>(shared_from_this())));
+    DISPATCH(Player, CurrentDrink);
 }
 
 void Player::ResetCurrentDrink(uint32_t drink)
 {
     current_drink_ = drink;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::CurrentDrink", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, CurrentDrink);
 }
 
 uint32_t Player::GetMaxDrink() 
@@ -863,9 +773,7 @@ uint32_t Player::GetMaxDrink()
 void Player::ResetMaxDrink(uint32_t drink)
 {
     max_drink_ = drink;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::MaxDrink", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, MaxDrink);
 }
 
 uint32_t Player::GetJediState() 
@@ -876,9 +784,7 @@ uint32_t Player::GetJediState()
 void Player::SetJediState(uint32_t jedi_state)
 {
     jedi_state_ = jedi_state;
-
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::JediState", static_pointer_cast<Player>(shared_from_this())));
+	DISPATCH(Player, JediState);
 }
 
 Gender Player::GetGender() 
@@ -930,8 +836,11 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
 
 void Player::CreateBaselines(shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-        ("Player::Baselines", shared_from_this(), observer));
+    if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Player::Baselines", shared_from_this(), observer));
+	}
 }
 
 std::shared_ptr<Object> Player::Clone()

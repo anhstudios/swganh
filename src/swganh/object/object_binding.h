@@ -8,6 +8,8 @@
 #include "swganh/python_shared_ptr.h"
 
 #include "swganh_core/object/object.h"
+#include "swganh_core/object/cell/cell.h"
+#include "swganh_core/object/intangible/intangible.h"
 #include "swganh/object/object_controller_binding.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
 
@@ -240,5 +242,10 @@ void exportObject()
 		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
 		;
 
+	class_<Cell, bases<Object>, std::shared_ptr<Cell>, boost::noncopyable>("Cell");
+	class_<Intangible, bases<Object>, std::shared_ptr<Intangible>, boost::noncopyable>("Intangible");
+
+	implicitly_convertible<std::shared_ptr<Intangible>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<Object>>();
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();
 }

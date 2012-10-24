@@ -35,6 +35,9 @@ public:
 	virtual std::shared_ptr<Object> Clone();
 	void Clone(std::shared_ptr<Cell> other);
 
+private:
+	typedef swganh::ValueEvent<std::shared_ptr<Cell>> CellEvent;
+
 };
 
 }} // swganh::object

@@ -49,8 +49,7 @@ void Tangible::AddCustomization(const string& customization)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         customization_.append(customization);
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Customization",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, Customization);
 }
 
 std::string Tangible::GetCustomization(void)
@@ -65,8 +64,7 @@ void Tangible::SetCustomization(const string& customization)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         customization_ = customization;
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Customization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Customization);
 }
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
@@ -83,9 +81,7 @@ void Tangible::RemoveComponentCustomization(uint32_t customization)
             
         component_customization_list_.Remove(iter);
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, ComponentCustomization);
 }
 void Tangible::AddComponentCustomization(uint32_t customization)
 {
@@ -93,9 +89,7 @@ void Tangible::AddComponentCustomization(uint32_t customization)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         component_customization_list_.Add(ComponentCustomization(customization));
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, ComponentCustomization);
 }
 
 std::list<ComponentCustomization> Tangible::GetComponentCustomization(void)
@@ -110,23 +104,19 @@ void Tangible::ClearComponentCustomization()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         component_customization_list_.Clear();
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, ComponentCustomization);
 }
 
 void Tangible::SetOptionsMask(uint32_t options_mask)
 {
     options_bitmask_ = options_mask;
-
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::OptionsMask",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, OptionsMask);
 }
 
 void Tangible::ToggleOption(uint32_t option)
 {
 	options_bitmask_ ^= option;
-	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::OptionsMask",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, OptionsMask);
 }
 
 uint32_t Tangible::GetOptionsMask(void)
@@ -137,8 +127,7 @@ uint32_t Tangible::GetOptionsMask(void)
 void Tangible::SetIncapTimer(uint32_t incap_timer)
 {
     incap_timer_ = incap_timer;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::IncapTimer",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, IncapTimer);
 }
 
 uint32_t Tangible::GetIncapTimer(void)
@@ -149,11 +138,8 @@ uint32_t Tangible::GetIncapTimer(void)
 void Tangible::SetConditionDamage(uint32_t damage)
 {
     condition_damage_ = damage;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ConditionDamage",static_pointer_cast<Tangible>(shared_from_this())));
-	
-	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Object::UpdateAttribute", static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, ConditionDamage);
+	DISPATCH(Tangible, UpdateAttribute);
 }
 
 uint32_t Tangible::GetCondition(void)
@@ -164,10 +150,8 @@ uint32_t Tangible::GetCondition(void)
 void Tangible::SetMaxCondition(uint32_t max_condition)
 {
     max_condition_ = max_condition;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::MaxCondition",static_pointer_cast<Tangible>(shared_from_this())));
-	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Object::UpdateAttribute", static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, MaxCondition);
+	DISPATCH(Tangible, UpdateAttribute);
 }
 
 uint32_t Tangible::GetMaxCondition(void)
@@ -178,8 +162,7 @@ uint32_t Tangible::GetMaxCondition(void)
 void Tangible::SetStatic(bool is_static)
 {
     is_static_ = is_static;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Static",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, Static);
 }
 
 bool Tangible::IsStatic(void)
@@ -205,9 +188,7 @@ void Tangible::AddDefender(uint64_t defender)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         defender_list_.Add(Defender(defender));
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, Defenders);
 }
 void Tangible::RemoveDefender(uint64_t defender)
 {
@@ -224,9 +205,7 @@ void Tangible::RemoveDefender(uint64_t defender)
             
         defender_list_.Remove(iter);
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Defenders);
 }
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
@@ -238,8 +217,7 @@ void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
         });
         defender_list_.Reinstall();
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Defenders);
 }
 
 std::vector<Defender> Tangible::GetDefenders()
@@ -254,8 +232,7 @@ void Tangible::ClearDefenders()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         defender_list_.Clear();
     }   
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Defenders);
 }
 
 void Tangible::ActivateAutoAttack()
@@ -272,8 +249,11 @@ bool Tangible::IsAutoAttacking()
 }
 void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-        ("Tangible::Baselines",shared_from_this(), observer));
+    if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Tangible::Baselines", shared_from_this(), observer));
+	}
 }
 
 std::shared_ptr<Object> Tangible::Clone()

@@ -11,9 +11,7 @@ using namespace swganh::messages;
 
 void Cell::SetCell(uint32_t cell_number) {
 	generic_int_ = cell_number;
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-		("Cell::Cell",shared_from_this()));
-
+	DISPATCH(Cell, Cell);
 }
 
 uint32_t Cell::GetCell()

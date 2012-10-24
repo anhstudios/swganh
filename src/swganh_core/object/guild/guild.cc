@@ -34,9 +34,7 @@ void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
     }
 
     guild_list_.Add(GuildTag(guild_id, guild_tag));
-        
-    GetEventDispatcher()->Dispatch(make_shared<GuildEvent>
-        ("Guild::Tag",static_pointer_cast<Guild>(shared_from_this())));
+    DISPATCH(Guild, Tag);
 }
 
 void Guild::RemoveGuildTag(uint32_t guild_id)
@@ -52,9 +50,7 @@ void Guild::RemoveGuildTag(uint32_t guild_id)
     }
 
     guild_list_.Remove(iter);
-    
-    GetEventDispatcher()->Dispatch(make_shared<GuildEvent>
-        ("Guild::Tag",static_pointer_cast<Guild>(shared_from_this())));
+    DISPATCH(Guild, Tag);
 }
     
 swganh::messages::containers::NetworkList<GuildTag>& Guild::GetGuildList()

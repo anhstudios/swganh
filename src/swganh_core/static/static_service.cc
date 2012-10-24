@@ -113,20 +113,12 @@ StaticService::StaticService(SwganhKernel* kernel)
 		{
 			// Create a combat dummy
 			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_juvenile_canyon_krayt.iff", CREATURE_PERMISSION, false, false);
-			auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
-			creature_dummy->SetPosition(glm::vec3(-146, 28,-4702));
-			creature_dummy->SetCustomName(L"Combat Dummy");
-			creature_dummy->SetStatMax(HEALTH, 9999);
-			creature_dummy->SetStatCurrent(HEALTH, 9999);
-			creature_dummy->SetStatMax(ACTION, 9999);
-			creature_dummy->SetStatCurrent(ACTION, 9999);
-			creature_dummy->SetStatMax(MIND, 9999);
-			creature_dummy->SetStatCurrent(MIND, 9999);
-			creature_dummy->SetScale(0.5);
-			
-			creature_dummy->SetPvPStatus(PvPStatus_Attackable);
-			simulation_service->AddObjectToScene(combat_dummy, "corellia");
+			auto combat_dummy = simulation_service->CreateObjectFromTemplate("R2D2CombatDummy", CREATURE_PERMISSION, false, true);
+			if (combat_dummy)
+			{
+				auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
+				simulation_service->AddObjectToScene(combat_dummy, "corellia");
+			}
 		}
 	});
 }
@@ -172,7 +164,7 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 	{
 		//Load Building Row
 		auto object = simulation_service->CreateObjectFromTemplate(result->getString(9), 
-			STATIC_CONTAINER_PERMISSION, false, false, result->getInt64(1));
+			STATIC_CONTAINER_PERMISSION, false, true, result->getInt64(1));
 		
 		if(object == nullptr)
 			continue;
@@ -201,7 +193,7 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
 	{
 		//Load Cells
 		auto object = simulation_service->CreateObjectFromTemplate("object/cell/shared_cell.iff",
-			WORLD_CELL_PERMISSION, false, false, result->getInt64(1));
+			WORLD_CELL_PERMISSION, false, true, result->getInt64(1));
 
 		if(object == nullptr)
 			continue;
@@ -236,7 +228,7 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(11),
-			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -272,6 +264,12 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 			{
 				parent->AddObject(nullptr, object);
 			}
+		}
+		// Check if it's a bank
+		// TODO: Remove once prototypes are in..
+		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_bank.iff") == 0)
+		{
+			object->SetAttribute("radial_filename", L"radials.bank");
 		}
 	}
 }
@@ -329,7 +327,7 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(3),
-			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -371,7 +369,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, Sp
 	{
 		//Load NPCS
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(15),
-			CREATURE_PERMISSION, false, false, result->getUInt64(1)));
+			CREATURE_PERMISSION, false, true, result->getUInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -447,7 +445,7 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(12),
-			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;

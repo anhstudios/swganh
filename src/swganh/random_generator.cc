@@ -7,7 +7,7 @@ using namespace swganh;
 using namespace boost::random;
 
 RandomGenerator::RandomGenerator(uniform_int_distribution<> distribution)
-    : generator()
+    : generator(rand())
     , distribution_(distribution)    
 {
 }
