@@ -25,13 +25,6 @@ using swganh::scripting::ScopedGilLock;
 namespace swganh {
 namespace object {
 
-	void InsertMapTemplate(
-		std::map<std::string, std::shared_ptr<TemplateInterface>> map_,
-		std::string str, std::shared_ptr<TemplateInterface> template_)
-	{
-		map_.insert(make_pair(str, template_));
-	}
-
 	struct TemplateWrap : TemplateInterface, bp::wrapper<TemplateInterface>
 	{
 		TemplateWrap(PyObject* obj)
@@ -69,9 +62,8 @@ namespace object {
 		bp::class_<std::map<std::string, std::shared_ptr<Object>>>("PrototypeMap", "Map of objects")
 			.def(bp::map_indexing_suite<std::map<std::string, std::shared_ptr<Object>>, true>())
 		;
-		bp::class_<std::map<std::string, std::shared_ptr<TemplateInterface>>>("TemplateMap", "Map of Templates")
-			.def(bp::map_indexing_suite<map<std::string, std::shared_ptr<TemplateInterface>>, true>())
-			.def("Insert", InsertMapTemplate)
+		bp::class_<std::map<std::string, boost::shared_ptr<TemplateInterface>>>("TemplateMap", "Map of Templates")
+			.def(bp::map_indexing_suite<map<std::string, boost::shared_ptr<TemplateInterface>>,true>())
 		;
 	}
 }}

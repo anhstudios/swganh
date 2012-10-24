@@ -283,7 +283,7 @@ namespace object {
         > ObjectMessageBuilderMap;
 
 		typedef std::map<std::string, std::shared_ptr<swganh::object::Object>> PrototypeMap;
-		typedef std::map<std::string, std::shared_ptr<swganh::object::TemplateInterface>> PythonTemplateMap;
+		typedef std::map<std::string, boost::shared_ptr<swganh::object::TemplateInterface>> PythonTemplateMap;
 
         /**
          * Registers a message builder for a specific object type

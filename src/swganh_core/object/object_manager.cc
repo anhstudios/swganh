@@ -264,11 +264,28 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 	{
 		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
 		auto prototype_itr = prototypes_.find(template_name);
-		if(prototype_itr == prototypes_.end())
+		if(prototype_itr != prototypes_.end())
 		{
-			return nullptr;
+			prototype = prototype_itr->second;	
+		}		
+	}
+	if (!prototype)
+	{
+		// Call python To get Object
+		swganh::scripting::ScopedGilLock lock;
+		{
+			{
+				boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+				auto template_iter = object_templates_.find(template_name);
+				if (template_iter == object_templates_.end())
+				{
+					return nullptr;	
+				}
+				// Temp
+				prototype = template_iter->second->CreateTemplate(std::map<std::string, std::string>());
+			}
+
 		}
-		prototype = prototype_itr->second;
 	}
 
 	if(prototype)
@@ -463,11 +480,13 @@ void ObjectManager::LoadPythonObjectTemplates()
 {
 	swganh::scripting::ScopedGilLock lock;
 	try {		
+		LOG(info) << "Loading Prototype and Template Objects from Python...";
 		auto module = bp::import("load_objects");
 		auto python_template = module.attr("templates");
-		object_templates_ = bp::extract<PythonTemplateMap>(python_template);	
+		object_templates_ = bp::extract<PythonTemplateMap>(python_template);			
 		auto python_prototypes = module.attr("prototypes");
 		prototypes_ = bp::extract<PrototypeMap>(python_prototypes);
+		LOG(info) << "Finished Loading...";
 	}
 	catch(bp::error_already_set&)
 	{

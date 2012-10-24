@@ -6,11 +6,13 @@ import sys, os, io, glob, importlib
 from swgpy.object import *
 templates = TemplateMap()
 prototypes = PrototypeMap()
+tempInterface = BaseTemplate()
 
 def addTemplate(template):
-	#templates[template.name] = template
-	#if template.is_prototype:
-	prototypes[template.name] = template.create({})
+	if template.is_prototype:
+		prototypes[template.name] = template.create({})
+	else:
+		templates[template.name] = template
 
 subdirs = []
 files = []
