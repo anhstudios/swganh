@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/bug_jar/shared_sample_bees.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "sample_bees"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("sample_bees","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

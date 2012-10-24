@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_valarian_dagger.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "valarian_dagger"
-		result.stf_name_string = "item_n"
+		result.stfName("valarian_dagger","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

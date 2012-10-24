@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/powerup/weapon/fs_quest_sad/shared_melee_speed_quest.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "weapon_melee_speed_quest"
-		result.stf_name_string = "powerup_n"
+		result.stfName("weapon_melee_speed_quest","powerup_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

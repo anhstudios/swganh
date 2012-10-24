@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_village_bannerpole_s01.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "fs_village_bannerpole_s01_n"
-		result.stf_name_string = "quest/force_sensitive/fs_patrol"
+		result.stfName("fs_village_bannerpole_s01_n","quest/force_sensitive/fs_patrol")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

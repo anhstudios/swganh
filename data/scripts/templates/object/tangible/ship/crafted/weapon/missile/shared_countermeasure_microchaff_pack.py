@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/weapon/missile/shared_countermeasure_microchaff_pack.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "weapon_microchaff_pack"
-		result.stf_name_string = "space_crafting_n"
+		result.stfName("weapon_microchaff_pack","space_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_turbo_laser_gun_tube.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "turbo_laser_gun_tube"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("turbo_laser_gun_tube","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

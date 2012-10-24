@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/booster/shared_bst_reward_novaldex_elite.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "bst_reward_novaldex_elite"
-		result.stf_name_string = "space_item_n"
+		result.stfName("bst_reward_novaldex_elite","space_item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

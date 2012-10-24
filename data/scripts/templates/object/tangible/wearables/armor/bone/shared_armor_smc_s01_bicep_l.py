@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/wearables/armor/bone/shared_armor_smc_s01_bicep_l.iff"
 		result.attribute_template_id = 0
-		result.stf_name_file = "armor_singing_mountain_clan_s01_bicep_l"
-		result.stf_name_string = "wearables_name"
+		result.stfName("armor_singing_mountain_clan_s01_bicep_l","wearables_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

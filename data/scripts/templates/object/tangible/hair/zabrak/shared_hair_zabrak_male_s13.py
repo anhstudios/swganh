@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/hair/zabrak/shared_hair_zabrak_male_s13.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "hair"
-		result.stf_name_string = "hair_name"
+		result.stfName("hair","hair_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

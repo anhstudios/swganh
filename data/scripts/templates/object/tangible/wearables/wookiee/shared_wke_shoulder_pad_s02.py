@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/wearables/wookiee/shared_wke_shoulder_pad_s02.iff"
 		result.attribute_template_id = 11
-		result.stf_name_file = "wke_shoulder_pads_s02"
-		result.stf_name_string = "wearables_name"
+		result.stfName("wke_shoulder_pads_s02","wearables_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/survey_tool/shared_survey_tool_organic.iff"
 		result.attribute_template_id = 1
-		result.stf_name_file = "survey_tool_organic"
-		result.stf_name_string = "item_n"
+		result.stfName("survey_tool_organic","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

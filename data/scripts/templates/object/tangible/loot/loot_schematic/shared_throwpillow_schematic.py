@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_throwpillow_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "throw_pillow"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("throw_pillow","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

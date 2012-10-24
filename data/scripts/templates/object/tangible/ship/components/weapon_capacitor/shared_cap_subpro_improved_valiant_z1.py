@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon_capacitor/shared_cap_subpro_improved_valiant_z1.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "cap_subpro_improved_valiant_z1_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("cap_subpro_improved_valiant_z1_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

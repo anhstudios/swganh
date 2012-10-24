@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/special/shared_vibroknuckler.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "vibroknuckler"
-		result.stf_name_string = "weapon_name"
+		result.stfName("vibroknuckler","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

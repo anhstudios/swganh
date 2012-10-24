@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/misc/shared_gungan_lance.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "gungan_lance"
-		result.stf_name_string = "item_n"
+		result.stfName("gungan_lance","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

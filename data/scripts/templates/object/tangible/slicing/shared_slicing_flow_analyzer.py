@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/slicing/shared_slicing_flow_analyzer.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "flow_analyzer"
-		result.stf_name_string = "item_n"
+		result.stfName("flow_analyzer","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

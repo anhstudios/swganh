@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/military/shared_outpost_starport.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "starport_corellia"
-		result.stf_name_string = "building_name"
+		result.stfName("starport_corellia","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

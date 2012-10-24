@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/recycler/shared_creature_recycler.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "creature_recycler"
-		result.stf_name_string = "item_n"
+		result.stfName("creature_recycler","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/story_loot/shared_loot_dantooine_junk.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "loot_dantooine_junk"
-		result.stf_name_string = "space/story_loot_n"
+		result.stfName("loot_dantooine_junk","space/story_loot_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/crafting/station/shared_jedi_tool.iff"
 		result.attribute_template_id = 1
-		result.stf_name_file = "jedi_tool_name"
-		result.stf_name_string = "crafting"
+		result.stfName("jedi_tool_name","crafting")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/knife/shared_knife_vibroblade_quest.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "knife_vibroblade_quest"
-		result.stf_name_string = "weapon_name"
+		result.stfName("knife_vibroblade_quest","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

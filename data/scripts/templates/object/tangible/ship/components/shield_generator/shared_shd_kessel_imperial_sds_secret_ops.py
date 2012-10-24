@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_kessel_imperial_sds_secret_ops.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "shd_kessel_imperial_sds_secret_ops_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("shd_kessel_imperial_sds_secret_ops_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

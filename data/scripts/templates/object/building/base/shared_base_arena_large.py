@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/base/shared_base_arena_large.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "base_arena_large"
-		result.stf_name_string = "building_name"
+		result.stfName("base_arena_large","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

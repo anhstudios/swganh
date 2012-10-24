@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/reactor/shared_rct_kse_lx11.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "rct_kse_lx11_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("rct_kse_lx11_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

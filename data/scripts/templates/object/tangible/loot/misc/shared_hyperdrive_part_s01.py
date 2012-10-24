@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/misc/shared_hyperdrive_part_s01.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "hyperdrive_part_s01"
-		result.stf_name_string = "item_n"
+		result.stfName("hyperdrive_part_s01","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

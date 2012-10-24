@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/special_loot/shared_firespray_schematic_part1.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "firespray_schematic_part1"
-		result.stf_name_string = "space_item_n"
+		result.stfName("firespray_schematic_part1","space_item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

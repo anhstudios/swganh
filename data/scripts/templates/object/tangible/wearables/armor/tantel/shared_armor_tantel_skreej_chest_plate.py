@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/wearables/armor/tantel/shared_armor_tantel_skreej_chest_plate.iff"
 		result.attribute_template_id = 0
-		result.stf_name_file = "armor_tantel_skreej_chest_plate"
-		result.stf_name_string = "wearables_name"
+		result.stfName("armor_tantel_skreej_chest_plate","wearables_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

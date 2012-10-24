@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_medic_puzzle_heal_pack.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "fs_medic_puzzle_heal_pack"
-		result.stf_name_string = "medicine_name"
+		result.stfName("fs_medic_puzzle_heal_pack","medicine_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

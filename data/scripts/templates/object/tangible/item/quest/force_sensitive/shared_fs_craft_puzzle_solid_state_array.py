@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_craft_puzzle_solid_state_array.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "fs_craft_puzzle_solid_state_array"
-		result.stf_name_string = "quest_item_n"
+		result.stfName("fs_craft_puzzle_solid_state_array","quest_item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

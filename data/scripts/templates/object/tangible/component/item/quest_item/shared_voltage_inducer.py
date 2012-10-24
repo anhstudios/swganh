@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_voltage_inducer.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "voltage_inducer"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("voltage_inducer","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

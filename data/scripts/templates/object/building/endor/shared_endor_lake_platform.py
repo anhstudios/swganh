@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/endor/shared_endor_lake_platform.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "endor_lake_platform"
-		result.stf_name_string = "building_name"
+		result.stfName("endor_lake_platform","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

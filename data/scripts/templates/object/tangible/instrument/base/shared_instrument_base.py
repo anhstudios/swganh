@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/instrument/base/shared_instrument_base.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "default_craftable"
-		result.stf_name_string = "item_n"
+		result.stfName("default_craftable","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

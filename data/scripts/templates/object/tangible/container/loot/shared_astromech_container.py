@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/loot/shared_astromech_container.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "astromech"
-		result.stf_name_string = "container_name"
+		result.stfName("astromech","container_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

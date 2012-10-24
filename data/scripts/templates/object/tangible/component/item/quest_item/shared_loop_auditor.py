@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_loop_auditor.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "loop_auditor"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("loop_auditor","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

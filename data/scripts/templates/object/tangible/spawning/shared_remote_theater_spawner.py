@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/spawning/shared_remote_theater_spawner.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "remote_theater_spawner"
-		result.stf_name_string = "item_n"
+		result.stfName("remote_theater_spawner","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

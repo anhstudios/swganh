@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_warren_farewell_letter.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "farewell_letter"
-		result.stf_name_string = "warren_item_n"
+		result.stfName("farewell_letter","warren_item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

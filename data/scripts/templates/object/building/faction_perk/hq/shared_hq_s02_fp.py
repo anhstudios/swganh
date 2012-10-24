@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/faction_perk/hq/shared_hq_s02_fp.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "hq_s02"
-		result.stf_name_string = "faction_perk_n"
+		result.stfName("hq_s02","faction_perk_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/droid/shared_navicomputer_6.iff"
 		result.attribute_template_id = 3
-		result.stf_name_file = "navicomputer_6_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("navicomputer_6_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

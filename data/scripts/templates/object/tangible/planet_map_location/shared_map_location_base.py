@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/planet_map_location/shared_map_location_base.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "city_map_location"
-		result.stf_name_string = "item_n"
+		result.stfName("city_map_location","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

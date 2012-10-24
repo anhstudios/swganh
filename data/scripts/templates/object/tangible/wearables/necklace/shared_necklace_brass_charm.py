@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/wearables/necklace/shared_necklace_brass_charm.iff"
 		result.attribute_template_id = 11
-		result.stf_name_file = "necklace_brass_charm"
-		result.stf_name_string = "wearables_name"
+		result.stfName("necklace_brass_charm","wearables_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

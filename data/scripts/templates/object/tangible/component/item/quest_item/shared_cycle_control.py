@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_cycle_control.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "cycle_control"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("cycle_control","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_heating_element.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "heating_element"
-		result.stf_name_string = "loot_n"
+		result.stfName("heating_element","loot_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/hero_of_tatooine/shared_mark_honor.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "hero_of_tatooine_mark_honor"
-		result.stf_name_string = "quest_item_n"
+		result.stfName("hero_of_tatooine_mark_honor","quest_item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

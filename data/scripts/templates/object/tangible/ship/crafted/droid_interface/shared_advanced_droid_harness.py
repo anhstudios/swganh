@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/droid_interface/shared_advanced_droid_harness.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "advanced_droid_harness"
-		result.stf_name_string = "space_crafting_n"
+		result.stfName("advanced_droid_harness","space_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

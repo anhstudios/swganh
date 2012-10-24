@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/shared_invisible_object.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "base_poi"
-		result.stf_name_string = "item_n"
+		result.stfName("base_poi","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

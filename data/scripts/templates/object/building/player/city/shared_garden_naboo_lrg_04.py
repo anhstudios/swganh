@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/player/city/shared_garden_naboo_lrg_04.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "garden"
-		result.stf_name_string = "building_name"
+		result.stfName("garden","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon/shared_wpn_gyrhil_auto_blaster.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "wpn_gyrhil_auto_blaster_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("wpn_gyrhil_auto_blaster_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

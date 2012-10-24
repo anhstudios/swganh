@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/death_watch_bunker/shared_invulnerable_debris.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "newbie_tutorial_debris"
-		result.stf_name_string = "container_name"
+		result.stfName("newbie_tutorial_debris","container_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

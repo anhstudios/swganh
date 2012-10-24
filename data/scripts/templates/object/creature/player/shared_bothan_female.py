@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/player/shared_bothan_female.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "bothan"
-		result.stf_name_string = "species"
+		result.stfName("bothan","species")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

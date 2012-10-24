@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/engine/shared_eng_moncal_charged_standard.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "eng_moncal_charged_standard_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("eng_moncal_charged_standard_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

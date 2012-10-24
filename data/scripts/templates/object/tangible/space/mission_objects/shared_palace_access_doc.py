@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/mission_objects/shared_palace_access_doc.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "palace_access_doc"
-		result.stf_name_string = "space_item_n"
+		result.stfName("palace_access_doc","space_item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

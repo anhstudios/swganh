@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/armor/shared_arm_reward_mandal_elite.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "armor_reward_mandal_elite"
-		result.stf_name_string = "space/space_item"
+		result.stfName("armor_reward_mandal_elite","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

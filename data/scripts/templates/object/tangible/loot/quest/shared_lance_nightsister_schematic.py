@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_lance_nightsister_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "lance_nightsister_schematic"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("lance_nightsister_schematic","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

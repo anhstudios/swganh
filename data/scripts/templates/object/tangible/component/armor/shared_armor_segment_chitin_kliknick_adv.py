@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/armor/shared_armor_segment_chitin_kliknick_adv.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "armor_segment_chitin_kliknick_adv"
-		result.stf_name_string = "craft_armor_ingredients_n"
+		result.stfName("armor_segment_chitin_kliknick_adv","craft_armor_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/region/shared_deliver_region_25.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "unknown_object"
-		result.stf_name_string = "obj_n"
+		result.stfName("unknown_object","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

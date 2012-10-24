@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/chemistry/shared_nebulaorchid.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = ""
-		result.stf_name_string = ""
+		result.stfName("","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_quest_item_goru_calling_card.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "zicx_calling_card"
-		result.stf_name_string = "item_n"
+		result.stfName("zicx_calling_card","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

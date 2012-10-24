@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_droid_brain_anakin.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "droid_brain_anakin"
-		result.stf_name_string = "craft_droid_ingredients_n"
+		result.stfName("droid_brain_anakin","craft_droid_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

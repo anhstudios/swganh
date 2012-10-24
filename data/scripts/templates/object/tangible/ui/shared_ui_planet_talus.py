@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ui/shared_ui_planet_talus.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "talus"
-		result.stf_name_string = "loc_n"
+		result.stfName("talus","loc_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

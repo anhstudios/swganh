@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/armor/shared_scale_giant_dune_kimogila.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "scale_giant_dune_kimogila"
-		result.stf_name_string = "craft_clothing_ingredients_n"
+		result.stfName("scale_giant_dune_kimogila","craft_clothing_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

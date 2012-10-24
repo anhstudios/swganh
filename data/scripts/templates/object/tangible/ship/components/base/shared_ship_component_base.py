@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/base/shared_ship_component_base.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "unknown_object"
-		result.stf_name_string = "obj_n"
+		result.stfName("unknown_object","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

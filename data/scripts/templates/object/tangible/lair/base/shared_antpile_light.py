@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/base/shared_antpile_light.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "generic_antpile"
-		result.stf_name_string = "lair_n"
+		result.stfName("generic_antpile","lair_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

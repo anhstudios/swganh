@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/dna/shared_dna_template_fambaa.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "dna_template_fambaa"
-		result.stf_name_string = "craft_dna_components_n"
+		result.stfName("dna_template_fambaa","craft_dna_components_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

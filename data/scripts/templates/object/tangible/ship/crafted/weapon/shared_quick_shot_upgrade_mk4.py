@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/weapon/shared_quick_shot_upgrade_mk4.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "quick_shot_upgrade_mk4"
-		result.stf_name_string = "space_crafting_n"
+		result.stfName("quick_shot_upgrade_mk4","space_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

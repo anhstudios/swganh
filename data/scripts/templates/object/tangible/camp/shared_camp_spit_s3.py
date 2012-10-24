@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/camp/shared_camp_spit_s3.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "camp_master"
-		result.stf_name_string = "camp"
+		result.stfName("camp_master","camp")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

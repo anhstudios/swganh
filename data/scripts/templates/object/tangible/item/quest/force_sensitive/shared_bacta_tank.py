@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_bacta_tank.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "bacta_tank_n"
-		result.stf_name_string = "quest/force_sensitive/fs_medic"
+		result.stfName("bacta_tank_n","quest/force_sensitive/fs_medic")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

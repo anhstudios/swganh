@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/reactor/shared_rct_mission_reward_imperial_sds_high_output.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "rct_mission_reward_imperial_sds_high_output_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("rct_mission_reward_imperial_sds_high_output_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

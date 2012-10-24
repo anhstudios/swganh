@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/painting/shared_painting_twilek_m.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "painting_twilek_m"
-		result.stf_name_string = "frn_n"
+		result.stfName("painting_twilek_m","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/event_perk/shared_web_tree.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "web_tree_n"
-		result.stf_name_string = "event_perk_detail"
+		result.stfName("web_tree_n","event_perk_detail")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

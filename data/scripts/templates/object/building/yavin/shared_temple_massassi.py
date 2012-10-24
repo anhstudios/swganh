@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/yavin/shared_temple_massassi.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "temple_massassi"
-		result.stf_name_string = "building_name"
+		result.stfName("temple_massassi","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

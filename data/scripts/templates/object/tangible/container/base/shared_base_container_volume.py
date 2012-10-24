@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/base/shared_base_container_volume.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "base_container_volume"
-		result.stf_name_string = "container_name"
+		result.stfName("base_container_volume","container_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

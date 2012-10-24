@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/shield_generator/shared_shd_reward_seinar_elite.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "shd_reward_seinar_elite"
-		result.stf_name_string = "space/space_item"
+		result.stfName("shd_reward_seinar_elite","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

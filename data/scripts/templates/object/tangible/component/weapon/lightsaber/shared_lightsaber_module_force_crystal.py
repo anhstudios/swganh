@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/lightsaber/shared_lightsaber_module_force_crystal.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "force_crystal"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("force_crystal","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

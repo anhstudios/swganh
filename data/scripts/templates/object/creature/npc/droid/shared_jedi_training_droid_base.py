@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/npc/droid/shared_jedi_training_droid_base.iff"
 		result.attribute_template_id = 3
-		result.stf_name_file = "jedi_training_droid_base"
-		result.stf_name_string = "droid_name"
+		result.stfName("jedi_training_droid_base","droid_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

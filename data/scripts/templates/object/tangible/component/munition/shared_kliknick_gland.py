@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/munition/shared_kliknick_gland.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "kliknick_gland"
-		result.stf_name_string = "craft_munition_ingredients_n"
+		result.stfName("kliknick_gland","craft_munition_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

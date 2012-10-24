@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/instrument/shared_flute_droopy.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "obj_chidinkalu_horn"
-		result.stf_name_string = "obj_n"
+		result.stfName("obj_chidinkalu_horn","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

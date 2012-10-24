@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/jar/shared_jar_guts_s01.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "jar_guts"
-		result.stf_name_string = "container_name"
+		result.stfName("jar_guts","container_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

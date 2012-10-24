@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_syren1_warning.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "syren1_warning"
-		result.stf_name_string = "item_n"
+		result.stfName("syren1_warning","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/base/shared_lair_base_imperial_guard.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "generic_imperial_guard"
-		result.stf_name_string = "lair_n"
+		result.stfName("generic_imperial_guard","lair_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

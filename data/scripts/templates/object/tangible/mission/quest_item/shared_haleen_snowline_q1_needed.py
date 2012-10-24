@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_haleen_snowline_q1_needed.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "haleen_snowline_q1_needed"
-		result.stf_name_string = "loot_tals_n"
+		result.stfName("haleen_snowline_q1_needed","loot_tals_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

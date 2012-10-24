@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/corpse/shared_player_corpse.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "corpse_player_n"
-		result.stf_name_string = "base_player"
+		result.stfName("corpse_player_n","base_player")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

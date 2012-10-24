@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/gem/shared_clothing.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "socket_gem_clothing"
-		result.stf_name_string = "item_n"
+		result.stfName("socket_gem_clothing","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

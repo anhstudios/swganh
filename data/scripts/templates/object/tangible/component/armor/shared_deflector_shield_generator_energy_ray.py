@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/armor/shared_deflector_shield_generator_energy_ray.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "deflector_shield_generator_energy_ray"
-		result.stf_name_string = "craft_clothing_ingredients_n"
+		result.stfName("deflector_shield_generator_energy_ray","craft_clothing_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

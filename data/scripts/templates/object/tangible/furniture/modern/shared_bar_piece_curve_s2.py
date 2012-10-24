@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/modern/shared_bar_piece_curve_s2.iff"
 		result.attribute_template_id = 6
-		result.stf_name_file = "bar_piece_curve_s2"
-		result.stf_name_string = "frn_n"
+		result.stfName("bar_piece_curve_s2","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

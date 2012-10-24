@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/all/shared_event_flag_game_neut_banner.iff"
 		result.attribute_template_id = 6
-		result.stf_name_file = "flag_game_neut_flag"
-		result.stf_name_string = "event_perk"
+		result.stfName("flag_game_neut_flag","event_perk")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

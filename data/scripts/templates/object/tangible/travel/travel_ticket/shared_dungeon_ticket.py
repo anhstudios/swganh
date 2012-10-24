@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "dungeon_ticket"
-		result.stf_name_string = "dungeon/space_dungeon"
+		result.stfName("dungeon_ticket","dungeon/space_dungeon")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

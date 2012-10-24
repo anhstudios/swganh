@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/corellian_corvette/shared_imperial_assassin_filler02.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "imperial_assassin_filler02"
-		result.stf_name_string = "item_n"
+		result.stfName("imperial_assassin_filler02","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

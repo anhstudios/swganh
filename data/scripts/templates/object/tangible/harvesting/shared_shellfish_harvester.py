@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/harvesting/shared_shellfish_harvester.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "shellfish_harvester"
-		result.stf_name_string = "item_n"
+		result.stfName("shellfish_harvester","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

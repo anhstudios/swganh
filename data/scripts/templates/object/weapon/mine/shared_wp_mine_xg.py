@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/mine/shared_wp_mine_xg.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "mine_xg"
-		result.stf_name_string = "weapon_name"
+		result.stfName("mine_xg","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

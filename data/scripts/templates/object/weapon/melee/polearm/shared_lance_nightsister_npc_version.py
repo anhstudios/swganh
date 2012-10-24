@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/polearm/shared_lance_nightsister_npc_version.iff"
 		result.attribute_template_id = 9
-		result.stf_name_file = "lance_nightsister"
-		result.stf_name_string = "weapon_name"
+		result.stfName("lance_nightsister","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

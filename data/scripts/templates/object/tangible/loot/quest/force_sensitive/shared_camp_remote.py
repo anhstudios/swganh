@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/force_sensitive/shared_camp_remote.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "remote_name"
-		result.stf_name_string = "fs_quest_village"
+		result.stfName("remote_name","fs_quest_village")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

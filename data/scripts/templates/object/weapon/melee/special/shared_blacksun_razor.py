@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/special/shared_blacksun_razor.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "blacksun_razor"
-		result.stf_name_string = "weapon_name"
+		result.stfName("blacksun_razor","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

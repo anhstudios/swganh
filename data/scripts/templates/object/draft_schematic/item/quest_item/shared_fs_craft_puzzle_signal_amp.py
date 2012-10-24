@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/item/quest_item/shared_fs_craft_puzzle_signal_amp.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = ""
-		result.stf_name_string = "string_id_table"
+		result.stfName("","string_id_table")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/deed/faction_perk/turret/shared_block_med_deed.iff"
 		result.attribute_template_id = 2
-		result.stf_name_file = "turret_block_med"
-		result.stf_name_string = "deed"
+		result.stfName("turret_block_med","deed")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dice/shared_eqp_twelve_sided_dice_set.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "eqp_twelve_sided_dice_set_single"
-		result.stf_name_string = "dice/dice_details"
+		result.stfName("eqp_twelve_sided_dice_set_single","dice/dice_details")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

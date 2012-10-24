@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/base/shared_lair_base_den_earthen_dark.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "generic_den"
-		result.stf_name_string = "lair_n"
+		result.stfName("generic_den","lair_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

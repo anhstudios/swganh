@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/camp/shared_campfire_logs_fresh.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "campfire_logs_fresh"
-		result.stf_name_string = "item_n"
+		result.stfName("campfire_logs_fresh","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

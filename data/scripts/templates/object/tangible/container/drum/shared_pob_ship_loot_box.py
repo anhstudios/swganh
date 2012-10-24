@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/container/drum/shared_pob_ship_loot_box.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "pob_loot"
-		result.stf_name_string = "space/space_interaction"
+		result.stfName("pob_loot","space/space_interaction")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

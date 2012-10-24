@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/region/shared_battlefield_marker.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "battlefield_marker_name"
-		result.stf_name_string = "battlefield"
+		result.stfName("battlefield_marker_name","battlefield")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

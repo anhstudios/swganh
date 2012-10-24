@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/medicine/pet/shared_pet_stimpack_b.iff"
 		result.attribute_template_id = 7
-		result.stf_name_file = "pet_stimpack_b"
-		result.stf_name_string = "medicine_name"
+		result.stfName("pet_stimpack_b","medicine_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/base/shared_earthmound_light.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "generic_mound"
-		result.stf_name_string = "lair_n"
+		result.stfName("generic_mound","lair_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

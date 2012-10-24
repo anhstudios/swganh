@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/event_perk/shared_camp_pavilion_s1.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "frn_tent"
-		result.stf_name_string = "frn_n"
+		result.stfName("frn_tent","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

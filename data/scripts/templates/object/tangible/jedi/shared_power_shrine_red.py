@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/jedi/shared_power_shrine_red.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "power_shrine_n"
-		result.stf_name_string = "quest/force_sensitive/utils"
+		result.stfName("power_shrine_n","quest/force_sensitive/utils")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

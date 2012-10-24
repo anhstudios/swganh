@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_chemical_dispersion_mechanism.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "chemical_dispersion_mechanism"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("chemical_dispersion_mechanism","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

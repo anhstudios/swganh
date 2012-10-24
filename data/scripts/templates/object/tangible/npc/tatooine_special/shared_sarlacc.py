@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/npc/tatooine_special/shared_sarlacc.iff"
 		result.attribute_template_id = 9
-		result.stf_name_file = "sarlacc"
-		result.stf_name_string = "frn_n"
+		result.stfName("sarlacc","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

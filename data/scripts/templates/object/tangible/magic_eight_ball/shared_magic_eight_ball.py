@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/magic_eight_ball/shared_magic_eight_ball.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "magic_eight_ball"
-		result.stf_name_string = "item_n"
+		result.stfName("magic_eight_ball","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

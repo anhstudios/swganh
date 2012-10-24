@@ -43,7 +43,7 @@ def main(force):
 	
 		#Convert entry at 0 to filename
 		output_filename = "./"+csv[0].replace(".iff", ".py")
-	
+		
 		replaces = []
 		if os.path.isfile(output_filename):
 			replace = None
@@ -83,6 +83,12 @@ def main(force):
 						if line.find(target) != -1:
 							line = line.replace(target, str(func(csv[index])))
 					output.write(line)
+					
+	## Create __init__.py for each subfolder if doesn't exist
+	for dirname, subdirs, filenames in os.walk('.'):
+		if not os.path.isfile(dirname + os.sep + '__init__.py'):
+			with open(dirname + os.sep + '__init__.py', 'w') as init_py:
+				init_py.write('')
 	
 	if len(saved_files) > 0:
 		print("The following files were saved. You must run with -f, or remove the MODIFIED TAG")

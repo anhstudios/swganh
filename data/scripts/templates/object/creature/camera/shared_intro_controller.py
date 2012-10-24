@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/creature/camera/shared_intro_controller.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "intro_controller"
-		result.stf_name_string = "theme_park_name"
+		result.stfName("intro_controller","theme_park_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

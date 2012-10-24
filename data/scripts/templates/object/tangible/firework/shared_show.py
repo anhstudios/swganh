@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/firework/shared_show.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "show"
-		result.stf_name_string = "firework_n"
+		result.stfName("show","firework_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

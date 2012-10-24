@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/tatooine/shared_lair_environment_tatooine.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "filler_building_tatt_style01_10"
-		result.stf_name_string = "building_name"
+		result.stfName("filler_building_tatt_style01_10","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

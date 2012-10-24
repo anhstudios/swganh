@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/structure/interior/shared_lair_hive_medium_interior_dalyrake.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "hive_medium_interior_dalyrake"
-		result.stf_name_string = "lair_n"
+		result.stfName("hive_medium_interior_dalyrake","lair_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

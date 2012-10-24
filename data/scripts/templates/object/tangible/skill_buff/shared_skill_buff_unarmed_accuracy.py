@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/skill_buff/shared_skill_buff_unarmed_accuracy.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "unarmed_accuracy"
-		result.stf_name_string = "skill_buff_n"
+		result.stfName("unarmed_accuracy","skill_buff_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/hq_destructible/shared_power_regulator.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "power_regulator"
-		result.stf_name_string = "hq"
+		result.stfName("power_regulator","hq")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

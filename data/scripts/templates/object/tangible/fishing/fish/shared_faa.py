@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/fishing/fish/shared_faa.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "faa"
-		result.stf_name_string = "fish_n"
+		result.stfName("faa","fish_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

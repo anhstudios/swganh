@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_nym_droid_memory_chip.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "nym_memory_chip"
-		result.stf_name_string = "item_n"
+		result.stfName("nym_memory_chip","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

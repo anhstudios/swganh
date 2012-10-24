@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act2/shared_relay_station_terminal.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = ""
-		result.stf_name_string = ""
+		result.stfName("","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

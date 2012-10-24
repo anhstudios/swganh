@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/content_infrastructure/shared_basic_corridor_point.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "patrol_point"
-		result.stf_name_string = "item_n"
+		result.stfName("patrol_point","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

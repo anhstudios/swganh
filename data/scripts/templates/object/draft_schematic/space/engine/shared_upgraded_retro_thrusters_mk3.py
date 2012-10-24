@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/space/engine/shared_upgraded_retro_thrusters_mk3.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = ""
-		result.stf_name_string = ""
+		result.stfName("","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

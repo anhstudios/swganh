@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/spawning/shared_spawn_egg.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "spawn_egg"
-		result.stf_name_string = "item_n"
+		result.stfName("spawn_egg","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

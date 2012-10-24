@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/deed/vehicle_deed/shared_landspeeder_x34_deed.iff"
 		result.attribute_template_id = 2
-		result.stf_name_file = "landspeeder_x34"
-		result.stf_name_string = "pet_deed"
+		result.stfName("landspeeder_x34","pet_deed")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

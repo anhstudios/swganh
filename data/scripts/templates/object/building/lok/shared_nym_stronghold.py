@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/lok/shared_nym_stronghold.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "nym_stronghold"
-		result.stf_name_string = "building_name"
+		result.stfName("nym_stronghold","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

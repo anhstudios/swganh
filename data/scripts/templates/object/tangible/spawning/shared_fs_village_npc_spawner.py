@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/spawning/shared_fs_village_npc_spawner.iff"
 		result.attribute_template_id = 9
-		result.stf_name_file = "fs_quest_nodraw"
-		result.stf_name_string = "item_n"
+		result.stfName("fs_quest_nodraw","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

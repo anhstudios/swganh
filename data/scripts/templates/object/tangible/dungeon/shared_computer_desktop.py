@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_computer_desktop.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "computer_desktop"
-		result.stf_name_string = "obj_n"
+		result.stfName("computer_desktop","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

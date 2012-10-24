@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/terminal/shared_terminal_player_structure_nosnap_mini.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "terminal_player_structure"
-		result.stf_name_string = "terminal_name"
+		result.stfName("terminal_player_structure","terminal_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

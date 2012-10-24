@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/armor/shared_hide_gurk_king.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "hide_gurk_king"
-		result.stf_name_string = "craft_clothing_ingredients_n"
+		result.stfName("hide_gurk_king","craft_clothing_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

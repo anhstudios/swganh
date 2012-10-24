@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/shared_lytus_family_artefact.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "lytus_family_artefact"
-		result.stf_name_string = "frn_n"
+		result.stfName("lytus_family_artefact","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

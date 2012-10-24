@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/lightsaber/shared_lightsaber_module_color.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "lightsaber_module_color"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("lightsaber_module_color","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

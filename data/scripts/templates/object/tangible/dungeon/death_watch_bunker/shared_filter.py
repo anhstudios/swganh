@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/death_watch_bunker/shared_filter.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "filter"
-		result.stf_name_string = "dungeon/death_watch"
+		result.stfName("filter","dungeon/death_watch")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

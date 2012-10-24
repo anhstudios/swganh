@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/sign/player/shared_house_address_naboo.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "sign"
-		result.stf_name_string = "sign_name"
+		result.stfName("sign","sign_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

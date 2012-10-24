@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_shellfish_harvester_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "shellfish_harvester_schematic"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("shellfish_harvester_schematic","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

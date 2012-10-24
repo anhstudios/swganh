@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_attunement_grid.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "attunement_grid"
-		result.stf_name_string = "item_n"
+		result.stfName("attunement_grid","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

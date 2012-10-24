@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/decorative/shared_tanning_hide_s02.iff"
 		result.attribute_template_id = 6
-		result.stf_name_file = "tanning_hide"
-		result.stf_name_string = "frn_n"
+		result.stfName("tanning_hide","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

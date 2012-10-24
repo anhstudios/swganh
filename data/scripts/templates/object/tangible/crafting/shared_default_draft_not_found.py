@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/crafting/shared_default_draft_not_found.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "unknown_schematic"
-		result.stf_name_string = "obj_n"
+		result.stfName("unknown_schematic","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

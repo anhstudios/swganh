@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/armor/shared_arm_mission_reward_imperial_sfs_light_military.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "arm_mission_reward_imperial_sfs_light_military_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("arm_mission_reward_imperial_sfs_light_military_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

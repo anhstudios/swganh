@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_empty_datapad.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "empty_datapad"
-		result.stf_name_string = "loot_n"
+		result.stfName("empty_datapad","loot_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

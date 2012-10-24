@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_heavy_harvesting_mechanism.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "shared_heavy_harvesting_mechanism"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("shared_heavy_harvesting_mechanism","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

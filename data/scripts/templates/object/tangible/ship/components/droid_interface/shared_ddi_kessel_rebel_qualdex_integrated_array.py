@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/droid_interface/shared_ddi_kessel_rebel_qualdex_integrated_array.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "ddi_kessel_rebel_qualdex_integrated_array_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("ddi_kessel_rebel_qualdex_integrated_array_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_sean_history_disk.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "sean_history_disk"
-		result.stf_name_string = "item_n"
+		result.stfName("sean_history_disk","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

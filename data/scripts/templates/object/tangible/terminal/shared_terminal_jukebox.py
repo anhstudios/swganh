@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/terminal/shared_terminal_jukebox.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "jukebox_terminal_name"
-		result.stf_name_string = "event_perk"
+		result.stfName("jukebox_terminal_name","event_perk")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

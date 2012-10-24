@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/painting/shared_painting_schematic_droid.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "painting_schematic_droid"
-		result.stf_name_string = "frn_n"
+		result.stfName("painting_schematic_droid","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

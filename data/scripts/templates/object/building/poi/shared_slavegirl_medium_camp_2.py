@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/poi/shared_slavegirl_medium_camp_2.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "base_poi_building"
-		result.stf_name_string = "poi_n"
+		result.stfName("base_poi_building","poi_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

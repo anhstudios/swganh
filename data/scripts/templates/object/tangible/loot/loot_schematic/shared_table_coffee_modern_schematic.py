@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_table_coffee_modern_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "coffee_table_modern"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("coffee_table_modern","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

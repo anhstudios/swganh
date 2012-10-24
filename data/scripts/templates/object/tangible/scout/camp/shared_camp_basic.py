@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/scout/camp/shared_camp_basic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "camp_basic"
-		result.stf_name_string = "item_n"
+		result.stfName("camp_basic","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

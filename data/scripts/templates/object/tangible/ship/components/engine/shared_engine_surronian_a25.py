@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/engine/shared_engine_surronian_a25.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "eng_surronian_a25_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("eng_surronian_a25_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

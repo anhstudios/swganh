@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_ore_recycler_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "ore_recycler"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("ore_recycler","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

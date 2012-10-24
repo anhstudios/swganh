@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/jedi/shared_frn_all_dark_throne.iff"
 		result.attribute_template_id = 6
-		result.stf_name_file = "frn_jedi_throne"
-		result.stf_name_string = "frn_n"
+		result.stfName("frn_jedi_throne","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

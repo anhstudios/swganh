@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/death_watch_bunker/shared_binary_liquid.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "binary_liquid"
-		result.stf_name_string = "item_n"
+		result.stfName("binary_liquid","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

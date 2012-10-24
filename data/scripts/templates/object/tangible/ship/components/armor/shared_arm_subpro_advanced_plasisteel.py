@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/armor/shared_arm_subpro_advanced_plasisteel.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "arm_subpro_advanced_plasisteel_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("arm_subpro_advanced_plasisteel_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/vehicle/shared_mini_launcher_pod.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "mini_launcher_pod"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("mini_launcher_pod","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_quest_item_spice_jar.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "zicx_spice_jar"
-		result.stf_name_string = "item_n"
+		result.stfName("zicx_spice_jar","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

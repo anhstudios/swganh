@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_reinforced_wall_module.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "reinforced_wall_module"
-		result.stf_name_string = "community_crafting_n"
+		result.stfName("reinforced_wall_module","community_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

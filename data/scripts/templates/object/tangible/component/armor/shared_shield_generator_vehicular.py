@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/armor/shared_shield_generator_vehicular.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "shield_generator_vehicular"
-		result.stf_name_string = "craft_clothing_ingredients_n"
+		result.stfName("shield_generator_vehicular","craft_clothing_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

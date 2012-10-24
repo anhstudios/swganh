@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/rebel/shared_lair_rebel_npc.iff"
 		result.attribute_template_id = 9
-		result.stf_name_file = "rebel"
-		result.stf_name_string = "lair_n"
+		result.stfName("rebel","lair_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

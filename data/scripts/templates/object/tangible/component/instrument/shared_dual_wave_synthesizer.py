@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/instrument/shared_dual_wave_synthesizer.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "dual_wave_synthesizer"
-		result.stf_name_string = "craft_furniture_ingredients_n"
+		result.stfName("dual_wave_synthesizer","craft_furniture_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/food/shared_container_large_glass.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "large_glass"
-		result.stf_name_string = "craft_food_ingredients_n"
+		result.stfName("large_glass","craft_food_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

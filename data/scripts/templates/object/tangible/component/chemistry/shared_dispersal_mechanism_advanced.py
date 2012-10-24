@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/chemistry/shared_dispersal_mechanism_advanced.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "dispersal_mechanism_advanced"
-		result.stf_name_string = "craft_chemical_ingredients_n"
+		result.stfName("dispersal_mechanism_advanced","craft_chemical_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

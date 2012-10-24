@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/chemistry/shared_medpack_poison_area_mind_c.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = ""
-		result.stf_name_string = "string_id_table"
+		result.stfName("","string_id_table")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/force_sensitive/sharred_waypoint_datapad.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "waypoint_datapad_name"
-		result.stf_name_string = "quest/force_sensitive/intro"
+		result.stfName("waypoint_datapad_name","quest/force_sensitive/intro")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

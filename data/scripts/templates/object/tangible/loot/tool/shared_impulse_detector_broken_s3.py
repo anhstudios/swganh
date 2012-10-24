@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/tool/shared_impulse_detector_broken_s3.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "impulse_detector_broken"
-		result.stf_name_string = "item_n"
+		result.stfName("impulse_detector_broken","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/lair/base/shared_objective_power_transformer.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "power_transformer"
-		result.stf_name_string = "lair_n"
+		result.stfName("power_transformer","lair_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

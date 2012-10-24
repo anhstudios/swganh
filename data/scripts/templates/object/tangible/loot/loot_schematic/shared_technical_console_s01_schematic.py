@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_technical_console_s01_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "tech_console_s01"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("tech_console_s01","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

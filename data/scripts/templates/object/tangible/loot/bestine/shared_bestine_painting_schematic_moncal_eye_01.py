@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/bestine/shared_bestine_painting_schematic_moncal_eye_01.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "painting_schematic_moncal_eye_01"
-		result.stf_name_string = "craft_furniture_ingredients_n"
+		result.stfName("painting_schematic_moncal_eye_01","craft_furniture_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

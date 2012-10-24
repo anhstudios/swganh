@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_refined_rudic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "refined_rudic"
-		result.stf_name_string = "community_crafting_n"
+		result.stfName("refined_rudic","community_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

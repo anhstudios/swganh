@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/misc/shared_damaged_datapad.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "damaged_datapad"
-		result.stf_name_string = "item_n"
+		result.stfName("damaged_datapad","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

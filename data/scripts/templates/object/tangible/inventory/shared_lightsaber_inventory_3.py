@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/inventory/shared_lightsaber_inventory_3.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "saber_inventory"
-		result.stf_name_string = "item_n"
+		result.stfName("saber_inventory","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/polearm/shared_lance_lightsaber_02.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "lance_lightsaber"
-		result.stf_name_string = "weapon_name"
+		result.stfName("lance_lightsaber","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

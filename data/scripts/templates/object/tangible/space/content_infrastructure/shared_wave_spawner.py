@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/space/content_infrastructure/shared_wave_spawner.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "spawner"
-		result.stf_name_string = "item_n"
+		result.stfName("spawner","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

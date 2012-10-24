@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/death_watch_bunker/shared_pistol_de10_barrel.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "de10_barrel"
-		result.stf_name_string = "item_n"
+		result.stfName("de10_barrel","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

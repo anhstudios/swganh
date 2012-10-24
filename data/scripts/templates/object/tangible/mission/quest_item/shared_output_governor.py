@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_output_governor.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "output_governor"
-		result.stf_name_string = "item_n"
+		result.stfName("output_governor","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

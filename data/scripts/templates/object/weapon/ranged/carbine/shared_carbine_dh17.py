@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/ranged/carbine/shared_carbine_dh17.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "carbine_dh17"
-		result.stf_name_string = "weapon_name"
+		result.stfName("carbine_dh17","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

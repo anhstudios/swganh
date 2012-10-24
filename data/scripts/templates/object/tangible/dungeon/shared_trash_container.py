@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_trash_container.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "trash_container"
-		result.stf_name_string = "obj_n"
+		result.stfName("trash_container","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

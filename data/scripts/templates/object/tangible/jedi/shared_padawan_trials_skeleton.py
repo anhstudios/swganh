@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/jedi/shared_padawan_trials_skeleton.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "skeleton_human"
-		result.stf_name_string = "frn_n"
+		result.stfName("skeleton_human","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

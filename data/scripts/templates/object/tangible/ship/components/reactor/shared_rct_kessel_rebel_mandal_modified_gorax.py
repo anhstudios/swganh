@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/reactor/shared_rct_kessel_rebel_mandal_modified_gorax.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "rct_kessel_rebel_mandal_modified_gorax_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("rct_kessel_rebel_mandal_modified_gorax_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_geonosian_sonic_blaster_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "geonosian_sonic_blaster_schematic"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("geonosian_sonic_blaster_schematic","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

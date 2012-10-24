@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/reverse_engineering/shared_reactor_analysis_tool.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "reactor_analysis_tool"
-		result.stf_name_string = "space_crafting_n"
+		result.stfName("reactor_analysis_tool","space_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

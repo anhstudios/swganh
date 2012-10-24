@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/ranged/heavy/shared_heavy_acid_beam.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "heavy_acid_beam"
-		result.stf_name_string = "weapon_name"
+		result.stfName("heavy_acid_beam","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/gambling/slot/shared_standard.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "slot_machine"
-		result.stf_name_string = "item_n"
+		result.stfName("slot_machine","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

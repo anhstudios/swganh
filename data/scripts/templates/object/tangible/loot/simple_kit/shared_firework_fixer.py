@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_firework_fixer.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "firework_packager"
-		result.stf_name_string = "loot_n"
+		result.stfName("firework_packager","loot_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

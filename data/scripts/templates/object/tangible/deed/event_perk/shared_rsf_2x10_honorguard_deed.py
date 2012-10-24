@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/deed/event_perk/shared_rsf_2x10_honorguard_deed.iff"
 		result.attribute_template_id = 2
-		result.stf_name_file = "rsf_2x10_honorguard_deed_name"
-		result.stf_name_string = "event_perk"
+		result.stfName("rsf_2x10_honorguard_deed_name","event_perk")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

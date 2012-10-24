@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/chassis/shared_blacksun_medium_s03_chassis_token.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "blacksun_medium_s03_chassis_token"
-		result.stf_name_string = "space_crafting_n"
+		result.stfName("blacksun_medium_s03_chassis_token","space_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

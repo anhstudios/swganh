@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_viewscreen_reader.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "viewscreen_reader"
-		result.stf_name_string = "loot_n"
+		result.stfName("viewscreen_reader","loot_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

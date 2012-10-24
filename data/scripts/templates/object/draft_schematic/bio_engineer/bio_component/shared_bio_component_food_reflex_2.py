@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/draft_schematic/bio_engineer/bio_component/shared_bio_component_food_reflex_2.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = ""
-		result.stf_name_string = ""
+		result.stfName("","")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

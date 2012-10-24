@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/geonosian_mad_bunker/shared_engineering_key.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "biogenic_engineering_key"
-		result.stf_name_string = "item_n"
+		result.stfName("biogenic_engineering_key","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

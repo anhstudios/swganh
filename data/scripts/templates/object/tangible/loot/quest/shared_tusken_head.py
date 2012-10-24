@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_tusken_head.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "tusken_head"
-		result.stf_name_string = "item_n"
+		result.stfName("tusken_head","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

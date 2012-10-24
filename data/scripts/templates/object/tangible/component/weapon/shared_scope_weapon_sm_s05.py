@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_scope_weapon_sm_s05.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "weapon_scope_sm_t5"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("weapon_scope_sm_t5","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

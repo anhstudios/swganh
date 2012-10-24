@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_lifeday_orb.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "lifeday_orb"
-		result.stf_name_string = "wearables_name"
+		result.stfName("lifeday_orb","wearables_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

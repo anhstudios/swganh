@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_syren2_blacksun_base.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "syren2_datapad"
-		result.stf_name_string = "item_n"
+		result.stfName("syren2_datapad","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

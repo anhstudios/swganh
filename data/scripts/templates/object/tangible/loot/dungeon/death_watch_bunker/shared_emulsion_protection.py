@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/death_watch_bunker/shared_emulsion_protection.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "emulsion_protector"
-		result.stf_name_string = "item_n"
+		result.stfName("emulsion_protector","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

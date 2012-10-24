@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/tatooine/shared_lucky_despot.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "Lucky Despot Hotel and Casino"
-		result.stf_name_string = "building_name"
+		result.stfName("Lucky Despot Hotel and Casino","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

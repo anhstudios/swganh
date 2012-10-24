@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_ian_logo_q3_needed.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "ian_lago_q3_needed"
-		result.stf_name_string = "loot_nboo_n"
+		result.stfName("ian_lago_q3_needed","loot_nboo_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

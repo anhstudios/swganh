@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/vehicle/shared_structural_reinforcements_hvy.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "structural_reinforcements_hvy"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("structural_reinforcements_hvy","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

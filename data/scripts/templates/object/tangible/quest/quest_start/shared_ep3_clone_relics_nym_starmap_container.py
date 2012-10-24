@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/quest/quest_start/shared_ep3_clone_relics_nym_starmap_container.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "security_container"
-		result.stf_name_string = "container_name"
+		result.stfName("security_container","container_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

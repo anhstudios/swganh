@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act2/shared_decoder_comp_processor.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "decoder_comp_processor"
-		result.stf_name_string = "item_n"
+		result.stfName("decoder_comp_processor","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

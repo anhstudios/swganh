@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/tool/shared_comlink_naboo_broken.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "comlink_naboo_broken"
-		result.stf_name_string = "item_n"
+		result.stfName("comlink_naboo_broken","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

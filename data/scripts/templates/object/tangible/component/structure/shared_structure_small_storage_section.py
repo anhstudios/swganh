@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/structure/shared_structure_small_storage_section.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "small_structure_storage_module"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("small_structure_storage_module","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

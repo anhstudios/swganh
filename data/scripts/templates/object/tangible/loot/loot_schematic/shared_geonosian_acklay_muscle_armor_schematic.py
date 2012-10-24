@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_geonosian_acklay_muscle_armor_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "acklay_muscle_weaving_schematic"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("acklay_muscle_weaving_schematic","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

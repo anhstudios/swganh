@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_victor_questp_jregistry.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "victor_questp_jregistry"
-		result.stf_name_string = "item_n"
+		result.stfName("victor_questp_jregistry","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

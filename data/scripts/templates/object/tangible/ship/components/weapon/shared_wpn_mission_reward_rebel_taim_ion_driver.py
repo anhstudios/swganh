@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/weapon/shared_wpn_mission_reward_rebel_taim_ion_driver.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "wpn_mission_reward_rebel_taim_ion_driver_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("wpn_mission_reward_rebel_taim_ion_driver_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

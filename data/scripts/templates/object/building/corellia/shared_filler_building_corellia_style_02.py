@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/building/corellia/shared_filler_building_corellia_style_02.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "filler_building_corellia_style_2"
-		result.stf_name_string = "building_name"
+		result.stfName("filler_building_corellia_style_2","building_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

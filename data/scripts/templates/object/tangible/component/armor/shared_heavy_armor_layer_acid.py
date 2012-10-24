@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/armor/shared_heavy_armor_layer_acid.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "heavy_armor_layer_acid"
-		result.stf_name_string = "craft_clothing_ingredients_n"
+		result.stfName("heavy_armor_layer_acid","craft_clothing_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

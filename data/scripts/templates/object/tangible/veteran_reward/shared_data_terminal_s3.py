@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/veteran_reward/shared_data_terminal_s3.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "vet_data_terminal_s3"
-		result.stf_name_string = "frn_n"
+		result.stfName("vet_data_terminal_s3","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ui/shared_ui_planet_rebel.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "rebel"
-		result.stf_name_string = "loc_n"
+		result.stfName("rebel","loc_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/beta/shared_beta_terminal_xp.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "terminal_xp"
-		result.stf_name_string = "terminal_name"
+		result.stfName("terminal_xp","terminal_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

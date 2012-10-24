@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/terminal/shared_terminal_light_enclave_voting.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "terminal_light_enclave_voting"
-		result.stf_name_string = "terminal_name"
+		result.stfName("terminal_light_enclave_voting","terminal_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/painting/shared_painting_tree.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "painting_blueleaf_temple"
-		result.stf_name_string = "frn_n"
+		result.stfName("painting_blueleaf_temple","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

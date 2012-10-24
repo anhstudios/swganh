@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_keypad_terminal.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "keypad"
-		result.stf_name_string = "terminal_name"
+		result.stfName("keypad","terminal_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/loot_schematic/shared_death_watch_razor_knuckler_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "razor_knuckler_schematic"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("razor_knuckler_schematic","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

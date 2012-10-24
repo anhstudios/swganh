@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/gambling/wheel/shared_roulette.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "roulette_table"
-		result.stf_name_string = "item_n"
+		result.stfName("roulette_table","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

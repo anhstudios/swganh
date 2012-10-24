@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/sign/shared_tatooine_moraj_marker.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "moraj_marker"
-		result.stf_name_string = "item_n"
+		result.stfName("moraj_marker","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

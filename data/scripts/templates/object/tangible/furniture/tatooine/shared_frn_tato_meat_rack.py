@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/furniture/tatooine/shared_frn_tato_meat_rack.iff"
 		result.attribute_template_id = 6
-		result.stf_name_file = "frn_tato_meat_rack"
-		result.stf_name_string = "frn_n"
+		result.stfName("frn_tato_meat_rack","frn_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

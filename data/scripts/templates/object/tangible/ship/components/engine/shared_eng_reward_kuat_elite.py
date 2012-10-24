@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/engine/shared_eng_reward_kuat_elite.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "eng_reward_kuat_elite"
-		result.stf_name_string = "space/space_item"
+		result.stfName("eng_reward_kuat_elite","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

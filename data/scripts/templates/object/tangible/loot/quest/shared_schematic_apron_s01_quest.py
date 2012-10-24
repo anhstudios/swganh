@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_schematic_apron_s01_quest.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "schematic_apron_s01_quest"
-		result.stf_name_string = "craft_clothing_ingredients_n"
+		result.stfName("schematic_apron_s01_quest","craft_clothing_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

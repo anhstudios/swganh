@@ -6,6 +6,8 @@
 
 #include "swganh/object/object_binding.h"
 #include "swganh_core/object/tangible/tangible.h"
+#include "swganh_core/object/building/building.h"
+#include "swganh_core/object/factory_crate/factory_crate.h"
 #include "swganh_core/object/weapon/weapon.h"
 
 #include <boost/python.hpp>
@@ -41,6 +43,11 @@ void exportTangible()
         .def("isAutoAttacking", &Tangible::IsAutoAttacking, "returns true if currently auto attacking")
 		;
 
+	class_<Building, bases<Tangible>, std::shared_ptr<Building>, boost::noncopyable>("Building");
+	class_<FactoryCrate, bases<Tangible>, std::shared_ptr<FactoryCrate>, boost::noncopyable>("FactoryCrate");
+
+	implicitly_convertible<std::shared_ptr<FactoryCrate>, std::shared_ptr<Tangible>>();
+	implicitly_convertible<std::shared_ptr<Building>, std::shared_ptr<Tangible>>();
 	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<Object>>();
 	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<ContainerInterface>>();
 }

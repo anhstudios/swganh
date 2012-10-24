@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act3/shared_repaired_grav_unit.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "repaired_grav_unit"
-		result.stf_name_string = "item_n"
+		result.stfName("repaired_grav_unit","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

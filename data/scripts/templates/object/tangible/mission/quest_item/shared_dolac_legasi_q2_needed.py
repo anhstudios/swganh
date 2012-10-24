@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/mission/quest_item/shared_dolac_legasi_q2_needed.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "dolac_legasi_q2_needed"
-		result.stf_name_string = "loot_dath_n"
+		result.stfName("dolac_legasi_q2_needed","loot_dath_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

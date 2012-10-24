@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/capacitor/shared_extended_life_battery_mk2.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "extended_life_battery_mk2"
-		result.stf_name_string = "space_crafting_n"
+		result.stfName("extended_life_battery_mk2","space_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

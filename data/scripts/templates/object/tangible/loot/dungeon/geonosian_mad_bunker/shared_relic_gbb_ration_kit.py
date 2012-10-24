@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/dungeon/geonosian_mad_bunker/shared_relic_gbb_ration_kit.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "relic_gbb_ration_kit"
-		result.stf_name_string = "item_n"
+		result.stfName("relic_gbb_ration_kit","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/chemistry/shared_chemistry_component.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "chemistry_base_component"
-		result.stf_name_string = "craft_chemistry_ingredients_n"
+		result.stfName("chemistry_base_component","craft_chemistry_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

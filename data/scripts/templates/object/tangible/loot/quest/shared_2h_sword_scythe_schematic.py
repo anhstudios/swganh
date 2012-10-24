@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/quest/shared_2h_sword_scythe_schematic.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "sword_scythe_schematic"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("sword_scythe_schematic","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

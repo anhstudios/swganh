@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/simple_kit/shared_tumble_blender.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "tumble_blender"
-		result.stf_name_string = "loot_n"
+		result.stfName("tumble_blender","loot_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

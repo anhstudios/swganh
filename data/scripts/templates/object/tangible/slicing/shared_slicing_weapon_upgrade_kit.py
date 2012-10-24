@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/slicing/shared_slicing_weapon_upgrade_kit.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "weapon_upgrade_kit"
-		result.stf_name_string = "item_n"
+		result.stfName("weapon_upgrade_kit","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

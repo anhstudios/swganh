@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/encoded_disk/shared_message_assembled_base.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "message_assembled_base"
-		result.stf_name_string = "item_n"
+		result.stfName("message_assembled_base","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

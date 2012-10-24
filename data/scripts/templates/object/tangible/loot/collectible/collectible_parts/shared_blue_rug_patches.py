@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/collectible/collectible_parts/shared_blue_rug_patches.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "blue_rug_patches"
-		result.stf_name_string = "collectible_loot_items_n"
+		result.stfName("blue_rug_patches","collectible_loot_items_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

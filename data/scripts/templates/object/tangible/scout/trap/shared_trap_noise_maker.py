@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/scout/trap/shared_trap_noise_maker.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "trap_noise_maker"
-		result.stf_name_string = "item_n"
+		result.stfName("trap_noise_maker","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

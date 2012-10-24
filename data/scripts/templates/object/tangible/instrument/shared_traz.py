@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/instrument/shared_traz.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "obj_traz"
-		result.stf_name_string = "obj_n"
+		result.stfName("obj_traz","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

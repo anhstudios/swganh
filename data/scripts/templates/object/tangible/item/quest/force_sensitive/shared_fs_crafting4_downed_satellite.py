@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_crafting4_downed_satellite.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "fs_crafting4_downed_satellite"
-		result.stf_name_string = "quest_item_n"
+		result.stfName("fs_crafting4_downed_satellite","quest_item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

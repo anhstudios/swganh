@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/hopper/shared_manufacture_installation_output_hopper_1.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "output_hopper"
-		result.stf_name_string = "crafting"
+		result.stfName("output_hopper","crafting")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

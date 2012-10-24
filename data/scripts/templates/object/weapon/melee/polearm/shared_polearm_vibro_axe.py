@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/weapon/melee/polearm/shared_polearm_vibro_axe.iff"
 		result.attribute_template_id = 10
-		result.stf_name_file = "lance_vibro_axe"
-		result.stf_name_string = "weapon_name"
+		result.stfName("lance_vibro_axe","weapon_name")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

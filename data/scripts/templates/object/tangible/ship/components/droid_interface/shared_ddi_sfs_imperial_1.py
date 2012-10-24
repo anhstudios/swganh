@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/components/droid_interface/shared_ddi_sfs_imperial_1.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "ddi_sfs_imperial_1_n"
-		result.stf_name_string = "space/space_item"
+		result.stfName("ddi_sfs_imperial_1_n","space/space_item")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

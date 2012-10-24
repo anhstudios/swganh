@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/munition/shared_enhanced_destructive_pulse_channeling.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "enhanced_destructive_pulse_channeling"
-		result.stf_name_string = "craft_munition_ingredients_n"
+		result.stfName("enhanced_destructive_pulse_channeling","craft_munition_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

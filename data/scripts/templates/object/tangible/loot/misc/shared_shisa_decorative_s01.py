@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/loot/misc/shared_shisa_decorative_s01.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "shisa_decorative_s01"
-		result.stf_name_string = "item_n"
+		result.stfName("shisa_decorative_s01","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

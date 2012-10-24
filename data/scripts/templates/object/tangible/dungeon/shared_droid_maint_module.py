@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/dungeon/shared_droid_maint_module.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "corvette_droid_maint_module"
-		result.stf_name_string = "obj_n"
+		result.stfName("corvette_droid_maint_module","obj_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

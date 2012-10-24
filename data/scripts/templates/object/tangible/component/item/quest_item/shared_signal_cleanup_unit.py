@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/item/quest_item/shared_signal_cleanup_unit.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "signal_cleanup_unit"
-		result.stf_name_string = "craft_item_ingredients_n"
+		result.stfName("signal_cleanup_unit","craft_item_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

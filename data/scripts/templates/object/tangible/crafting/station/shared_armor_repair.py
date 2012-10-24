@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/crafting/station/shared_armor_repair.iff"
 		result.attribute_template_id = 1
-		result.stf_name_file = "armor_repair_name"
-		result.stf_name_string = "crafting"
+		result.stfName("armor_repair_name","crafting")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

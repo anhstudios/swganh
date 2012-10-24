@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/component/weapon/shared_stock_advanced.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "stock_unit_advanced"
-		result.stf_name_string = "craft_weapon_ingredients_n"
+		result.stfName("stock_unit_advanced","craft_weapon_ingredients_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

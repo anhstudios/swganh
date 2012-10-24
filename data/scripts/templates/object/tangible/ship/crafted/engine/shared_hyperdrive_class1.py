@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/ship/crafted/engine/shared_hyperdrive_class1.iff"
 		result.attribute_template_id = 8
-		result.stf_name_file = "hyperdrive_class1"
-		result.stf_name_string = "space_crafting_n"
+		result.stfName("hyperdrive_class1","space_crafting_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####

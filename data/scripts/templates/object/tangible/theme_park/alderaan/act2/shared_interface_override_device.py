@@ -13,8 +13,7 @@ class Template(BaseTemplate):
 	
 		result.template = "object/tangible/theme_park/alderaan/act2/shared_interface_override_device.iff"
 		result.attribute_template_id = -1
-		result.stf_name_file = "interface_override_device"
-		result.stf_name_string = "item_n"
+		result.stfName("interface_override_device","item_n")		
 		
 		#### BEGIN MODIFICATIONS ####
 		####  END MODIFICATIONS  ####
