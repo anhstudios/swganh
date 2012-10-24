@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/terrain/corellia/shared_rock_bowl_agrilat_single.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/terrain/corellia/shared_rock_bowl_agrilat_single.iff"

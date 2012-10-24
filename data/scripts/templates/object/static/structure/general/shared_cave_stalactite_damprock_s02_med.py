@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/general/shared_cave_stalactite_damprock_s02_med.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/general/shared_cave_stalactite_damprock_s02_med.iff"

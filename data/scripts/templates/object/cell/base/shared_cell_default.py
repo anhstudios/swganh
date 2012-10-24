@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/cell/base/shared_cell_default.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Cell()
 	
 		result.template = "object/cell/base/shared_cell_default.iff"

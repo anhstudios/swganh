@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/vehicle/component/shared_extended_fuel_tank.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/vehicle/component/shared_extended_fuel_tank.iff"

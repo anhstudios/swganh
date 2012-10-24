@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/component/food/base/shared_alcoholic_drink_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/component/food/base/shared_alcoholic_drink_base.iff"

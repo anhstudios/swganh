@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/space/spacestations/shared_spacestation_rebel_battlefield_control.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/space/spacestations/shared_spacestation_rebel_battlefield_control.iff"

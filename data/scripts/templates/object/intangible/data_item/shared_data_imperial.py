@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/intangible/data_item/shared_data_imperial.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/intangible/data_item/shared_data_imperial.iff"

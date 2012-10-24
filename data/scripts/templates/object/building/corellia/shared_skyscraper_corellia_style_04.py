@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/corellia/shared_skyscraper_corellia_style_04.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/corellia/shared_skyscraper_corellia_style_04.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/group/shared_group_object.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Group()
 	
 		result.template = "object/group/shared_group_object.iff"

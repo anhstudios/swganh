@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/corellia/shared_corl_power_arial_prime.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/corellia/shared_corl_power_arial_prime.iff"

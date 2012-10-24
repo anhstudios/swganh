@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/item/quest/crowd_pleaser/shared_dance_reward.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/item/quest/crowd_pleaser/shared_dance_reward.iff"

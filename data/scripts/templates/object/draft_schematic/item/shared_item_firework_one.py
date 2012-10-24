@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/item/shared_item_firework_one.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/item/shared_item_firework_one.iff"

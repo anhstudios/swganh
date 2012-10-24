@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/battlefield/destructible/shared_bfield_gungan_wall_ruined_sm_s02.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/battlefield/destructible/shared_bfield_gungan_wall_ruined_sm_s02.iff"

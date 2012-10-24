@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/waypoint/base/shared_waypoint_default.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Waypoint()
 	
 		result.template = "object/waypoint/base/shared_waypoint_default.iff"

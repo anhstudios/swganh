@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/poi/base/shared_poi_base_nosnap.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/poi/base/shared_poi_base_nosnap.iff"

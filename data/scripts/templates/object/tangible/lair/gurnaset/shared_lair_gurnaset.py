@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/lair/gurnaset/shared_lair_gurnaset.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/lair/gurnaset/shared_lair_gurnaset.iff"

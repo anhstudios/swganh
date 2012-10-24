@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/chemistry/component/shared_biologic_effect_controller_advanced.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/chemistry/component/shared_biologic_effect_controller_advanced.iff"

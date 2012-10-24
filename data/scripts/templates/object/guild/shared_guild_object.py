@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/guild/shared_guild_object.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Guild()
 	
 		result.template = "object/guild/shared_guild_object.iff"

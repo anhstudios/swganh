@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/clothing/component/shared_clothing_jewelry_setting.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/clothing/component/shared_clothing_jewelry_setting.iff"

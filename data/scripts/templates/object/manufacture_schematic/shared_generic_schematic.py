@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/manufacture_schematic/shared_generic_schematic.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = ManufactureSchematic()
 	
 		result.template = "object/manufacture_schematic/shared_generic_schematic.iff"

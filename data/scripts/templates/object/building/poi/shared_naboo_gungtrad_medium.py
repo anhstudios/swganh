@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/poi/shared_naboo_gungtrad_medium.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/poi/shared_naboo_gungtrad_medium.iff"

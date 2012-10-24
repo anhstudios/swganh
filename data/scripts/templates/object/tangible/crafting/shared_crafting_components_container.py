@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/crafting/shared_crafting_components_container.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/crafting/shared_crafting_components_container.iff"

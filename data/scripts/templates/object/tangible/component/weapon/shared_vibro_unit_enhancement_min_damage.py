@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/component/weapon/shared_vibro_unit_enhancement_min_damage.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/component/weapon/shared_vibro_unit_enhancement_min_damage.iff"

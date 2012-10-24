@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/generators/shared_power_generator_solar_style_1.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/generators/shared_power_generator_solar_style_1.iff"

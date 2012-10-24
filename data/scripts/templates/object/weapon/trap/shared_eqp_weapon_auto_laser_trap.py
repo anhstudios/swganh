@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/weapon/trap/shared_eqp_weapon_auto_laser_trap.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Weapon()
 	
 		result.template = "object/weapon/trap/shared_eqp_weapon_auto_laser_trap.iff"

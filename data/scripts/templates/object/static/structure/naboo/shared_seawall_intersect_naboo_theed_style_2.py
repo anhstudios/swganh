@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/naboo/shared_seawall_intersect_naboo_theed_style_2.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/naboo/shared_seawall_intersect_naboo_theed_style_2.iff"

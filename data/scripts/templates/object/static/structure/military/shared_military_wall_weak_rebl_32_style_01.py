@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/military/shared_military_wall_weak_rebl_32_style_01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/military/shared_military_wall_weak_rebl_32_style_01.iff"

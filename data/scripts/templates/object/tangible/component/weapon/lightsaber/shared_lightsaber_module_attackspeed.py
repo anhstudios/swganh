@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/component/weapon/lightsaber/shared_lightsaber_module_attackspeed.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/component/weapon/lightsaber/shared_lightsaber_module_attackspeed.iff"

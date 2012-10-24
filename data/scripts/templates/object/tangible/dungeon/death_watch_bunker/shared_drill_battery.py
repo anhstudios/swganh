@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/dungeon/death_watch_bunker/shared_drill_battery.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/dungeon/death_watch_bunker/shared_drill_battery.iff"

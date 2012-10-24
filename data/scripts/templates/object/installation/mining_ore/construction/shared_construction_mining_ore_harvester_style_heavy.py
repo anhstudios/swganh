@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/mining_ore/construction/shared_construction_mining_ore_harvester_style_heavy.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/mining_ore/construction/shared_construction_mining_ore_harvester_style_heavy.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/item/quest/force_sensitive/shared_fs_craft_puzzle_decryption_chip.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/item/quest/force_sensitive/shared_fs_craft_puzzle_decryption_chip.iff"

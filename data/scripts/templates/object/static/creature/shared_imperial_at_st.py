@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/creature/shared_imperial_at_st.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/creature/shared_imperial_at_st.iff"

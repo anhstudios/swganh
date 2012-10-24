@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/factory/shared_factory_crate_clothing.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = FactoryCrate()
 	
 		result.template = "object/factory/shared_factory_crate_clothing.iff"

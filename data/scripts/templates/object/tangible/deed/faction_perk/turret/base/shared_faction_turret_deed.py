@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/deed/faction_perk/turret/base/shared_faction_turret_deed.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/deed/faction_perk/turret/base/shared_faction_turret_deed.iff"

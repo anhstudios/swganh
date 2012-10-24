@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/naboo/shared_gungan_shield_gen_s01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/naboo/shared_gungan_shield_gen_s01.iff"

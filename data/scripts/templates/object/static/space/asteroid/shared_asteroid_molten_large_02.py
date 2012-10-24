@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/space/asteroid/shared_asteroid_molten_large_02.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/space/asteroid/shared_asteroid_molten_large_02.iff"

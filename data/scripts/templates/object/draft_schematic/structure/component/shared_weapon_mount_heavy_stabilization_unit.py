@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/structure/component/shared_weapon_mount_heavy_stabilization_unit.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/structure/component/shared_weapon_mount_heavy_stabilization_unit.iff"

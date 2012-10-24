@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/mobile/shared_cll8_binary_load_lifter.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/mobile/shared_cll8_binary_load_lifter.iff"

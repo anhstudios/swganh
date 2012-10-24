@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/intangible/pet/shared_astromech_waiter.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/intangible/pet/shared_astromech_waiter.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/general/shared_cave_08_flatland_s03_ice.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/general/shared_cave_08_flatland_s03_ice.iff"

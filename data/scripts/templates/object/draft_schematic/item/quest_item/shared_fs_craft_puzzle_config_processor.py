@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/item/quest_item/shared_fs_craft_puzzle_config_processor.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/item/quest_item/shared_fs_craft_puzzle_config_processor.iff"

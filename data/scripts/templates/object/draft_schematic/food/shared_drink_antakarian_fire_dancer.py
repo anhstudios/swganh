@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/food/shared_drink_antakarian_fire_dancer.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/food/shared_drink_antakarian_fire_dancer.iff"

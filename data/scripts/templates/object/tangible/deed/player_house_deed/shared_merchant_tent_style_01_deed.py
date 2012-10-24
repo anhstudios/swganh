@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/deed/player_house_deed/shared_merchant_tent_style_01_deed.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/deed/player_house_deed/shared_merchant_tent_style_01_deed.iff"

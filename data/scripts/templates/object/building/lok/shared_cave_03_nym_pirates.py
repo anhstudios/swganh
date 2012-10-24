@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/lok/shared_cave_03_nym_pirates.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/lok/shared_cave_03_nym_pirates.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/dice/shared_eqp_ten_sided_dice_set.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/dice/shared_eqp_ten_sided_dice_set.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/weapon/melee/polearm/shared_polearm_vibro_axe.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Weapon()
 	
 		result.template = "object/weapon/melee/polearm/shared_polearm_vibro_axe.iff"

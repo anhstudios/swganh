@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/vehicle/shared_static_tie_fighter.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/vehicle/shared_static_tie_fighter.iff"

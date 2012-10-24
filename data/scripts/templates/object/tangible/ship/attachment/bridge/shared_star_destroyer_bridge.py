@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/ship/attachment/bridge/shared_star_destroyer_bridge.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/ship/attachment/bridge/shared_star_destroyer_bridge.iff"

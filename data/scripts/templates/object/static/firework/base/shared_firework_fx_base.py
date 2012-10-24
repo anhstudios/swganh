@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/firework/base/shared_firework_fx_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/firework/base/shared_firework_fx_base.iff"

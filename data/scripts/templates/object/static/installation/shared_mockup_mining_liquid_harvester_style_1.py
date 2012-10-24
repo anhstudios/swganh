@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/installation/shared_mockup_mining_liquid_harvester_style_1.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/installation/shared_mockup_mining_liquid_harvester_style_1.iff"

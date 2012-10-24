@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/furniture/modern/shared_sofa_chair_modern_style_01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/furniture/modern/shared_sofa_chair_modern_style_01.iff"

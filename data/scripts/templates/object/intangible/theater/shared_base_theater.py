@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/intangible/theater/shared_base_theater.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/intangible/theater/shared_base_theater.iff"

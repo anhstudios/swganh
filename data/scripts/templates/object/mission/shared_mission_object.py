@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/mission/shared_mission_object.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Mission()
 	
 		result.template = "object/mission/shared_mission_object.iff"

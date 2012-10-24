@@ -34,12 +34,12 @@ namespace object {
 			bp::detail::initialize_wrapper(obj, this);
 		}
 
-		std::shared_ptr<Object> CreateTemplate(std::map<std::string, std::string> parameters)
+		std::shared_ptr<Object> CreateTemplate(swganh::app::SwganhKernel* kernel, std::map<std::string, std::string> parameters)
 		{
 			ScopedGilLock lock;
 			try 
 			{
-				return this->get_override("create")(parameters).as<std::shared_ptr<Object>>();
+				return this->get_override("create")(bp::ptr(kernel), parameters).as<std::shared_ptr<Object>>();
 			}
 			catch (bp::error_already_set&)
 			{

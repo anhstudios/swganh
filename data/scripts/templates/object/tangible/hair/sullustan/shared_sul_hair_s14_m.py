@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/hair/sullustan/shared_sul_hair_s14_m.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/hair/sullustan/shared_sul_hair_s14_m.iff"

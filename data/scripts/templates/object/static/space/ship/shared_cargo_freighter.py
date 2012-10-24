@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/space/ship/shared_cargo_freighter.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/space/ship/shared_cargo_freighter.iff"

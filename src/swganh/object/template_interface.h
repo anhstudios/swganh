@@ -18,7 +18,7 @@ namespace object {
     class TemplateInterface 
     {
     public:
-		virtual std::shared_ptr<swganh::object::Object> CreateTemplate(std::map<std::string, std::string> parameters) = 0;
+		virtual std::shared_ptr<swganh::object::Object> CreateTemplate(swganh::app::SwganhKernel* kernel, std::map<std::string, std::string> parameters) = 0;		
     };
 
 }}

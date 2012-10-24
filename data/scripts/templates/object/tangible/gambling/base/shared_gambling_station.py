@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/gambling/base/shared_gambling_station.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/gambling/base/shared_gambling_station.iff"

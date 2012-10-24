@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/mining_organic/shared_mining_organic_flora_farm_medium.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/mining_organic/shared_mining_organic_flora_farm_medium.iff"

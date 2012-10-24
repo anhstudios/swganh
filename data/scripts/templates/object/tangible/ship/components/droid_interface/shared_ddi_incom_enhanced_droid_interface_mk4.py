@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/ship/components/droid_interface/shared_ddi_incom_enhanced_droid_interface_mk4.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/ship/components/droid_interface/shared_ddi_incom_enhanced_droid_interface_mk4.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/harvesting/shared_shellfish_harvester.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/harvesting/shared_shellfish_harvester.iff"

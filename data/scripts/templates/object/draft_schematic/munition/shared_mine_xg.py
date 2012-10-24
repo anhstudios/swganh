@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/munition/shared_mine_xg.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/munition/shared_mine_xg.iff"

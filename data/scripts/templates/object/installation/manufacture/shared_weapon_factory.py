@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/manufacture/shared_weapon_factory.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/manufacture/shared_weapon_factory.iff"

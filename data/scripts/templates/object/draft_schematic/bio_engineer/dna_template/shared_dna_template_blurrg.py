@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/bio_engineer/dna_template/shared_dna_template_blurrg.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/bio_engineer/dna_template/shared_dna_template_blurrg.iff"

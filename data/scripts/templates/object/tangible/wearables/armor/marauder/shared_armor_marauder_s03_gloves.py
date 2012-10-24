@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/wearables/armor/marauder/shared_armor_marauder_s03_gloves.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/wearables/armor/marauder/shared_armor_marauder_s03_gloves.iff"

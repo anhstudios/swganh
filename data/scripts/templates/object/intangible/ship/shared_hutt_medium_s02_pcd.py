@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/intangible/ship/shared_hutt_medium_s02_pcd.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/intangible/ship/shared_hutt_medium_s02_pcd.iff"

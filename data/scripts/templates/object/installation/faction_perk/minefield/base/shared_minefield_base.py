@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/faction_perk/minefield/base/shared_minefield_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/faction_perk/minefield/base/shared_minefield_base.iff"

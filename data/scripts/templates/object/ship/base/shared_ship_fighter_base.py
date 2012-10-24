@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/ship/base/shared_ship_fighter_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Ship()
 	
 		result.template = "object/ship/base/shared_ship_fighter_base.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/ship/components/weapon/shared_wpn_sfs_imperial_blaster_3.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/ship/components/weapon/shared_wpn_sfs_imperial_blaster_3.iff"

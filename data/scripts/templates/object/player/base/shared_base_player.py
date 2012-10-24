@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/player/base/shared_base_player.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Player()
 	
 		result.template = "object/player/base/shared_base_player.iff"

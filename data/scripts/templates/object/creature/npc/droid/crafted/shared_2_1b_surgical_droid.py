@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/creature/npc/droid/crafted/shared_2_1b_surgical_droid.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/creature/npc/droid/crafted/shared_2_1b_surgical_droid.iff"

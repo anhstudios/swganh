@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/ship/components/weapon_capacitor/shared_cap_kessel_imperial_sfs_array.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/ship/components/weapon_capacitor/shared_cap_kessel_imperial_sfs_array.iff"

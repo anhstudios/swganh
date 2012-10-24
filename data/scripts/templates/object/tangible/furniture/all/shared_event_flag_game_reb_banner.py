@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/furniture/all/shared_event_flag_game_reb_banner.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/furniture/all/shared_event_flag_game_reb_banner.iff"

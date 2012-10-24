@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/weapon/ranged/heavy/shared_heavy_acid_beam.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Weapon()
 	
 		result.template = "object/weapon/ranged/heavy/shared_heavy_acid_beam.iff"

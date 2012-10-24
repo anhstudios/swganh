@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/naboo/shared_filler_nboo_bldg_64x32_s02.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/naboo/shared_filler_nboo_bldg_64x32_s02.iff"

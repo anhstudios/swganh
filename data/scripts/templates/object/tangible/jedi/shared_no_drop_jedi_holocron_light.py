@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/jedi/shared_no_drop_jedi_holocron_light.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/jedi/shared_no_drop_jedi_holocron_light.iff"

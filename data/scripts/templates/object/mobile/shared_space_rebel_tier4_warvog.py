@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/mobile/shared_space_rebel_tier4_warvog.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/mobile/shared_space_rebel_tier4_warvog.iff"

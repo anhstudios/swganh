@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/particle/base/shared_static_particle_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/particle/base/shared_static_particle_base.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/intangible/vehicle/shared_landspeeder_x31_pcd.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/intangible/vehicle/shared_landspeeder_x31_pcd.iff"

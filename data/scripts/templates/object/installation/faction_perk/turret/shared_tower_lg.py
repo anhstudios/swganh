@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/faction_perk/turret/shared_tower_lg.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/faction_perk/turret/shared_tower_lg.iff"

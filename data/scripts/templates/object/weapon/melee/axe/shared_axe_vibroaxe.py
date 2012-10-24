@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/weapon/melee/axe/shared_axe_vibroaxe.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Weapon()
 	
 		result.template = "object/weapon/melee/axe/shared_axe_vibroaxe.iff"

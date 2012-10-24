@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/food/creature_bio_effects/shared_bio_kwi_adrenal_boost.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/food/creature_bio_effects/shared_bio_kwi_adrenal_boost.iff"

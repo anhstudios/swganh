@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/turret/shared_turret_dish_large.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/turret/shared_turret_dish_large.iff"

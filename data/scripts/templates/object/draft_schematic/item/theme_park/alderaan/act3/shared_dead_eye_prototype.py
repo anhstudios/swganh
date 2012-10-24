@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/item/theme_park/alderaan/act3/shared_dead_eye_prototype.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/item/theme_park/alderaan/act3/shared_dead_eye_prototype.iff"

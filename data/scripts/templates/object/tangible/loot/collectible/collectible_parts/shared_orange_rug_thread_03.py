@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/loot/collectible/collectible_parts/shared_orange_rug_thread_03.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/loot/collectible/collectible_parts/shared_orange_rug_thread_03.iff"

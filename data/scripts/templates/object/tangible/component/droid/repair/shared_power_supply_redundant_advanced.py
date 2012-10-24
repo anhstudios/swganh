@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/component/droid/repair/shared_power_supply_redundant_advanced.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/component/droid/repair/shared_power_supply_redundant_advanced.iff"

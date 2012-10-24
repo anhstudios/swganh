@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/dungeon/shared_wall_terminal_s4.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/dungeon/shared_wall_terminal_s4.iff"

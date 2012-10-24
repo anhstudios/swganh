@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/container/drum/shared_pob_ship_loot_box.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/container/drum/shared_pob_ship_loot_box.iff"

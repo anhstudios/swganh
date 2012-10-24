@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/deed/generator_deed/shared_generator_solar_deed.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/deed/generator_deed/shared_generator_solar_deed.iff"

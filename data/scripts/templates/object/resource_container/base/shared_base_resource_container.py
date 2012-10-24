@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/resource_container/base/shared_base_resource_container.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = ResourceContainer()
 	
 		result.template = "object/resource_container/base/shared_base_resource_container.iff"

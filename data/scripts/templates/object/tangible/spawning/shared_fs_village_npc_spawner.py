@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/spawning/shared_fs_village_npc_spawner.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/spawning/shared_fs_village_npc_spawner.iff"

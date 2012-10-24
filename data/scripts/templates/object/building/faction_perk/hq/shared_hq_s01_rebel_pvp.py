@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/faction_perk/hq/shared_hq_s01_rebel_pvp.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/faction_perk/hq/shared_hq_s01_rebel_pvp.iff"

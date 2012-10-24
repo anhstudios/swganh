@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/base/shared_missing_schematic_substitute.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/base/shared_missing_schematic_substitute.iff"

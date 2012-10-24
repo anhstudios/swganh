@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/item/shared_item_game_dejarik_gameboard.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/item/shared_item_game_dejarik_gameboard.iff"

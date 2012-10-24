@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/mission/quest_item/shared_warren_core_control_rod_s02.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/mission/quest_item/shared_warren_core_control_rod_s02.iff"

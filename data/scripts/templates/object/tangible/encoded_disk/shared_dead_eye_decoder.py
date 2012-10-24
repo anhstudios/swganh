@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/encoded_disk/shared_dead_eye_decoder.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/encoded_disk/shared_dead_eye_decoder.iff"

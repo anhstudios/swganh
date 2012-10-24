@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/creature/player/shared_wookiee_male.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/creature/player/shared_wookiee_male.iff"

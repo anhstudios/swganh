@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/yavin/shared_temple_woolamander.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/yavin/shared_temple_woolamander.iff"

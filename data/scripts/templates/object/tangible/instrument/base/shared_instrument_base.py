@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/instrument/base/shared_instrument_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/instrument/base/shared_instrument_base.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "@MODEL_STRING@"
 	is_prototype = @IS_PROTOTYPE@
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = @OBJECT_TYPE@()
 	
 		result.template = "@MODEL_STRING@"

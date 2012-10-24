@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/base/shared_base_arena.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/base/shared_base_arena.iff"

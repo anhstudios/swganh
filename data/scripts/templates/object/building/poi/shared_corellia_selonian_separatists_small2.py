@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/poi/shared_corellia_selonian_separatists_small2.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/poi/shared_corellia_selonian_separatists_small2.iff"

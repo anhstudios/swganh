@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/dathomir/shared_night_sister_banner_s02.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/dathomir/shared_night_sister_banner_s02.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/base/shared_static_structure_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/base/shared_static_structure_base.iff"

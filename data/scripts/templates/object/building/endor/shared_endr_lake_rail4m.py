@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/endor/shared_endr_lake_rail4m.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/endor/shared_endr_lake_rail4m.iff"

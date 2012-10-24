@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/space/story_loot/shared_loot_tatooine_blacksun2.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/space/story_loot/shared_loot_tatooine_blacksun2.iff"

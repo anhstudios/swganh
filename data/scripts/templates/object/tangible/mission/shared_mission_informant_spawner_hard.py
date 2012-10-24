@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/mission/shared_mission_informant_spawner_hard.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/mission/shared_mission_informant_spawner_hard.iff"

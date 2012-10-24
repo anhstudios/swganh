@@ -282,7 +282,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 					return nullptr;	
 				}
 				// Temp
-				prototype = template_iter->second->CreateTemplate(std::map<std::string, std::string>());
+				prototype = template_iter->second->CreateTemplate(kernel_,std::map<std::string, std::string>());
 			}
 
 		}

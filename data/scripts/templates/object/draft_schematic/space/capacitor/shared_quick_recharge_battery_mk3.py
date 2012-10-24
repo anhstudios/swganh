@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/space/capacitor/shared_quick_recharge_battery_mk3.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/space/capacitor/shared_quick_recharge_battery_mk3.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/weapon/ranged/turret/shared_turret_block_large.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Weapon()
 	
 		result.template = "object/weapon/ranged/turret/shared_turret_block_large.iff"

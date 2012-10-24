@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/naboo/shared_nboo_imprv_pillar_wall_ornate_large_s01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/naboo/shared_nboo_imprv_pillar_wall_ornate_large_s01.iff"

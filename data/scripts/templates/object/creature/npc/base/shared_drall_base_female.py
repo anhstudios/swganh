@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/creature/npc/base/shared_drall_base_female.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/creature/npc/base/shared_drall_base_female.iff"

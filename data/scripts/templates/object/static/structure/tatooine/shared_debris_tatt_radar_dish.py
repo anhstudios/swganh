@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/structure/tatooine/shared_debris_tatt_radar_dish.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/structure/tatooine/shared_debris_tatt_radar_dish.iff"

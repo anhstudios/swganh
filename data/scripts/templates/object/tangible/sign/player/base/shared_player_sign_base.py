@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/sign/player/base/shared_player_sign_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/sign/player/base/shared_player_sign_base.iff"

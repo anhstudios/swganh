@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/medicine/crafted/shared_medpack_wound_strength_e.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/medicine/crafted/shared_medpack_wound_strength_e.iff"

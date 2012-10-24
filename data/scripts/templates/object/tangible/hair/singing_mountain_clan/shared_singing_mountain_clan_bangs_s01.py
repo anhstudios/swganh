@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/hair/singing_mountain_clan/shared_singing_mountain_clan_bangs_s01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/hair/singing_mountain_clan/shared_singing_mountain_clan_bangs_s01.iff"

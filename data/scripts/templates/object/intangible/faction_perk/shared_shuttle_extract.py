@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/intangible/faction_perk/shared_shuttle_extract.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/intangible/faction_perk/shared_shuttle_extract.iff"

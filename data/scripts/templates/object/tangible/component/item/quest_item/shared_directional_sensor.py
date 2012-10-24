@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/component/item/quest_item/shared_directional_sensor.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/component/item/quest_item/shared_directional_sensor.iff"

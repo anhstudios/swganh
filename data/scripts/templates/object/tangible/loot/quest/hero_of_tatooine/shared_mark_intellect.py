@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/loot/quest/hero_of_tatooine/shared_mark_intellect.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/loot/quest/hero_of_tatooine/shared_mark_intellect.iff"

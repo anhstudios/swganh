@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/event_perk/shared_camp_pavilion_s1.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/event_perk/shared_camp_pavilion_s1.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/scout/camokit/shared_camokit_talus.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/scout/camokit/shared_camokit_talus.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/ship/player/shared_player_xwing.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Ship()
 	
 		result.template = "object/ship/player/shared_player_xwing.iff"

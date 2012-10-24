@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/furniture/shared_furniture_lamp_free_s01_on.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/furniture/shared_furniture_lamp_free_s01_on.iff"

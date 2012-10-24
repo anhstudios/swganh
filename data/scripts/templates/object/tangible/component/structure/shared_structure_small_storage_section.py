@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/component/structure/shared_structure_small_storage_section.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/component/structure/shared_structure_small_storage_section.iff"

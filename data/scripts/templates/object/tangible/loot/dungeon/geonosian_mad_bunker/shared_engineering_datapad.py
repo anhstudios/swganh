@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/loot/dungeon/geonosian_mad_bunker/shared_engineering_datapad.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/loot/dungeon/geonosian_mad_bunker/shared_engineering_datapad.iff"

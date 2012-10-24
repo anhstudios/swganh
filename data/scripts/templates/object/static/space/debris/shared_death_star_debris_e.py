@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/space/debris/shared_death_star_debris_e.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/space/debris/shared_death_star_debris_e.iff"

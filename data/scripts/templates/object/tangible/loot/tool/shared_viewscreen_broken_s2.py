@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/loot/tool/shared_viewscreen_broken_s2.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/loot/tool/shared_viewscreen_broken_s2.iff"

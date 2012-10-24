@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/droid/component/shared_item_storage_module_3.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/droid/component/shared_item_storage_module_3.iff"

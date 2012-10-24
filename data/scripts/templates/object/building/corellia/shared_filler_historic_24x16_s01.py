@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/corellia/shared_filler_historic_24x16_s01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/corellia/shared_filler_historic_24x16_s01.iff"

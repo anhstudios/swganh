@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/building/poi/farm/shared_tatooine_flora_large.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Building()
 	
 		result.template = "object/building/poi/farm/shared_tatooine_flora_large.iff"

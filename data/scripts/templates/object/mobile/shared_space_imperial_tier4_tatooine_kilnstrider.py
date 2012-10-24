@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/mobile/shared_space_imperial_tier4_tatooine_kilnstrider.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/mobile/shared_space_imperial_tier4_tatooine_kilnstrider.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/space/beacon/shared_hyperspace_generator_01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/space/beacon/shared_hyperspace_generator_01.iff"

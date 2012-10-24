@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/weapon/melee/special/shared_blacksun_razor.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Weapon()
 	
 		result.template = "object/weapon/melee/special/shared_blacksun_razor.iff"

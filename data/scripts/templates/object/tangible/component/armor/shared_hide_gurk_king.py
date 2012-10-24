@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/component/armor/shared_hide_gurk_king.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/component/armor/shared_hide_gurk_king.iff"

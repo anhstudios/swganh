@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/mobile/shared_narglatch_cub.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/mobile/shared_narglatch_cub.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/creature/npc/droid/shared_dz_70_fugitive_tracker_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Creature()
 	
 		result.template = "object/creature/npc/droid/shared_dz_70_fugitive_tracker_base.iff"

@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/draft_schematic/bio_engineer/bio_component/shared_bio_component_clothing_field_cover_2.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Intangible()
 	
 		result.template = "object/draft_schematic/bio_engineer/bio_component/shared_bio_component_clothing_field_cover_2.iff"

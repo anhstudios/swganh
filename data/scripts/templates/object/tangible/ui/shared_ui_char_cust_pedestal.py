@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/ui/shared_ui_char_cust_pedestal.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/ui/shared_ui_char_cust_pedestal.iff"

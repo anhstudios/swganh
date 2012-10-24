@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/ship/customization/shared_xwing_thruster_neg_s01.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/ship/customization/shared_xwing_thruster_neg_s01.iff"

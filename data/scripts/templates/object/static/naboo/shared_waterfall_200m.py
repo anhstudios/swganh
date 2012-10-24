@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/static/naboo/shared_waterfall_200m.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Static()
 	
 		result.template = "object/static/naboo/shared_waterfall_200m.iff"

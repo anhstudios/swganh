@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/tangible/theme_park/alderaan/act2/shared_decoder_comp_reader.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Tangible()
 	
 		result.template = "object/tangible/theme_park/alderaan/act2/shared_decoder_comp_reader.iff"

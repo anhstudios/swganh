@@ -8,7 +8,7 @@ class Template(BaseTemplate):
 	name = "object/installation/mining_liquid/base/shared_mining_liquid_base.iff"
 	is_prototype = False
 	
-	def create(self, params):
+	def create(self, kernel, params):
 		result = Installation()
 	
 		result.template = "object/installation/mining_liquid/base/shared_mining_liquid_base.iff"
