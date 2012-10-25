@@ -77,8 +77,9 @@ void SpawnService::Startup()
     try 
     {
         auto config = boost::python::import("spawn_config");
-		GetValue(config, "SHUTTLE_AWAY_TIME_SECONDS", SHUTTLE_AWAY_TIME_SECONDS);
-		GetValue(config, "SHUTTLE_IN_PORT_TIME_SECONDS", SHUTTLE_IN_PORT_TIME_SECONDS);
+
+		SHUTTLE_AWAY_TIME_SECONDS = boost::python::extract<uint32_t>(config.attr("SHUTTLE_AWAY_TIME_SECONDS"));
+		SHUTTLE_IN_PORT_TIME_SECONDS = boost::python::extract<uint32_t>(config.attr("SHUTTLE_IN_PORT_TIME_SECONDS"));
     }
     catch(boost::python::error_already_set& /*e*/)
     {
