@@ -78,8 +78,6 @@ void SimulationService::RegisterObjectFactories()
 {
     auto object_manager = GetObjectManager();
 
-	LOG(warning) << "Loading Object Prototypes. This may take several moments.";
-
 	std::promise<bool> prom1, prom2, prom3;
 	std::future<bool> fut1=prom1.get_future(), fut2= prom2.get_future(), fut3 = prom3.get_future();
 

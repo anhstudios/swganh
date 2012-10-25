@@ -479,7 +479,7 @@ void ObjectManager::LoadPythonObjectTemplates()
 {
 	swganh::scripting::ScopedGilLock lock;
 	try {		
-		LOG(info) << "Loading Prototype and Template Objects from Python...";
+		LOG(info) << "Loading Prototype and Template Objects";
 		auto module = bp::import("load_objects");
 		auto python_template = module.attr("templates");
 		object_templates_ = bp::extract<PythonTemplateMap>(python_template);			
