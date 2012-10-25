@@ -4,6 +4,8 @@ build/
 vendor/
 docs/
 nbproject/
+
+#Ignore compiled python scripts
 __pycache__/
 
 # ignore configuration files
