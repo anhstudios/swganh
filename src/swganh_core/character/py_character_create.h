@@ -7,15 +7,22 @@
 
 namespace swganh {
 namespace app {
-	class SwganhKernel;
+	class KernelInterface;
 }
 namespace character {
 
 	class PyCharacterCreate
 	{
-		PyCharacterCreate(swganh::app::SwganhKernel* kernel);
+	public:
+		PyCharacterCreate(swganh::app::KernelInterface* kernel)
+			: kernel_(kernel){}
 
-		bool CreateCharacter(uint64_t character_id, const std::string& full_name
+		bool CreateCharacter(
+			uint64_t character_id, const std::wstring& full_name, const std::string& profession, 
+			const std::string& location, float height, const std::string& bio, const std::string& customization, 
+			const std::string& hair_iff, const std::string& hair_customization, const std::string& iff_template);
+	private:
+		swganh::app::KernelInterface* kernel_;
 	};
 	
 }}

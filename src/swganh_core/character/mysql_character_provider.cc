@@ -11,6 +11,8 @@
 #include <boost/regex.hpp>
 #endif
 
+#include "py_character_create.h"
+
 #include "swganh/crc.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/database/database_manager.h"
@@ -239,45 +241,49 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
             custom_name += L" " + last_name;
         }
 
-        auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+		PyCharacterCreate create(kernel_);
+		create.CreateCharacter(8589934594, custom_name, character_info.starting_profession, character_info.start_location, character_info.height, character_info.biography, character_info.character_customization, character_info.hair_object, character_info.hair_customization, character_info.player_race_iff);
 
-        std::unique_ptr<sql::PreparedStatement> statement(conn->prepareStatement(
-            "CALL sp_CharacterCreate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @output)"));
+	}
+        //auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
 
-        DLOG(info) << "Creating character with location " << account_id;
+        //std::unique_ptr<sql::PreparedStatement> statement(conn->prepareStatement(
+        //    "CALL sp_CharacterCreate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @output)"));
 
-        statement->setUInt(1, account_id);
-        statement->setUInt(2, kernel_->GetServiceDirectory()->galaxy().id());
-        statement->setString(3, string(first_name.begin(), first_name.end()));
-        statement->setString(4, string(last_name.begin(), last_name.end()));
-        statement->setString(5, string(custom_name.begin(), custom_name.end()));
-        statement->setString(6, character_info.starting_profession);
-        statement->setString(7, character_info.start_location);
-        statement->setDouble(8, character_info.height);
-        statement->setString(9, character_info.biography);
-        statement->setString(10, character_info.character_customization);
-        statement->setString(11, character_info.hair_object);
-        statement->setString(12, character_info.hair_customization);
-        statement->setString(13, character_info.player_race_iff);
+        //DLOG(info) << "Creating character with location " << account_id;
 
-        statement->execute();
+        //statement->setUInt(1, account_id);
+        //statement->setUInt(2, kernel_->GetServiceDirectory()->galaxy().id());
+        //statement->setString(3, string(first_name.begin(), first_name.end()));
+        //statement->setString(4, string(last_name.begin(), last_name.end()));
+        //statement->setString(5, string(custom_name.begin(), custom_name.end()));
+        //statement->setString(6, character_info.starting_profession);
+        //statement->setString(7, character_info.start_location);
+        //statement->setDouble(8, character_info.height);
+        //statement->setString(9, character_info.biography);
+        //statement->setString(10, character_info.character_customization);
+        //statement->setString(11, character_info.hair_object);
+        //statement->setString(12, character_info.hair_customization);
+        //statement->setString(13, character_info.player_race_iff);
 
-        statement.reset(conn->prepareStatement("SELECT @output as _object_id"));
+        //statement->execute();
 
-        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-        if (result_set->next())
-        {
-            uint64_t char_id = result_set->getUInt64(1);
-            if (char_id < 1002)
-            {
-                // if we get a special character_id back it means there was an error.
-                /// @TODO Change this to return a separate output value for the error code
-                return make_tuple(0, getCharacterCreateErrorCode_(static_cast<uint32_t>(char_id)));
-            }
-            return make_tuple(char_id, "");
-        }
+        //statement.reset(conn->prepareStatement("SELECT @output as _object_id"));
 
-    }
+        //auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+        //if (result_set->next())
+        //{
+        //    uint64_t char_id = result_set->getUInt64(1);
+        //    if (char_id < 1002)
+        //    {
+        //        // if we get a special character_id back it means there was an error.
+        //        /// @TODO Change this to return a separate output value for the error code
+        //        return make_tuple(0, getCharacterCreateErrorCode_(static_cast<uint32_t>(char_id)));
+        //    }
+        //    return make_tuple(char_id, "");
+        //}
+
+    //}
     catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
