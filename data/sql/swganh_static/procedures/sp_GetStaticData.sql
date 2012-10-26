@@ -1,7 +1,7 @@
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `sp_GetStaticData` $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetStaticData`()
+CREATE PROCEDURE `sp_GetStaticData`()
 BEGIN
     
 	SELECT s.skill_name, s.skill_is_title, s.skill_is_profession, s.skill_money_required,
