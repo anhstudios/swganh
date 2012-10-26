@@ -34,7 +34,7 @@ def GetStartingItems(species, profession, gender):
 #Profession Specific Items
 def GetEntertainerItems(ItemList, gender):
 	ItemList.append('object/tangible/instrument/shared_slitherhorn.iff')
-	if (gender = 'female'):
+	if (gender == 'female'):
 		#female
 		ItemList += {
 		'object/tangible/wearables/shirt/shared_shirt_s38.iff',
@@ -51,7 +51,7 @@ def GetEntertainerItems(ItemList, gender):
 def GetMedicItems(ItemList, gender):	
 	#science_medic
 	ItemList.append('object/tangible/crafting/station/shared_food_tool.iff')
-	if (gender = 'female'):
+	if (gender == 'female'):
 		#female
 		ItemList += {
 		'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff',
@@ -139,9 +139,9 @@ def GetMarskmanItems(ItemList, gender):
 		'object/tangible/wearables/boots/shared_boots_s21.iff'
 		}
 	
-def GetWookieItems(ItemList, profession, gender)
+def GetWookieeItems(ItemList, profession, gender):
 	ItemList += ProfessionItems[profession]
-	if profession = 'science_medic':
+	if profession == 'science_medic':
 		ItemList.append('object/tangible/wearables/jacket/shared_jacket_s24.iff')
 
 #Ithorian

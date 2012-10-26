@@ -477,7 +477,8 @@ void ObjectManager::PrepareToAccomodate(uint32_t delta)
 
 void ObjectManager::LoadPythonObjectTemplates()
 {
-	swganh::scripting::ScopedGilLock lock;
+	// Temp Ignore
+	/*swganh::scripting::ScopedGilLock lock;
 	try {		
 		LOG(info) << "Loading Prototype and Template Objects";
 		auto module = bp::import("load_objects");
@@ -490,5 +491,5 @@ void ObjectManager::LoadPythonObjectTemplates()
 	catch(bp::error_already_set&)
 	{
 		PyErr_Print();		
-	}
+	}*/
 }

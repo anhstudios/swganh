@@ -11,7 +11,7 @@
 #include <boost/regex.hpp>
 #endif
 
-#include "py_character_create.h"
+#include "character_create.h"
 
 #include "swganh/crc.h"
 #include "swganh/app/swganh_kernel.h"
@@ -241,10 +241,20 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
             custom_name += L" " + last_name;
         }
 
+		
 		PyCharacterCreate create(kernel_);
-		create.CreateCharacter(8589934594, custom_name, character_info.starting_profession, character_info.start_location, character_info.height, character_info.biography, character_info.character_customization, character_info.hair_object, character_info.hair_customization, character_info.player_race_iff);
-
+		// Temp
+		create.CreateCharacter(8589934594, custom_name, character_info.starting_profession, character_info.start_location, character_info.height, character_info.biography, 
+			character_info.character_customization, character_info.hair_object, character_info.hair_customization, character_info.player_race_iff);
 	}
+	catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return make_tuple(0, "name_declined_internal_error");
+}
         //auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
 
         //std::unique_ptr<sql::PreparedStatement> statement(conn->prepareStatement(
@@ -284,14 +294,6 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
         //}
 
     //}
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-
-    return make_tuple(0, "name_declined_internal_error");
-}
 
 std::string MysqlCharacterProvider::getCharacterCreateErrorCode_(uint32_t error_code)
 {
