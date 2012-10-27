@@ -54,7 +54,8 @@ public:
     void AddObject(shared_ptr<Object> object)
     {
 		InsertObject(object);
-
+		// Set Scene Id
+		object->SetSceneId(description_.id);
 		spatial_index_->AddObject(nullptr, object);
     }
     

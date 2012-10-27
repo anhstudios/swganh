@@ -243,9 +243,14 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
 
 		
 		PyCharacterCreate create(kernel_);
-		// Temp
-		create.CreateCharacter(8589934594, custom_name, character_info.starting_profession, character_info.start_location, character_info.height, character_info.biography, 
+		// Temp TODO: Get from DB
+		uint64_t starting_id = 8589934594; 
+		bool created_successfully = create.CreateCharacter(starting_id, custom_name, character_info.starting_profession, character_info.start_location, character_info.height, character_info.biography, 
 			character_info.character_customization, character_info.hair_object, character_info.hair_customization, character_info.player_race_iff);
+		if (created_successfully)
+		{
+			return make_tuple(starting_id, "");
+		}
 	}
 	catch(sql::SQLException &e)
     {

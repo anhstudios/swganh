@@ -147,7 +147,7 @@ public:
 		auto scene = scene_manager_->GetScene(scene_label);
         if (scene)
         {
-            scene->AddObject(object);
+			scene->AddObject(object);
         }		
 	}	
 	

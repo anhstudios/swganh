@@ -313,9 +313,9 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			LoadSlotsForObject(created_object);
 
 			//Set the ID based on the inputs
-			if(is_persisted)
+			if(is_persisted && object_id != 0)
 			{
-
+				created_object->SetObjectId(object_id);
 			}
 			else if(object_id == 0)
 			{
@@ -477,8 +477,7 @@ void ObjectManager::PrepareToAccomodate(uint32_t delta)
 
 void ObjectManager::LoadPythonObjectTemplates()
 {
-	// Temp Ignore
-	/*swganh::scripting::ScopedGilLock lock;
+	swganh::scripting::ScopedGilLock lock;
 	try {		
 		LOG(info) << "Loading Prototype and Template Objects";
 		auto module = bp::import("load_objects");
@@ -491,5 +490,5 @@ void ObjectManager::LoadPythonObjectTemplates()
 	catch(bp::error_already_set&)
 	{
 		PyErr_Print();		
-	}*/
+	}
 }

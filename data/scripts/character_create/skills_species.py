@@ -4,6 +4,7 @@ baseSpeciesSkills = {
 'human'      : 'social_language',
 'human'      : 'social_language_basic',
 'human'      : 'social_language_basic_speak',
+'human'      : 'species_human',
 'rodian'     : 'social_language',
 'rodian'     : 'social_language_basic',
 'rodian'     : 'social_language_basic_speak',

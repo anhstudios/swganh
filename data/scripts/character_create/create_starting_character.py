@@ -1,5 +1,6 @@
 import os, sys, importlib, re
 from swgpy.utility import vector3
+from swgpy.simulation import *
 from swgpy.object import *
 from character_create.locations import *
 from character_create.base_stats import *
@@ -7,83 +8,68 @@ from character_create.professions import *
 from character_create.skills_species import *
 from character_create.starting_items import *
 
-import templates.object.player.shared_player as shared_player
-import templates.object.tangible.datapad.shared_character_datapad as shared_character_datapad
-import templates.object.tangible.inventory.shared_character_inventory as shared_character_inventory
-import templates.object.tangible.bank.shared_character_bank as shared_character_bank
-import templates.object.tangible.mission_bag.shared_mission_bag as mission_bag
-import templates.object.tangible.hair
-
 def CreateStartingCharacter(kernel, id, scale, base_model, full_name, profession, hair_model, start_city):
+	# Simulation Service to add to scene
+	simulation = kernel.serviceManager().simulationService()
+	# Set Female
+	if base_model.find('female') == -1:
+		gender = 'male'
+	else:
+		gender = 'female'
 	# Get Starting Location
-	startLoc = Locations[start_city]
+	# HARDCODE FOR NOW...
+	startLoc = Locations['coronet']
 	# Create appropriate creature object...
 	species = GetSpecies(base_model)
-	creature = GetCreatureObject(kernel, base_model.replace('player/', 'player/shared_'))
-	creature.id = id
+	creature = simulation.createObject(base_model.replace('player/', 'player/shared_'), ContainerPermission.CREATURE, True, True, id)
 	creature.custom_name = full_name
 	creature.position = vector3(startLoc.x, startLoc.y, startLoc.z)
 	creature.bank_credits = 2000
 	creature.speed_base = 5.75
 	# Set Starting Stats
-	print(StartingStats)
 	startStats = StartStats[species + ":" + profession]
 	SetStartingStats(creature, startStats)
 	# Set Starting Skills
 	SetStartingSkills(creature, species, profession)
 	# Create datapad
-	datapad = shared_character_datapad.Template().create(kernel, {})
-	datapad.id = id+2
+	datapad = simulation.createObject('object/tangible/datapad/shared_character_datapad.iff', ContainerPermission.CREATURE_CONTAINER, True, True, id+2)
 	# Create inventory
-	inventory = shared_character_inventory.Template().create(kernel, {})
-	inventory.id = id+3
+	inventory = simulation.createObject('object/tangible/inventory/shared_character_inventory.iff', ContainerPermission.CREATURE_CONTAINER, True, True, id+3)
 	# Create bank
-	bank = shared_character_bank.Template().create(kernel, {})
-	bank.id = id+4
+	bank = simulation.createObject('object/tangible/bank/shared_character_bank.iff', ContainerPermission.CREATURE_CONTAINER, True, True, id+4)
 	# Create mission
-	mission = mission_bag.Template().create(kernel, {})
-	mission.id = id+5
+	mission = simulation.createObject('object/tangible/mission_bag/shared_mission_bag.iff', ContainerPermission.CREATURE_CONTAINER, True, True, id+5)
 	# Create hair
-	hair = CreateHair(kernel, hair_model)
-	hair.id = id+6
+	hair = simulation.createObject(hair_model.replace('/hair_','/shared_hair_'), ContainerPermission.CREATURE_CONTAINER, True, True, id+6)
 	# Create Base Player Object
-	player = shared_player.Template().create(kernel, {})	
-	player.id = id+1
+	player = simulation.createObject('object/player/shared_player.iff', ContainerPermission.CREATURE_CONTAINER, True, True, id+1)
 	# Create Starting Items
-	startingItems = starting_items.GetStartingItems(species, profession, gender)	
-	# Simulation Service to add to scene
-	simulation = kernel.serviceManager().simulation_service()
-	simulation.AddObjectToScene(creature, startLoc.name)
+	startingItems = GetStartingItems(species, profession, gender)	
 	# Add all sub objects to creature (parent)
 	creature.add(creature, datapad)
 	creature.add(creature, inventory)
 	creature.add(creature, bank)
 	creature.add(creature, mission)
-	creature.add(creature, hair)
+	if (hair):
+		creature.add(creature, hair)
 	creature.add(creature, player)
 	# Now add the objects to the inventory
 	item_id_start = id + 10
+	# Wearables get equipped
 	for item in startingItems:
-		item.id = item_id_start
+		item_obj  = simulation.createObject(item, ContainerPermission.DEFAULT, True, True, item_id_start)
 		item_id_start += 1
-		inventory.add(inventory, item)
+		if 'wearables' in item:
+			creature.add(creature, item_obj)
+		else:
+			inventory.add(creature, item_obj)
 	
+	print(item_id_start)
+	simulation.addObjectToScene(creature, startLoc.name)
 	return creature
-# "object/creature/player/bothan_male.iff"	
 def GetSpecies(base_model):
-	print(base_model)
 	match = re.search('player/(.*)_', base_model)
 	return match.group(1)
-	
-def GetCreatureObject(kernel, base_model):
-	c = importlib.import_module('templates.' + base_model.replace('/','.').replace('.iff',''))
-	return c.Template().create(kernel, {})
-	
-def CreateHair(kernel, hair_model):
-	# match = re.search('(?<=/)', hair_model)
-	# hair_model = 
-	h = importlib.import_module('templates.' + hair_model.replace('/','.').replace('.iff',''))
-	return h.Template().create(kernel, {})
 
 def SetStartingStats(creature, s):
 	# Health Stats

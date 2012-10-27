@@ -7,7 +7,10 @@
 #include <boost/python.hpp>
 
 #include "swganh/app/swganh_kernel.h"
+#include "swganh/service/service_manager.h"
 #include "swganh/scripting/utilities.h"
+#include "swganh_core/simulation/simulation_service.h"
+#include "swganh_core/object/creature/creature.h"
 
 namespace bp = boost::python;
 using namespace swganh::character;
@@ -31,6 +34,12 @@ bool PyCharacterCreate::CreateCharacter(
 			auto createFunc = start_mod.attr("CreateStartingCharacter");
 			// kernel, id, scale, profession, base_model, appearance_customization, hair_model, hair_customization, start_city
 			auto return_creature = createFunc(bp::ptr(kernel_), character_id, height, iff_template, full_name, profession, hair_iff, location);			
+			swganh::object::Creature* created_creature = bp::extract<swganh::object::Creature*>(return_creature);
+
+			// Temp
+			created_creature->SetCustomization(customization);
+			auto simulation = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationService>("SimulationService");
+			simulation->PersistObject(created_creature->GetObjectId());
 			// Set customization, etc...
 			return true;
 		}
