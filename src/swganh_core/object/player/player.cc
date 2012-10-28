@@ -892,6 +892,23 @@ void Player::SetGender(Gender value)
     gender_ = value;
 }
 
+void Player::ToggleBadge(uint8_t index, uint8_t bit)
+{
+	if(index > 6 || bit > 32)
+		return;
+
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	badge_flags_[index][bit] = !badge_flags_[index][bit];
+}
+
+bool Player::HasBadge(uint8_t index, uint8_t bit)
+{
+	if(index > 6 || bit > 32)
+		return false;
+
+	return badge_flags_[index][bit];
+}
+
 void PlayerWaypointSerializer::Serialize(swganh::messages::BaselinesMessage& message)
 {
     message.data.write<uint64_t>(waypoint->GetObjectId());

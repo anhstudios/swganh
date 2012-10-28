@@ -31,10 +31,6 @@
 #include "machines/npc_neutral.h"
 #include "machines/shuttle.h"
 
-// Temp
-#include "swganh_core/object/regions/badge/badge_region.h"
-#include "swganh_core/object/permissions/world_permission.h"
-
 using namespace swganh::service;
 using namespace swganh::app;
 using namespace swganh::simulation;
@@ -50,23 +46,6 @@ SpawnService::SpawnService(SwganhKernel* kernel)
 	, fsm_manager_(kernel->GetEventDispatcher())
 	, timer_(kernel_->GetIoService(), boost::posix_time::seconds(60))
 {
-	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
-	{
-
-		//Temp
-		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
-
-		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-
-		std::shared_ptr<swganh::object::regions::BadgeRegion> badge_region = std::make_shared<swganh::object::regions::BadgeRegion>();
-		badge_region->SetEventDispatcher(kernel_->GetEventDispatcher());
-		badge_region->SetPosition(glm::vec3(1084, 0, 4176));
-		badge_region->SetSceneId(real_event->scene_id);
-		badge_region->SetObjectId(0xDEADBABE);
-		badge_region->SetInSnapshot(true);
-		badge_region->SetPermissions(std::make_shared<swganh::object::WorldPermission>());
-		simulation_service->TransferObjectToScene(badge_region, real_event->scene_label);
-	});
 }
 
 SpawnService::~SpawnService()
