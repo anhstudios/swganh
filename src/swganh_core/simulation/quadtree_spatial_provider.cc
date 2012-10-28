@@ -247,6 +247,24 @@ QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> o
 	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
 }
 
+std::list<std::shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::Query(boost::geometry::model::polygon<swganh::object::Point> query_box)
+{
+	std::list<std::shared_ptr<swganh::object::Object>> return_vector;
+	QueryBox aabb;
+
+	boost::geometry::envelope(query_box, aabb);
+
+	return_vector = root_node_.Query(aabb); // Find objects without our AABB
+	for(auto i = return_vector.begin(); i != return_vector.end(); i++)
+	{
+		// Do more precise intersection detection, if we are not colliding, erase.
+		if(boost::geometry::intersects((*i)->GetWorldCollisionBox(), query_box) == false)
+			i = return_vector.erase(i);
+	}
+
+	return return_vector;
+}
+
 void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)
 {
 	auto objects = root_node_.Query(object->GetAABB());
