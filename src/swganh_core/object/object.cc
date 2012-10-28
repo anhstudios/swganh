@@ -33,7 +33,7 @@ Object::Object()
 	, instance_id_(0)
     , template_string_("")
     , position_(glm::vec3(0,0,0))
-    , orientation_(glm::quat(0,0,0,0))
+    , orientation_(glm::quat())
     , complexity_(0)
     , stf_name_file_("")
     , stf_name_string_("")
@@ -42,6 +42,9 @@ Object::Object()
 	, arrangement_id_(-2)
 	, database_persisted_(true)
 	, in_snapshot_(false)
+	, collision_height_(0.0f)
+	, collision_length_(0.0f)
+	, collidable_(false)
 	, attributes_template_id(-1)
 	, event_dispatcher_(nullptr)
 	, controller_(nullptr)
@@ -522,6 +525,8 @@ void Object::SetPosition(glm::vec3 position)
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         position_ = position;
+		UpdateWorldCollisionBox();
+		UpdateAABB();
     }
 	DISPATCH(Object, Position);
 }
@@ -987,6 +992,25 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 		}		
 	
 	return ss.str();
+}
+
+void Object::UpdateWorldCollisionBox(void)
+{ 
+		auto rot = glm::yaw(orientation_);
+
+		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
+
+		if(rot <= DBL_MAX && rot >= -DBL_MAX) // glm::yaw sometimes results in a non-real float (-1.#IND) that will cause problems if not filted through.
+		{
+			//std::cout << "Orientation: " << rot << std::endl;
+			boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
+			boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
+			boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
+		}
+		else
+		{
+			boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
+		}
 }
 
 AttributeVariant Object::GetAttributeRecursive(const std::string& name)

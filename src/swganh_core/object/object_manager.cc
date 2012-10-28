@@ -8,6 +8,8 @@
 
 #include "swganh/logger.h"
 
+#include <bitset>
+
 #include "object_factory.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh/tre/resource_manager.h"
@@ -311,6 +313,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
 			created_object->SetDatabasePersisted(is_persisted);
 			LoadSlotsForObject(created_object);
+			LoadCollisionInfoForObject(created_object);
 
 			//Set the ID based on the inputs
 			if(is_persisted)
@@ -405,6 +408,20 @@ void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id)
 std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefinition()
 {
 	return slot_definition_;
+}
+
+void ObjectManager::LoadCollisionInfoForObject(std::shared_ptr<Object> obj)
+{
+		auto obj_visitor = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(obj->GetTemplate());
+		obj_visitor->load_aggregate_data(kernel_->GetResourceManager());
+
+		if(obj_visitor->has_attribute("collisionLength") && obj_visitor->has_attribute("collisionHeight"))
+		{
+			obj->SetCollisionBoxSize(obj_visitor->attribute<float>("collisionLength"), obj_visitor->attribute<float>("collisionHeight"));
+			obj->SetCollidable(true);
+		}
+		else
+			obj->SetCollidable(false);
 }
 
 void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
