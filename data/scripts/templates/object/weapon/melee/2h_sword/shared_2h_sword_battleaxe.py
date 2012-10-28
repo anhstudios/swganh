@@ -15,7 +15,7 @@ class Template(BaseTemplate):
 		result.attribute_template_id = 10
 		result.stfName("weapon_name","sword_2h_axe")		
 		
-		#### BEGIN MODIFICATIONS ####
+		#### BEGIN MODIFICATIONS ####		
 		####  END MODIFICATIONS  ####
 		
 		return result
