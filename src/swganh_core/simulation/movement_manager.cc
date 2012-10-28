@@ -44,7 +44,7 @@ void MovementManager::HandleDataTransformServer(
 {
     counter_map_[object->GetObjectId()] = counter_map_[object->GetObjectId()];
     
-	glm::vec3 old_position = object->GetPosition();
+	auto old_bounding_volume = object->GetAABB();
 
 	object->SetPosition(new_position);
 	
@@ -52,7 +52,7 @@ void MovementManager::HandleDataTransformServer(
 	if(object->GetContainer() != spatial_provider_)
 		object->GetContainer()->TransferObject(object, object, spatial_provider_);
 	else
-		spatial_provider_->UpdateObject(object, old_position, new_position);
+		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 
     SendDataTransformMessage(object);
 }
@@ -93,7 +93,7 @@ void MovementManager::HandleDataTransform(
 
     counter_map_[object->GetObjectId()] = message.counter;
     
-	glm::vec3 old_position = object->GetPosition();
+	auto old_bounding_volume = object->GetAABB();
 
 	object->SetPosition(message.position);
     object->SetOrientation(message.orientation);
@@ -102,7 +102,7 @@ void MovementManager::HandleDataTransform(
 	if(object->GetContainer() != spatial_provider_)
 		object->GetContainer()->TransferObject(object, object, spatial_provider_);
 	else
-		spatial_provider_->UpdateObject(object, old_position, message.position);
+		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 
     SendUpdateDataTransformMessage(object);
 }
@@ -211,6 +211,13 @@ void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
             SendDataTransformMessage(object);
         }
     });
+
+	event_dispatcher->Subscribe(
+		"SpatialIndexSvgDump",
+		[this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+		spatial_provider_->SvgToFile();
+	});
 }
 
 bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)

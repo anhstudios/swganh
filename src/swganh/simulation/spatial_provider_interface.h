@@ -7,11 +7,7 @@
 #include <glm/glm.hpp>
 
 #include "swganh/object/container_interface.h"
-
-namespace swganh{
-namespace object {
-	class Object;
-}}
+#include "swganh_core/object/object.h"
 
 
 namespace swganh {
@@ -23,8 +19,10 @@ namespace simulation {
 class SpatialProviderInterface : public swganh::object::ContainerInterface
 {
 public:
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position) = 0;
+	virtual void SvgToFile()=0;
+	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume) = 0;
 	virtual void ViewObjectsInRange(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func) = 0;
+	virtual std::list<std::shared_ptr<swganh::object::Object>> Query(boost::geometry::model::polygon<swganh::object::Point> query_box) = 0;
 };
 
 }} // namespace swganh::simulation

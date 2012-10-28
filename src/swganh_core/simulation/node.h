@@ -5,6 +5,7 @@
 #include <list>
 #include <set>
 #include <memory>
+#include <fstream>
 
 #include <boost/array.hpp>
 #include <boost/geometry.hpp>
@@ -14,17 +15,14 @@
 
 #include <glm/glm.hpp>
 
-namespace swganh {
-namespace object {
-	class Object;
-}} // namespace swganh::object
-
+#include <swganh_core/object/object.h>
 namespace quadtree
 {
 
 typedef boost::geometry::model::box< boost::geometry::model::d2::point_xy<double> > Region;
 typedef boost::geometry::model::box< boost::geometry::model::d2::point_xy<double> > QueryBox;
 typedef boost::geometry::model::d2::point_xy<double> Point;
+typedef boost::geometry::model::polygon<Point> QueryRegion;
 
 enum NodeQuadrant
 {
@@ -59,8 +57,13 @@ public:
 
 	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position);
+	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume);
 	void Split();
+
+	void SvgDump(void);
+	void SvgDumpRegions(std::ofstream& file);
+	void SvgDumpObjects(std::ofstream& file);
+
 	std::list<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
 
 	const NodeQuadrant& GetQuadrant(void) { return quadrant_; }
@@ -74,7 +77,7 @@ public:
 protected:
 	void InsertObject_(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject_(std::shared_ptr<swganh::object::Object> obj);
-	std::shared_ptr<Node> GetNodeWithinPoint_(Point point);
+	std::shared_ptr<Node> GetNodeContainingVolume_(swganh::object::AABB volumn);
 	
 	Node* GetRootNode_(void) { 	
 		// Go to the root.

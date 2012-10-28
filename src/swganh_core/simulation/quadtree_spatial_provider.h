@@ -18,11 +18,14 @@ public:
 
 	uint64_t GetObjectId() { return 0; }
 
+	void SvgToFile() { root_node_.SvgDump(); }
+
 	//Object Management
 	virtual void AddObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position);
+	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume);
+	virtual std::list<std::shared_ptr<swganh::object::Object>> Query(boost::geometry::model::polygon<swganh::object::Point> query_box);
 
 	virtual void ViewObjectsInRange(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
 
@@ -43,6 +46,8 @@ private:
 	std::shared_ptr<ContainerInterface> __this;
 	quadtree::Node root_node_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
+
+	void CheckCollisions(std::shared_ptr<swganh::object::Object> object);
 };
 
 }} // swganh::simulation

@@ -12,6 +12,8 @@
 #include "swganh/utilities.h"
 
 #include "swganh/app/swganh_app.h"
+#include "swganh/app/swganh_kernel.h"
+#include "swganh/event_dispatcher.h"
 #include "swganh/scripting/utilities.h"
 
 using namespace boost;
@@ -49,9 +51,14 @@ int main(int argc, char* argv[])
 
                     if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
                         LOG(info) << "Exit command received from command line. Shutting down.";
-						
-						break;
-                    } else {
+                        break;
+                    }
+					else if(cmd.compare("si_dump") == 0) {
+						LOG(info) << "[SVGDump] Dumping Spatial Indexing SVG...";
+						app.GetAppKernel()->GetEventDispatcher()->Dispatch(std::make_shared<swganh::BaseEvent>("SpatialIndexSvgDump"));
+						LOG(info) << "[SVGDump] Done.";
+					}
+					else {
                         LOG(warning) << "Invalid command received: " << cmd;
                         std::cout << "Type exit or (q)uit to quit" << std::endl;
                     }

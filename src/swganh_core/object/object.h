@@ -17,6 +17,10 @@
 #include <boost/variant.hpp>
 #include <boost/thread/mutex.hpp>
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -63,6 +67,10 @@ typedef boost::variant<float, int32_t, std::wstring, boost::blank> AttributeVari
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
 typedef swganh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
+
+typedef boost::geometry::model::d2::point_xy<double> Point;
+typedef boost::geometry::model::polygon<Point> CollisionBox;
+typedef boost::geometry::model::box<Point> AABB;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
@@ -575,6 +583,73 @@ public:
 	virtual std::shared_ptr<Object> Clone();
 	void Clone(std::shared_ptr<Object> other);
 
+	//
+	// Spatial/Collision
+	//
+	virtual void OnCollisionEnter(std::shared_ptr<Object> collider) { }
+	virtual void OnCollisionStay(std::shared_ptr<Object> collider) { }
+	virtual void OnCollisionLeave(std::shared_ptr<Object> collider) { }
+
+	void BuildSpatialProfile(void)
+	{
+		BuildCollisionBox();
+		BuildBoundingVolume();
+	}
+
+	void BuildBoundingVolume(void)
+	{
+		UpdateAABB();
+	}
+
+	void BuildCollisionBox(void)
+	{
+		__BuildCollisionBox();
+		UpdateWorldCollisionBox();
+	}
+
+	void UpdateAABB() 
+	{ 
+		boost::geometry::envelope(world_collision_box_, aabb_);
+	}
+
+	void UpdateWorldCollisionBox();
+
+	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
+	void AddCollidedObject(std::shared_ptr<Object> obj)
+	{
+		bool found = false;
+
+		std::for_each(collided_objects_.begin(), collided_objects_.end(), [=, &found](std::shared_ptr<Object> other) {
+			if(other->GetObjectId() == obj->GetObjectId())
+				found = true;
+		});
+
+		if(found == false)
+			collided_objects_.insert(obj);
+	}
+
+	void RemoveCollidedObject(std::shared_ptr<Object> obj)
+	{
+		auto i = collided_objects_.find(obj);
+		if(i != collided_objects_.end())
+			collided_objects_.erase(i);
+	}
+
+	const CollisionBox& GetLocalCollisionBox(void) const { return local_collision_box_; }
+	const CollisionBox& GetWorldCollisionBox(void) const { return world_collision_box_; }
+	const AABB& GetAABB(void) const { return aabb_; }
+
+	void SetCollisionBoxSize(float length, float height)
+	{
+		collision_length_ = length;
+		collision_height_ = height;
+
+		std::cout << "collision_length_ " << length << ":" << height << std::endl;
+	}
+
+	void SetCollidable(bool collidable) { collidable_ = collidable; }
+	bool IsCollidable(void) const { return collidable_; }
+
 protected:
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
@@ -590,6 +665,36 @@ protected:
     std::atomic<int32_t> arrangement_id_;
 	std::atomic<int8_t> attributes_template_id;	 // Used to determine which attribute template to use
 	mutable boost::mutex object_mutex_;
+	
+	//
+	// Spatial
+	//
+	std::set<std::shared_ptr<Object>> collided_objects_;
+
+	CollisionBox local_collision_box_;
+	CollisionBox world_collision_box_;
+
+	AABB aabb_;
+
+	float collision_length_;
+	float collision_height_;
+	bool collidable_;
+
+	virtual void __BuildCollisionBox(void)
+	{
+			local_collision_box_.clear();
+			if(collidable_)
+			{
+				boost::geometry::append(local_collision_box_, Point((-1.0f * collision_length_) / 2, (-1.0f * collision_length_) / 2));
+				boost::geometry::append(local_collision_box_, Point((-1.0f * collision_length_) / 2, collision_length_ / 2));
+				boost::geometry::append(local_collision_box_, Point(collision_length_ / 2, collision_length_ / 2));
+				boost::geometry::append(local_collision_box_, Point(collision_length_ / 2, (-1.0f * collision_length_) / 2));
+			}
+			else
+			{
+				boost::geometry::append(local_collision_box_, Point(0.0f, 0.0f));
+			}
+	}
 
 	std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 

@@ -7,6 +7,7 @@
 #include <atomic>
 #include <list>
 #include <string>
+#include <bitset>
 
 #include <boost/thread/mutex.hpp>
 
@@ -876,6 +877,22 @@ public:
      */
     void SetGender(Gender gender);
 
+	/**
+	 * Toggles badge.
+	 *
+	 * @param index The bitmask index.
+	 * @param bit The bit to toggle.
+	 */
+	void ToggleBadge(uint8_t index, uint8_t bit);
+
+	/**
+	 * @param index The bitmask to look in.
+	 * @param bit The bit to check.
+	 * 
+	 * @return Check for badge.
+	 */
+	bool HasBadge(uint8_t index, uint8_t bit);
+
     // baselines
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 
@@ -916,6 +933,9 @@ private:
     std::atomic<uint32_t> max_drink_;
     std::atomic<uint32_t> jedi_state_;
     Gender gender_;
+
+	// Badges
+	std::array<std::bitset<32>, 6> badge_flags_;
 };
 
 }}  // namespace swganh::object

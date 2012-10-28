@@ -18,6 +18,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "attributes/attributes_init.h"
+#include "badge/badge_init.h"
 #include "chat/chat_init.h"
 #include "combat/combat_init.h"
 #include "character/character_init.h"
@@ -59,6 +60,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     auto swganh_kernel = static_cast<SwganhKernel*>(kernel);    
     
 	swganh::attributes::Initialize(swganh_kernel);
+	swganh::badge::Initialize(swganh_kernel);
     swganh::character::Initialize(swganh_kernel);
 	swganh::connection::Initialize(swganh_kernel);
     swganh::command::Initialize(swganh_kernel);

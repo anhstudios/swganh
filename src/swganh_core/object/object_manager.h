@@ -263,6 +263,7 @@ namespace object {
 		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> GetSlotDefinition();
 
 		void LoadSlotsForObject(std::shared_ptr<Object> object);
+		void LoadCollisionInfoForObject(std::shared_ptr<Object> object);
 
 		PermissionsObjectMap& GetPermissionsMap();
 

@@ -18,8 +18,8 @@ using namespace quadtree;
 static int VIEWING_RANGE = 128;
 
 QuadtreeSpatialProvider::QuadtreeSpatialProvider()
-	: root_node_(ROOT, Region(Point(-8300.0f, -8300.0f), 
-	Point(8300.0f, 8300.0f)), 0, 9, nullptr)
+	: root_node_(ROOT, Region(quadtree::Point(-8300.0f, -8300.0f), 
+	quadtree::Point(8300.0f, 8300.0f)), 0, 9, nullptr)
 {
 	SetPermissions(std::shared_ptr<ContainerPermissionsInterface>(new WorldPermission()));
 }
@@ -38,6 +38,8 @@ void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> 
 		object->SetContainer(__this);
 		object->SetArrangementId(arrangement_id);
 	}
+
+	CheckCollisions(object);
 
 	// Make objects aware
 	__InternalViewObjects(object, 0, true, [&](shared_ptr<Object> found_object){
@@ -62,15 +64,17 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 	}
 }
 
-void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
+void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume)
 {
 	std::vector<std::shared_ptr<Object>> deleted_objects;
 
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
-		root_node_.UpdateObject(obj, old_position, new_position);
+		root_node_.UpdateObject(obj, old_bounding_volume, new_bounding_volume);
 	}
+
+	CheckCollisions(obj);
 
 	auto new_objects = root_node_.Query(GetQueryBoxViewRange(obj));
 	
@@ -94,6 +98,15 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 
 	for(auto& to_delete : deleted_objects)
 	{
+		if(to_delete->GetObjectId() == obj->GetObjectId())
+		{
+			std::cout << "Trying to delete myself!?" << std::endl;
+			std::cout << "Position: " << to_delete->GetPosition().x << ", " << to_delete->GetPosition().y << ", " << to_delete->GetPosition().z << std::endl;
+			std::cout << "Bounding Volume (World): " << to_delete->GetAABB().min_corner().x() << ", " << to_delete->GetAABB().min_corner().y() << ":" << to_delete->GetAABB().max_corner().x() << ", " << to_delete->GetAABB().max_corner().y() << std::endl;
+			auto view_box = GetQueryBoxViewRange(obj);
+			std::cout << "Viewing Box: " <<  view_box.min_corner().x() << ", " << view_box.min_corner().y() << ":" << view_box.max_corner().x() << ", " << view_box.max_corner().y() << std::endl;
+		}
+
 		//Send Destroy
 		obj->__InternalRemoveAwareObject(to_delete);
 		to_delete->__InternalRemoveAwareObject(obj);
@@ -161,8 +174,8 @@ void QuadtreeSpatialProvider::ViewObjectsInRange(glm::vec3 position, float radiu
 	std::list<std::shared_ptr<Object>> contained_objects;
 
 	boost::shared_lock<boost::shared_mutex> lock(global_container_lock_);
-	contained_objects = root_node_.Query(QueryBox(Point(position.x - radius, position.z - radius), 
-		Point(position.x + radius, position.z + radius)));
+	contained_objects = root_node_.Query(QueryBox(swganh::object::Point(position.x - radius, position.z - radius), 
+		swganh::object::Point(position.x + radius, position.z + radius)));
 
 	for (auto& object : contained_objects)
 	{
@@ -231,6 +244,91 @@ glm::vec3 QuadtreeSpatialProvider::__InternalGetAbsolutePosition()
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
 	auto position = object->__InternalGetAbsolutePosition();
-	return QueryBox(Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));
-	
+	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
+}
+
+std::list<std::shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::Query(boost::geometry::model::polygon<swganh::object::Point> query_box)
+{
+	std::list<std::shared_ptr<swganh::object::Object>> return_vector;
+	QueryBox aabb;
+
+	boost::geometry::envelope(query_box, aabb);
+
+	return_vector = root_node_.Query(aabb); // Find objects without our AABB
+	for(auto i = return_vector.begin(); i != return_vector.end(); i++)
+	{
+		// Do more precise intersection detection, if we are not colliding, erase.
+		if(boost::geometry::intersects((*i)->GetWorldCollisionBox(), query_box) == false)
+			i = return_vector.erase(i);
+	}
+
+	return return_vector;
+}
+
+void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)
+{
+	auto objects = root_node_.Query(object->GetAABB());
+	auto collided_objects = object->GetCollidedObjects();
+	std::for_each(collided_objects.begin(), collided_objects.end(), [=, &objects](std::shared_ptr<swganh::object::Object> other) {
+		auto iter = std::find(objects.begin(), objects.end(), other);
+		
+		if(iter == objects.end())
+		{
+			std::cout << "Object::OnCollisionLeave " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
+			object->RemoveCollidedObject(other);
+			other->RemoveCollidedObject(object);
+
+			object->OnCollisionLeave(other);
+			other->OnCollisionLeave(object);
+			
+			objects.erase(iter);
+		}
+		else
+		{
+			// Make sure we still are intersecting.
+			if(boost::geometry::intersects(object->GetWorldCollisionBox(), other->GetWorldCollisionBox()) == false) {
+				std::cout << "Object::OnCollisionLeave " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
+				
+				object->RemoveCollidedObject(other);
+				other->RemoveCollidedObject(object);
+				
+				object->OnCollisionLeave(other);
+				other->OnCollisionLeave(object);
+				
+				objects.erase(iter);
+				return;
+			}
+			std::cout << "Object::OnCollisionStay " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
+			object->OnCollisionStay(other);
+			other->OnCollisionStay(object);
+		}
+	});
+
+	std::for_each(objects.begin(), objects.end(), [=](const std::shared_ptr<swganh::object::Object> other) {
+		if(other->GetObjectId() == object->GetObjectId() || other->IsCollidable() == false)
+			return;
+
+		if(boost::geometry::intersects(object->GetWorldCollisionBox(), other->GetWorldCollisionBox()))
+		{
+			bool found = false;
+			auto collided_objects = object->GetCollidedObjects();
+			std::for_each(collided_objects.begin(), collided_objects.end(), [=, &found](std::shared_ptr<Object> collided_object){
+				if(collided_object->GetObjectId() == other->GetObjectId())
+				{
+					found = true;
+				}
+			});
+
+			if(!found)
+			{
+				std::cout << "Object::OnCollisionEnter " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
+				
+				object->AddCollidedObject(other);
+				other->AddCollidedObject(object);
+
+				object->OnCollisionEnter(other);
+				other->OnCollisionEnter(object);
+			}
+		}
+	});
 }
