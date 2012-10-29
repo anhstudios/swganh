@@ -16,6 +16,7 @@ class Template(BaseTemplate):
 		result.stfName("food_name","fruit_melon")		
 		
 		#### BEGIN MODIFICATIONS ####
+		result.setIntAttribute('counter_uses_remaining', 5)
 		####  END MODIFICATIONS  ####
 		
 		return result

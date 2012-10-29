@@ -11,11 +11,11 @@ class WeaponAttributeTemplate(BaseAttributeTemplate):
 			attributes.append("@obj_attr_n:original_name", "@" + object.stf_file + ":" + object.stf_name)
 		attributes.extend([
 			Attribute("@obj_attr_n:weapon_cert_status", object.getStringAttribute("weapon_cert_status")),
-			Attribute("@obj_attr_n:condition", str(object.condition_damage) + "/" + str(object.max_condition)),
+			Attribute("@obj_attr_n:condition", str(object.max_condition-object.condition_damage) + "/" + str(object.max_condition)),
 			Attribute("@obj_attr_n:volume", str(object.volume))
 		])
-		SetOptionalAttribute(attributes, "obj_attr_n:wpn_armor_pierce_rating", "wpn_armor_pierce_rating", object, True)
-		SetOptionalAttribute(attributes, "obj_attr_n:wpn_attack_speed", "wpn_attack_speed", object, True)
+		SetOptionalAttribute(attributes, "wpn_armor_pierce_rating", "wpn_armor_pierce_rating", object, True)
+		SetOptionalAttribute(attributes, "wpn_attack_speed", "wpn_attack_speed", object, True)
 		SetOptionalAttribute(attributes, "cat_wpn_damage.@obj_attr_n:cat_wpn_damage", "cat_wpn_damage.wpn_damage_type", object, True)
 		SetOptionalAttribute(attributes, "cat_wpn_damage.@obj_attr_n:wpn_damage_min", "cat_wpn_damage.wpn_damage_min", object, True)
 		SetOptionalAttribute(attributes, "cat_wpn_damage.@obj_attr_n:wpn_damage_max", "cat_wpn_damage.wpn_damage_max", object, True)

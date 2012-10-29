@@ -163,6 +163,6 @@ IthorianItems = {
 #All Get These
 CommonItems = [
 	'object/tangible/food/shared_fruit_melon.iff',
-	'object/weapon/ranged/pistol/shared_pistol_cdef.iff',
+	'object/weapon/ranged/pistol/shared_pistol_cdef_noob.iff',
 	'object/weapon/melee/knife/shared_knife_survival.iff'
 ]
