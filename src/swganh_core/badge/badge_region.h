@@ -17,9 +17,6 @@ public:
 
 	void OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider);
 
-protected:
-	void __BuildCollisionBox();
-
 private:
 	swganh::badge::BadgeService* badge_service_;
 	std::string badge_name_;

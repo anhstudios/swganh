@@ -50,9 +50,6 @@ namespace badge {
 		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
 		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
 
-		swganh::app::SwganhKernel* kernel_;
-		swganh::command::CommandServiceInterface* command_service_;
-
 	private:
 		const std::shared_ptr<Badge> FindBadge(uint32_t id);
 		const std::shared_ptr<Badge> FindBadge(std::string name);
@@ -63,6 +60,9 @@ namespace badge {
 		std::vector<
 			std::shared_ptr<BadgeRegion>
 		> badge_regions_;
+
+		swganh::app::SwganhKernel* kernel_;
+		swganh::command::CommandServiceInterface* command_service_;
 	};
 
 }} // namespace swganh::badge
