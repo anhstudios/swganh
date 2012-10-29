@@ -140,7 +140,14 @@ void BadgeService::Startup()
 
 swganh::service::ServiceDescription BadgeService::GetServiceDescription()
 {
-	return swganh::service::ServiceDescription("BadgeService", "badge", "0.1", "127.0.0.1", 0, 0, 0);
+	return swganh::service::ServiceDescription(
+		"BadgeService", // namve
+		"badge", // type
+		"0.1", // version
+		"127.0.0.1", // address
+		0, // tcp port
+		0, // udp port
+		0); // status
 }
 
 void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::string name)
@@ -161,7 +168,7 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Bad
 	// Lookup badge loaded badges by name.
 	if(badge == nullptr)
 	{
-		LOG(error) << "Badge " << badge->name << " does not exist.";
+		LOG(error) << "Badge does not exist.";
 	}
 
 	// Find player object.
@@ -244,8 +251,7 @@ void BadgeService::CheckExplorationBadgeAccumulation(std::shared_ptr<Object> obj
 
 	uint32_t badge_count = 0;
 
-	// This will need to be switched out for looping through player badges, instead of all
-	// badges.
+	// This needs further optimization.
 	std::for_each(badges_.begin(), badges_.end(), [=, &badge_count](std::shared_ptr<Badge> badge) {
 		if(badge->type == EXPLORATION_DANGEROUS || badge->type == EXPLORATION_EASY || badge->type == EXPLORATION_JEDI)
 		{

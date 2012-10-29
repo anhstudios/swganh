@@ -21,6 +21,10 @@
 #include "swganh_core/messages/containers/network_map.h"
 
 namespace swganh {
+namespace badge {
+	struct Badge;
+} // namespace swganh::badge
+
 namespace object {
 
 enum Gender
