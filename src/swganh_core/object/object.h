@@ -640,8 +640,6 @@ public:
 	{
 		collision_length_ = length;
 		collision_height_ = height;
-
-		std::cout << "collision_length_ " << length << ":" << height << std::endl;
 	}
 
 	void SetCollidable(bool collidable) { collidable_ = collidable; }

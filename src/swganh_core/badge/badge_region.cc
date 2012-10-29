@@ -11,7 +11,6 @@
 
 #include "badge_service.h"
 
-using namespace swganh::object::regions;
 using namespace swganh::badge;
 using namespace swganh::messages;
 
@@ -33,8 +32,8 @@ void BadgeRegion::OnCollisionEnter(std::shared_ptr<swganh::object::Object> colli
 
 void BadgeRegion::__BuildCollisionBox(void)
 {
-	boost::geometry::append(local_collision_box_, Point(-25, -25));
-	boost::geometry::append(local_collision_box_, Point(-25, 25));
-	boost::geometry::append(local_collision_box_, Point(25, 25));
-	boost::geometry::append(local_collision_box_, Point(25, -25));
+	boost::geometry::append(local_collision_box_, swganh::object::Point(-25, -25));
+	boost::geometry::append(local_collision_box_, swganh::object::Point(-25, 25));
+	boost::geometry::append(local_collision_box_, swganh::object::Point(25, 25));
+	boost::geometry::append(local_collision_box_, swganh::object::Point(25, -25));
 }

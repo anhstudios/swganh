@@ -6,10 +6,8 @@
 
 namespace swganh {
 namespace badge {
-	class BadgeService;
-}
-namespace object {
-namespace regions {
+
+class BadgeService;
 
 class BadgeRegion : public swganh::object::Object
 {
@@ -27,4 +25,4 @@ private:
 	std::string badge_name_;
 };
 
-}}} // swganh::object::regions
+}} // swganh::badge

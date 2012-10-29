@@ -15,6 +15,8 @@ namespace command {
 
 namespace badge {
 
+	class BadgeRegion;
+
 	enum BadgeType
 	{
 		ACCUMULATION = 1,
@@ -52,7 +54,15 @@ namespace badge {
 		swganh::command::CommandServiceInterface* command_service_;
 
 	private:
-		std::vector<Badge> badges_;
+		const std::shared_ptr<Badge> FindBadge(uint32_t id);
+		const std::shared_ptr<Badge> FindBadge(std::string name);
+		void CheckBadgeAccumulation();
+		void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<Badge> badge);
+
+		std::vector<std::shared_ptr<Badge>> badges_;
+		std::vector<
+			std::shared_ptr<BadgeRegion>
+		> badge_regions_;
 	};
 
 }} // namespace swganh::badge
