@@ -6,6 +6,7 @@
 #include <swganh/app/swganh_kernel.h>
 #include <swganh/service/service_manager.h>
 #include "swganh_core/simulation/simulation_service.h"
+#include "swganh_core/equipment/equipment_service.h"
 
 #include <swganh_core/object/object.h>
 #include <swganh_core/object/player/player.h>
@@ -19,19 +20,20 @@ using swganh::command::CommandCallback;
 using namespace swganh::service;
 using namespace swganh::simulation;
 using namespace swganh::app;
+using namespace swganh::equipment;
 
 RequestBadgesCommand::RequestBadgesCommand(SwganhKernel* kernel, const CommandProperties& properties)
 	: BaseSwgCommand(kernel, properties)
 	, kernel_(kernel)
 {
+	equipment_service_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
 }
 
 boost::optional<std::shared_ptr<CommandCallback>> RequestBadgesCommand::Run()
 {
 	// Find player object.
-	auto simulation = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-	auto player = std::static_pointer_cast<swganh::object::Player>(simulation->GetObjectById(GetActor()->GetObjectId() + 1));
-	
+	auto player = std::static_pointer_cast<swganh::object::Player>(equipment_service_->GetEquippedObject(GetActor(), "ghost"));
+
 	swganh::messages::BadgesResponseMessage badges_response;
 	badges_response.character_id = GetActor()->GetObjectId();
 	badges_response.badge_flags = player->GetBadges();

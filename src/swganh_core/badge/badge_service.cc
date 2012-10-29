@@ -30,6 +30,7 @@
 
 #include "badge_region.h"
 #include "swganh/service/service_manager.h"
+#include "swganh_core/equipment/equipment_service.h"
 #include "swganh_core/simulation/simulation_service.h"
 #include "swganh_core/simulation/scene_events.h"
 #include "swganh_core/object/permissions/world_permission.h"
@@ -40,6 +41,7 @@ using namespace swganh::command;
 using namespace swganh::messages;
 using namespace swganh::service;
 using namespace swganh::simulation;
+using namespace swganh::equipment;
 
 BadgeService::BadgeService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
@@ -66,6 +68,8 @@ BadgeService::~BadgeService(void)
 void BadgeService::Startup()
 {
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+	equipment_service_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
+	
 	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
 
 	// Load Badges
@@ -151,15 +155,16 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Bad
 	}
 
 	// Find player object.
-	auto simulation = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-	auto play = std::static_pointer_cast<Player>(simulation->GetObjectById(player->GetObjectId() + 1));
-	
+	auto play = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(player, "ghost"));
+	if(play == nullptr)
+		return;
+
 	// Don't give a badge twice.
-	if(play->HasBadge((uint32_t)floor((double)(badge->id/32)), badge->id%32))
+	if(play->HasBadge(badge->GetIndex(), badge->GetBit()))
 		return;
 
 	// Toggle badge bitmask and commit to Mysql.	
-	play->ToggleBadge((uint32_t)floor((double)(badge->id/32)), badge->id%32);
+	play->ToggleBadge(badge->GetIndex(), badge->GetBit());
 
 	// Player system message feedback.
 	messages::PlayMusicMessage music_message;

@@ -7,6 +7,11 @@
 #include "swganh/command/base_swg_command.h"
 
 namespace swganh {
+
+namespace equipment {
+	class EquipmentService;
+} // namespace swganh::equipment
+
 namespace badge {
 
     class BadgeService;
@@ -33,6 +38,7 @@ namespace badge {
     private:
         BadgeService* chat_service_;
 		swganh::app::SwganhKernel* kernel_;
+		swganh::equipment::EquipmentService* equipment_service_;
     };
 
 }}
