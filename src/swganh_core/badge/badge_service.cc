@@ -173,6 +173,8 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Bad
 
 	player->GetController()->Notify(&music_message);
 	SystemMessage::Send(player, messages::OutOfBand("badge_n", badge->name), false, false);
+
+	CheckBadgeAccumulation(player);
 }
 
 const std::shared_ptr<Badge> BadgeService::FindBadge(uint32_t id)
@@ -197,4 +199,42 @@ const std::shared_ptr<Badge> BadgeService::FindBadge(std::string name)
 		return (*i);
 	else
 		return nullptr;
+}
+
+void BadgeService::CheckBadgeAccumulation(std::shared_ptr<Object> object)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+
+	uint32_t badge_count = 0;
+	for(uint32_t x = 0; x < player->GetBadges().size(); x++)
+		badge_count += player->GetBadges().at(x).count();
+
+	if(badge_count >= 5) {
+		GiveBadge(object, "count_5");
+		return; // no need for more checking.
+	}
+	else if(badge_count >= 10) {
+		GiveBadge(object, "count_10");
+		return; // no need for more checking.
+	}
+	else if(badge_count >= 25) {
+		GiveBadge(object, "count_25");
+		return; // no need for more checking.
+	}
+	else if(badge_count >= 50) {
+		GiveBadge(object, "count_50");
+		return; // no need for more checking.
+	}
+	else if(badge_count >= 75) {
+		GiveBadge(object, "count_75");
+		return; // no need for more checking.
+	}
+	else if(badge_count >= 100) {
+		GiveBadge(object, "count_100");
+		return; // no need for more checking.
+	}
+	else if(badge_count >= 125) {
+		GiveBadge(object, "count_125");
+		return; // no need for more checking.
+	}
 }

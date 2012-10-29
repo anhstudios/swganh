@@ -28,4 +28,8 @@ BadgeRegion::~BadgeRegion(void)
 void BadgeRegion::OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider)
 {
 	badge_service_->GiveBadge(collider, badge_name_);
+	badge_service_->GiveBadge(collider, "exp_tat_escape_pod");
+	badge_service_->GiveBadge(collider, "exp_tat_tusken_pool");
+	badge_service_->GiveBadge(collider, "exp_dat_tarpit");
+	badge_service_->GiveBadge(collider, "exp_lok_volcano");
 }

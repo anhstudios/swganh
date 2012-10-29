@@ -9,6 +9,10 @@
 
 namespace swganh {
 
+namespace object {
+	class Player;
+} // namespace swganh::object
+
 namespace equipment {
 	class EquipmentService;
 } // namespace swganh::equipment
@@ -40,8 +44,8 @@ namespace badge {
 		std::string sound;
 		BadgeType type;
 
-		uint32_t GetIndex() { return (uint32_t)floor((double)(id/32)); }
-		uint8_t GetBit() { return id%32; }
+		uint32_t GetIndex() { return (uint32_t)floor((double)((id)/32)); }
+		uint8_t GetBit() { return (id)%32; }
 	};
 
 	class BadgeService : public BadgeServiceInterface
@@ -61,7 +65,7 @@ namespace badge {
 		const std::shared_ptr<Badge> FindBadge(std::string name);
 
 	private:
-		void CheckBadgeAccumulation();
+		void CheckBadgeAccumulation(std::shared_ptr<swganh::object::Object> player);
 		void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<Badge> badge);
 
 		std::vector<std::shared_ptr<Badge>> badges_;
