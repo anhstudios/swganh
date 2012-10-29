@@ -150,7 +150,16 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Bad
 		LOG(error) << "Badge " << badge->name << " does not exist.";
 	}
 
-	// Toggle badge bitmask and commit to Mysql.
+	// Find player object.
+	auto simulation = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+	auto play = std::static_pointer_cast<Player>(simulation->GetObjectById(player->GetObjectId() + 1));
+	
+	// Don't give a badge twice.
+	if(play->HasBadge((uint32_t)floor((double)(badge->id/32)), badge->id%32))
+		return;
+
+	// Toggle badge bitmask and commit to Mysql.	
+	play->ToggleBadge((uint32_t)floor((double)(badge->id/32)), badge->id%32);
 
 	// Player system message feedback.
 	messages::PlayMusicMessage music_message;

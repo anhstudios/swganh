@@ -32,6 +32,7 @@ namespace badge {
 
     private:
         BadgeService* chat_service_;
+		swganh::app::SwganhKernel* kernel_;
     };
 
 }}
