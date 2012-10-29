@@ -29,11 +29,11 @@ namespace simulation {
 
         void RegisterObjectFactories();
 
-        void PersistObject(uint64_t object_id);
+        void PersistObject(uint64_t object_id, bool persist_inherited = false);
 		/*
 		*	\brief this persists the given object and all related objects (ie: everything contained inside this object)
 		*/
-		void PersistRelatedObjects(uint64_t parent_object_id);
+		void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited = false);
 
 		void AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label);
         

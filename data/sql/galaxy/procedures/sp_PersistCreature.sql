@@ -75,7 +75,7 @@ BEGIN
     DECLARE disguise_iff_template INT;
 	DECLARE does_exist INT;
     
-    select count(*) from object o where o.id = object_id into does_exist;
+    select count(*) from creature c where c.id = object_id into does_exist;
     SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE in_disguise INTO disguise_iff_template;
 --
 	IF does_exist > 0 THEN

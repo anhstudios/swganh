@@ -80,7 +80,8 @@ CREATE TABLE IF NOT EXISTS `creature` (
   PRIMARY KEY (`id`),
   KEY `IDX_2A6C6AF47E3C61F9` (`owner_id`),
   KEY `IDX_2A6C6AF49523AA8A` (`musician_id`),
-  KEY `FK_A8ADABEC727AC32D` (`disguise_template_id`)
+  KEY `FK_A8ADABEC727AC32D` (`disguise_template_id`),
+  CONSTRAINT `FK_812371D251G23` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /*!40000 ALTER TABLE `creature` DISABLE KEYS */;

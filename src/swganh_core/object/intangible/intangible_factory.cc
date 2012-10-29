@@ -29,11 +29,12 @@ IntangibleFactory::IntangibleFactory(swganh::app::SwganhKernel* kernel)
 {
 }
 
-uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	// Persist Intangible
     uint32_t counter = 1;
-
+	if (persist_inherited)
+		ObjectFactory::PersistObject(object, persist_inherited);
 	try 
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");

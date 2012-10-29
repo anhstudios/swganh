@@ -84,9 +84,11 @@ void CreatureFactory::PersistChangedObjects()
 			PersistObject(object);
 	}
 }
-uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
     uint32_t counter = 1;
+	if (persist_inherited)
+		TangibleFactory::PersistObject(object, persist_inherited);
 	// Now for the biggy
     try
     {	

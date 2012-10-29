@@ -8,7 +8,7 @@ CREATE PROCEDURE `sp_PersistInstallation`(IN `object_id` BIGINT, IN `selected_re
 DOUBLE, IN `current_extraction_rate` DOUBLE, IN `current_hopper_size` DOUBLE, IN `is_updating` TINYINT, IN `condition_percentage` INT)
 BEGIN
 DECLARE does_exist INT;
-select count(*) from object o where o.id = object_id into does_exist;
+select count(*) from installation i where i.id = object_id into does_exist;
 
 if does_exist > 0 then
 	update installation i set i.selected_resource_id = selected_resource_id, i.is_active = active_flag, i.power_reserve = power_reserve, 

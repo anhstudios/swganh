@@ -20,8 +20,8 @@ PyCharacterCreate::PyCharacterCreate(swganh::app::KernelInterface* kernel)
 	: kernel_(kernel)
 {}
 
-bool PyCharacterCreate::CreateCharacter(
-	uint64_t character_id, const std::wstring& full_name, const std::string& profession, 
+uint64_t PyCharacterCreate::CreateCharacter(
+	const std::wstring& full_name, const std::string& profession, 
 	const std::string& location, float height, const std::string& bio, const std::string& customization, 
 	const std::string& hair_iff, const std::string& hair_customization, const std::string& iff_template)
 {
@@ -32,21 +32,20 @@ bool PyCharacterCreate::CreateCharacter(
 		if (!start_mod.is_none())
 		{
 			auto createFunc = start_mod.attr("CreateStartingCharacter");
-			// kernel, id, scale, profession, base_model, appearance_customization, hair_model, hair_customization, start_city
-			auto return_creature = createFunc(bp::ptr(kernel_), character_id, height, iff_template, full_name, profession, hair_iff, location);			
+			// kernel, scale, profession, base_model, appearance_customization, hair_model, hair_customization, start_city
+			auto return_creature = createFunc(bp::ptr(kernel_), height, iff_template, full_name, profession, hair_iff, location);			
 			swganh::object::Creature* created_creature = bp::extract<swganh::object::Creature*>(return_creature);
 
-			// Temp
-			created_creature->SetCustomization(customization);
 			auto simulation = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationService>("SimulationService");
-			simulation->PersistObject(created_creature->GetObjectId());
+			simulation->PersistRelatedObjects(created_creature->GetObjectId(), true);
 			// Set customization, etc...
-			return true;
+			created_creature->SetCustomization(customization);
+			return created_creature->GetObjectId();
 		}
 	}
 	catch(bp::error_already_set& /*e*/)
     {
         PyErr_Print();
     }
-	return false;
+	return 0;
 }

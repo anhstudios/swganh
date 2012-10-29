@@ -16,9 +16,8 @@ namespace character {
 	public:
 		PyCharacterCreate(swganh::app::KernelInterface* kernel);
 			
-
-		bool CreateCharacter(
-			uint64_t character_id, const std::wstring& full_name, const std::string& profession, 
+		// Returns created character_id
+		uint64_t CreateCharacter(const std::wstring& full_name, const std::string& profession, 
 			const std::string& location, float height, const std::string& bio, const std::string& customization, 
 			const std::string& hair_iff, const std::string& hair_customization, const std::string& iff_template);
 	private:
