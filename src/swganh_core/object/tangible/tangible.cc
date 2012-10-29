@@ -17,7 +17,7 @@ Tangible::Tangible()
     , options_bitmask_(0)
     , incap_timer_(0)
     , condition_damage_(0)
-    , max_condition_(0)
+    , max_condition_(1000)
     , is_static_(false)
     , defender_list_(swganh::messages::containers::NetworkSortedVector<Defender>(3))
 {}

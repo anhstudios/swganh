@@ -39,8 +39,9 @@ uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object, bool
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?);"));
+            (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?,?);"));
         auto tangible = static_pointer_cast<Intangible>(object);
+		statement->setUInt64(counter++, tangible->GetObjectId());
 		statement->setString(counter++, tangible->GetStfNameFile());
 		statement->setString(counter++, tangible->GetStfNameString());
 		statement->setInt(counter++, tangible->GetGenericInt());
