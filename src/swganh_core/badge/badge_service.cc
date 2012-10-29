@@ -43,6 +43,16 @@ using namespace swganh::service;
 using namespace swganh::simulation;
 using namespace swganh::equipment;
 
+uint32_t GetBadgeBitmaskIndexById(uint32_t id)
+{
+	return (uint32_t)floor((double)((id)/32));
+}
+
+uint8_t GetBadgeBitmaskBitById(uint32_t id)
+{
+	return (id)%32;
+}
+
 BadgeService::BadgeService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 {
@@ -175,6 +185,9 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Bad
 	SystemMessage::Send(player, messages::OutOfBand("badge_n", badge->name), false, false);
 
 	CheckBadgeAccumulation(player);
+
+	if(badge->type == EXPLORATION_DANGEROUS || badge->type == EXPLORATION_EASY || badge->type == EXPLORATION_JEDI)
+		CheckExplorationBadgeAccumulation(player);
 }
 
 const std::shared_ptr<Badge> BadgeService::FindBadge(uint32_t id)
@@ -209,32 +222,46 @@ void BadgeService::CheckBadgeAccumulation(std::shared_ptr<Object> object)
 	for(uint32_t x = 0; x < player->GetBadges().size(); x++)
 		badge_count += player->GetBadges().at(x).count();
 
-	if(badge_count >= 5) {
+	if(badge_count >= 5 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_5), GetBadgeBitmaskBitById(COUNT_5)) == false)
 		GiveBadge(object, "count_5");
-		return; // no need for more checking.
-	}
-	else if(badge_count >= 10) {
+	if(badge_count >= 10 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_10), GetBadgeBitmaskBitById(COUNT_10)) == false)
 		GiveBadge(object, "count_10");
-		return; // no need for more checking.
-	}
-	else if(badge_count >= 25) {
+	if(badge_count >= 25 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_25), GetBadgeBitmaskBitById(COUNT_25)) == false)
 		GiveBadge(object, "count_25");
-		return; // no need for more checking.
-	}
-	else if(badge_count >= 50) {
+	if(badge_count >= 50 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_50), GetBadgeBitmaskBitById(COUNT_50)) == false)
 		GiveBadge(object, "count_50");
-		return; // no need for more checking.
-	}
-	else if(badge_count >= 75) {
+	if(badge_count >= 75 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_75), GetBadgeBitmaskBitById(COUNT_75)) == false)
 		GiveBadge(object, "count_75");
-		return; // no need for more checking.
-	}
-	else if(badge_count >= 100) {
+	if(badge_count >= 100 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_100), GetBadgeBitmaskBitById(COUNT_100)) == false)
 		GiveBadge(object, "count_100");
-		return; // no need for more checking.
-	}
-	else if(badge_count >= 125) {
+	if(badge_count >= 125 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_125), GetBadgeBitmaskBitById(COUNT_125)) == false)
 		GiveBadge(object, "count_125");
-		return; // no need for more checking.
-	}
+}
+
+void BadgeService::CheckExplorationBadgeAccumulation(std::shared_ptr<Object> object)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+
+	uint32_t badge_count = 0;
+
+	// This will need to be switched out for looping through player badges, instead of all
+	// badges.
+	std::for_each(badges_.begin(), badges_.end(), [=, &badge_count](std::shared_ptr<Badge> badge) {
+		if(badge->type == EXPLORATION_DANGEROUS || badge->type == EXPLORATION_EASY || badge->type == EXPLORATION_JEDI)
+		{
+			if(player->HasBadge(badge->GetIndex(), badge->GetBit()))
+				badge_count += 1;
+		}
+	});
+
+	if(badge_count >= 10 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_10), GetBadgeBitmaskBitById(EXP_COUNT_10)) == false)
+		GiveBadge(object, "bdg_exp_10_badges");
+	if(badge_count >= 20 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_20), GetBadgeBitmaskBitById(EXP_COUNT_20)) == false)
+		GiveBadge(object, "bdg_exp_20_badges");
+	if(badge_count >= 30 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_30), GetBadgeBitmaskBitById(EXP_COUNT_30)) == false)
+		GiveBadge(object, "bdg_exp_30_badges");
+	if(badge_count >= 10 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_40), GetBadgeBitmaskBitById(EXP_COUNT_40)) == false)
+		GiveBadge(object, "bdg_exp_40_badges");
+	if(badge_count >= 45 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_45), GetBadgeBitmaskBitById(EXP_COUNT_45)) == false)
+		GiveBadge(object, "bdg_exp_45_badges");
 }

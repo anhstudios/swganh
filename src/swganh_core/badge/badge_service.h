@@ -25,6 +25,32 @@ namespace badge {
 
 	class BadgeRegion;
 
+	/**
+	 * Badge IDs for accumulation badges.
+	 */
+	enum AccumulationBadges
+	{
+		COUNT_5 = 0,
+		COUNT_10,
+		COUNT_25,
+		COUNT_50,
+		COUNT_75,
+		COUNT_100,
+		COUNT_125
+	};
+
+	/**
+	 * Badge IDs for exploration accumulation badges.
+	 */
+	enum ExpAccumulationBadges
+	{
+		EXP_COUNT_10 = 100,
+		EXP_COUNT_20,
+		EXP_COUNT_30,
+		EXP_COUNT_40,
+		EXP_COUNT_45
+	};
+
 	enum BadgeType
 	{
 		ACCUMULATION = 1,
@@ -66,6 +92,7 @@ namespace badge {
 
 	private:
 		void CheckBadgeAccumulation(std::shared_ptr<swganh::object::Object> player);
+		void CheckExplorationBadgeAccumulation(std::shared_ptr<swganh::object::Object> object);
 		void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<Badge> badge);
 
 		std::vector<std::shared_ptr<Badge>> badges_;
