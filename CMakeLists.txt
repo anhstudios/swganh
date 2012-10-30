@@ -179,6 +179,6 @@ if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
-if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs AND BUILD_DOCS)
     add_subdirectory(docs)
 endif()

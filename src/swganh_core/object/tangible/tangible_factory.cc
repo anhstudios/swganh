@@ -33,7 +33,7 @@ using namespace swganh::simulation;
 	GetEventDispatcher()->Subscribe("Tangible::Customization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::ComponentCustomization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::OptionsMask", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Tangible::IncapTimer", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::Counter", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::ConditionDamage", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::UpdateAttribute", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::MaxCondition", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
@@ -56,9 +56,11 @@ void TangibleFactory::PersistChangedObjects()
 	}
 }
 
-uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
+	if (persist_inherited)
+		ObjectFactory::PersistObject(object, persist_inherited);
     try 
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
@@ -69,7 +71,7 @@ uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
 		statement->setUInt64(counter++, tangible->GetObjectId());
         statement->setString(counter++, tangible->GetCustomization());
         statement->setInt(counter++, tangible->GetOptionsMask());
-        statement->setInt(counter++, tangible->GetIncapTimer());
+        statement->setInt(counter++, tangible->GetCounter());
         statement->setInt(counter++, tangible->GetCondition());
         statement->setInt(counter++, tangible->GetMaxCondition());
         statement->setBoolean(counter++, tangible->IsStatic());
@@ -100,7 +102,7 @@ void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const
             {
                 tangible->SetCustomization(result->getString("customization"));
                 tangible->SetOptionsMask(result->getUInt("options_bitmask"));
-                tangible->SetIncapTimer(result->getUInt("incap_timer"));
+                tangible->SetCounter(result->getUInt("incap_timer"));
                 tangible->SetConditionDamage(result->getUInt("condition_damage"));
                 tangible->SetMaxCondition(result->getUInt("max_condition"));
                 tangible->SetStatic(result->getBoolean("is_static"));

@@ -25,7 +25,7 @@ namespace object {
 		typedef Player ObjectType;
 
         PlayerFactory(swganh::app::SwganhKernel* kernel);
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, bool persist_inherited = false);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 		virtual void PersistChangedObjects();

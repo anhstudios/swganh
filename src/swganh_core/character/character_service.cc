@@ -104,7 +104,7 @@ void CharacterService::HandleClientCreateCharacter_(
 	}
 
     tie(character_id, error_code) = character_provider_->CreateCharacter(*message, client->GetAccountId());
-
+	
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
     client->SendTo(heartbeat);

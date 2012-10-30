@@ -14,7 +14,7 @@ MissionFactory::MissionFactory(swganh::app::SwganhKernel* kernel)
 {
 }
 
-uint32_t MissionFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t MissionFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
 

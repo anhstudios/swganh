@@ -4,10 +4,10 @@
 
 DROP PROCEDURE IF EXISTS `sp_PersistGuild`;
 DELIMITER //
-CREATE PROCEDURE `sp_PersistGuild`(IN `guild_id` INT, IN `tag` INT)
+CREATE PROCEDURE `sp_PersistGuild`(IN `guild_id` INT, IN `in_tag` INT)
 BEGIN
 
-UPDATE guild g SET g.tag = tag where g.id = guild_id;
+replace into guild SET id = guild_id, tag = in_tag; 
 
 END//
 DELIMITER ;

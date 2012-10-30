@@ -16,6 +16,7 @@ class Template(BaseTemplate):
 		result.stfName("wearables_name","shirt_s27")		
 		
 		#### BEGIN MODIFICATIONS ####
+		result.max_condition = 1000
 		####  END MODIFICATIONS  ####
 		
 		return result

@@ -71,6 +71,13 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 
+	// Load the highest object_id from the db
+	unique_ptr<sql::Statement> statement(kernel_->GetDatabaseManager()->getConnection("galaxy")->createStatement());
+	auto result = unique_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetHighestObjectId();"));
+	if (result->next())
+		next_persistent_id_ = result->getUInt64(1);
+	while(statement->getMoreResults());
+
 	LoadPythonObjectTemplates();
 }
 
@@ -318,7 +325,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			//Set the ID based on the inputs
 			if(is_persisted)
 			{
-
+				created_object->SetObjectId(next_persistent_id_++);
 			}
 			else if(object_id == 0)
 			{
@@ -352,7 +359,7 @@ void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<Object>& objec
     return factory->DeleteObjectFromStorage(object);
 }
 
-void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
+void ObjectManager::PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited)
 {
 	std::shared_ptr<ObjectFactoryInterface> factory;
 	{
@@ -367,40 +374,40 @@ void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
 
 	if(object->IsDatabasePersisted())
     {
-		factory->PersistObject(object);
+		factory->PersistObject(object, persist_inherited);
 	}
 }
 
-void ObjectManager::PersistObject(uint64_t object_id)
+void ObjectManager::PersistObject(uint64_t object_id, bool persist_inherited)
 {
     auto object = GetObjectById(object_id);
     if (object)
     {
-        PersistObject(object);
+        PersistObject(object, persist_inherited);
     }
 }
 
-void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
+void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object, bool persist_inherited)
 {
     if (object)
     {
 		// first persist the parent object
-        PersistObject(object);
+        PersistObject(object, persist_inherited);
 
 		// Now related objects
 		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> contained)
 		{
-			PersistObject(contained);
+			PersistObject(contained, persist_inherited);
 		});
     }
 }
 	
-void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id)
+void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
 {
     auto object = GetObjectById(parent_object_id);
     if (object)
     {
-        PersistRelatedObjects(object);
+        PersistRelatedObjects(object, persist_inherited);
     }
 }
 

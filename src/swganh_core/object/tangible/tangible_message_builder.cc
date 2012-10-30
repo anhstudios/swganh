@@ -40,10 +40,10 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         auto value_event = static_pointer_cast<TangibleEvent>(incoming_event);
         BuildOptionsMaskDelta(value_event->Get());
     });
-    event_dispatcher->Subscribe("Tangible::IncapTimer", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Tangible::Counter", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<TangibleEvent>(incoming_event);
-        BuildIncapTimerDelta(value_event->Get());
+        BuildCounterDelta(value_event->Get());
     });
     event_dispatcher->Subscribe("Tangible::ConditionDamage", [this] (shared_ptr<EventInterface> incoming_event)
     {
@@ -112,12 +112,12 @@ void TangibleMessageBuilder::BuildOptionsMaskDelta(const shared_ptr<Tangible>& t
         tangible->AddDeltasUpdate(&message);
     }
 }
-void TangibleMessageBuilder::BuildIncapTimerDelta(const shared_ptr<Tangible>& tangible)
+void TangibleMessageBuilder::BuildCounterDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 7);
-        message.data.write(tangible->GetIncapTimer());
+        message.data.write(tangible->GetCounter());
         tangible->AddDeltasUpdate(&message);
     }
 }
@@ -167,7 +167,7 @@ BaselinesMessage TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangibl
     message.data.write<std::string>(tangible->GetCustomization());
     tangible->SerializeComponentCustomization(&message);
     message.data.write<uint32_t>(tangible->GetOptionsMask());
-    message.data.write<uint32_t>(tangible->GetIncapTimer());
+    message.data.write<uint32_t>(tangible->GetCounter());
     message.data.write<uint32_t>(tangible->GetCondition());
     message.data.write<uint32_t>(tangible->GetMaxCondition());
     message.data.write<uint8_t>(tangible->IsStatic() ? 1 : 0);

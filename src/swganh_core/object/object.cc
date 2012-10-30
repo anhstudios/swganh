@@ -239,13 +239,14 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrange
 		auto& arrangement = object->slot_arrangements_[arrangement_id-4];
 		for (auto& i : arrangement)
 		{
+			slot_descriptor_[i]->insert_object(object);			
 			// Remove object in existing slot
-			removed_object = slot_descriptor_[i]->insert_object(object);			
-			if (removed_object)
-			{
-				// Transfer it out, put it in the place the replacing object came from
-				removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
-			}
+			//removed_object = 
+			//if (removed_object && removed_object != object)
+			//{
+			//	// Transfer it out, put it in the place the replacing object came from
+			//	removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
+			//}
 		}
 	}
 	object->SetArrangementId(arrangement_id);
@@ -276,51 +277,55 @@ void Object::SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object
 
 void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
 {
-	// we are already locked
-	if(	requester == nullptr || (
-		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
-		newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
-		{
-			arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
-
-		//Split into 3 groups -- only ours, only new, and both ours and new
-		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
-
-		object->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
-			oldObservers.insert(observer);
-		});
-	
-		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) 
-		{
-			if(newContainer->GetPermissions()->canView(newContainer, observer))
+	try {
+		// we are already locked
+		if(	requester == nullptr || (
+			this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
+			newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
 			{
-				auto itr = oldObservers.find(observer);
-				if(itr != oldObservers.end())
+				arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+
+			//Split into 3 groups -- only ours, only new, and both ours and new
+			std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
+
+			object->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
+				oldObservers.insert(observer);
+			});
+	
+			newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) 
+			{
+				if(newContainer->GetPermissions()->canView(newContainer, observer))
 				{
-					oldObservers.erase(itr);
-					bothObservers.insert(observer);
-				} 
-				else 
-				{
-					newObservers.insert(observer);
+					auto itr = oldObservers.find(observer);
+					if(itr != oldObservers.end())
+					{
+						oldObservers.erase(itr);
+						bothObservers.insert(observer);
+					} 
+					else 
+					{
+						newObservers.insert(observer);
+					}
 				}
+			}, requester);
+
+			//Send Creates to only new
+			for(auto& observer : newObservers) {
+				object->__InternalAddAwareObject(observer);
 			}
-		}, requester);
 
-		//Send Creates to only new
-		for(auto& observer : newObservers) {
-			object->__InternalAddAwareObject(observer);
-		}
+			//Send updates to both
+			for(auto& observer : bothObservers) {
+				object->SendUpdateContainmentMessage(observer->GetController());
+			}
 
-		//Send updates to both
-		for(auto& observer : bothObservers) {
-			object->SendUpdateContainmentMessage(observer->GetController());
+			//Send destroys to only ours
+			for(auto& observer : oldObservers) {
+				object->__InternalRemoveAwareObject(observer);
+			}
 		}
-
-		//Send destroys to only ours
-		for(auto& observer : oldObservers) {
-			object->__InternalRemoveAwareObject(observer);
-		}
+	} catch(const std::exception& e){
+		LOG(error) << "Could not transfer object " << object->GetObjectId() << " to container :" << GetObjectId() << " with error " << e.what();
 	}
 }
 

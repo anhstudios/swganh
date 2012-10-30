@@ -14,7 +14,7 @@ ManufactureSchematicFactory::ManufactureSchematicFactory(swganh::app::SwganhKern
 {
 }
 
-uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	return 0;
 }

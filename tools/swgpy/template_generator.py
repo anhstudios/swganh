@@ -37,12 +37,13 @@ def main(force):
 			csv.append(i)
 	
 		#Ensure the folder exists
-		dir = os.path.dirname(csv[0])
+		out_file =  '../../data/scripts/templates/' +csv[0]
+		dir = os.path.dirname(out_file)
 		if not os.path.exists(dir):
 			os.makedirs(dir)
 	
 		#Convert entry at 0 to filename
-		output_filename = "./"+csv[0].replace(".iff", ".py")
+		output_filename = "./" + out_file.replace(".iff", ".py")
 		
 		replaces = []
 		if os.path.isfile(output_filename):

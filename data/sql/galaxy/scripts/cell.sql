@@ -19,12 +19,5 @@ CREATE TABLE IF NOT EXISTS `cell` (
   CONSTRAINT `FK_CB8787E2BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table galaxy.cell: ~3 rows (approximately)
-/*!40000 ALTER TABLE `cell` DISABLE KEYS */;
-INSERT INTO `cell` (`id`, `cell_number`) VALUES
-	(1038, 0),
-	(1039, 0),
-	(1040, 0);
-/*!40000 ALTER TABLE `cell` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

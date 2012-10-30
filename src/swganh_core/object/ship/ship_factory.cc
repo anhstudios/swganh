@@ -8,7 +8,7 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object;
 
-uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
 

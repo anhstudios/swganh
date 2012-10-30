@@ -16,6 +16,8 @@ class Template(BaseTemplate):
 		result.stfName("food_name","fruit_melon")		
 		
 		#### BEGIN MODIFICATIONS ####
+		# UsesRemaining
+		result.counter = 5
 		####  END MODIFICATIONS  ####
 		
 		return result

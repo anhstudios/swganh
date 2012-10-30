@@ -3,6 +3,7 @@
 #pragma once
 
 #include "swganh/character/character_provider_interface.h"
+#include "character_create.h"
 
 namespace swganh {
 namespace app {
@@ -54,6 +55,11 @@ public:
 	*   On failure, it returns the 0 and the string of the error that occurred
 	*/
     virtual std::tuple<uint64_t, std::string> CreateCharacter(const swganh::messages::ClientCreateCharacter& character_info, uint32_t account_id);
+
+	/**
+	 * 
+	 *
+	 */
 	
 	/**
 	* Checks if a particular name is allowed to be used
@@ -77,6 +83,8 @@ private:
 	* @returns the string for the given mysql implementation-specific bad name error code
 	*/
     std::string getCharacterCreateErrorCode_(uint32_t error_code);
+
+	PyCharacterCreate py_character_create_;
 	
     swganh::app::KernelInterface* kernel_;
 	std::vector<std::string> reserved_names_;

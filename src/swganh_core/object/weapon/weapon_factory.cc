@@ -28,9 +28,9 @@ void WeaponFactory::PersistChangedObjects()
 	}
 }
 
-uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
-	return TangibleFactory::PersistObject(object);
+	return TangibleFactory::PersistObject(object, persist_inherited);
 }
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)

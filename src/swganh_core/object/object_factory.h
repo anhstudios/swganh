@@ -53,7 +53,7 @@ namespace object {
          * @param the result set from which to load the values from
          */
         void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
-        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object);
+        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false);
         
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
