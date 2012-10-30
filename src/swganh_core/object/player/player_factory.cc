@@ -167,6 +167,7 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
 
             LoadStatusFlags_(player, statement);
             LoadProfileFlags_(player, statement);
+			LoadBadgeFlags_(player, statement);
             LoadDraftSchematics_(player, statement);
             LoadFriends_(player, statement);
             LoadForceSensitiveQuests_(player, statement);
@@ -234,6 +235,27 @@ void PlayerFactory::LoadProfileFlags_(std::shared_ptr<Player> player, const std:
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+}
+
+void PlayerFactory::LoadBadgeFlags_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
+{
+	try
+	{
+		if(statement->getMoreResults())
+		{
+			auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
+			while(result->next())
+			{
+				auto badge_id = result->getUInt("badge");
+				player->ToggleBadge((uint32_t)floor((double)((badge_id)/32)),badge_id%32);
+			}
+		}
+	}
+	catch(sql::SQLException &e)
+	{
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
 }
 
 // Helpers

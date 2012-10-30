@@ -807,6 +807,23 @@ void Player::ToggleBadge(uint8_t index, uint8_t bit)
 	badge_flags_[index][bit] = !badge_flags_[index][bit];
 }
 
+void Player::AddBadge(uint32_t id)
+{
+	uint32_t index = (uint32_t)floor((double)((id)/32));
+	uint8_t bit = id % 32;
+
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	badge_flags_[index][bit] = 1;
+}
+
+bool Player::HasBadge(uint32_t id)
+{
+	uint32_t index = (uint32_t)floor((double)((id)/32));
+	uint8_t bit = id % 32;
+
+	return badge_flags_[index][bit];
+}
+
 bool Player::HasBadge(uint8_t index, uint8_t bit)
 {
 	if(index > 6 || bit > 32)

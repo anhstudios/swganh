@@ -6,10 +6,8 @@
 
 namespace swganh {
 namespace badge {
-	class BadgeService;
-}
-namespace object {
-namespace regions {
+
+class BadgeService;
 
 class BadgeRegion : public swganh::object::Object
 {
@@ -19,12 +17,9 @@ public:
 
 	void OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider);
 
-protected:
-	void __BuildCollisionBox();
-
 private:
 	swganh::badge::BadgeService* badge_service_;
 	std::string badge_name_;
 };
 
-}}} // swganh::object::regions
+}} // swganh::badge
