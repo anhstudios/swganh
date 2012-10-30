@@ -16,5 +16,8 @@ namespace badge {
 	public:
 		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> player, std::string name)=0;
 		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> player, uint32_t id)=0;
+
+		virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, std::string name)=0;
+		virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id)=0;
 	};
 }} // namespace swganh::badge
