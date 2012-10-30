@@ -183,6 +183,21 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Bad
 	// Toggle badge bitmask and commit to Mysql.	
 	play->ToggleBadge(badge->GetIndex(), badge->GetBit());
 
+	try
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+		auto statement = conn->createStatement();
+	
+		std::stringstream query;
+		query << "INSERT INTO player_badges (`player_id`, `badge_id`) VALUES(" << play->GetObjectId() << ", " << badge->id << ");";
+
+		statement->execute(query.str());
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+
 	// Player system message feedback.
 	messages::PlayMusicMessage music_message;
 	music_message.music_file = badge->sound;

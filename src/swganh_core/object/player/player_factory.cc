@@ -246,7 +246,7 @@ void PlayerFactory::LoadBadgeFlags_(shared_ptr<Player> player, const std::shared
 			auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
 			while(result->next())
 			{
-				auto badge_id = result->getUInt("badge_id");
+				auto badge_id = result->getUInt("badge");
 				player->ToggleBadge((uint32_t)floor((double)((badge_id)/32)),badge_id%32);
 			}
 		}

@@ -25,7 +25,7 @@ BEGIN
     LEFT JOIN players_profile_flags ON players_profile_flags.profile_flag_id = profile_flag.id
     WHERE players_profile_flags.player_id = object_id;
 
-	SELECT badge_id
+	SELECT badge_id as badge
 	FROM player_badges
 	WHERE player_id = object_id;
 	
