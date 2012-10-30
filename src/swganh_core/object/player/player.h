@@ -890,12 +890,26 @@ public:
 	void ToggleBadge(uint8_t index, uint8_t bit);
 
 	/**
+	 * Adds a badge by id.
+	 *
+	 * @param id Id of the badge you want to add.
+	 */
+	void AddBadge(uint32_t id);
+
+	/**
 	 * @param index The bitmask to look in.
 	 * @param bit The bit to check.
 	 * 
 	 * @return Check for badge.
 	 */
 	bool HasBadge(uint8_t index, uint8_t bit);
+
+	/**
+	 * @param id Id of the badge you want to find.
+	 * 
+	 * @return Check for badge.
+	 */
+	bool HasBadge(uint32_t id);
 
 	std::array<std::bitset<32>, 15> GetBadges() { return badge_flags_; }
 

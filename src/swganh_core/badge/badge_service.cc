@@ -160,6 +160,23 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, uint32_t id)
 	GiveBadge(player, FindBadge(id));
 }
 
+bool BadgeService::HasBadge(std::shared_ptr<Object> object, std::string name)
+{
+	auto badge = FindBadge(name);
+	if(badge == nullptr)
+		return false;
+	
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+	return player->HasBadge(badge->GetIndex(), badge->GetBit());
+
+}
+
+bool BadgeService::HasBadge(std::shared_ptr<Object> object, uint32_t id)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+	return player->HasBadge(GetBadgeBitmaskIndexById(id), GetBadgeBitmaskBitById(id));
+}
+
 void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Badge> badge)
 {
 	if(!player->HasController())
@@ -181,7 +198,7 @@ void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Bad
 		return;
 
 	// Toggle badge bitmask and commit to Mysql.	
-	play->ToggleBadge(badge->GetIndex(), badge->GetBit());
+	play->AddBadge(badge->id);
 
 	try
 	{
