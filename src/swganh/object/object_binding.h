@@ -242,6 +242,9 @@ void exportObject()
 		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
 		;
 
+	bp::class_<std::vector<int>>("IntVector")
+		.def(bp::vector_indexing_suite<std::vector<int>>());
+
 	class_<Cell, bases<Object>, std::shared_ptr<Cell>, boost::noncopyable>("Cell");
 	class_<Intangible, bases<Object>, std::shared_ptr<Intangible>, boost::noncopyable>("Intangible");
 

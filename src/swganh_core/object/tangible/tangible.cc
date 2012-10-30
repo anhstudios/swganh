@@ -15,7 +15,7 @@ Tangible::Tangible()
     , customization_("")
     , component_customization_list_(NetworkList<ComponentCustomization>())
     , options_bitmask_(0)
-    , incap_timer_(0)
+    , counter_(0)
     , condition_damage_(0)
     , max_condition_(1000)
     , is_static_(false)
@@ -23,12 +23,12 @@ Tangible::Tangible()
 {}
 
 Tangible::Tangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
-        uint32_t incap_timer, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders)
+        uint32_t counter, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders)
     : Object()
     , customization_(customization)
     , component_customization_list_(NetworkList<ComponentCustomization>())
     , options_bitmask_(bitmask_options)
-    , incap_timer_(incap_timer)
+    , counter_(counter)
     , condition_damage_(condition_damage)
     , max_condition_(max_condition)
     , is_static_(is_static)
@@ -65,6 +65,14 @@ void Tangible::SetCustomization(const string& customization)
         customization_ = customization;
     }
     DISPATCH(Tangible, Customization);
+}
+void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints)
+{
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		customization_ = std::string(customization_ints.begin(), customization_ints.end());
+	}
+	DISPATCH(Tangible, Customization);
 }
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
@@ -124,15 +132,15 @@ uint32_t Tangible::GetOptionsMask(void)
     return options_bitmask_;
 }
 
-void Tangible::SetIncapTimer(uint32_t incap_timer)
+void Tangible::SetCounter(uint32_t counter)
 {
-    incap_timer_ = incap_timer;
-    DISPATCH(Tangible, IncapTimer);
+    counter_ = counter;
+    DISPATCH(Tangible, Counter);
 }
 
-uint32_t Tangible::GetIncapTimer(void)
+uint32_t Tangible::GetCounter(void)
 {
-    return incap_timer_;
+    return counter_;
 }
 
 void Tangible::SetConditionDamage(uint32_t damage)
@@ -269,7 +277,7 @@ void Tangible::Clone(std::shared_ptr<Tangible> other)
 	other->customization_ =  customization_;
 	other->component_customization_list_ = component_customization_list_;
 	other->options_bitmask_.store(options_bitmask_);
-    other->incap_timer_.store(incap_timer_);
+    other->counter_.store(counter_);
 	other->condition_damage_.store(condition_damage_);
     other->max_condition_.store(max_condition_);
     other->is_static_.store(is_static_);

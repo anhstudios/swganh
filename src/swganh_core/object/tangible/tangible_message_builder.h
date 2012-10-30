@@ -23,7 +23,7 @@ namespace object {
         static void BuildCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
         static void BuildComponentCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
         static void BuildOptionsMaskDelta(const std::shared_ptr<Tangible>& tangible);
-        static void BuildIncapTimerDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildCounterDelta(const std::shared_ptr<Tangible>& tangible);
         static void BuildConditionDamageDelta(const std::shared_ptr<Tangible>& tangible);
         static void BuildMaxConditionDelta(const std::shared_ptr<Tangible>& tangible);
         static void BuildStaticDelta(const std::shared_ptr<Tangible>& tangible);

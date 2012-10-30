@@ -236,13 +236,14 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrange
 		auto& arrangement = object->slot_arrangements_[arrangement_id-4];
 		for (auto& i : arrangement)
 		{
+			slot_descriptor_[i]->insert_object(object);			
 			// Remove object in existing slot
-			removed_object = slot_descriptor_[i]->insert_object(object);			
-			if (removed_object && removed_object != object)
-			{
-				// Transfer it out, put it in the place the replacing object came from
-				removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
-			}
+			//removed_object = 
+			//if (removed_object && removed_object != object)
+			//{
+			//	// Transfer it out, put it in the place the replacing object came from
+			//	removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
+			//}
 		}
 	}
 	object->SetArrangementId(arrangement_id);

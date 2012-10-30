@@ -8,7 +8,7 @@ from character_create.professions import *
 from character_create.skills_species import *
 from character_create.starting_items import *
 
-def CreateStartingCharacter(kernel, scale, base_model, full_name, profession, hair_model, start_city):
+def CreateStartingCharacter(kernel, scale, base_model, customization, full_name, profession, hair_model, hair_customization, start_city):
 	# Simulation Service to add to scene
 	simulation = kernel.serviceManager().simulationService()
 	# Set Female
@@ -24,6 +24,8 @@ def CreateStartingCharacter(kernel, scale, base_model, full_name, profession, ha
 	creature = simulation.createObject(base_model.replace('player/', 'player/shared_'), ContainerPermission.CREATURE, True, True)
 	creature.custom_name = full_name
 	creature.position = vector3(startLoc.x, startLoc.y, startLoc.z)
+	if customization:
+		creature.customization = customization
 	creature.bank_credits = 2000
 	creature.speed_base = 5.75
 	# Set Starting Stats
@@ -51,7 +53,8 @@ def CreateStartingCharacter(kernel, scale, base_model, full_name, profession, ha
 	creature.add(creature, bank)
 	creature.add(creature, mission)
 	if (hair):
-		creature.add(creature, hair)
+		hair.customization = hair_customization
+		creature.add(creature, hair)		
 	creature.add(creature, player)
 	# Now add the objects to the inventory
 	# Wearables get equipped

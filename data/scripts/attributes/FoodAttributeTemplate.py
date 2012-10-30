@@ -11,7 +11,7 @@ class FoodAttributeTemplate(BaseAttributeTemplate):
 			attributes.append("@obj_attr_n:original_name", "@" + object.stf_file + ":" + object.stf_name)
 		attributes.extend([
 			Attribute("@obj_attr_n:volume", str(object.volume)),
-			Attribute("@obj_attr_n:counter_uses_remaining", object.getStringAttribute("counter_uses_remaining"))
+			Attribute("@obj_attr_n:counter_uses_remaining", str(object.counter))
 		])
 		SetOptionalAttribute(attributes, '@obj_attr_n:crafter', 'crafter', object, False)
 		SetOptionalAttribute(attributes, '@obj_attr_n:serial_number', 'serial_number', object, False)			
