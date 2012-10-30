@@ -16,6 +16,18 @@ class Template(BaseTemplate):
 		result.stfName("weapon_name","knife_survival")		
 		
 		#### BEGIN MODIFICATIONS ####
+		result.setStringAttribute('wpn_armor_pierce_rating', 'None')
+		result.setFloatAttribute('wpn_attack_speed', 4.5)
+		result.setStringAttribute('cat_wpn_damage.wpn_damage_type', 'Kinetic')
+		result.setIntAttribute('cat_wpn_damage.wpn_damage_min', 14)
+		result.setIntAttribute('cat_wpn_damage.wpn_damage_max', 28)
+		result.setFloatAttribute('cat_wpn_damage.wpn_wound_chance', 5.0)
+		result.setIntAttribute('cat_wpn_rangemods.wpn_range_zero', 0)
+		result.setIntAttribute('cat_wpn_rangemods.wpn_range_mid', 3)
+		result.setIntAttribute('cat_wpn_rangemods.wpn_range_max', 4)
+		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_health', 9)
+		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_action', 28)
+		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_mind', 6)	
 		####  END MODIFICATIONS  ####
 		
 		return result

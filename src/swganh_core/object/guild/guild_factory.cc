@@ -23,7 +23,7 @@ GuildFactory::GuildFactory(swganh::app::SwganhKernel* kernel)
 {	
 }
 
-uint32_t GuildFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t GuildFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {	
 	return 0;
 }

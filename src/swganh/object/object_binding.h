@@ -30,7 +30,7 @@ using namespace swganh::object;
 
 boost::python::tuple AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2)
 {
-	return boost::python::make_tuple(newObject, requester, arrangement_id);
+	return boost::python::make_tuple(requester, newObject,  arrangement_id);
 }
 
 boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
@@ -241,6 +241,9 @@ void exportObject()
 		.def("toCreature", ToCreature)
 		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
 		;
+
+	bp::class_<std::vector<int>>("IntVector")
+		.def(bp::vector_indexing_suite<std::vector<int>>());
 
 	class_<Cell, bases<Object>, std::shared_ptr<Cell>, boost::noncopyable>("Cell");
 	class_<Intangible, bases<Object>, std::shared_ptr<Intangible>, boost::noncopyable>("Intangible");

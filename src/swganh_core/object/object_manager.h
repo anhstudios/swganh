@@ -1,3 +1,4 @@
+
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
@@ -233,28 +234,28 @@ namespace object {
          *
          * @param object the object instance to persist.
          */
-        void PersistObject(const std::shared_ptr<Object>& object);
+        void PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false);
 
         /**
          * Persists a currently managed object by its id.
          *
          * @param object_id The id of the object to persist
          */
-        void PersistObject(uint64_t object_id);
+        void PersistObject(uint64_t object_id, bool persist_inherited = false);
         
         /**
          * Persists an object and all its related objects.
          *
          * @param object the object instance to persist.
          */
-        void PersistRelatedObjects(const std::shared_ptr<Object>& object);
+        void PersistRelatedObjects(const std::shared_ptr<Object>& object, bool persist_inherited = false);
         
         /**
          * Persists a managed object and all its related objects by id.
          *
          * @param object_id The id of the object to persist
          */
-	    void PersistRelatedObjects(uint64_t parent_object_id);
+	    void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited = false);
 
 		/**
 		 * Gets the objects definition file data from the resource manager
@@ -322,6 +323,7 @@ namespace object {
 		PythonTemplateMap object_templates_;
 
 		uint64_t next_dynamic_id_;
+		uint64_t next_persistent_id_;
 
         boost::shared_mutex object_map_mutex_;
 		boost::shared_mutex object_factories_mutex_;

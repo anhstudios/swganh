@@ -52,9 +52,11 @@ void InstallationFactory::PersistChangedObjects()
 			PersistObject(object);
 	}
 }
-uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
+	if (persist_inherited)
+		TangibleFactory::PersistObject(object, persist_inherited);
 	try 
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
