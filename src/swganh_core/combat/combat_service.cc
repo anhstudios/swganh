@@ -767,7 +767,8 @@ void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const
     command_service_->ClearDefaultCommand(target->GetObjectId());
     target->SetPosture(INCAPACITATED);
     //@TODO: Get this from config Default Incap Timer 
-    target->SetIncapTimer(15);
+	// Incap Timer
+    target->SetCounter(15);
     EndCombat(attacker, target);
 
     SystemMessage::Send(attacker, OutOfBand("base_player", "prose_target_incap", TT, target->GetObjectId()));
@@ -785,7 +786,8 @@ void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const
         if (!target || target->IsDead())
             return;
         target->SetPosture(UPRIGHT);
-        target->SetIncapTimer(0);
+		// Incap Timer
+        target->SetCounter(0);
     });
     
 }

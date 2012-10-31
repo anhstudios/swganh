@@ -4,6 +4,7 @@
 #include "object_manager.h"
 
 #include <boost/asio.hpp>
+#include <boost/python.hpp>
 
 #include "swganh/logger.h"
 
@@ -17,6 +18,9 @@
 #include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
 #include "swganh_core/object/slot_exclusive.h"
 #include "swganh_core/object/slot_container.h"
+#include "swganh/object/template_interface.h"
+
+#include "swganh/scripting/utilities.h"
 
 #include "swganh/database/database_manager_interface.h"
 #include <cppconn/exception.h>
@@ -39,6 +43,7 @@ using namespace swganh;
 using namespace swganh::tre;
 using namespace swganh::object;
 using namespace swganh::messages;
+namespace bp = boost::python;
 
 #define DYNAMIC_ID_START 17596481011712
 
@@ -65,6 +70,15 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 
 	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
+
+	// Load the highest object_id from the db
+	unique_ptr<sql::Statement> statement(kernel_->GetDatabaseManager()->getConnection("galaxy")->createStatement());
+	auto result = unique_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetHighestObjectId();"));
+	if (result->next())
+		next_persistent_id_ = result->getUInt64(1);
+	while(statement->getMoreResults());
+
+	LoadPythonObjectTemplates();
 }
 
 ObjectManager::~ObjectManager()
@@ -83,32 +97,6 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
 	}
 
 	factory->RegisterEventHandlers();
-
-	//Load Object Prototypes For this ObjectType
-	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
-    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-
-	std::stringstream ss;
-	ss << "SELECT i.id, i.iff_template FROM iff_templates i WHERE i.has_prototype=1 and i.object_type ="<< object_type <<";";
-    statement->execute(ss.str());
-
-	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-
-	while(result->next())
-	{
-		uint64_t id = result->getUInt64("id");
-		std::string key = result->getString("iff_template");
-
-		std::shared_ptr<Object> obj = factory->CreateObjectFromStorage(id);
-		obj->SetDatabasePersisted(false);
-		obj->SetInSnapshot(false);
-
-		if(obj)
-		{
-			boost::lock_guard<boost::shared_mutex> lock(object_map_mutex_);
-			prototypes_.insert(make_pair(key, obj));
-		}
-	}
 }
 
 void ObjectManager::UnregisterObjectType(uint32_t object_type)
@@ -285,11 +273,28 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 	{
 		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
 		auto prototype_itr = prototypes_.find(template_name);
-		if(prototype_itr == prototypes_.end())
+		if(prototype_itr != prototypes_.end())
 		{
-			return nullptr;
+			prototype = prototype_itr->second;	
+		}		
+	}
+	if (!prototype)
+	{
+		// Call python To get Object
+		swganh::scripting::ScopedGilLock lock;
+		{
+			{
+				boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+				auto template_iter = object_templates_.find(template_name);
+				if (template_iter == object_templates_.end())
+				{
+					return nullptr;	
+				}
+				// Temp
+				prototype = template_iter->second->CreateTemplate(kernel_,std::map<std::string, std::string>());
+			}
+
 		}
-		prototype = prototype_itr->second;
 	}
 
 	if(prototype)
@@ -313,7 +318,6 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			//Set the required stuff
 			created_object->SetPermissions(permission_itr->second);
 			created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
-			created_object->SetTemplate(template_name);
 			created_object->SetDatabasePersisted(is_persisted);
 			LoadSlotsForObject(created_object);
 			LoadCollisionInfoForObject(created_object);
@@ -321,7 +325,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			//Set the ID based on the inputs
 			if(is_persisted)
 			{
-
+				created_object->SetObjectId(next_persistent_id_++);
 			}
 			else if(object_id == 0)
 			{
@@ -355,7 +359,7 @@ void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<Object>& objec
     return factory->DeleteObjectFromStorage(object);
 }
 
-void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
+void ObjectManager::PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited)
 {
 	std::shared_ptr<ObjectFactoryInterface> factory;
 	{
@@ -370,40 +374,40 @@ void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
 
 	if(object->IsDatabasePersisted())
     {
-		factory->PersistObject(object);
+		factory->PersistObject(object, persist_inherited);
 	}
 }
 
-void ObjectManager::PersistObject(uint64_t object_id)
+void ObjectManager::PersistObject(uint64_t object_id, bool persist_inherited)
 {
     auto object = GetObjectById(object_id);
     if (object)
     {
-        PersistObject(object);
+        PersistObject(object, persist_inherited);
     }
 }
 
-void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
+void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object, bool persist_inherited)
 {
     if (object)
     {
 		// first persist the parent object
-        PersistObject(object);
+        PersistObject(object, persist_inherited);
 
 		// Now related objects
 		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> contained)
 		{
-			PersistObject(contained);
+			PersistObject(contained, persist_inherited);
 		});
     }
 }
 	
-void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id)
+void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
 {
     auto object = GetObjectById(parent_object_id);
     if (object)
     {
-        PersistRelatedObjects(object);
+        PersistRelatedObjects(object, persist_inherited);
     }
 }
 
@@ -493,4 +497,22 @@ void ObjectManager::PrepareToAccomodate(uint32_t delta)
 {
 	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
 	object_map_.reserve(object_map_.size() + delta);
+}
+
+void ObjectManager::LoadPythonObjectTemplates()
+{
+	swganh::scripting::ScopedGilLock lock;
+	try {		
+		LOG(info) << "Loading Prototype and Template Objects";
+		auto module = bp::import("load_objects");
+		auto python_template = module.attr("templates");
+		object_templates_ = bp::extract<PythonTemplateMap>(python_template);			
+		auto python_prototypes = module.attr("prototypes");
+		prototypes_ = bp::extract<PrototypeMap>(python_prototypes);
+		LOG(info) << "Finished Loading...";
+	}
+	catch(bp::error_already_set&)
+	{
+		PyErr_Print();		
+	}
 }

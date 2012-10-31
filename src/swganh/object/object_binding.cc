@@ -12,6 +12,7 @@
 #include "swganh/object/guild/guild_binding.h"
 #include "swganh/object/tangible/tangible_binding.h"
 #include "swganh/object/object_controller_binding.h"
+#include "swganh/object/template_binding.h"
 
 BOOST_PYTHON_MODULE(py_object) 
 {
@@ -24,4 +25,5 @@ BOOST_PYTHON_MODULE(py_object)
 	exportWeapon();
     exportObjectController();
     exportOutOfBand();
+	exportObjectTemplate();
 }

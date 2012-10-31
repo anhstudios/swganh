@@ -147,17 +147,17 @@ public:
 		auto scene = scene_manager_->GetScene(scene_label);
         if (scene)
         {
-            scene->AddObject(object);
+			scene->AddObject(object);
         }		
 	}	
 	
-    void PersistObject(uint64_t object_id)
+    void PersistObject(uint64_t object_id, bool persist_inherited)
     {
-        object_manager_->PersistObject(object_id);
+        object_manager_->PersistObject(object_id, persist_inherited);
     }
-	void PersistRelatedObjects(uint64_t parent_object_id)
+	void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
 	{
-        object_manager_->PersistRelatedObjects(parent_object_id);
+        object_manager_->PersistRelatedObjects(parent_object_id, persist_inherited);
 	}
 
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
@@ -252,8 +252,8 @@ public:
 		//Update the object's scene_id
 		obj->SetSceneId(scene_obj->GetSceneId());		
 
-	        // Add object to scene and send baselines
-	        scene_obj->AddObject(obj);
+	    // Add object to scene and send baselines
+	    scene_obj->AddObject(obj);
 	}
 
 	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)
@@ -522,13 +522,13 @@ std::string SimulationService::SceneNameById(uint32_t scene_id)
 	return impl_->GetSceneManager()->GetScene(scene_id)->GetLabel();
 }
 
-void SimulationService::PersistObject(uint64_t object_id)
+void SimulationService::PersistObject(uint64_t object_id, bool persist_inherited)
 {
-    impl_->PersistObject(object_id);
+    impl_->PersistObject(object_id, persist_inherited);
 }
-void SimulationService::PersistRelatedObjects(uint64_t parent_object_id)
+void SimulationService::PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
 {
-	impl_->PersistRelatedObjects(parent_object_id);
+	impl_->PersistRelatedObjects(parent_object_id, persist_inherited);
 }
 shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id)
 {

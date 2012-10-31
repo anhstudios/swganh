@@ -38,6 +38,9 @@
 
 #include "swganh/object/slot_interface.h"
 
+#define DISPATCH(BIG, LITTLE) if(event_dispatcher_) \
+{GetEventDispatcher()->Dispatch(make_shared<BIG ## Event>(#BIG "::" #LITTLE, static_pointer_cast<BIG>(shared_from_this())));}
+
 namespace swganh {
 namespace object {
 
@@ -526,7 +529,8 @@ public:
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		attributes_map_[name] = attribute;
 
-		event_dispatcher_->Dispatch(std::make_shared<ObjectEvent>("Object::UpdateAttribute", shared_from_this()));
+		if (event_dispatcher_)
+			event_dispatcher_->Dispatch(std::make_shared<ObjectEvent>("Object::UpdateAttribute", shared_from_this()));
 	}
 
 	/**
@@ -693,6 +697,8 @@ protected:
 
 	std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 
+	swganh::EventDispatcher* event_dispatcher_;
+
 private:
     
     typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
@@ -710,7 +716,6 @@ private:
     DeltasCacheContainer deltas_;
 
     std::shared_ptr<ContainerInterface> container_;
-    swganh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;
 

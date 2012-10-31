@@ -24,7 +24,7 @@ namespace object {
 
 		 ResourceContainerFactory(swganh::app::SwganhKernel* kernel);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, bool persist_inherited = false);
 		virtual void PersistChangedObjects(){}
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

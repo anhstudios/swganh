@@ -36,9 +36,7 @@ void Group::AddGroupMember(uint64_t member, std::string name)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		member_list_.Add(Member(member, name));
 	}
-    
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
+    DISPATCH(Group, Member);
 }
 
 void Group::RemoveGroupMember(uint64_t member)
@@ -56,9 +54,7 @@ void Group::RemoveGroupMember(uint64_t member)
         
 		member_list_.Remove(iter);
 	}
-    
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
+    DISPATCH(Group, Member);
 }
     
 swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMembers()
@@ -70,9 +66,7 @@ swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMember
 void Group::SetLootMode(LootMode loot_mode)
 {
     loot_mode_ = loot_mode;
-
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::LootMode",static_pointer_cast<Group>(shared_from_this())));
+	DISPATCH(Group, LootMode);
 }
 
 LootMode Group::GetLootMode(void)
@@ -84,9 +78,7 @@ LootMode Group::GetLootMode(void)
 void Group::SetDifficulty(uint16_t difficulty)
 {
     difficulty_ = difficulty;
-
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::Difficulty",static_pointer_cast<Group>(shared_from_this())));
+	DISPATCH(Group, Difficulty);
 }
 
 uint16_t Group::GetDifficulty(void)
@@ -97,9 +89,7 @@ uint16_t Group::GetDifficulty(void)
 void Group::SetLootMaster(uint64_t loot_master)
 {
     loot_master_ = loot_master;
-
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::LootMaster",static_pointer_cast<Group>(shared_from_this())));
+	DISPATCH(Group, LootMaster);
 }
 
 uint64_t Group::GetLootMaster(void)

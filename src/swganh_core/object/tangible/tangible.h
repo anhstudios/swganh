@@ -106,11 +106,12 @@ public:
 
     Tangible();
     Tangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
-        uint32_t incap_timer, uint32_t damage_amount, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders);
+        uint32_t counter, uint32_t damage_amount, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders);
 
     // Customization
     void AddCustomization(const std::string& customization);
     void SetCustomization(const std::string& customization);
+	void SetCustomizationFromInts(std::vector<int> customization_ints);
     std::string GetCustomization();
 
     // Component Customization
@@ -125,9 +126,11 @@ public:
     void ToggleOption(uint32_t option);
     void SetOptionsMask(uint32_t options);
 
-    // Incap Timer
-    uint32_t GetIncapTimer();
-    void SetIncapTimer(uint32_t incap_timer);
+    // Counter
+	// Used for both item counters and incap_timer
+    uint32_t GetCounter();
+	// Used for both item counters and incap_timer
+    void SetCounter(uint32_t counter);
 
     // Condition
     uint32_t GetCondition();
@@ -165,7 +168,8 @@ private:
     std::string customization_;                                                                                      // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;                 // update 3 variable 5
     std::atomic<uint32_t> options_bitmask_;                                                                          // update 3 variable 6
-    std::atomic<uint32_t> incap_timer_;                                                                              // update 3 variable 7
+	// Uses for uses counter on items and incap_timer for creature
+    std::atomic<uint32_t> counter_;                                                                                  // update 3 variable 7
     std::atomic<uint32_t> condition_damage_;                                                                         // update 3 variable 8
     std::atomic<uint32_t> max_condition_;                                                                            // update 3 variable 9
     std::atomic<bool> is_static_;                                                                                    // update 3 variable 10

@@ -6,6 +6,8 @@
 
 #include "swganh/object/object_binding.h"
 #include "swganh_core/object/tangible/tangible.h"
+#include "swganh_core/object/building/building.h"
+#include "swganh_core/object/factory_crate/factory_crate.h"
 #include "swganh_core/object/weapon/weapon.h"
 
 #include <boost/python.hpp>
@@ -17,7 +19,7 @@ using namespace swganh::object;
 void exportTangible()
 {
 	class_<Tangible, bases<swganh::object::Object>, std::shared_ptr<Tangible>, boost::noncopyable>("Tangible")
-		.add_property("customization", &Tangible::GetCustomization, &Tangible::SetCustomization, "Gets and Sets the tangible customization")
+		.add_property("customization", &Tangible::GetCustomization, &Tangible::SetCustomizationFromInts, "Gets and Sets the tangible customization")
 		//.def("customization.__add__", &Tangible::AddCustomization, "Adds a string to the existing customization")
         //.def("componentCustomization", &Tangible::GetComponentCustomization, return_value_policy<copy_const_reference>(),"Gets the current component_customization")
         .def("addComponentCustomization", &Tangible::AddComponentCustomization, "Adds a string to the component_customization")
@@ -27,7 +29,7 @@ void exportTangible()
 		.def("clearComponentCustomization", &Tangible::ClearComponentCustomization, "Clears all crc's from the component customization list")
 		.add_property("options_mask", &Tangible::GetOptionsMask, &Tangible::SetOptionsMask, "Gets and Sets the options mask")
 		.def("toggleOption", &Tangible::ToggleOption, "Toggles the specified option")
-		.add_property("incap_timer", &Tangible::GetIncapTimer, &Tangible::SetIncapTimer, "Gets and Sets the incapacitation timer of the tangible object")
+		.add_property("counter", &Tangible::GetCounter, &Tangible::SetCounter, "Gets and Sets the counter of the tangible object")
 		.add_property("condition_damage", &Tangible::GetCondition, &Tangible::SetConditionDamage, "Gets and Sets the current condition of the tangible")
 		.add_property("max_condition", &Tangible::GetMaxCondition, &Tangible::SetMaxCondition, "Gets and Sets the max condition of the tangible")
 		.add_property("static", &Tangible::IsStatic, &Tangible::SetStatic, "Gets and Sets the static property")
@@ -41,6 +43,11 @@ void exportTangible()
         .def("isAutoAttacking", &Tangible::IsAutoAttacking, "returns true if currently auto attacking")
 		;
 
+	class_<Building, bases<Tangible>, std::shared_ptr<Building>, boost::noncopyable>("Building");
+	class_<FactoryCrate, bases<Tangible>, std::shared_ptr<FactoryCrate>, boost::noncopyable>("FactoryCrate");
+
+	implicitly_convertible<std::shared_ptr<FactoryCrate>, std::shared_ptr<Tangible>>();
+	implicitly_convertible<std::shared_ptr<Building>, std::shared_ptr<Tangible>>();
 	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<Object>>();
 	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<ContainerInterface>>();
 }

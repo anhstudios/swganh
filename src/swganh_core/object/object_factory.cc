@@ -71,13 +71,13 @@ void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& inc
 		persisted_objects_.insert(object);
 	}
 }
-uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
     try {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto prepared_statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         prepared_statement->setUInt64(counter++, object->GetObjectId());
 		if (object->GetContainer() != nullptr)
 		{
@@ -107,6 +107,7 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
         prepared_statement->setUInt(counter++, object->GetVolume());
 		prepared_statement->setInt(counter++, object->GetArrangementId());
 		prepared_statement->setInt(counter++, object->GetPermissions()->GetType());
+		prepared_statement->setInt(counter++, object->GetType());
         // Now execute the update
         prepared_statement->executeUpdate();
 

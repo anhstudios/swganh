@@ -46,6 +46,8 @@ Object::Object()
 	, collision_length_(0.0f)
 	, collidable_(false)
 	, attributes_template_id(-1)
+	, event_dispatcher_(nullptr)
+	, controller_(nullptr)
 {
 }
 
@@ -237,13 +239,14 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrange
 		auto& arrangement = object->slot_arrangements_[arrangement_id-4];
 		for (auto& i : arrangement)
 		{
+			slot_descriptor_[i]->insert_object(object);			
 			// Remove object in existing slot
-			removed_object = slot_descriptor_[i]->insert_object(object);			
-			if (removed_object)
-			{
-				// Transfer it out, put it in the place the replacing object came from
-				removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
-			}
+			//removed_object = 
+			//if (removed_object && removed_object != object)
+			//{
+			//	// Transfer it out, put it in the place the replacing object came from
+			//	removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
+			//}
 		}
 	}
 	object->SetArrangementId(arrangement_id);
@@ -274,51 +277,55 @@ void Object::SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object
 
 void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
 {
-	// we are already locked
-	if(	requester == nullptr || (
-		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
-		newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
-		{
-			arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
-
-		//Split into 3 groups -- only ours, only new, and both ours and new
-		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
-
-		object->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
-			oldObservers.insert(observer);
-		});
-	
-		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) 
-		{
-			if(newContainer->GetPermissions()->canView(newContainer, observer))
+	try {
+		// we are already locked
+		if(	requester == nullptr || (
+			this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
+			newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
 			{
-				auto itr = oldObservers.find(observer);
-				if(itr != oldObservers.end())
+				arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+
+			//Split into 3 groups -- only ours, only new, and both ours and new
+			std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
+
+			object->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
+				oldObservers.insert(observer);
+			});
+	
+			newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) 
+			{
+				if(newContainer->GetPermissions()->canView(newContainer, observer))
 				{
-					oldObservers.erase(itr);
-					bothObservers.insert(observer);
-				} 
-				else 
-				{
-					newObservers.insert(observer);
+					auto itr = oldObservers.find(observer);
+					if(itr != oldObservers.end())
+					{
+						oldObservers.erase(itr);
+						bothObservers.insert(observer);
+					} 
+					else 
+					{
+						newObservers.insert(observer);
+					}
 				}
+			}, requester);
+
+			//Send Creates to only new
+			for(auto& observer : newObservers) {
+				object->__InternalAddAwareObject(observer);
 			}
-		});
 
-		//Send Creates to only new
-		for(auto& observer : newObservers) {
-			object->__InternalAddAwareObject(observer);
-		}
+			//Send updates to both
+			for(auto& observer : bothObservers) {
+				object->SendUpdateContainmentMessage(observer->GetController());
+			}
 
-		//Send updates to both
-		for(auto& observer : bothObservers) {
-			object->SendUpdateContainmentMessage(observer->GetController());
+			//Send destroys to only ours
+			for(auto& observer : oldObservers) {
+				object->__InternalRemoveAwareObject(observer);
+			}
 		}
-
-		//Send destroys to only ours
-		for(auto& observer : oldObservers) {
-			object->__InternalRemoveAwareObject(observer);
-		}
+	} catch(const std::exception& e){
+		LOG(error) << "Could not transfer object " << object->GetObjectId() << " to container :" << GetObjectId() << " with error " << e.what();
 	}
 }
 
@@ -410,8 +417,7 @@ void Object::SetTemplate(const string& template_string)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
 	    template_string_ = template_string;
     }
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Template",shared_from_this()));
+	DISPATCH(Object, Template);
 }
 void Object::SetObjectId(uint64_t object_id)
 {
@@ -434,9 +440,7 @@ void Object::SetCustomName(wstring custom_name)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         custom_name_ = custom_name;
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::CustomName",shared_from_this()));
+    DISPATCH(Object, CustomName);
 }
 
 bool Object::HasObservers()
@@ -529,16 +533,13 @@ void Object::SetPosition(glm::vec3 position)
 		UpdateWorldCollisionBox();
 		UpdateAABB();
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Position",shared_from_this()));
+	DISPATCH(Object, Position);
 }
 void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& quaternion, std::shared_ptr<Object> parent)
 {
 	SetOrientation(quaternion);
 	// Call an Event that gets handled by the movement manager
-	GetEventDispatcher()->Dispatch(make_shared<UpdatePositionEvent>
-		("Object::UpdatePosition", parent, shared_from_this(), new_position));
+	DISPATCH(Object, UpdatePosition);
 }
 
 glm::vec3 Object::GetPosition()
@@ -564,9 +565,7 @@ void Object::SetOrientation(glm::quat orientation)
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         orientation_ = orientation;
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Orientation",shared_from_this()));
+	DISPATCH(Object, Orientation);
 }
 glm::quat Object::GetOrientation()
 {
@@ -597,8 +596,7 @@ void Object::FacePosition(const glm::vec3& position)
         orientation_.y = -orientation_.y;
         orientation_.w = -orientation_.w; 
     }
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Orientation",shared_from_this()));
+	DISPATCH(Object, Orientation);
 }
 
 uint8_t Object::GetHeading()
@@ -637,9 +635,7 @@ void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         container_ = container;		
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Container",shared_from_this()));
+	DISPATCH(Object, Container);
 }
 
 shared_ptr<ContainerInterface> Object::GetContainer()
@@ -654,9 +650,7 @@ void Object::SetComplexity(float complexity)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         complexity_ = complexity;
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Complexity",shared_from_this()));
+	DISPATCH(Object, Complexity);
 }
 
 float Object::GetComplexity()
@@ -672,9 +666,7 @@ void Object::SetStfName(const string& stf_file_name, const string& stf_string)
         stf_name_file_ = stf_file_name;
         stf_name_string_ = stf_string;
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::StfName",shared_from_this()));
+	DISPATCH(Object, StfName);
 }
 
 string Object::GetStfNameFile()
@@ -692,9 +684,7 @@ string Object::GetStfNameString()
 void Object::SetVolume(uint32_t volume)
 {
     volume_ = volume;
-
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Volume",shared_from_this()));
+	DISPATCH(Object, Volume);
 }
 
 uint32_t Object::GetVolume()
@@ -705,9 +695,7 @@ uint32_t Object::GetVolume()
 void Object::SetSceneId(uint32_t scene_id)
 {
     scene_id_ = scene_id;
-        
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::SceneId",shared_from_this()));
+	DISPATCH(Object, SceneId);
 }
 
 uint32_t Object::GetSceneId()
@@ -723,9 +711,7 @@ uint32_t Object::GetInstanceId()
 void Object::SetInstanceId(uint32_t instance_id)
 {
 	instance_id_ = instance_id;
-
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::InstanceId",shared_from_this()));
+	DISPATCH(Object, InstanceId);
 }
 
 int32_t Object::GetArrangementId()
@@ -750,8 +736,11 @@ void Object::SetEventDispatcher(swganh::EventDispatcher* dispatcher)
 
 void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-        ("Object::Baselines", shared_from_this(), observer));
+	if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Object::Baselines", shared_from_this(), observer));
+	}
 }
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 

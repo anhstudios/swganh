@@ -54,7 +54,12 @@ public:
     void AddObject(shared_ptr<Object> object)
     {
 		InsertObject(object);
-
+		// Set Scene Id for all sub objects as well
+		object->SetSceneId(description_.id);
+		object->ViewObjects(object, 1, true, [=] (shared_ptr<Object> contained){
+			if (contained->GetSceneId() != description_.id)
+				contained->SetSceneId(description_.id);
+		});
 		spatial_index_->AddObject(nullptr, object);
     }
     

@@ -15,20 +15,20 @@ Tangible::Tangible()
     , customization_("")
     , component_customization_list_(NetworkList<ComponentCustomization>())
     , options_bitmask_(0)
-    , incap_timer_(0)
+    , counter_(0)
     , condition_damage_(0)
-    , max_condition_(0)
+    , max_condition_(1000)
     , is_static_(false)
     , defender_list_(swganh::messages::containers::NetworkSortedVector<Defender>(3))
 {}
 
 Tangible::Tangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
-        uint32_t incap_timer, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders)
+        uint32_t counter, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders)
     : Object()
     , customization_(customization)
     , component_customization_list_(NetworkList<ComponentCustomization>())
     , options_bitmask_(bitmask_options)
-    , incap_timer_(incap_timer)
+    , counter_(counter)
     , condition_damage_(condition_damage)
     , max_condition_(max_condition)
     , is_static_(is_static)
@@ -49,8 +49,7 @@ void Tangible::AddCustomization(const string& customization)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         customization_.append(customization);
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Customization",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, Customization);
 }
 
 std::string Tangible::GetCustomization(void)
@@ -65,8 +64,15 @@ void Tangible::SetCustomization(const string& customization)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         customization_ = customization;
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Customization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Customization);
+}
+void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints)
+{
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		customization_ = std::string(customization_ints.begin(), customization_ints.end());
+	}
+	DISPATCH(Tangible, Customization);
 }
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
@@ -83,9 +89,7 @@ void Tangible::RemoveComponentCustomization(uint32_t customization)
             
         component_customization_list_.Remove(iter);
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, ComponentCustomization);
 }
 void Tangible::AddComponentCustomization(uint32_t customization)
 {
@@ -93,9 +97,7 @@ void Tangible::AddComponentCustomization(uint32_t customization)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         component_customization_list_.Add(ComponentCustomization(customization));
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, ComponentCustomization);
 }
 
 std::list<ComponentCustomization> Tangible::GetComponentCustomization(void)
@@ -110,23 +112,19 @@ void Tangible::ClearComponentCustomization()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         component_customization_list_.Clear();
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, ComponentCustomization);
 }
 
 void Tangible::SetOptionsMask(uint32_t options_mask)
 {
     options_bitmask_ = options_mask;
-
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::OptionsMask",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, OptionsMask);
 }
 
 void Tangible::ToggleOption(uint32_t option)
 {
 	options_bitmask_ ^= option;
-	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::OptionsMask",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, OptionsMask);
 }
 
 uint32_t Tangible::GetOptionsMask(void)
@@ -134,26 +132,22 @@ uint32_t Tangible::GetOptionsMask(void)
     return options_bitmask_;
 }
 
-void Tangible::SetIncapTimer(uint32_t incap_timer)
+void Tangible::SetCounter(uint32_t counter)
 {
-    incap_timer_ = incap_timer;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::IncapTimer",static_pointer_cast<Tangible>(shared_from_this())));
+    counter_ = counter;
+    DISPATCH(Tangible, Counter);
 }
 
-uint32_t Tangible::GetIncapTimer(void)
+uint32_t Tangible::GetCounter(void)
 {
-    return incap_timer_;
+    return counter_;
 }
 
 void Tangible::SetConditionDamage(uint32_t damage)
 {
     condition_damage_ = damage;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::ConditionDamage",static_pointer_cast<Tangible>(shared_from_this())));
-	
-	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Object::UpdateAttribute", static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, ConditionDamage);
+	DISPATCH(Tangible, UpdateAttribute);
 }
 
 uint32_t Tangible::GetCondition(void)
@@ -164,10 +158,8 @@ uint32_t Tangible::GetCondition(void)
 void Tangible::SetMaxCondition(uint32_t max_condition)
 {
     max_condition_ = max_condition;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::MaxCondition",static_pointer_cast<Tangible>(shared_from_this())));
-	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Object::UpdateAttribute", static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, MaxCondition);
+	DISPATCH(Tangible, UpdateAttribute);
 }
 
 uint32_t Tangible::GetMaxCondition(void)
@@ -178,8 +170,7 @@ uint32_t Tangible::GetMaxCondition(void)
 void Tangible::SetStatic(bool is_static)
 {
     is_static_ = is_static;
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Static",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, Static);
 }
 
 bool Tangible::IsStatic(void)
@@ -205,9 +196,7 @@ void Tangible::AddDefender(uint64_t defender)
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         defender_list_.Add(Defender(defender));
     }
-
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+	DISPATCH(Tangible, Defenders);
 }
 void Tangible::RemoveDefender(uint64_t defender)
 {
@@ -224,9 +213,7 @@ void Tangible::RemoveDefender(uint64_t defender)
             
         defender_list_.Remove(iter);
     }
-    
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Defenders);
 }
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
@@ -238,8 +225,7 @@ void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
         });
         defender_list_.Reinstall();
     }
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Defenders);
 }
 
 std::vector<Defender> Tangible::GetDefenders()
@@ -254,8 +240,7 @@ void Tangible::ClearDefenders()
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         defender_list_.Clear();
     }   
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
+    DISPATCH(Tangible, Defenders);
 }
 
 void Tangible::ActivateAutoAttack()
@@ -272,8 +257,11 @@ bool Tangible::IsAutoAttacking()
 }
 void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
-        ("Tangible::Baselines",shared_from_this(), observer));
+    if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Tangible::Baselines", shared_from_this(), observer));
+	}
 }
 
 std::shared_ptr<Object> Tangible::Clone()
@@ -289,7 +277,7 @@ void Tangible::Clone(std::shared_ptr<Tangible> other)
 	other->customization_ =  customization_;
 	other->component_customization_list_ = component_customization_list_;
 	other->options_bitmask_.store(options_bitmask_);
-    other->incap_timer_.store(incap_timer_);
+    other->counter_.store(counter_);
 	other->condition_damage_.store(condition_damage_);
     other->max_condition_.store(max_condition_);
     other->is_static_.store(is_static_);

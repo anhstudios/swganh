@@ -1,3 +1,4 @@
+
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
@@ -40,6 +41,7 @@ namespace object {
     
 	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
 
+	class TemplateInterface;
     /**
      * ObjectManager is a general interface for managing the object lifecycles for
      * general user defined types. In order to manage an object type an implementation
@@ -232,28 +234,28 @@ namespace object {
          *
          * @param object the object instance to persist.
          */
-        void PersistObject(const std::shared_ptr<Object>& object);
+        void PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false);
 
         /**
          * Persists a currently managed object by its id.
          *
          * @param object_id The id of the object to persist
          */
-        void PersistObject(uint64_t object_id);
+        void PersistObject(uint64_t object_id, bool persist_inherited = false);
         
         /**
          * Persists an object and all its related objects.
          *
          * @param object the object instance to persist.
          */
-        void PersistRelatedObjects(const std::shared_ptr<Object>& object);
+        void PersistRelatedObjects(const std::shared_ptr<Object>& object, bool persist_inherited = false);
         
         /**
          * Persists a managed object and all its related objects by id.
          *
          * @param object_id The id of the object to persist
          */
-	    void PersistRelatedObjects(uint64_t parent_object_id);
+	    void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited = false);
 
 		/**
 		 * Gets the objects definition file data from the resource manager
@@ -283,6 +285,7 @@ namespace object {
         > ObjectMessageBuilderMap;
 
 		typedef std::map<std::string, std::shared_ptr<swganh::object::Object>> PrototypeMap;
+		typedef std::map<std::string, boost::shared_ptr<swganh::object::TemplateInterface>> PythonTemplateMap;
 
         /**
          * Registers a message builder for a specific object type
@@ -302,6 +305,10 @@ namespace object {
          * @param message_builder The message builder to store.
          */
         void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
+		/**
+		 *  Loads the python object templates and creates any objects inserting them as prototypes
+		 */
+		void LoadPythonObjectTemplates();
 
 		void ObjectManager::AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
 
@@ -313,8 +320,10 @@ namespace object {
         ObjectMessageBuilderMap message_builders_;
         
 		PrototypeMap prototypes_; 
+		PythonTemplateMap object_templates_;
 
 		uint64_t next_dynamic_id_;
+		uint64_t next_persistent_id_;
 
         boost::shared_mutex object_map_mutex_;
 		boost::shared_mutex object_factories_mutex_;

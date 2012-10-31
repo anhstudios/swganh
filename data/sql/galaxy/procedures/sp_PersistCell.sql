@@ -8,7 +8,7 @@ DROP PROCEDURE IF EXISTS `sp_PersistCell`;
 DELIMITER //
 CREATE PROCEDURE `sp_PersistCell`(IN `in_cell_id` INT)
 BEGIN
-UPDATE cell i set i.cell_id = in_cell_id;
+REPLACE INTO cell set cell_id = in_cell_id;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

@@ -64,9 +64,7 @@ void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		current_quantity_ = current_quantity;
 	}
-
-	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
-        ("ResourceContainer::CurrentQuantity",static_pointer_cast<ResourceContainer>(shared_from_this())));
+	DISPATCH(ResourceContainer, CurrentQuantity);
 }
 
 void ResourceContainer::SetGlobalResource(uint64_t global_resource)
@@ -75,9 +73,7 @@ void ResourceContainer::SetGlobalResource(uint64_t global_resource)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		global_resource_id_ = global_resource;
 	}
-
-	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
-        ("ResourceContainer::GlobalResourceId",static_pointer_cast<ResourceContainer>(shared_from_this())));
+	DISPATCH(ResourceContainer, GlobalResourceId);
 }
 
 void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
@@ -86,9 +82,7 @@ void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		max_quantity_ = max_quantity;
 	}
-
-	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
-        ("ResourceContainer::MaxQuantity",static_pointer_cast<ResourceContainer>(shared_from_this())));
+	DISPATCH(ResourceContainer, MaxQuantity);
 }
 void ResourceContainer::SetResourceType(const string& resource_type)
 {
@@ -96,9 +90,7 @@ void ResourceContainer::SetResourceType(const string& resource_type)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		resource_type_ = resource_type;
 	}
-
-	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
-        ("ResourceContainer::ResourceType",static_pointer_cast<ResourceContainer>(shared_from_this())));
+	DISPATCH(ResourceContainer, ResourceType);
 }
 void ResourceContainer::SetResourceName(const wstring& name)
 {
@@ -106,9 +98,7 @@ void ResourceContainer::SetResourceName(const wstring& name)
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		variation_name_ = name;
 	}
-
-	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
-        ("ResourceContainer::ResourceName",static_pointer_cast<ResourceContainer>(shared_from_this())));
+	DISPATCH(ResourceContainer, ResourceName);
 }
 
 
