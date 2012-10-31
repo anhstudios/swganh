@@ -376,6 +376,8 @@ public:
         start_scene.galaxy_time = 0;
         client->SendTo(start_scene);
 
+		object->SetCollidable(false);
+
 		if(object->GetContainer() == nullptr)
 		{
 			scene->AddObject(object);
@@ -401,6 +403,8 @@ public:
 				object->AddAwareObject(aware);
 			}
 		});
+
+		object->SetCollidable(true);
     }
 
 	void SendToAll(swganh::messages::BaseSwgMessage* message)

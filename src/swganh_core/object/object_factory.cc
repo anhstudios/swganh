@@ -157,6 +157,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 			object->SetPermissions(permissions_objects_.find(DEFAULT_PERMISSION)->second);
 		}
 		object_manager_->LoadSlotsForObject(object);
+		object_manager_->LoadCollisionInfoForObject(object);
 
 		auto parent = object_manager_->GetObjectById(result->getUInt64("parent_id"));
 		if(parent != nullptr)
