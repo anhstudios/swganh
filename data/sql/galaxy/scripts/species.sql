@@ -13,7 +13,7 @@
 -- Dumping structure for table galaxy.species
 DROP TABLE IF EXISTS `species`;
 CREATE TABLE IF NOT EXISTS `species` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `health_min` int(11) NOT NULL,
   `health_max` int(11) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `species` (
   `willpower_max` int(11) NOT NULL,
   `total` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Dumping data for table galaxy.species: ~10 rows (approximately)
 /*!40000 ALTER TABLE `species` DISABLE KEYS */;
