@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `account` (
   `credentials_expire_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_7D3656A492FC23A8` (`username_canonical`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 DELETE FROM `account`;
     

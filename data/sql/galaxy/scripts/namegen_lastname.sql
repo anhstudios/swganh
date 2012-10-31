@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `namegen_lastname` (
   `species` int(11) NOT NULL,
   `gender` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=76516 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=76516 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.namegen_lastname: ~76,737 rows (approximately)
 /*!40000 ALTER TABLE `namegen_lastname` DISABLE KEYS */;

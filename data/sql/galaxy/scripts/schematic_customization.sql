@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `schematic_customization` (
   PRIMARY KEY (`id`),
   KEY `IDX_1AF7B2664DE6846C` (`manufacture_schematic_id`),
   CONSTRAINT `FK_1AF7B2664DE6846C` FOREIGN KEY (`manufacture_schematic_id`) REFERENCES `manufacture_schematic` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.schematic_customization: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schematic_customization` DISABLE KEYS */;

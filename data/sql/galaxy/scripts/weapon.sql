@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `weapon` (
   `id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FK_6933A7E6BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.weapon: ~0 rows (approximately)
 /*!40000 ALTER TABLE `weapon` DISABLE KEYS */;

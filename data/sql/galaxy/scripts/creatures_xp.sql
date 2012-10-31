@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `creatures_xp` (
   KEY `fk_charxp_xp_xp` (`xp_type_id`),
   CONSTRAINT `character_xp_ibfk_2` FOREIGN KEY (`creature_id`) REFERENCES `creature` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_charxp_xp_xp` FOREIGN KEY (`xp_type_id`) REFERENCES `xp_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.creatures_xp: ~0 rows (approximately)
 /*!40000 ALTER TABLE `creatures_xp` DISABLE KEYS */;

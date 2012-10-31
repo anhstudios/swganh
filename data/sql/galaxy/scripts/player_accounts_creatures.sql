@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `player_accounts_creatures` (
   KEY `IDX_AFDAB34199E6F5DF` (`player_id`),
   CONSTRAINT `FK_AFDAB341910BEE57` FOREIGN KEY (`creature_id`) REFERENCES `creature` (`id`),
   CONSTRAINT `FK_AFDAB34199E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player_account` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.player_accounts_creatures: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player_accounts_creatures` DISABLE KEYS */;

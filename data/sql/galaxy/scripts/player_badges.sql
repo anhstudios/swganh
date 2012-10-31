@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `player_badges` (
   `badge_id` int(11) unsigned NOT NULL,
   PRIMARY KEY  (`player_id`, `badge_id`)
   -- CONSTRAINT `fk_playerbadges_char_char` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=REDUNDANT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=REDUNDANT;
 
 --
 -- Dumping data for table `player_badges`
