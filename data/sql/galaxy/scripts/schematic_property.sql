@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `schematic_property` (
   PRIMARY KEY (`id`),
   KEY `IDX_C21D7FB14DE6846C` (`manufacture_schematic_id`),
   CONSTRAINT `FK_C21D7FB14DE6846C` FOREIGN KEY (`manufacture_schematic_id`) REFERENCES `manufacture_schematic` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.schematic_property: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schematic_property` DISABLE KEYS */;

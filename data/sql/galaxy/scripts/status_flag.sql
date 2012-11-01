@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `status_flag` (
   `description` longtext NOT NULL,
   `flag` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.status_flag: ~0 rows (approximately)
 /*!40000 ALTER TABLE `status_flag` DISABLE KEYS */;

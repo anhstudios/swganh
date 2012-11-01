@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `skills_required_skills` (
   KEY `IDX_C6D178BBCEC0E2D5` (`required_skill_id`),
   CONSTRAINT `FK_C6D178BB5585C142` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
   CONSTRAINT `FK_C6D178BBCEC0E2D5` FOREIGN KEY (`required_skill_id`) REFERENCES `skill` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.skills_required_skills: ~974 rows (approximately)
 /*!40000 ALTER TABLE `skills_required_skills` DISABLE KEYS */;

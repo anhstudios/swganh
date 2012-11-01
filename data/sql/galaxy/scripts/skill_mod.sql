@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `skill_mod` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=297 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=297 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.skill_mod: ~296 rows (approximately)
 /*!40000 ALTER TABLE `skill_mod` DISABLE KEYS */;

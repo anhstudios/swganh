@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `scene` (
   `description` longtext NOT NULL,
   `terrain` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.scene: ~44 rows (approximately)
 /*!40000 ALTER TABLE `scene` DISABLE KEYS */;

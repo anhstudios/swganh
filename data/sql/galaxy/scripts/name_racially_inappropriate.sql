@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `name_racially_inappropriate` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.name_racially_inappropriate: ~2 rows (approximately)
 /*!40000 ALTER TABLE `name_racially_inappropriate` DISABLE KEYS */;

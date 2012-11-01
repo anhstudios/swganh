@@ -113,6 +113,7 @@ void BadgeService::Startup()
 			badge_region->SetEventDispatcher(kernel_->GetEventDispatcher());
 			badge_region->SetPosition(glm::vec3(result->getDouble("x"), 0.0f, result->getDouble("z")));
 			badge_region->SetSceneId(result->getUInt("planet_id") + 1);
+			badge_region->SetDatabasePersisted(false);
 			
 			auto name = result->getString("name").asStdString();
 			badge_region->SetCustomName(std::wstring(name.begin(), name.end()));

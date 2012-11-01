@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `planet` (
   `name` varchar(100) NOT NULL,
   `terrainMap` varchar(100) NOT NULL,
   PRIMARY KEY (`planet_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 -- Dumping data for table galaxy.planet: ~44 rows (approximately)
 /*!40000 ALTER TABLE `planet` DISABLE KEYS */;

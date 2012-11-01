@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `profile_flag` (
   `description` longtext NOT NULL,
   `flag` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.profile_flag: ~0 rows (approximately)
 /*!40000 ALTER TABLE `profile_flag` DISABLE KEYS */;

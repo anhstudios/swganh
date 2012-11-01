@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `skill_command` (
   `name` char(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `pk_skillcommands_name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=950 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=950 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.skill_command: ~970 rows (approximately)
 /*!40000 ALTER TABLE `skill_command` DISABLE KEYS */;

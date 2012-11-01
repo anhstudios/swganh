@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `creature` (
   KEY `IDX_2A6C6AF49523AA8A` (`musician_id`),
   KEY `FK_A8ADABEC727AC32D` (`disguise_template_id`),
   CONSTRAINT `FK_812371D251G23` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40000 ALTER TABLE `creature` DISABLE KEYS */;
 INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `turn_radius`, `walking_speed`, `water_modifier_percent`, `combat_level`, `animation`, `group_id`, `guild_id`, `weapon_id`, `mood_id`, `performance_id`, `disguise_template_id`, `health_wounds`, `strength_wounds`, `constitution_wounds`, `action_wounds`, `quickness_wounds`, `stamina_wounds`, `mind_wounds`, `focus_wounds`, `willpower_wounds`, `health_encumberance`, `strength_encumberance`, `constitution_encumberance`, `action_encumberance`, `quickness_encumberance`, `stamina_encumberance`, `mind_encumberance`, `focus_encumberance`, `willpower_encumberance`, `current_health`, `current_strength`, `current_constitution`, `current_action`, `current_quickness`, `current_stamina`, `current_mind`, `current_focus`, `current_willpower`, `max_health`, `max_strength`, `max_constitution`, `max_action`, `max_quickness`, `max_stamina`, `max_mind`, `max_focus`, `max_willpower`) VALUES

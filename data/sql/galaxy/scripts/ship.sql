@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `ship` (
   `id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FK_FA30EB24BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.ship: ~0 rows (approximately)
 /*!40000 ALTER TABLE `ship` DISABLE KEYS */;

@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `player` (
   `jedi_state` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   CONSTRAINT `FK_98197A65BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.player: ~0 rows (approximately)
 /*!40000 ALTER TABLE `player` DISABLE KEYS */;

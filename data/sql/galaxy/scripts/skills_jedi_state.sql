@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `skills_jedi_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` char(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.skills_jedi_state: ~5 rows (approximately)
 /*!40000 ALTER TABLE `skills_jedi_state` DISABLE KEYS */;

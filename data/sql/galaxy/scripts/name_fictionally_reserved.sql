@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `name_fictionally_reserved` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.name_fictionally_reserved: ~9 rows (approximately)
 /*!40000 ALTER TABLE `name_fictionally_reserved` DISABLE KEYS */;

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `players_status_flags` (
   KEY `IDX_9475E7A2994F9360` (`status_flag_id`),
   CONSTRAINT `FK_9475E7A2994F9360` FOREIGN KEY (`status_flag_id`) REFERENCES `status_flag` (`id`),
   CONSTRAINT `FK_9475E7A299E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.players_status_flags: ~0 rows (approximately)
 /*!40000 ALTER TABLE `players_status_flags` DISABLE KEYS */;

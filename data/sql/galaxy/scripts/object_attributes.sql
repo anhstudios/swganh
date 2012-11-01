@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `object_attributes` (
   PRIMARY KEY (`id`),
   KEY `FK_object_attributes_swganh_static.attributes` (`attribute_id`),
   CONSTRAINT `FK_object_attributes_swganh_static.attributes` FOREIGN KEY (`attribute_id`) REFERENCES `swganh_static`.`attributes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=32814 DEFAULT CHARSET=latin1 COMMENT='stores attributes for objects';
+) ENGINE=InnoDB AUTO_INCREMENT=32814 DEFAULT CHARSET=utf8 COMMENT='stores attributes for objects';
 
 DELETE FROM `object_attributes`;
 

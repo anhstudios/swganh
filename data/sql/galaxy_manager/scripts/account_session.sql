@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `account_session` (
   `account` int(11) NOT NULL,
   `session_key` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 
 DELETE FROM `account_session`;
     

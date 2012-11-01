@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `friend_list` (
   KEY `IDX_DEB224F86A5458E8` (`friend_id`),
   CONSTRAINT `FK_DEB224F86A5458E8` FOREIGN KEY (`friend_id`) REFERENCES `player` (`id`),
   CONSTRAINT `FK_DEB224F899E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.friend_list: ~0 rows (approximately)
 /*!40000 ALTER TABLE `friend_list` DISABLE KEYS */;

@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `xp_list` (
   KEY `IDX_960633ED2291DC48` (`xp_type_id`),
   CONSTRAINT `FK_960633ED2291DC48` FOREIGN KEY (`xp_type_id`) REFERENCES `xp_type` (`id`),
   CONSTRAINT `FK_960633ED99E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.xp_list: ~0 rows (approximately)
 /*!40000 ALTER TABLE `xp_list` DISABLE KEYS */;
