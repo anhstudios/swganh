@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `skills_preclusion_skills` (
   KEY `IDX_F89ED6FBB334A428` (`preclusion_skill_id`),
   CONSTRAINT `FK_F89ED6FB5585C142` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`),
   CONSTRAINT `FK_F89ED6FBB334A428` FOREIGN KEY (`preclusion_skill_id`) REFERENCES `skill` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.skills_preclusion_skills: ~8 rows (approximately)
 /*!40000 ALTER TABLE `skills_preclusion_skills` DISABLE KEYS */;

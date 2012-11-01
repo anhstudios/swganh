@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `manufacture_schematic` (
   `is_ready` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FK_51DC8E01BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.manufacture_schematic: ~0 rows (approximately)
 /*!40000 ALTER TABLE `manufacture_schematic` DISABLE KEYS */;

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `player_account` (
   `reference_id` bigint(20) NOT NULL,
   `max_characters` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 /*!40000 ALTER TABLE `player_account` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;

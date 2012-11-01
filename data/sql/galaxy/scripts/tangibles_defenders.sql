@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `tangibles_defenders` (
   PRIMARY KEY (`tangible_id`),
   KEY `IDX_C6524BE2C7FE2A7F` (`tangible_id`),
   CONSTRAINT `FK_C6524BE2C7FE2A7F` FOREIGN KEY (`tangible_id`) REFERENCES `tangible` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.tangibles_defenders: ~0 rows (approximately)
 /*!40000 ALTER TABLE `tangibles_defenders` DISABLE KEYS */;

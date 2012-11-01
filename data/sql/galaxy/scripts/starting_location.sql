@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `starting_location` (
   PRIMARY KEY (`location_id`),
   KEY `IDX_6D2A488E166053B4` (`scene_id`),
   CONSTRAINT `FK_6D2A488E166053B4` FOREIGN KEY (`scene_id`) REFERENCES `scene` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.starting_location: ~18 rows (approximately)
 /*!40000 ALTER TABLE `starting_location` DISABLE KEYS */;

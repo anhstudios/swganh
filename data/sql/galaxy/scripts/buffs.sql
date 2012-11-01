@@ -6,4 +6,4 @@ CREATE TABLE `buffs` (
 	`name` VARCHAR(50),
 	`duration` INT(11),
 	INDEX `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

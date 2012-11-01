@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `mission` (
   UNIQUE KEY `UNIQ_9067F23C7BB1FD97` (`waypoint_id`),
   CONSTRAINT `FK_9067F23C7BB1FD97` FOREIGN KEY (`waypoint_id`) REFERENCES `waypoint` (`id`),
   CONSTRAINT `FK_9067F23CBF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.mission: ~0 rows (approximately)
 /*!40000 ALTER TABLE `mission` DISABLE KEYS */;

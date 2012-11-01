@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `xp_type` (
   `name` varchar(255) NOT NULL,
   `cap` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.xp_type: ~49 rows (approximately)
 /*!40000 ALTER TABLE `xp_type` DISABLE KEYS */;

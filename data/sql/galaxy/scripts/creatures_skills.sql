@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `creatures_skills` (
   KEY `IDX_563396085585C142` (`skill_id`),
   CONSTRAINT `FK_563396085585C142` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE,
   CONSTRAINT `FK_56339608F9AB048` FOREIGN KEY (`creature_id`) REFERENCES `creature` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.creatures_skills: ~0 rows (approximately)
 /*!40000 ALTER TABLE `creatures_skills` DISABLE KEYS */;
