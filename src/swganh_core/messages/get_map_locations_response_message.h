@@ -22,7 +22,7 @@ namespace messages {
     	uint8_t type_displayAsCategory;
     	uint8_t type_displayAsSubcategory;
     	uint8_t type_displayAsActive;
-    }
+    };
 
     struct GetMapLocationsResponseMessage : public BaseSwgMessage
     {
