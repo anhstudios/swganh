@@ -5,17 +5,26 @@
 #include <swganh/map/map_service_interface.h>
 
 #include <swganh_core/messages/get_map_locations_response_message.h>
+#include <swganh_core/messages/get_map_locations_request_message.h>
 
 namespace swganh {
 namespace app {
 	class SwganhKernel;
 } // namespace swganh::app
 
-namespace map {
+namespace connection {
+	class ConnectionClientInterface;
+} // namespace swganh::connection
 
-	struct MapPoint
-	{
-	};
+namespace object {
+	class Object;
+} // namespace swganh::object
+
+namespace simulation {
+	class SimulationService;
+} // namespace swganh::simulation
+
+namespace map {
 
 	class MapService : public MapServiceInterface
 	{
@@ -28,8 +37,13 @@ namespace map {
 		swganh::service::ServiceDescription GetServiceDescription();
 
 	private:
+		void HandleRequestMapLocationsMessage(
+			const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
+			swganh::messages::GetMapLocationsRequestMessage* message);
+
 		swganh::app::SwganhKernel* kernel_;
-		std::list<swganh::messages::MapLocation> locations_;
+		swganh::simulation::SimulationService* simulation_;
+		std::map<uint32_t, std::vector<swganh::messages::MapLocation>> locations_;
 	};
 
 }} // swganh::map

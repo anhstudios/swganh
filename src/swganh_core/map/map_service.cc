@@ -5,9 +5,14 @@
 #include <swganh_core/map/map_service.h>
 
 #include <swganh/app/swganh_kernel.h>
+#include <swganh/event_dispatcher.h>
 #include <swganh/service/service_manager.h>
 #include <swganh/database/database_manager.h>
 #include <swganh/logger.h>
+
+#include <swganh_core/simulation/simulation_service.h>
+#include <swganh/connection/connection_service_interface.h>
+#include <swganh/connection/connection_client_interface.h>
 
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
@@ -21,7 +26,10 @@
 
 using namespace swganh::map;
 
+using swganh::connection::ConnectionServiceInterface;
 using swganh::service::ServiceDescription;
+using swganh::simulation::SimulationService;
+using swganh::connection::ConnectionClientInterface;
 
 MapService::MapService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
@@ -47,5 +55,19 @@ ServiceDescription MapService::GetServiceDescription()
 
 void MapService::Startup()
 {
+	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+	
 	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
+	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
+
+	connection_service->RegisterMessageHandler(
+		&MapService::HandleRequestMapLocationsMessage, this);
+
+}
+
+void MapService::HandleRequestMapLocationsMessage(
+	const std::shared_ptr<ConnectionClientInterface>& client, 
+	swganh::messages::GetMapLocationsRequestMessage* message)
+{
+	std::cout << "Looking up map locations for: " << message->planet_name << std::endl;
 }
