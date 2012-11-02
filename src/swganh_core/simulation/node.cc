@@ -249,10 +249,10 @@ std::shared_ptr<Node> Node::GetNodeContainingVolume_(swganh::object::AABB volumn
 	return std::shared_ptr<Node>(shared_from_this());
 }
 
-void Node::SvgDump(void)
+void Node::SvgDump(std::string fname)
 {
 	std::ofstream file;
-	file.open("swganh_si_dump.svg");
+	file.open(fname);
 	file << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1440\" height=\"900\" version=\"1.1\" viewBox=\"-8300 -8300 16600 16600\" overflow=\"visible\">\n";
 	
 	file << "<g>\n";

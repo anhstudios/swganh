@@ -28,6 +28,7 @@
 #include "login/login_init.h"
 #include "galaxy/galaxy_init.h"
 #include "simulation/simulation_init.h"
+#include "map/map_init.h"
 #include "player/player_init.h"
 #include "social/social_init.h"
 #include "equipment/equipment_init.h"
@@ -78,5 +79,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh::sui::Initialize(swganh_kernel);
 	swganh::weather::Initialize(swganh_kernel);
 	swganh::terrain::Initialize(swganh_kernel);
+	swganh::map::Initialize(swganh_kernel);
     return ExitModule;
 }

@@ -181,10 +181,8 @@ bool BadgeService::HasBadge(std::shared_ptr<Object> object, uint32_t id)
 
 void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Badge> badge)
 {
-	if(!player->HasController()) {
-		std::cout << "no controller" << " " << player->IsCollidable() << std::endl;
+	if(!player->HasController())
 		return;
-	}
 
 	// Lookup badge loaded badges by name.
 	if(badge == nullptr)

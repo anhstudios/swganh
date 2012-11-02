@@ -54,9 +54,7 @@ int main(int argc, char* argv[])
                         break;
                     }
 					else if(cmd.compare("si_dump") == 0) {
-						LOG(info) << "[SVGDump] Dumping Spatial Indexing SVG...";
 						app.GetAppKernel()->GetEventDispatcher()->Dispatch(std::make_shared<swganh::BaseEvent>("SpatialIndexSvgDump"));
-						LOG(info) << "[SVGDump] Done.";
 					}
 					else {
                         LOG(warning) << "Invalid command received: " << cmd;
