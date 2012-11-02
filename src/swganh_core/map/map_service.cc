@@ -61,9 +61,9 @@ void MapService::Startup()
 	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
 	// Get STATIC map locations.
-	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
 	try
 	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
 		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
 		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetMapLocations"));
 
@@ -88,6 +88,31 @@ void MapService::Startup()
 	}
 
 	// Get DYNAMIC map locations.
+	try
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetMapLocations"));
+
+		while(result->next())
+		{
+			MapLocation location;
+			location.id = result->getUInt("id");
+			auto name = result->getString("name").asStdString();
+			location.name = std::wstring(name.begin(), name.end());
+			location.x = (float)result->getDouble("x");
+			location.y = (float)result->getDouble("y");
+			location.type_displayAsCategory = result->getUInt("category_main");
+			location.type_displayAsSubcategory = result->getUInt("category_sub");
+
+			uint32_t scene_id = result->getUInt("scene_id") + 1;
+			InsertLocation(scene_id, location);
+		}
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
 
 	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
