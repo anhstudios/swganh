@@ -30,6 +30,9 @@ using swganh::connection::ConnectionServiceInterface;
 using swganh::service::ServiceDescription;
 using swganh::simulation::SimulationService;
 using swganh::connection::ConnectionClientInterface;
+using swganh::messages::MapLocation;
+using swganh::messages::GetMapLocationsRequestMessage;
+using swganh::messages::GetMapLocationsResponseMessage;
 
 MapService::MapService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
@@ -56,18 +59,59 @@ ServiceDescription MapService::GetServiceDescription()
 void MapService::Startup()
 {
 	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-	
+
+	// Get STATIC map locations.
 	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
+	try
+	{
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetMapLocations"));
+
+		while(result->next())
+		{
+			MapLocation location;
+			location.id = result->getUInt("id");
+			auto name = result->getString("name").asStdString();
+			location.name = std::wstring(name.begin(), name.end());
+			location.x = (float)result->getDouble("x");
+			location.y = (float)result->getDouble("y");
+			location.type_displayAsCategory = result->getUInt("category_main");
+			location.type_displayAsSubcategory = result->getUInt("category_sub");
+
+			uint32_t scene_id = result->getUInt("scene_id") + 1;
+			InsertLocation(scene_id, location);
+		}
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+
+	// Get DYNAMIC map locations.
+
+	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
+	connection_service->RegisterMessageHandler(&MapService::HandleRequestMapLocationsMessage, this);
 
-	connection_service->RegisterMessageHandler(
-		&MapService::HandleRequestMapLocationsMessage, this);
+}
 
+void MapService::InsertLocation(uint32_t scene_id, MapLocation& location)
+{
+	auto i = locations_.find(scene_id);
+	if(i == locations_.end())
+	{
+		locations_.insert(std::make_pair(scene_id, std::list<MapLocation>()));
+	}
+
+	locations_.at(scene_id).push_back(location);
 }
 
 void MapService::HandleRequestMapLocationsMessage(
 	const std::shared_ptr<ConnectionClientInterface>& client, 
 	swganh::messages::GetMapLocationsRequestMessage* message)
 {
-	std::cout << "Looking up map locations for: " << message->planet_name << std::endl;
+	swganh::messages::GetMapLocationsResponseMessage response;
+	response.planet_name = message->planet_name;
+	response.locations = locations_.find(simulation_->SceneIdByName(message->planet_name))->second;
+	client->GetController()->Notify(&response);
 }

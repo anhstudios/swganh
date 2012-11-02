@@ -37,13 +37,15 @@ namespace map {
 		swganh::service::ServiceDescription GetServiceDescription();
 
 	private:
+		void InsertLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
+
 		void HandleRequestMapLocationsMessage(
 			const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
 			swganh::messages::GetMapLocationsRequestMessage* message);
 
 		swganh::app::SwganhKernel* kernel_;
 		swganh::simulation::SimulationService* simulation_;
-		std::map<uint32_t, std::vector<swganh::messages::MapLocation>> locations_;
+		std::map<uint32_t, std::list<swganh::messages::MapLocation>> locations_;
 	};
 
 }} // swganh::map
