@@ -171,7 +171,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 					newObservers.insert(observer);
 				}
 			}
-		});
+		}, requester);
 
 		//Send Creates to only new
 		for(auto& observer : newObservers) {
