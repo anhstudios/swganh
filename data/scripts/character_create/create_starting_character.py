@@ -21,7 +21,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	startLoc = Locations['coronet']
 	# Create appropriate creature object...
 	species = GetSpecies(base_model)
-	creature = simulation.createObject(base_model.replace('player/', 'player/shared_'), ContainerPermission.CREATURE, True, True)
+	creature = simulation.createObject(base_model.replace('player/', 'player/shared_'), ContainerPermission.CREATURE)
 	creature.custom_name = full_name
 	creature.position = vector3(startLoc.x, startLoc.y, startLoc.z)
 	if customization:
@@ -34,19 +34,19 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	# Set Starting Skills
 	SetStartingSkills(creature, species, profession)
 	# Create Base Player Object
-	player = simulation.createObject('object/player/shared_player.iff', ContainerPermission.CREATURE_CONTAINER, True, True)
+	player = simulation.createObject('object/player/shared_player.iff')
 	# Create datapad
-	datapad = simulation.createObject('object/tangible/datapad/shared_character_datapad.iff', ContainerPermission.CREATURE_CONTAINER, True, True)
+	datapad = simulation.createObject('object/tangible/datapad/shared_character_datapad.iff', ContainerPermission.CREATURE_CONTAINER)
 	# Create inventory
-	inventory = simulation.createObject('object/tangible/inventory/shared_character_inventory.iff', ContainerPermission.CREATURE_CONTAINER, True, True)
+	inventory = simulation.createObject('object/tangible/inventory/shared_character_inventory.iff', ContainerPermission.CREATURE_CONTAINER)
 	# Create bank
-	bank = simulation.createObject('object/tangible/bank/shared_character_bank.iff', ContainerPermission.CREATURE_CONTAINER, True, True)
+	bank = simulation.createObject('object/tangible/bank/shared_character_bank.iff', ContainerPermission.CREATURE_CONTAINER)
 	# Create mission
-	mission = simulation.createObject('object/tangible/mission_bag/shared_mission_bag.iff', ContainerPermission.CREATURE_CONTAINER, True, True)
+	mission = simulation.createObject('object/tangible/mission_bag/shared_mission_bag.iff', ContainerPermission.CREATURE_CONTAINER)
 	# Create hair
-	hair = simulation.createObject(hair_model.replace('/hair_','/shared_hair_'), ContainerPermission.CREATURE_CONTAINER, True, True)	
+	hair = simulation.createObject(hair_model.replace('/hair_','/shared_hair_'))	
 	# Create Starting Items
-	startingItems = GetStartingItems(species, profession, gender)	
+	startingItems = GetStartingItems(species, profession, gender)
 	# Add all sub objects to creature (parent)
 	creature.add(creature, datapad)
 	creature.add(creature, inventory)
@@ -59,7 +59,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	# Now add the objects to the inventory
 	# Wearables get equipped
 	for item in startingItems:
-		item_obj  = simulation.createObject(item, ContainerPermission.DEFAULT, True, True)
+		item_obj  = simulation.createObject(item)
 		if 'wearables' in item:
 			creature.add(creature, item_obj)
 		else:
