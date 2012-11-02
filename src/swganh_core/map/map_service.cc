@@ -167,6 +167,7 @@ void MapService::AddLocation(uint32_t scene_id, std::wstring name, float x, floa
 
 	// Add to list to sync to mysql
 	// or just sync it now?
+	SyncAddLocation(scene_id, new_loc);
 	
 }
 
@@ -178,8 +179,10 @@ void MapService::RemoveLocation(uint32_t scene_id, std::wstring name)
 
 	for(auto iter = i->second.begin(); iter != i->second.end(); i++)
 	{
-		if(iter->name == name)
+		if(iter->name == name) {
+			SyncRemoveLocation(scene_id, (*iter));
 			iter = i->second.erase(iter);
+		}
 	}
 }
 
@@ -196,6 +199,28 @@ bool MapService::LocationExists(uint32_t scene_id, std::wstring name)
 	}
 
 	return false;
+}
+
+void MapService::SyncAddLocation(uint32_t scene_id, MapLocation& location)
+{
+	auto i = inserted_locations_.find(scene_id);
+	if(i == inserted_locations_.end())
+	{
+		inserted_locations_.insert(std::make_pair(scene_id, std::list<MapLocation>()));
+	}
+
+	inserted_locations_.at(scene_id).push_back(location);
+}
+
+void MapService::SyncRemoveLocation(uint32_t scene_id, MapLocation& location)
+{
+	auto i = removed_locations_.find(scene_id);
+	if(i == removed_locations_.end())
+	{
+		removed_locations_.insert(std::make_pair(scene_id, std::list<MapLocation>()));
+	}
+
+	removed_locations_.at(scene_id).push_back(location);
 }
 
 void MapService::InsertLocation(uint32_t scene_id, MapLocation& location)

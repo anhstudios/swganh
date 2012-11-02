@@ -46,6 +46,8 @@ namespace map {
 
 	private:
 		void InsertLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
+		void SyncAddLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
+		void SyncRemoveLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
 
 		void HandleRequestMapLocationsMessage(
 			const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
@@ -54,6 +56,8 @@ namespace map {
 		swganh::app::SwganhKernel* kernel_;
 		swganh::simulation::SimulationService* simulation_;
 		std::map<uint32_t, std::list<swganh::messages::MapLocation>> locations_;
+		std::map<uint32_t, std::list<swganh::messages::MapLocation>> inserted_locations_;
+		std::map<uint32_t, std::list<swganh::messages::MapLocation>> removed_locations_;
 		uint32_t next_location_id_;
 	};
 
