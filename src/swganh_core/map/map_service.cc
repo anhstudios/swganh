@@ -114,10 +114,88 @@ void MapService::Startup()
 		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
 	}
 
+	// Get next location id.
+	try 
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetHighestLocationId();"));
+
+		while(result->next())
+			next_location_id_ = result->getUInt("next_id");
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+
 	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 	connection_service->RegisterMessageHandler(&MapService::HandleRequestMapLocationsMessage, this);
 
+}
+
+void MapService::AddLocation(std::string scene, std::wstring name, float x, float z, uint32_t category, uint32_t sub_category)
+{
+	AddLocation(simulation_->SceneIdByName(scene), name, x, z, category, sub_category);
+}
+
+void MapService::RemoveLocation(std::string scene, std::wstring name)
+{
+	RemoveLocation(simulation_->SceneIdByName(scene), name);
+}
+
+bool MapService::LocationExists(std::string scene, std::wstring name)
+{
+	return LocationExists(simulation_->SceneIdByName(scene), name);
+}
+
+void MapService::AddLocation(uint32_t scene_id, std::wstring name, float x, float z, uint32_t category, uint32_t sub_category)
+{
+	auto i = locations_.find(scene_id);
+	if(i == locations_.end())
+		return;
+
+	MapLocation new_loc;
+	new_loc.id = next_location_id_++;
+	new_loc.name = name;
+	new_loc.x = x;
+	new_loc.y = z;
+	new_loc.type_displayAsCategory = category;
+	new_loc.type_displayAsSubcategory = sub_category;
+	i->second.push_back(new_loc);
+
+	// Add to list to sync to mysql
+	// or just sync it now?
+	
+}
+
+void MapService::RemoveLocation(uint32_t scene_id, std::wstring name)
+{
+	auto i = locations_.find(scene_id);
+	if(i == locations_.end())
+		return;
+
+	for(auto iter = i->second.begin(); iter != i->second.end(); i++)
+	{
+		if(iter->name == name)
+			iter = i->second.erase(iter);
+	}
+}
+
+bool MapService::LocationExists(uint32_t scene_id, std::wstring name)
+{
+	auto i = locations_.find(scene_id);
+	if(i == locations_.end())
+		return false;
+
+	for(auto iter = i->second.begin(); iter != i->second.end(); i++)
+	{
+		if(iter->name == name)
+			return true;
+	}
+
+	return false;
 }
 
 void MapService::InsertLocation(uint32_t scene_id, MapLocation& location)
