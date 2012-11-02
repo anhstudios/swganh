@@ -18,7 +18,13 @@ public:
 
 	uint64_t GetObjectId() { return 0; }
 
-	void SvgToFile() { root_node_.SvgDump(); }
+	void SvgToFile() { 
+		std::stringstream fname;
+		fname << "./logs/scene_graph_" <<  scene_name_ << ".svg";
+		root_node_.SvgDump(fname.str()); 
+	}
+
+	void SetSceneName(std::string name) { scene_name_ = name; }
 
 	//Object Management
 	virtual void AddObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
@@ -45,6 +51,7 @@ public:
 private:
 	std::shared_ptr<ContainerInterface> __this;
 	quadtree::Node root_node_;
+	std::string scene_name_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
 
 	void CheckCollisions(std::shared_ptr<swganh::object::Object> object);
