@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `mood` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` char(64) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.mood: ~177 rows (approximately)
 /*!40000 ALTER TABLE `mood` DISABLE KEYS */;

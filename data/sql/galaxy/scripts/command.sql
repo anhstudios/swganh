@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `command` (
   `posture_up_chance` float NOT NULL DEFAULT '0',
   `deny_in_locomotion` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.command: ~781 rows (approximately)
 /*!40000 ALTER TABLE `command` DISABLE KEYS */;

@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `resource` (
   `expiration_date` datetime NOT NULL,
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.resource: ~0 rows (approximately)
 /*!40000 ALTER TABLE `resource` DISABLE KEYS */;

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `force_sensitive_quest_list` (
   PRIMARY KEY (`id`),
   KEY `IDX_EA74336199E6F5DF` (`player_id`),
   CONSTRAINT `FK_EA74336199E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.force_sensitive_quest_list: ~0 rows (approximately)
 /*!40000 ALTER TABLE `force_sensitive_quest_list` DISABLE KEYS */;

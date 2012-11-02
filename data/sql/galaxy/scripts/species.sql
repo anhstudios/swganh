@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `species` (
   `willpower_max` int(11) NOT NULL,
   `total` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.species: ~10 rows (approximately)
 /*!40000 ALTER TABLE `species` DISABLE KEYS */;

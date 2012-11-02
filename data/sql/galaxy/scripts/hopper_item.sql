@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `hopper_item` (
   KEY `IDX_E6F7A6B989329D25` (`resource_id`),
   CONSTRAINT `FK_E6F7A6B9167B88B4` FOREIGN KEY (`installation_id`) REFERENCES `installation` (`id`),
   CONSTRAINT `FK_E6F7A6B989329D25` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.hopper_item: ~0 rows (approximately)
 /*!40000 ALTER TABLE `hopper_item` DISABLE KEYS */;

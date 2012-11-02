@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `types` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `description` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1874303458 DEFAULT CHARSET=latin1 COMMENT='These are all of the possible object types';
+) ENGINE=InnoDB AUTO_INCREMENT=1874303458 DEFAULT CHARSET=utf8 COMMENT='These are all of the possible object types';
 
 -- Dumping data for table galaxy.types: ~18 rows (approximately)
 /*!40000 ALTER TABLE `types` DISABLE KEYS */;

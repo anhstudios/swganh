@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `player_session` (
   `player` int(11) NOT NULL,
   `session_key` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.player_session: ~36 rows (approximately)
 /*!40000 ALTER TABLE `player_session` DISABLE KEYS */;

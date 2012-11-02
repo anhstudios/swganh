@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `skills_skill_mods` (
   KEY `IDX_E43191859C9E5E6D` (`skill_mod_id`),
   CONSTRAINT `FK_E43191855585C142` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE,
   CONSTRAINT `FK_E43191859C9E5E6D` FOREIGN KEY (`skill_mod_id`) REFERENCES `skill_mod` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.skills_skill_mods: ~2,352 rows (approximately)
 /*!40000 ALTER TABLE `skills_skill_mods` DISABLE KEYS */;

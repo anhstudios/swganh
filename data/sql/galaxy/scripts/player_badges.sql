@@ -37,11 +37,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 DROP TABLE IF EXISTS `player_badges`;
 CREATE TABLE IF NOT EXISTS `player_badges` (
-  `player_id` bigint(20) unsigned NOT NULL,
+  `player_id` bigint(20) NOT NULL,
   `badge_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY  (`player_id`, `badge_id`)
-  -- CONSTRAINT `fk_playerbadges_char_char` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=REDUNDANT;
+  PRIMARY KEY  (`player_id`, `badge_id`),
+  CONSTRAINT `fk_playerbadges_char_char` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=REDUNDANT;
 
 --
 -- Dumping data for table `player_badges`

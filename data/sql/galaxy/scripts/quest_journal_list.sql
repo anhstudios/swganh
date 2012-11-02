@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `quest_journal_list` (
   KEY `IDX_DF1EF7BA9F66DE5C` (`quest_owner_id`),
   CONSTRAINT `FK_DF1EF7BA99E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`),
   CONSTRAINT `FK_DF1EF7BA9F66DE5C` FOREIGN KEY (`quest_owner_id`) REFERENCES `player` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.quest_journal_list: ~0 rows (approximately)
 /*!40000 ALTER TABLE `quest_journal_list` DISABLE KEYS */;

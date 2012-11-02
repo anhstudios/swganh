@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `resource_container` (
   KEY `IDX_6F6BBF8489329D25` (`resource_id`),
   CONSTRAINT `FK_6F6BBF8489329D25` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`),
   CONSTRAINT `FK_6F6BBF84BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.resource_container: ~0 rows (approximately)
 /*!40000 ALTER TABLE `resource_container` DISABLE KEYS */;

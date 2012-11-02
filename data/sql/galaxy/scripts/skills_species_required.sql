@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `skills_species_required` (
   KEY `fk_skills_speciesreq_spec_spec` (`species_id`),
   CONSTRAINT `fk_skills_speciesreq_skill_skill` FOREIGN KEY (`skill_id`) REFERENCES `skills` (`skill_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_skills_speciesreq_spec_spec` FOREIGN KEY (`species_id`) REFERENCES `race` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.skills_species_required: ~68 rows (approximately)
 /*!40000 ALTER TABLE `skills_species_required` DISABLE KEYS */;

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `name_developer` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.name_developer: ~20 rows (approximately)
 /*!40000 ALTER TABLE `name_developer` DISABLE KEYS */;

@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `creation_item` (
   PRIMARY KEY (`id`),
   KEY `FK_98197A65BF469374` (`profession_id`),
   KEY `FK_98197A65BF080238` (`species_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=415 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=415 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.creation_item: 414 rows
 /*!40000 ALTER TABLE `creation_item` DISABLE KEYS */;

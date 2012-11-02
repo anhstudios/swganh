@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `waypoint` (
   KEY `IDX_B3DC588199E6F5DF` (`player_id`),
   CONSTRAINT `FK_B3DC588199E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`),
   CONSTRAINT `FK_B3DC5881BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.waypoint: ~12 rows (approximately)
 /*!40000 ALTER TABLE `waypoint` DISABLE KEYS */;
