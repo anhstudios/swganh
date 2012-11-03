@@ -911,7 +911,7 @@ public:
 	 */
 	bool HasBadge(uint32_t id);
 
-	std::array<std::bitset<32>, 15> GetBadges() { return badge_flags_; }
+	std::list<uint32_t> GetBadges() { return badges_; }
 
     // baselines
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
@@ -955,7 +955,7 @@ private:
     Gender gender_;
 
 	// Badges
-	std::array<std::bitset<32>, 15> badge_flags_;
+	std::list<uint32_t> badges_;
 };
 
 }}  // namespace swganh::object

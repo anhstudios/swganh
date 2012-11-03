@@ -62,7 +62,8 @@ void PlayerFactory::RegisterEventHandlers()
 	GetEventDispatcher()->Subscribe("Player::MaxStomach", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
 	GetEventDispatcher()->Subscribe("Player::CurrentDrink", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
 	GetEventDispatcher()->Subscribe("Player::MaxDrink", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
-	GetEventDispatcher()->Subscribe("Player::JediState", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	GetEventDispatcher()->Subscribe("Player::JediState", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Player::Badges", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
 }
 void PlayerFactory::PersistChangedObjects()
 {
@@ -114,6 +115,7 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object, bool per
         PersistDraftSchematics_(player);
         PersistForceSensitiveQuests_(player);
         PersistQuestJournal_(player);
+		PersistBadges_(player);
     }
     catch(sql::SQLException &e)
     {
@@ -169,7 +171,7 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
 
             LoadStatusFlags_(player, statement);
             LoadProfileFlags_(player, statement);
-			LoadBadgeFlags_(player, statement);
+			LoadBadges_(player, statement);
             LoadDraftSchematics_(player, statement);
             LoadFriends_(player, statement);
             LoadForceSensitiveQuests_(player, statement);
@@ -239,7 +241,7 @@ void PlayerFactory::LoadProfileFlags_(std::shared_ptr<Player> player, const std:
     }
 }
 
-void PlayerFactory::LoadBadgeFlags_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
+void PlayerFactory::LoadBadges_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
 {
 	try
 	{
@@ -341,6 +343,28 @@ void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, const std::s
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
+
+void PlayerFactory::PersistBadges_(const shared_ptr<Player>& player)
+{
+	try
+	{
+		auto conn = GetDatabaseManager()->getConnection("galaxy");
+		auto badges = player->GetBadges();
+		for(auto& badge_id : badges)
+		{
+			auto statement = conn->prepareStatement("CALL sp_UpdateBadges(?, ?);");
+			statement->setUInt64(1, player->GetObjectId());
+			statement->setUInt(2, badge_id);
+			auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+		};
+	}
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
 void PlayerFactory::PersistDraftSchematics_(const shared_ptr<Player>& player)
 {
     try 
