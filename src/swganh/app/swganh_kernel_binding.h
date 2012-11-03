@@ -25,6 +25,7 @@
 #include "swganh/weather/weather_service_interface.h"
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/player/player_service_interface.h"
+#include "swganh/badge/badge_service_interface.h"
 
 #include <boost/python.hpp>
 
@@ -94,6 +95,11 @@ void exportSWGANHKernel()
 				return_value_policy<reference_existing_object>(),
 				boost::mpl::vector<swganh::weather::WeatherServiceInterface*, swganh::service::ServiceManager*>()),
 				"returns an internal refrence of the :class:`.WeatherService`")
+		.def("badgeService", make_function(
+				std::bind(&swganh::service::ServiceManager::GetService<swganh::badge::BadgeServiceInterface>, std::placeholders::_1, "BadgeService"),
+				return_value_policy<reference_existing_object>(),
+				boost::mpl::vector<swganh::badge::BadgeServiceInterface*, swganh::service::ServiceManager*>()),
+				"returns an internal reference of the :class:`.BadgeService`")
        ;
        
 }
