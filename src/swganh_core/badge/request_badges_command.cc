@@ -22,6 +22,16 @@ using namespace swganh::simulation;
 using namespace swganh::app;
 using namespace swganh::equipment;
 
+uint32_t GetBadgeBitmaskIndexById2(uint32_t id)
+{
+	return (uint32_t)floor((double)((id)/32));
+}
+
+uint8_t GetBadgeBitmaskBitById2(uint32_t id)
+{
+	return (id)%32;
+}
+
 RequestBadgesCommand::RequestBadgesCommand(SwganhKernel* kernel, const CommandProperties& properties)
 	: BaseSwgCommand(kernel, properties)
 	, kernel_(kernel)
@@ -36,7 +46,11 @@ boost::optional<std::shared_ptr<CommandCallback>> RequestBadgesCommand::Run()
 
 	swganh::messages::BadgesResponseMessage badges_response;
 	badges_response.character_id = GetActor()->GetObjectId();
-	badges_response.badge_flags = player->GetBadges();
+
+	auto badges = player->GetBadges();
+	std::for_each(badges.begin(), badges.end(), [=, &badges_response](const uint32_t id) {
+		badges_response.badge_flags[GetBadgeBitmaskIndexById2(id)].at(GetBadgeBitmaskBitById2(id)) = true;
+	});
 
 	GetActor()->GetController()->Notify(&badges_response);
 
