@@ -9,6 +9,7 @@
 #include "swganh/logger.h"
 
 #include <bitset>
+#include <sstream>
 
 #include "object_factory.h"
 #include "swganh/event_dispatcher.h"
@@ -204,9 +205,32 @@ shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_na
 	auto find_iter = std::find_if(
         std::begin(object_map_), 
         std::end(object_map_),
-        [custom_name] (pair<uint64_t, shared_ptr<Object>> key_value)
+        [custom_name] (pair<uint64_t, shared_ptr<Object>> key_value) -> bool
     {
-		return key_value.second->GetCustomName().compare(custom_name) == 0;
+        auto wide_custom_name = key_value.second->GetCustomName();
+        std::string name(std::begin(wide_custom_name), std::end(wide_custom_name));
+        std::string check_name(std::begin(custom_name), std::end(custom_name));
+
+        // Names are case insensitive, normalize by converting to lowercase before comparison checks
+        std::transform(std::begin(name), std::end(name), std::begin(name), ::tolower);
+        std::transform(std::begin(check_name), std::end(check_name), std::begin(check_name), ::tolower);
+
+        if (name.compare(check_name) == 0)
+        {
+            return true;
+        }
+
+        // Only first names are unique, if a complete match fails then
+        // attempt to match the first name only.
+        std::size_t pos = name.find(" ");
+        std::string firstname = name.substr(0, pos);
+
+        if (firstname.compare(check_name) == 0)
+        {
+            return true;
+        }
+
+        return false;
 	});
 
 	if (find_iter == object_map_.end())
