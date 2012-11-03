@@ -211,6 +211,10 @@ shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_na
         std::string name(std::begin(wide_custom_name), std::end(wide_custom_name));
         std::string check_name(std::begin(custom_name), std::end(custom_name));
 
+        // Names are case insensitive, normalize by converting to lowercase before comparison checks
+        std::transform(std::begin(name), std::end(name), std::begin(name), ::tolower);
+        std::transform(std::begin(check_name), std::end(check_name), std::begin(check_name), ::tolower);
+
         if (name.compare(check_name) == 0)
         {
             return true;
