@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 #include "swganh/byte_buffer.h"
+#include "swganh/chat/instant_message.h"
 #include "base_swg_message.h"
 
 namespace swganh {
@@ -20,8 +21,11 @@ namespace messages {
     	std::string sender_character_name; // sender (the recipient receives this packet)
     	std::wstring message;
 
-    	ChatInstantMessageToClient()
-    		: game_name("SWG")
+    	ChatInstantMessageToClient(const swganh::chat::InstantMessage& instant_message)
+            : game_name(instant_message.game_tag)
+            , server_name(instant_message.galaxy_tag)
+            , sender_character_name(instant_message.sender)
+            , message(std::begin(instant_message.message), std::end(instant_message.message))
     	{}
 
     	void OnSerialize(swganh::ByteBuffer& buffer) const
@@ -30,6 +34,7 @@ namespace messages {
     		buffer.write(server_name);
     		buffer.write(sender_character_name);
     		buffer.write(message);
+            buffer.write(uint32_t(0));
     	}
 
     	void OnDeserialize(swganh::ByteBuffer& buffer)
@@ -38,6 +43,7 @@ namespace messages {
     		server_name = buffer.read<std::string>();
     		sender_character_name = buffer.read<std::string>();
     		message = buffer.read<std::wstring>();
+            buffer.read<uint32_t>();
     	}
     };
 
