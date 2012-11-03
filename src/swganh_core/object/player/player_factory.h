@@ -38,7 +38,8 @@ namespace object {
         // Helpers
         void LoadStatusFlags_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void LoadProfileFlags_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
-        void LoadBadgeFlags_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
+        void LoadBadges_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
+		void PersistBadges_(const std::shared_ptr<Player>& player);
 		void LoadXP_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistXP_(const std::shared_ptr<Player>& player);
         void LoadWaypoints_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);

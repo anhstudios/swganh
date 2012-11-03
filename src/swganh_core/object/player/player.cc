@@ -804,24 +804,26 @@ void Player::ToggleBadge(uint8_t index, uint8_t bit)
 		return;
 
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	badge_flags_[index][bit] = !badge_flags_[index][bit];
+	badges_.push_back((32 * index) + bit);
+
+	DISPATCH(Player, BadgeFlags);
 }
 
 void Player::AddBadge(uint32_t id)
 {
-	uint32_t index = (uint32_t)floor((double)((id)/32));
-	uint8_t bit = id % 32;
-
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	badge_flags_[index][bit] = 1;
+	badges_.push_back(id);
+
+	DISPATCH(Player, BadgeFlags);
 }
 
 bool Player::HasBadge(uint32_t id)
 {
-	uint32_t index = (uint32_t)floor((double)((id)/32));
-	uint8_t bit = id % 32;
-
-	return badge_flags_[index][bit];
+	auto i = std::find(badges_.begin(), badges_.end(), id);
+	if(i != badges_.end())
+		return true;
+	else
+		return false;
 }
 
 bool Player::HasBadge(uint8_t index, uint8_t bit)
@@ -829,7 +831,13 @@ bool Player::HasBadge(uint8_t index, uint8_t bit)
 	if(index > 6 || bit > 32)
 		return false;
 
-	return badge_flags_[index][bit];
+	uint32_t id = (32 * index) + bit;
+
+	auto i = std::find(badges_.begin(), badges_.end(), id);
+	if(i != badges_.end())
+		return true;
+	else
+		return false;
 }
 
 void PlayerWaypointSerializer::Serialize(swganh::messages::BaselinesMessage& message)
