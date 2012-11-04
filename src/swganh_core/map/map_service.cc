@@ -60,6 +60,10 @@ void MapService::Startup()
 {
 	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
+	kernel_->GetEventDispatcher()->Subscribe("ObjectManager::PersistObjectsByTimer", [=](std::shared_ptr<swganh::EventInterface> event) {
+		PersistLocations();
+	});
+
 	// Get STATIC map locations.
 	try
 	{
@@ -122,7 +126,7 @@ void MapService::Startup()
 		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetHighestLocationId();"));
 
 		while(result->next())
-			next_location_id_ = result->getUInt("next_id");
+			next_location_id_ = result->getUInt(1);
 	}
 	catch(sql::SQLException &e) {
 		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
@@ -203,24 +207,16 @@ bool MapService::LocationExists(uint32_t scene_id, std::wstring name)
 
 void MapService::SyncAddLocation(uint32_t scene_id, MapLocation& location)
 {
-	auto i = inserted_locations_.find(scene_id);
-	if(i == inserted_locations_.end())
-	{
-		inserted_locations_.insert(std::make_pair(scene_id, std::list<MapLocation>()));
-	}
-
-	inserted_locations_.at(scene_id).push_back(location);
+	changed_locations_.push(
+		std::tuple<uint32_t, uint32_t, MapLocation>(scene_id, 1, location)
+		);
 }
 
 void MapService::SyncRemoveLocation(uint32_t scene_id, MapLocation& location)
 {
-	auto i = removed_locations_.find(scene_id);
-	if(i == removed_locations_.end())
-	{
-		removed_locations_.insert(std::make_pair(scene_id, std::list<MapLocation>()));
-	}
-
-	removed_locations_.at(scene_id).push_back(location);
+	changed_locations_.push(
+		std::tuple<uint32_t, uint32_t, MapLocation>(scene_id, 2, location)
+		);
 }
 
 void MapService::InsertLocation(uint32_t scene_id, MapLocation& location)
@@ -232,6 +228,52 @@ void MapService::InsertLocation(uint32_t scene_id, MapLocation& location)
 	}
 
 	locations_.at(scene_id).push_back(location);
+}
+
+void MapService::PersistLocations()
+{
+	try
+	{
+		while(changed_locations_.size())
+		{
+			std::tuple<uint32_t, uint32_t, MapLocation> location = changed_locations_.front();
+
+			switch((uint32_t)std::get<1>(location))
+			{
+			case 1: // Add
+				{
+					auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+					auto statement = conn->prepareStatement("CALL sp_UpdateLocation(?, ?, ?, ?, ?, ?, ?);");
+					statement->setUInt(1, (uint32_t)std::get<2>(location).id);
+					statement->setString(2, std::string(std::get<2>(location).name.begin(), std::get<2>(location).name.end()));
+					statement->setUInt(3, std::get<0>(location) - 1);
+					statement->setUInt(4, std::get<2>(location).type_displayAsCategory);
+					statement->setUInt(5, std::get<2>(location).type_displayAsSubcategory);
+					statement->setDouble(6, std::get<2>(location).x);
+					statement->setDouble(7, std::get<2>(location).y);
+					auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+					break;
+				}
+
+			case 2: // Remove
+				{
+					auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+					auto statement = conn->prepareStatement("CALL sp_RemoveLocation(?, ?, ?);");
+					statement->setUInt(1, (uint32_t)std::get<2>(location).id);
+					statement->setUInt(2, std::get<0>(location) - 1);
+					statement->setString(3, std::string(std::get<2>(location).name.begin(), std::get<2>(location).name.end()));
+					auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+					break;
+				}
+			}
+
+			changed_locations_.pop();
+		}
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
 }
 
 void MapService::HandleRequestMapLocationsMessage(

@@ -6,10 +6,10 @@ DROP PROCEDURE IF EXISTS `sp_GetHighestLocationId`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetHighestLocationId`()
 BEGIN
-	IF (SELECT COUNT(*) FROM planetmap) = NULL THEN 
-		SELECT max(id) + 1 AS next_id FROM planetmap;
-	else
-		SELECT 999999681 AS next_id;
+	IF ((SELECT max(id) + 1 FROM planetmap) IS NULL) THEN 
+		SELECT 999999681;
+	ELSE
+		SELECT max(id) + 1 FROM planetmap;
 	END IF;
 END//
 DELIMITER ;
