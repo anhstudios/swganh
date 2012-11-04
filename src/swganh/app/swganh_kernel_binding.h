@@ -26,6 +26,7 @@
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/player/player_service_interface.h"
 #include "swganh/badge/badge_service_interface.h"
+#include "swganh/map/map_service_interface.h"
 
 #include <boost/python.hpp>
 
@@ -100,6 +101,11 @@ void exportSWGANHKernel()
 				return_value_policy<reference_existing_object>(),
 				boost::mpl::vector<swganh::badge::BadgeServiceInterface*, swganh::service::ServiceManager*>()),
 				"returns an internal reference of the :class:`.BadgeService`")
+		.def("mapService", make_function(
+				std::bind(&swganh::service::ServiceManager::GetService<swganh::map::MapServiceInterface>, std::placeholders::_1, "MapService"),
+				return_value_policy<reference_existing_object>(),
+				boost::mpl::vector<swganh::map::MapServiceInterface*, swganh::service::ServiceManager*>()),
+				"returns an internal reference of the :class:`.MapService`")
        ;
        
 }

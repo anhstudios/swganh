@@ -177,7 +177,7 @@ void MapService::RemoveLocation(uint32_t scene_id, std::wstring name)
 	if(i == locations_.end())
 		return;
 
-	for(auto iter = i->second.begin(); iter != i->second.end(); i++)
+	for(auto iter = i->second.begin(); iter != i->second.end(); iter++)
 	{
 		if(iter->name == name) {
 			SyncRemoveLocation(scene_id, (*iter));
@@ -192,7 +192,7 @@ bool MapService::LocationExists(uint32_t scene_id, std::wstring name)
 	if(i == locations_.end())
 		return false;
 
-	for(auto iter = i->second.begin(); iter != i->second.end(); i++)
+	for(auto iter = i->second.begin(); iter != i->second.end(); iter++)
 	{
 		if(iter->name == name)
 			return true;
