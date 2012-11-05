@@ -98,15 +98,6 @@ void ChatService::SendSpatialChat(
     actor->NotifyObservers(&spatial_chat);
 }
 
-void ChatService::SendInstantMessage(
-    const std::shared_ptr<swganh::object::Object>& target,
-    const InstantMessage& message)
-{
-    ChatInstantMessageToClient instant_message(message);
-
-    target->GetController()->Notify(&instant_message);
-}
-
 void ChatService::Startup()
 {
 	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
@@ -138,28 +129,23 @@ void ChatService::HandleChatInstantMessageToCharacter(
         return;
     }
 
-    auto receiver = simulation_service_->GetObjectByCustomName(message->recipient_character_name);
+    // @TODO Filter input (possibly via plugin class)
 
-    uint32_t receiver_status = 4;
+    auto receiver = simulation_service_->GetObjectByCustomName(message->recipient_character_name);
+    
+    uint32_t receiver_status = ChatOnSendInstantMessage::FAILED;
     
     if (receiver)
     {
-        receiver_status = 0;
-
-        InstantMessage instant_message;
-
-        instant_message.game_tag = "SWG";
-        instant_message.galaxy_tag = kernel_->GetServiceDirectory()->galaxy().name();
-        instant_message.message = std::string(std::begin(message->message), std::end(message->message));
-        instant_message.recipient = message->recipient_character_name;
+        receiver_status = ChatOnSendInstantMessage::OK;
         
-        auto sender_custom_name = sender->GetCustomName();
-        auto sender_name = std::string(std::begin(sender_custom_name), std::end(sender_custom_name));
+        ChatInstantMessageToClient instant_message(
+            "SWG",
+            kernel_->GetServiceDirectory()->galaxy().name(),            
+            sender->GetFirstName(),
+            message->message);
 
-        std::size_t pos = sender_name.find(" ");
-        instant_message.sender = sender_name.substr(0, pos);
-
-        SendInstantMessage(receiver, instant_message);
+        receiver->GetController()->Notify(&instant_message);
     }
 
     ChatOnSendInstantMessage response;

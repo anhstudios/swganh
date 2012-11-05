@@ -10,7 +10,13 @@ namespace swganh {
 namespace messages {
 
     struct ChatOnSendInstantMessage : public BaseSwgMessage
-    {
+    {        
+        enum RESPONSE_TYPES
+        {
+            OK = 0,
+            FAILED = 4
+        };
+
     	uint16_t Opcount() const { return 3; }
     	uint32_t Opcode() const { return 0x88DBB381; }
 

@@ -201,29 +201,28 @@ void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)
 {
+    auto check_name = custom_name;
+    std::transform(std::begin(check_name), std::end(check_name), std::begin(check_name), ::towlower);
+
     boost::shared_lock<boost::shared_mutex> lock(object_map_mutex_);
 	auto find_iter = std::find_if(
         std::begin(object_map_), 
         std::end(object_map_),
-        [custom_name] (pair<uint64_t, shared_ptr<Object>> key_value) -> bool
+        [&check_name] (pair<uint64_t, shared_ptr<Object>> key_value) -> bool
     {
-        auto wide_custom_name = key_value.second->GetCustomName();
-        std::string name(std::begin(wide_custom_name), std::end(wide_custom_name));
-        std::string check_name(std::begin(custom_name), std::end(custom_name));
-
         // Names are case insensitive, normalize by converting to lowercase before comparison checks
-        std::transform(std::begin(name), std::end(name), std::begin(name), ::tolower);
-        std::transform(std::begin(check_name), std::end(check_name), std::begin(check_name), ::tolower);
+        auto custom_name = key_value.second->GetCustomName();
+        std::transform(std::begin(custom_name), std::end(custom_name), std::begin(custom_name), ::towlower);
 
-        if (name.compare(check_name) == 0)
+        if (custom_name.compare(check_name) == 0)
         {
             return true;
         }
 
         // Only first names are unique, if a complete match fails then
         // attempt to match the first name only.
-        std::size_t pos = name.find(" ");
-        std::string firstname = name.substr(0, pos);
+        std::size_t pos = custom_name.find(L" ");
+        std::wstring firstname = custom_name.substr(0, pos);
 
         if (firstname.compare(check_name) == 0)
         {

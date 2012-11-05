@@ -443,6 +443,20 @@ void Object::SetCustomName(wstring custom_name)
     DISPATCH(Object, CustomName);
 }
 
+std::wstring Object::GetFirstName() const
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+    std::size_t pos = custom_name_.find(L" ");
+    return custom_name_.substr(0, pos);
+}
+
+std::wstring Object::GetSirName() const
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+    std::size_t pos = custom_name_.find(L" ");
+    return custom_name_.substr(pos, std::string::npos);
+}
+
 bool Object::HasObservers()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
