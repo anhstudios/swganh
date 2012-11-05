@@ -13,9 +13,6 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
-#include "swganh/chat/instant_message.h"
-#include "swganh/chat/persistent_message.h"
-
 namespace swganh {
 namespace connection {
     class ConnectionClientInterface;
@@ -61,10 +58,6 @@ public:
         std::wstring chat_message,
         uint16_t chat_type,
         uint16_t mood);
-
-    void SendInstantMessage(
-		const std::shared_ptr<swganh::object::Object>& target,
-        const InstantMessage& message);
 
 	/**
 	* Called on startup
