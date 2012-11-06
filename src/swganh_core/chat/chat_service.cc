@@ -105,6 +105,7 @@ void ChatService::Startup()
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
     
     connection_service->RegisterMessageHandler(&ChatService::HandleChatInstantMessageToCharacter, this);
+    connection_service->RegisterMessageHandler(&ChatService::HandleChatPersistentMessageToServer, this);
 
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
@@ -116,7 +117,6 @@ void ChatService::Startup()
         return std::make_shared<SpatialChatInternalCommand>(kernel, properties);
     });
 }
-
 
 void ChatService::HandleChatInstantMessageToCharacter(
     const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
@@ -153,4 +153,21 @@ void ChatService::HandleChatInstantMessageToCharacter(
     response.success_flag = receiver_status;
 
     sender->GetController()->Notify(&response);
+}
+
+void ChatService::HandleChatPersistentMessageToServer(
+    const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+    swganh::messages::ChatPersistentMessageToServer* message)
+{
+	auto sender = simulation_service_->GetObjectById(client->GetController()->GetId());
+
+    if (!sender)
+    {
+        return;
+    }
+
+    // @TODO Filter input (possibly via plugin class)
+
+    auto receiver = simulation_service_->GetObjectByCustomName(message->recipient);
+    DLOG(warning) << "Mail sent to " << message->recipient;
 }

@@ -18,7 +18,8 @@ namespace connection {
     class ConnectionClientInterface;
 }
 namespace messages {
-    struct ChatInstantMessageToCharacter; 
+    struct ChatInstantMessageToCharacter;
+    struct ChatPersistentMessageToServer;
 }
 namespace object {
 	class Object;
@@ -72,6 +73,10 @@ private:
     void HandleChatInstantMessageToCharacter(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
         swganh::messages::ChatInstantMessageToCharacter* message);
+
+    void HandleChatPersistentMessageToServer(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatPersistentMessageToServer* message);
 };
 
 }}  // namespace swganh::chat
