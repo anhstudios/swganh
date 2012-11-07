@@ -29,6 +29,8 @@ namespace messages {
 
     	ChatPersistentMessageToClient()
     		: game_name("SWG")
+            , null_spacer(0)
+            , unknown(0)
     	{}
 
     	void OnSerialize(swganh::ByteBuffer& buffer) const
@@ -38,16 +40,18 @@ namespace messages {
     		buffer.write(server_name);
     		buffer.write(mail_message_id);
     		buffer.write(request_type_flag);
+
     		if (request_type_flag == 1)
     		{
     			buffer.write(null_spacer);
-    			buffer.write(mail_message_subject);
     		}
-    		else if (request_type_flag == 0)
+    		else
     		{
     			buffer.write(mail_message_body);
-    			buffer.write(mail_message_subject);
     		}
+
+            buffer.write(mail_message_subject);
+    		buffer.write(unknown);
     		buffer.write(status);
     		buffer.write(timestamp);
     		buffer.write(unknown);
