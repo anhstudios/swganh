@@ -16,10 +16,11 @@ CREATE FUNCTION `sf_MailCreate`(
     subject char(255),
     message text,
     attachments text,
+    status tinyint(1) unsigned,
     sent_time int)
 RETURNS int(11)
 BEGIN
-    INSERT INTO chat_mail VALUES (NULL, sender, sender_game, sender_galaxy, reciever_id, subject, message, 78, sent_time, attachments, 0);
+    INSERT INTO chat_mail VALUES (NULL, sender, sender_game, sender_galaxy, reciever_id, subject, message, status, sent_time, attachments, 0);
     RETURN(LAST_INSERT_ID());
 END //
 

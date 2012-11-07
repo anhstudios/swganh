@@ -47,6 +47,16 @@ public:
 	*/
     swganh::service::ServiceDescription GetServiceDescription();
 
+    bool SendPersistentMessage(
+        const std::string& recipient,
+        const std::string& sender_name, 
+        const std::string& sender_game, 
+        const std::string& sender_galaxy, 
+        const std::wstring& subject, 
+        const std::wstring& message, 
+        const std::vector<char>& attachments, 
+        uint32_t timestamp);
+
 	/**
 	* Sends a spatial chat message
 	* @param actor the speaker
@@ -67,13 +77,48 @@ public:
 	*/
     void Startup();
 
-    uint64_t GetReceiverIdByCustomName(std::string custom_name);
+    uint64_t GetObjectIdByCustomName(const std::string& custom_name);
 
 private:
     swganh::database::DatabaseManagerInterface* db_manager_;
 	swganh::command::CommandServiceInterface* command_service_;
     swganh::simulation::SimulationServiceInterface* simulation_service_;
     swganh::app::SwganhKernel* kernel_;
+    
+    void SendChatPersistentMessageToClient(
+        const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 
+        const std::string& sender_name, 
+        const std::string& sender_game, 
+        const std::string& sender_galaxy, 
+        const std::wstring& subject, 
+        const std::wstring& message, 
+        uint32_t message_id,
+        uint8_t status,
+        const std::vector<char>& attachments, 
+        uint32_t timestamp);
+
+    void SendChatPersistentMessageToClient(
+        const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 
+        const std::string& sender_name, 
+        const std::string& sender_game, 
+        const std::string& sender_galaxy, 
+        const std::wstring& subject,
+        uint32_t message_id,
+        uint8_t status,
+        uint32_t timestamp);
+    
+    void SendChatPersistentMessageToClient(
+        const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 
+        const std::string& sender_name, 
+        const std::string& sender_game, 
+        const std::string& sender_galaxy, 
+        const std::wstring& subject, 
+        const std::wstring& message, 
+        uint32_t message_id,
+        uint8_t status,
+        const std::vector<char>& attachments, 
+        uint32_t timestamp,
+        uint8_t header_only);
 
     void HandleChatInstantMessageToCharacter(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
@@ -91,11 +136,16 @@ private:
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
         swganh::messages::ChatDeletePersistentMessage* message);
 
-    void PersistMessage(std::shared_ptr<swganh::object::Object> receiver, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
-        std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp);
-    
-    uint32_t PersistMessage(uint64_t receiver_id, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
-        std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp);
+    uint32_t StorePersistentMessage(
+        uint64_t recipient_id,
+        const std::string& sender_name, 
+        const std::string& sender_game, 
+        const std::string& sender_galaxy, 
+        const std::wstring& subject, 
+        const std::wstring& message, 
+        const std::vector<char>& attachments,
+        uint8_t status,
+        uint32_t timestamp);
 
     void LoadMessageHeaders(std::shared_ptr<swganh::object::Object> receiver);
 };
