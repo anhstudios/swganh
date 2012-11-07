@@ -11,7 +11,7 @@ DELIMITER //
 CREATE PROCEDURE `sp_MailMarkAsRead`(IN mail_id BIGINT)
 BEGIN
 
-  UPDATE chat_mail SET status = 1 WHERE id = mail_id;
+  UPDATE chat_mail SET status = 82 WHERE id = mail_id;
 
 END//
 
