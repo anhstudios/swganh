@@ -32,7 +32,8 @@
 #include "swganh_core/messages/chat_persistent_message_to_server.h"
 #include "swganh_core/messages/chat_on_send_instant_message.h"
 #include "swganh_core/messages/chat_on_send_persistent_message.h"
-
+#include "swganh_core/messages/chat_request_persistent_message.h"
+#include "swganh_core/messages/chat_delete_persistent_message.h"
 #include "swganh_core/object/object.h"
 
 #include "swganh/connection/connection_client_interface.h"
@@ -116,6 +117,8 @@ void ChatService::Startup()
     
     connection_service->RegisterMessageHandler(&ChatService::HandleChatInstantMessageToCharacter, this);
     connection_service->RegisterMessageHandler(&ChatService::HandleChatPersistentMessageToServer, this);
+    connection_service->RegisterMessageHandler(&ChatService::HandleChatRequestPersistentMessage, this);
+    connection_service->RegisterMessageHandler(&ChatService::HandleChatDeletePersistentMessage, this);
 
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
@@ -208,6 +211,72 @@ void ChatService::HandleChatPersistentMessageToServer(
     sender->GetController()->Notify(&response);
 }
 
+
+void ChatService::HandleChatRequestPersistentMessage(
+    const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+    swganh::messages::ChatRequestPersistentMessage* message)
+{    
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_MailGetMessage(?, ?);"));
+        statement->setUInt(1, message->mail_message_id);
+        statement->setUInt64(2, client->GetController()->GetId());
+
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+        while (result_set->next()) {
+            
+            uint32_t message_id = result_set->getUInt("id");
+            uint32_t timestamp = result_set->getUInt("sent_time");
+            uint8_t status = result_set->getUInt("status");
+            std::string sender_game = result_set->getString("sender_game");
+            std::string sender_galaxy = result_set->getString("sender_galaxy");
+            std::string sender_name = result_set->getString("sender");
+            std::string tmp = result_set->getString("subject");
+            std::wstring subject(std::begin(tmp), std::end(tmp));
+
+            tmp = result_set->getString("message");
+            std::wstring message(std::begin(tmp), std::end(tmp));
+
+            ChatPersistentMessageToClient persistent_message;
+            persistent_message.game_name = sender_game;
+            persistent_message.server_name = sender_galaxy;
+            persistent_message.mail_message_subject = subject;
+            persistent_message.mail_message_body = message;
+            persistent_message.mail_message_id = message_id;
+            persistent_message.request_type_flag = 0;
+            persistent_message.sender_character_name = sender_name;
+            persistent_message.status = status;
+            persistent_message.timestamp = timestamp;
+                        
+            client->GetController()->Notify(&persistent_message);
+        }
+        
+		while(statement->getMoreResults());
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
+void ChatService::HandleChatDeletePersistentMessage(
+    const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+    swganh::messages::ChatDeletePersistentMessage* message)
+{
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_MailDeleteMessage(?, ?);"));
+        statement->setUInt(1, message->mail_message_id);
+        statement->setUInt64(2, client->GetController()->GetId());
+
+        statement->execute();
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
 void ChatService::PersistMessage(std::shared_ptr<Object> receiver, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
     std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp)
 {    
@@ -284,3 +353,5 @@ void ChatService::LoadMessageHeaders(std::shared_ptr<swganh::object::Object> rec
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
+
+
