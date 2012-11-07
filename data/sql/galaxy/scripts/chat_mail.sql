@@ -24,6 +24,7 @@ CREATE TABLE `chat_mail` (
   `status` tinyint(1) unsigned NOT NULL,
   `sent_time` bigint(20) unsigned NOT NULL,
   `attachments` text,
+  `deleted` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id`),
   KEY `fk_mails_to_char` (`receiver_id`),
   CONSTRAINT `chat_mail_ibfk_1` FOREIGN KEY (`receiver_id`) REFERENCES `object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

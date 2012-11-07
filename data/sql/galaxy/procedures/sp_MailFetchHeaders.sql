@@ -18,7 +18,9 @@ BEGIN
            chat_mail.status,
            chat_mail.sent_time,
            chat_mail.subject
-    FROM chat_mail WHERE chat_mail.receiver_id = receiver_id;
+    FROM chat_mail
+    WHERE chat_mail.receiver_id = receiver_id
+    AND chat_mail.deleted = 0;
 
 END//
 

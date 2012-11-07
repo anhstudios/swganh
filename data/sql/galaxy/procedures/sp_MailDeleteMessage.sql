@@ -8,10 +8,10 @@ DROP PROCEDURE IF EXISTS `sp_MailDeleteMessage`;
 
 DELIMITER //
 
-CREATE PROCEDURE `sp_MailDeleteMessage`(IN message_id BIGINT)
+CREATE PROCEDURE `sp_MailDeleteMessage`(IN message_id BIGINT, IN receiver_id BIGINT)
 BEGIN
 
-    DELETE FROM chat_mail WHERE chat_mail.id = message_id;
+    UPDATE chat_mail SET chat_mail.deleted = 1 WHERE chat_mail.id = message_id AND chat_mail.receiver_id = receiver_id;
 
 END//
 
