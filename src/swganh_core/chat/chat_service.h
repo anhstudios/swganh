@@ -120,6 +120,23 @@ private:
         uint32_t timestamp,
         uint8_t header_only);
 
+    void SendChatOnSendInstantMessage(
+        const std::shared_ptr<swganh::observer::ObserverInterface>& receiver,
+        uint32_t message_id,
+        uint32_t recieved_status);
+
+    void SendChatOnSendPersistentMessage(
+        const std::shared_ptr<swganh::observer::ObserverInterface>& receiver,
+        uint32_t message_id,
+        uint32_t recieved_status);
+
+    void SendChatInstantMessageToClient(
+        const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 
+        const std::string& sender_name, 
+        const std::string& sender_game, 
+        const std::string& sender_galaxy, 
+        const std::wstring& message);
+
     void HandleChatInstantMessageToCharacter(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
         swganh::messages::ChatInstantMessageToCharacter* message);
@@ -147,7 +164,9 @@ private:
         uint8_t status,
         uint32_t timestamp);
 
-    void LoadMessageHeaders(std::shared_ptr<swganh::object::Object> receiver);
+    void LoadMessageHeaders(const std::shared_ptr<swganh::object::Object>& receiver);
+
+    std::wstring FilterMessage(const std::wstring& message);
 };
 
 }}  // namespace swganh::chat
