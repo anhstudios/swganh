@@ -26,7 +26,7 @@ CREATE TABLE `chat_mail` (
   `attachments` text,
   PRIMARY KEY  (`id`),
   KEY `fk_mails_to_char` (`receiver_id`),
-  CONSTRAINT `chat_mail_ibfk_1` FOREIGN KEY (`receiver_id`) REFERENCES `player` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `chat_mail_ibfk_1` FOREIGN KEY (`receiver_id`) REFERENCES `object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
