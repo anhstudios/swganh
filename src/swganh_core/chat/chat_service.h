@@ -67,6 +67,8 @@ public:
 	*/
     void Startup();
 
+    uint64_t GetReceiverIdByCustomName(std::string custom_name);
+
 private:
     swganh::database::DatabaseManagerInterface* db_manager_;
 	swganh::command::CommandServiceInterface* command_service_;
@@ -90,6 +92,9 @@ private:
         swganh::messages::ChatDeletePersistentMessage* message);
 
     void PersistMessage(std::shared_ptr<swganh::object::Object> receiver, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
+        std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp);
+    
+    uint32_t PersistMessage(uint64_t receiver_id, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
         std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp);
 
     void LoadMessageHeaders(std::shared_ptr<swganh::object::Object> receiver);

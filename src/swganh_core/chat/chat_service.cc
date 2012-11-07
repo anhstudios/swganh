@@ -3,6 +3,8 @@
 
 #include "chat_service.h"
 
+#include <ctime>
+
 #ifdef WIN32
 #include <regex>
 #else
@@ -139,6 +141,29 @@ void ChatService::Startup()
         LoadMessageHeaders(player_obj);
 	});
 }
+   
+uint64_t ChatService::GetReceiverIdByCustomName(std::string custom_name)
+{
+    uint64_t object_id = 0;
+
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("SELECT sf_GetObjectIdByCustomName(?);"));
+        statement->setString(1, custom_name);
+
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+        while (result_set->next()) {
+            object_id = result_set->getUInt64(1);
+        }
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return object_id;
+}
 
 void ChatService::HandleChatInstantMessageToCharacter(
     const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
@@ -189,19 +214,37 @@ void ChatService::HandleChatPersistentMessageToServer(
     }
 
     // @TODO Filter input (possibly via plugin class)
-
-    auto receiver = simulation_service_->GetObjectByCustomName(message->recipient);
+    auto receiver_id = GetReceiverIdByCustomName(message->recipient);
+    auto receiver = simulation_service_->GetObjectById(receiver_id);
     
     uint32_t receiver_status = ChatOnSendInstantMessage::FAILED;
     
-    if (receiver)
+    if (receiver_id)
     {
         receiver_status = ChatOnSendInstantMessage::OK;
         
         auto firstname = sender->GetFirstName();
 
-        PersistMessage(receiver, std::string(firstname.begin(), firstname.end()), "SWG",
-            kernel_->GetServiceDirectory()->galaxy().name(), message->subject, message->message, message->attachment_data, 0);
+        auto timestamp = static_cast<uint32_t>(time(NULL));
+
+        auto message_id = PersistMessage(receiver_id, std::string(firstname.begin(), firstname.end()), "SWG",
+            kernel_->GetServiceDirectory()->galaxy().name(), message->subject, message->message, message->attachment_data, timestamp);
+
+        if (receiver)
+        {
+            
+            ChatPersistentMessageToClient persistent_message;
+            persistent_message.game_name = "SWG";
+            persistent_message.server_name = kernel_->GetServiceDirectory()->galaxy().name();
+            persistent_message.mail_message_subject = message->subject;
+            persistent_message.mail_message_id = message_id;
+            persistent_message.request_type_flag = 1;
+            persistent_message.sender_character_name = std::string(firstname.begin(), firstname.end());
+            persistent_message.status = 'N';
+            persistent_message.timestamp = timestamp;
+                        
+            receiver->GetController()->Notify(&persistent_message);
+        }
     }
 
     ChatOnSendPersistentMessage response;
@@ -277,16 +320,18 @@ void ChatService::HandleChatDeletePersistentMessage(
     }
 }
 
-void ChatService::PersistMessage(std::shared_ptr<Object> receiver, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
+uint32_t ChatService::PersistMessage(uint64_t receiver_id, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
     std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp)
 {    
+    uint32_t message_id = 0;
+
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("SELECT sf_MailCreate(?, ?, ?, ?, ?, ?, ?, ?);"));
         statement->setString(1, sender_name);
         statement->setString(2, sender_game);
         statement->setString(3, sender_galaxy);
-        statement->setUInt64(4, receiver->GetObjectId());
+        statement->setUInt64(4, receiver_id);
         statement->setString(5, std::string(std::begin(subject), std::end(subject)));
         statement->setString(6, std::string(std::begin(message), std::end(message)));
         statement->setString(7, std::string(std::begin(attachments), std::end(attachments)));
@@ -295,24 +340,15 @@ void ChatService::PersistMessage(std::shared_ptr<Object> receiver, std::string s
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
 
         while (result_set->next()) {
-
-            ChatPersistentMessageToClient persistent_message;
-            persistent_message.game_name = sender_game;
-            persistent_message.server_name = sender_galaxy;
-            persistent_message.mail_message_subject = subject;
-            persistent_message.mail_message_id = result_set->getUInt(1);
-            persistent_message.request_type_flag = 1;
-            persistent_message.sender_character_name = sender_name;
-            persistent_message.status = 'N';
-            persistent_message.timestamp = timestamp;
-                        
-            receiver->GetController()->Notify(&persistent_message);
+            message_id = result_set->getUInt(1);
         }
 
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+
+    return message_id;
 }
     
 void ChatService::LoadMessageHeaders(std::shared_ptr<swganh::object::Object> receiver)
