@@ -19,7 +19,7 @@ CREATE FUNCTION `sf_MailCreate`(
     sent_time int)
 RETURNS int(11)
 BEGIN
-    INSERT INTO chat_mail VALUES (NULL, sender, sender_game, sender_galaxy, reciever_id, subject, message, 0, sent_time, attachments);
+    INSERT INTO chat_mail VALUES (NULL, sender, sender_game, sender_galaxy, reciever_id, subject, message, 78, sent_time, attachments);
     RETURN(LAST_INSERT_ID());
 END //
 
