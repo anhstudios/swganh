@@ -8,10 +8,10 @@ DROP PROCEDURE IF EXISTS `sp_MailGetMessage`;
 
 DELIMITER //
 
-CREATE PROCEDURE `sp_MailGetMessage`(IN message_id BIGINT)
+CREATE PROCEDURE `sp_MailGetMessage`(IN message_id BIGINT, IN receiver_id BIGINT)
 BEGIN
-
-    SELECT * FROM chat_mail WHERE chat_mail.id = message_id;
+    CALL sp_MailMarkAsRead(message_id);
+    SELECT * FROM chat_mail WHERE chat_mail.id = message_id AND chat_mail.receiver_id = receiver_id;
 
 END//
 
