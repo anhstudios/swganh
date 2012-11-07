@@ -66,6 +66,7 @@ public:
     void Startup();
 
 private:
+    swganh::database::DatabaseManagerInterface* db_manager_;
 	swganh::command::CommandServiceInterface* command_service_;
     swganh::simulation::SimulationServiceInterface* simulation_service_;
     swganh::app::SwganhKernel* kernel_;
@@ -77,6 +78,11 @@ private:
     void HandleChatPersistentMessageToServer(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
         swganh::messages::ChatPersistentMessageToServer* message);
+
+    void PersistMessage(std::shared_ptr<swganh::object::Object> receiver, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
+        std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp);
+
+    void LoadMessageHeaders(std::shared_ptr<swganh::object::Object> receiver);
 };
 
 }}  // namespace swganh::chat

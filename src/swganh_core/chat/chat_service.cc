@@ -9,8 +9,16 @@
 #include <boost/regex.hpp>
 #endif
 
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+
 #include "swganh/logger.h"
 
+#include "swganh/database/database_manager_interface.h"
 #include "swganh/service/service_manager.h"
 #include "swganh/service/service_directory_interface.h"
 
@@ -23,6 +31,7 @@
 #include "swganh_core/messages/chat_persistent_message_to_client.h"
 #include "swganh_core/messages/chat_persistent_message_to_server.h"
 #include "swganh_core/messages/chat_on_send_instant_message.h"
+#include "swganh_core/messages/chat_on_send_persistent_message.h"
 
 #include "swganh_core/object/object.h"
 
@@ -58,6 +67,7 @@ using boost::regex_match;
 
 ChatService::ChatService(SwganhKernel* kernel)
     : kernel_(kernel)
+    , db_manager_(kernel->GetDatabaseManager())
 {}
 
 ServiceDescription ChatService::GetServiceDescription()
@@ -116,6 +126,15 @@ void ChatService::Startup()
     {
         return std::make_shared<SpatialChatInternalCommand>(kernel, properties);
     });
+
+    
+	kernel_->GetEventDispatcher()->Subscribe(
+		"ObjectReadyEvent",
+	[this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+	    const auto& player_obj = static_pointer_cast<ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+        LoadMessageHeaders(player_obj);
+	});
 }
 
 void ChatService::HandleChatInstantMessageToCharacter(
@@ -169,5 +188,99 @@ void ChatService::HandleChatPersistentMessageToServer(
     // @TODO Filter input (possibly via plugin class)
 
     auto receiver = simulation_service_->GetObjectByCustomName(message->recipient);
-    DLOG(warning) << "Mail sent to " << message->recipient;
+    
+    uint32_t receiver_status = ChatOnSendInstantMessage::FAILED;
+    
+    if (receiver)
+    {
+        receiver_status = ChatOnSendInstantMessage::OK;
+        
+        auto firstname = sender->GetFirstName();
+
+        PersistMessage(receiver, std::string(firstname.begin(), firstname.end()), "SWG",
+            kernel_->GetServiceDirectory()->galaxy().name(), message->subject, message->message, message->attachment_data, 0);
+    }
+
+    ChatOnSendPersistentMessage response;
+    response.sequence_number = message->mail_id;
+    response.success_flag = receiver_status;
+
+    sender->GetController()->Notify(&response);
+}
+
+void ChatService::PersistMessage(std::shared_ptr<Object> receiver, std::string sender_name, std::string sender_game, std::string sender_galaxy, 
+    std::wstring subject, std::wstring message, std::vector<char> attachments, uint32_t timestamp)
+{    
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("SELECT sf_MailCreate(?, ?, ?, ?, ?, ?, ?, ?);"));
+        statement->setString(1, sender_name);
+        statement->setString(2, sender_game);
+        statement->setString(3, sender_galaxy);
+        statement->setUInt64(4, receiver->GetObjectId());
+        statement->setString(5, std::string(std::begin(subject), std::end(subject)));
+        statement->setString(6, std::string(std::begin(message), std::end(message)));
+        statement->setString(7, std::string(std::begin(attachments), std::end(attachments)));
+        statement->setUInt(8, timestamp);
+
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+        while (result_set->next()) {
+
+            ChatPersistentMessageToClient persistent_message;
+            persistent_message.game_name = sender_game;
+            persistent_message.server_name = sender_galaxy;
+            persistent_message.mail_message_subject = subject;
+            persistent_message.mail_message_id = result_set->getUInt(1);
+            persistent_message.request_type_flag = 1;
+            persistent_message.sender_character_name = sender_name;
+            persistent_message.status = 'N';
+            persistent_message.timestamp = timestamp;
+                        
+            receiver->GetController()->Notify(&persistent_message);
+        }
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+    
+void ChatService::LoadMessageHeaders(std::shared_ptr<swganh::object::Object> receiver)
+{
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_MailFetchHeaders(?);"));
+        statement->setUInt64(1, receiver->GetObjectId());
+
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+        while (result_set->next()) {
+
+            uint32_t message_id = result_set->getUInt("id");
+            uint32_t timestamp = result_set->getUInt("sent_time");
+            uint8_t status = result_set->getUInt("status");
+            std::string sender_game = result_set->getString("sender_game");
+            std::string sender_galaxy = result_set->getString("sender_galaxy");
+            std::string sender_name = result_set->getString("sender");
+            std::string tmp = result_set->getString("subject");
+            std::wstring subject(std::begin(tmp), std::end(tmp));
+
+            ChatPersistentMessageToClient persistent_message;
+            persistent_message.game_name = sender_game;
+            persistent_message.server_name = sender_galaxy;
+            persistent_message.mail_message_subject = subject;
+            persistent_message.mail_message_id = message_id;
+            persistent_message.request_type_flag = 1;
+            persistent_message.sender_character_name = sender_name;
+            persistent_message.status = status;
+            persistent_message.timestamp = timestamp;
+                        
+            receiver->GetController()->Notify(&persistent_message);
+        }
+		while(statement->getMoreResults());
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
