@@ -49,13 +49,18 @@ public:
 
     bool SendPersistentMessage(
         const std::string& recipient,
-        const std::string& sender_name, 
+        const std::string& sender, 
         const std::string& sender_game, 
         const std::string& sender_galaxy, 
         const std::wstring& subject, 
         const std::wstring& message, 
-        const std::vector<char>& attachments, 
-        uint32_t timestamp);
+        const std::vector<char>& attachments);
+    
+    bool SendPersistentMessage(
+        const std::string& recipient,
+        const std::string& sender,
+        const std::wstring& subject, 
+        const std::wstring& message);
 
 	/**
 	* Sends a spatial chat message
