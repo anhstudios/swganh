@@ -22,7 +22,22 @@ namespace chat {
     class ChatServiceInterface: public swganh::service::ServiceInterface
     {
     public:
+        virtual bool SendPersistentMessage(
+            const std::string& recipient,
+            const std::string& sender,
+            const std::string& sender_game,
+            const std::string& sender_galaxy,
+            const std::wstring& subject,
+            const std::wstring& message,
+            const std::vector<char>& attachments) = 0;
         
+    
+        virtual bool SendPersistentMessage(
+            const std::string& recipient,
+            const std::string& sender,
+            const std::wstring& subject, 
+            const std::wstring& message) = 0;
+
         virtual void SendSpatialChat(
 		    const std::shared_ptr<swganh::object::Object>& actor, // creature object
 		    const std::shared_ptr<swganh::object::Object>& target,	// target object

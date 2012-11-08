@@ -26,9 +26,12 @@ namespace messages {
     	uint8_t status; // N = New, R = Read, U = Unread
     	uint32_t timestamp;
     	uint32_t unknown;
+        std::vector<char> attachment_data;
 
     	ChatPersistentMessageToClient()
     		: game_name("SWG")
+            , null_spacer(0)
+            , unknown(0)
     	{}
 
     	void OnSerialize(swganh::ByteBuffer& buffer) const
@@ -38,16 +41,10 @@ namespace messages {
     		buffer.write(server_name);
     		buffer.write(mail_message_id);
     		buffer.write(request_type_flag);
-    		if (request_type_flag == 1)
-    		{
-    			buffer.write(null_spacer);
-    			buffer.write(mail_message_subject);
-    		}
-    		else if (request_type_flag == 0)
-    		{
-    			buffer.write(mail_message_body);
-    			buffer.write(mail_message_subject);
-    		}
+            buffer.write(mail_message_body);
+            buffer.write(mail_message_subject);    		
+    		buffer.write(uint32_t(attachment_data.size()));
+            buffer.write(attachment_data);
     		buffer.write(status);
     		buffer.write(timestamp);
     		buffer.write(unknown);
@@ -60,16 +57,15 @@ namespace messages {
     		server_name = buffer.read<std::string>();
     		mail_message_id = buffer.read<uint32_t>();
     		request_type_flag = buffer.read<uint8_t>();
-    		if (request_type_flag == 1)
-    		{
-    			null_spacer = buffer.read<uint32_t>();
-    			mail_message_subject = buffer.read<std::wstring>();
-    		}
-    		else if (request_type_flag == 0)
-    		{
-    			mail_message_body = buffer.read<std::wstring>();
-    			mail_message_subject = buffer.read<std::wstring>();
-    		}
+    		mail_message_body = buffer.read<std::wstring>();
+            mail_message_subject = buffer.read<std::wstring>();
+            
+            auto size = buffer.read<uint32_t>();
+            while (size > 0)
+            {
+                attachment_data.push_back(buffer.read<char>());
+                --size;
+            }
     		status = buffer.read<uint8_t>();
     		timestamp = buffer.read<uint32_t>();
     		unknown = buffer.read<uint32_t>();

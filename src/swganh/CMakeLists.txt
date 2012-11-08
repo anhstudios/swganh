@@ -3,6 +3,7 @@ set(ANH_PYTHON_BINDINGS "")
 
 add_subdirectory(app)
 add_subdirectory(attributes)
+add_subdirectory(chat)
 add_subdirectory(command)
 add_subdirectory(combat)
 add_subdirectory(equipment)
@@ -19,7 +20,7 @@ add_subdirectory(weather)
 add_custom_target(
     swgpy ALL
     DEPENDS
-        swgpy_app swgpy_command swgpy_combat swgpy_object swgpy_social swgpy_simulation swgpy_utility
+        swgpy_app swgpy_command swgpy_chat swgpy_combat swgpy_object swgpy_social swgpy_simulation swgpy_utility
     COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
     VERBATIM
@@ -47,7 +48,7 @@ AddANHExecutable(swganh
         ${TBB_INCLUDE_DIRS}
         ${ZLIB_INCLUDE_DIR}
     ADDITIONAL_LIBRARY_DIRS
-        ${Boost_LIBRARY_DIRS}	
+        ${Boost_LIBRARY_DIRS}
     DEBUG_LIBRARIES
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
@@ -60,7 +61,7 @@ AddANHExecutable(swganh
         ${Boost_SYSTEM_LIBRARY_DEBUG}
         ${Boost_THREAD_LIBRARY_DEBUG}
 		${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_DEBUG}
-        ${MYSQL_LIBRARY_DEBUG}		
+        ${MYSQL_LIBRARY_DEBUG}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
         ${PYTHON_LIBRARY}
         ${TBB_DEBUG_LIBRARIES}
