@@ -15,6 +15,10 @@ public:
 	BadgeRegion(std::string badge_name, swganh::badge::BadgeService* service);
 	~BadgeRegion(void);
 
+	/**
+	 * Called when a object collides with the BadgeRegion. Awards the target with
+	 * approprate badge.
+	 */
 	void OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider);
 
 private:

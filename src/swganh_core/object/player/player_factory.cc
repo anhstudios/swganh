@@ -251,7 +251,7 @@ void PlayerFactory::LoadBadges_(shared_ptr<Player> player, const std::shared_ptr
 			while(result->next())
 			{
 				auto badge_id = result->getUInt("badge");
-				player->ToggleBadge((uint32_t)floor((double)((badge_id)/32)),badge_id%32);
+				player->AddBadge(badge_id);
 			}
 		}
 	}
@@ -349,14 +349,43 @@ void PlayerFactory::PersistBadges_(const shared_ptr<Player>& player)
 	try
 	{
 		auto conn = GetDatabaseManager()->getConnection("galaxy");
-		auto badges = player->GetBadges();
-		for(auto& badge_id : badges)
+		auto badges = player->GetBadgesSyncQueue();
+
+		while(badges.size())
 		{
-			auto statement = conn->prepareStatement("CALL sp_UpdateBadges(?, ?);");
-			statement->setUInt64(1, player->GetObjectId());
-			statement->setUInt(2, badge_id);
-			auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-		};
+			auto queue_item = badges.front();
+
+			switch(queue_item.first)
+			{
+			case 0: // Remove
+				{
+					auto statement = conn->prepareStatement("CALL sp_RemoveBadge(?, ?);");
+					statement->setUInt64(1, player->GetObjectId());
+					statement->setUInt(2, queue_item.second);
+					auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+					break;
+				}
+
+			case 1: // Add
+				{
+					auto statement = conn->prepareStatement("CALL sp_UpdateBadges(?, ?);");
+					statement->setUInt64(1, player->GetObjectId());
+					statement->setUInt(2, queue_item.second);
+					auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+					break;
+				}
+			}
+
+			badges.pop();
+		}
+
+		//for(auto& badge_id : badges)
+		//{
+		//	auto statement = conn->prepareStatement("CALL sp_UpdateBadges(?, ?);");
+		//	statement->setUInt64(1, player->GetObjectId());
+		//	statement->setUInt(2, badge_id);
+		//	auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+		//};
 	}
     catch(sql::SQLException &e)
     {

@@ -90,12 +90,20 @@ namespace badge {
 		virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
 		virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
 
+		virtual void RemoveBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
+		virtual void RemoveBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
+
 	private:
 		const std::shared_ptr<Badge> FindBadge(uint32_t id);
 		const std::shared_ptr<Badge> FindBadge(std::string name);
 
+		void LoadBadges_();
+		void LoadBadgeRegions_();
+
 		void CheckBadgeAccumulation(std::shared_ptr<swganh::object::Object> player);
 		void CheckExplorationBadgeAccumulation(std::shared_ptr<swganh::object::Object> object);
+		void CheckBadgeRemovalAccumulation(std::shared_ptr<swganh::object::Object> player);
+		void CheckExplorationBadgeRemovalAccumulation(std::shared_ptr<swganh::object::Object> object);
 		void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<Badge> badge);
 
 		std::vector<std::shared_ptr<Badge>> badges_;

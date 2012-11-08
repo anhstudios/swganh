@@ -79,11 +79,152 @@ void BadgeService::Startup()
 {
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 	equipment_service_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
-	
-	auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
 
-	// Load Badges
-	try {
+	LoadBadges_();
+	LoadBadgeRegions_();
+	
+	// Subscribe to requestbadges CommandQueueEnqueue.
+	command_service_->AddCommandCreator("requestbadges", [] (swganh::app::SwganhKernel* kernel, const CommandProperties& properties)
+	{
+		return std::make_shared<RequestBadgesCommand>(kernel, properties);
+	});
+}
+
+swganh::service::ServiceDescription BadgeService::GetServiceDescription()
+{
+	return swganh::service::ServiceDescription(
+		"BadgeService", // namve
+		"badge", // type
+		"0.1", // version
+		"127.0.0.1", // address
+		0, // tcp port
+		0, // udp port
+		0); // status
+}
+
+void BadgeService::GiveBadge(std::shared_ptr<Object> object, std::string name)
+{
+	GiveBadge(object, FindBadge(name));
+}
+
+void BadgeService::GiveBadge(std::shared_ptr<Object> object, uint32_t id)
+{
+	GiveBadge(object, FindBadge(id));
+}
+
+bool BadgeService::HasBadge(std::shared_ptr<Object> object, std::string name)
+{
+	auto badge = FindBadge(name);
+	if(badge == nullptr)
+		return false;
+	
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+	return player->HasBadge(badge->id);
+
+}
+
+bool BadgeService::HasBadge(std::shared_ptr<Object> object, uint32_t id)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+	return player->HasBadge(id);
+}
+
+void BadgeService::RemoveBadge(std::shared_ptr<Object> object, std::string name)
+{
+	auto badge = FindBadge(name);
+	if(badge == nullptr)
+		return;
+
+	RemoveBadge(object, badge->id);
+}
+
+void BadgeService::RemoveBadge(std::shared_ptr<Object> object, uint32_t id)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+	auto badge = FindBadge(id);
+
+	if(!object->HasController() || badge == nullptr && player->HasBadge(id))
+		return;
+
+	player->RemoveBadge(id);
+
+	std::stringstream system_message;
+	system_message << "Badge " << badge->name << " removed.";
+	auto std_string = system_message.str();
+	SystemMessage::Send(object,  std::wstring(std_string.begin(), std_string.end()), false, false);
+
+	CheckBadgeRemovalAccumulation(object);
+
+	if(badge->type == EXPLORATION_DANGEROUS || badge->type == EXPLORATION_EASY || badge->type == EXPLORATION_JEDI)
+		CheckExplorationBadgeRemovalAccumulation(object);
+}
+
+void BadgeService::GiveBadge(std::shared_ptr<Object> object, std::shared_ptr<Badge> badge)
+{
+	if(!object->HasController())
+		return;
+
+	// Lookup badge loaded badges by name.
+	if(badge == nullptr)
+	{
+		LOG(error) << "Badge does not exist.";
+	}
+
+	// Find player object.
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+	if(player == nullptr)
+		return;
+
+	// Don't give a badge twice.
+	if(player->HasBadge(badge->id))
+		return;
+
+	// Toggle badge bitmask and commit to Mysql.	
+	player->AddBadge(badge->id);
+
+	// Player system message feedback.
+	messages::PlayMusicMessage music_message;
+	music_message.music_file = badge->sound;
+	music_message.channel = 0;
+
+	object->GetController()->Notify(&music_message);
+	SystemMessage::Send(object, messages::OutOfBand("badge_n", badge->name), false, false);
+
+	CheckBadgeAccumulation(object);
+
+	if(badge->type == EXPLORATION_DANGEROUS || badge->type == EXPLORATION_EASY || badge->type == EXPLORATION_JEDI)
+		CheckExplorationBadgeAccumulation(object);
+}
+
+const std::shared_ptr<Badge> BadgeService::FindBadge(uint32_t id)
+{
+	auto i = std::find_if(badges_.begin(), badges_.end(), [=](std::shared_ptr<Badge> badge) {
+		return (badge->id == id);
+	});
+
+	if(i != badges_.end())
+		return (*i);
+	else
+		return nullptr;
+}
+
+const std::shared_ptr<Badge> BadgeService::FindBadge(std::string name)
+{
+	auto i = std::find_if(badges_.begin(), badges_.end(), [=](std::shared_ptr<Badge> badge) {
+		return (badge->name == name);
+	});
+
+	if(i != badges_.end())
+		return (*i);
+	else
+		return nullptr;
+}
+
+void BadgeService::LoadBadges_()
+{
+	try 
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
 		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
 		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetBadges();"));
 
@@ -101,9 +242,14 @@ void BadgeService::Startup()
 		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
 		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
 	}
+}
 
+void BadgeService::LoadBadgeRegions_()
+{
 	// Load Badge Regions
-	try {
+	try 
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
 		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
 		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetBadgeRegions();"));
 
@@ -132,112 +278,6 @@ void BadgeService::Startup()
 		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
 		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
 	}
-	
-	// Subscribe to requestbadges CommandQueueEnqueue.
-	command_service_->AddCommandCreator("requestbadges", [] (swganh::app::SwganhKernel* kernel, const CommandProperties& properties)
-	{
-		return std::make_shared<RequestBadgesCommand>(kernel, properties);
-	});
-}
-
-swganh::service::ServiceDescription BadgeService::GetServiceDescription()
-{
-	return swganh::service::ServiceDescription(
-		"BadgeService", // namve
-		"badge", // type
-		"0.1", // version
-		"127.0.0.1", // address
-		0, // tcp port
-		0, // udp port
-		0); // status
-}
-
-void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::string name)
-{
-	GiveBadge(player, FindBadge(name));
-}
-
-void BadgeService::GiveBadge(std::shared_ptr<Object> player, uint32_t id)
-{
-	GiveBadge(player, FindBadge(id));
-}
-
-bool BadgeService::HasBadge(std::shared_ptr<Object> object, std::string name)
-{
-	auto badge = FindBadge(name);
-	if(badge == nullptr)
-		return false;
-	
-	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
-	return player->HasBadge(badge->GetIndex(), badge->GetBit());
-
-}
-
-bool BadgeService::HasBadge(std::shared_ptr<Object> object, uint32_t id)
-{
-	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
-	return player->HasBadge(GetBadgeBitmaskIndexById(id), GetBadgeBitmaskBitById(id));
-}
-
-void BadgeService::GiveBadge(std::shared_ptr<Object> player, std::shared_ptr<Badge> badge)
-{
-	if(!player->HasController())
-		return;
-
-	// Lookup badge loaded badges by name.
-	if(badge == nullptr)
-	{
-		LOG(error) << "Badge does not exist.";
-	}
-
-	// Find player object.
-	auto play = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(player, "ghost"));
-	if(play == nullptr)
-		return;
-
-	// Don't give a badge twice.
-	if(play->HasBadge(badge->GetIndex(), badge->GetBit()))
-		return;
-
-	// Toggle badge bitmask and commit to Mysql.	
-	play->AddBadge(badge->id);
-
-	// Player system message feedback.
-	messages::PlayMusicMessage music_message;
-	music_message.music_file = badge->sound;
-	music_message.channel = 0;
-
-	player->GetController()->Notify(&music_message);
-	SystemMessage::Send(player, messages::OutOfBand("badge_n", badge->name), false, false);
-
-	CheckBadgeAccumulation(player);
-
-	if(badge->type == EXPLORATION_DANGEROUS || badge->type == EXPLORATION_EASY || badge->type == EXPLORATION_JEDI)
-		CheckExplorationBadgeAccumulation(player);
-}
-
-const std::shared_ptr<Badge> BadgeService::FindBadge(uint32_t id)
-{
-	auto i = std::find_if(badges_.begin(), badges_.end(), [=](std::shared_ptr<Badge> badge) {
-		return (badge->id == id);
-	});
-
-	if(i != badges_.end())
-		return (*i);
-	else
-		return nullptr;
-}
-
-const std::shared_ptr<Badge> BadgeService::FindBadge(std::string name)
-{
-	auto i = std::find_if(badges_.begin(), badges_.end(), [=](std::shared_ptr<Badge> badge) {
-		return (badge->name == name);
-	});
-
-	if(i != badges_.end())
-		return (*i);
-	else
-		return nullptr;
 }
 
 void BadgeService::CheckBadgeAccumulation(std::shared_ptr<Object> object)
@@ -246,19 +286,19 @@ void BadgeService::CheckBadgeAccumulation(std::shared_ptr<Object> object)
 
 	uint32_t badge_count = player->GetBadges().size();
 
-	if(badge_count >= 5 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_5), GetBadgeBitmaskBitById(COUNT_5)) == false)
+	if(badge_count >= 5 && player->HasBadge(COUNT_5) == false)
 		GiveBadge(object, "count_5");
-	if(badge_count >= 10 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_10), GetBadgeBitmaskBitById(COUNT_10)) == false)
+	if(badge_count >= 10 && player->HasBadge(COUNT_10) == false)
 		GiveBadge(object, "count_10");
-	if(badge_count >= 25 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_25), GetBadgeBitmaskBitById(COUNT_25)) == false)
+	if(badge_count >= 25 && player->HasBadge(COUNT_25) == false)
 		GiveBadge(object, "count_25");
-	if(badge_count >= 50 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_50), GetBadgeBitmaskBitById(COUNT_50)) == false)
+	if(badge_count >= 50 && player->HasBadge(COUNT_50) == false)
 		GiveBadge(object, "count_50");
-	if(badge_count >= 75 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_75), GetBadgeBitmaskBitById(COUNT_75)) == false)
+	if(badge_count >= 75 && player->HasBadge(COUNT_75) == false)
 		GiveBadge(object, "count_75");
-	if(badge_count >= 100 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_100), GetBadgeBitmaskBitById(COUNT_100)) == false)
+	if(badge_count >= 100 && player->HasBadge(COUNT_100) == false)
 		GiveBadge(object, "count_100");
-	if(badge_count >= 125 && player->HasBadge(GetBadgeBitmaskIndexById(COUNT_125), GetBadgeBitmaskBitById(COUNT_125)) == false)
+	if(badge_count >= 125 && player->HasBadge(COUNT_125) == false)
 		GiveBadge(object, "count_125");
 }
 
@@ -278,14 +318,64 @@ void BadgeService::CheckExplorationBadgeAccumulation(std::shared_ptr<Object> obj
 			badge_count++;
 	});
 
-	if(badge_count >= 10 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_10), GetBadgeBitmaskBitById(EXP_COUNT_10)) == false)
+	if(badge_count >= 10 && player->HasBadge(EXP_COUNT_10) == false)
 		GiveBadge(object, "bdg_exp_10_badges");
-	if(badge_count >= 20 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_20), GetBadgeBitmaskBitById(EXP_COUNT_20)) == false)
+	if(badge_count >= 20 && player->HasBadge(EXP_COUNT_20) == false)
 		GiveBadge(object, "bdg_exp_20_badges");
-	if(badge_count >= 30 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_30), GetBadgeBitmaskBitById(EXP_COUNT_30)) == false)
+	if(badge_count >= 30 && player->HasBadge(EXP_COUNT_30) == false)
 		GiveBadge(object, "bdg_exp_30_badges");
-	if(badge_count >= 40 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_40), GetBadgeBitmaskBitById(EXP_COUNT_40)) == false)
+	if(badge_count >= 40 && player->HasBadge(EXP_COUNT_40) == false)
 		GiveBadge(object, "bdg_exp_40_badges");
-	if(badge_count >= 45 && player->HasBadge(GetBadgeBitmaskIndexById(EXP_COUNT_45), GetBadgeBitmaskBitById(EXP_COUNT_45)) == false)
+	if(badge_count >= 45 && player->HasBadge(EXP_COUNT_45) == false)
 		GiveBadge(object, "bdg_exp_45_badges");
+}
+
+void BadgeService::CheckBadgeRemovalAccumulation(std::shared_ptr<Object> object)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+
+	uint32_t badge_count = player->GetBadges().size();
+
+	if(badge_count < 5 && player->HasBadge(COUNT_5) == true)
+		RemoveBadge(object, "count_5");
+	if(badge_count < 10 && player->HasBadge(COUNT_10) == true)
+		RemoveBadge(object, "count_10");
+	if(badge_count < 25 && player->HasBadge(COUNT_25) == true)
+		RemoveBadge(object, "count_25");
+	if(badge_count < 50 && player->HasBadge(COUNT_50) == true)
+		RemoveBadge(object, "count_50");
+	if(badge_count < 75 && player->HasBadge(COUNT_75) == true)
+		RemoveBadge(object, "count_75");
+	if(badge_count < 100 && player->HasBadge(COUNT_100) == true)
+		RemoveBadge(object, "count_100");
+	if(badge_count < 125 && player->HasBadge(COUNT_125) == true)
+		RemoveBadge(object, "count_125");
+}
+
+void BadgeService::CheckExplorationBadgeRemovalAccumulation(std::shared_ptr<Object> object)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
+
+	uint32_t badge_count = 0;
+
+	auto badges = player->GetBadges();
+	std::for_each(badges.begin(), badges.end(), [=, &badge_count](const uint32_t badge_id) {
+		auto badge = FindBadge(badge_id);
+		if(badge == nullptr)
+			return;
+
+		if(badge->type == EXPLORATION_DANGEROUS || badge->type == EXPLORATION_EASY || badge->type == EXPLORATION_JEDI)
+			badge_count++;
+	});
+
+	if(badge_count < 10 && player->HasBadge(EXP_COUNT_10) == true)
+		RemoveBadge(object, "bdg_exp_10_badges");
+	if(badge_count < 20 && player->HasBadge(EXP_COUNT_20) == true)
+		RemoveBadge(object, "bdg_exp_20_badges");
+	if(badge_count < 30 && player->HasBadge(EXP_COUNT_30) == true)
+		RemoveBadge(object, "bdg_exp_30_badges");
+	if(badge_count < 40 && player->HasBadge(EXP_COUNT_40) == true)
+		RemoveBadge(object, "bdg_exp_40_badges");
+	if(badge_count < 45 && player->HasBadge(EXP_COUNT_45) == true)
+		RemoveBadge(object, "bdg_exp_45_badges");
 }

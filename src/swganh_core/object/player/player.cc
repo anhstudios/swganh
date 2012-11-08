@@ -798,41 +798,31 @@ void Player::SetGender(Gender value)
     gender_ = value;
 }
 
-void Player::ToggleBadge(uint8_t index, uint8_t bit)
+void Player::RemoveBadge(uint32_t id)
 {
-	if(index > 6 || bit > 32)
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto iter = std::find(badges_.begin(), badges_.end(), id);
+
+	if(iter == badges_.end())
 		return;
 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	badges_.push_back((32 * index) + bit);
-
-	DISPATCH(Player, BadgeFlags);
+	badges_sync_queue_.push(std::pair<uint8_t, uint32_t>(0, id));
+	badges_.erase(iter);
 }
 
 void Player::AddBadge(uint32_t id)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	
+	badges_sync_queue_.push(std::pair<uint8_t, uint32_t>(1, id));
 	badges_.push_back(id);
+	
 
 	DISPATCH(Player, BadgeFlags);
 }
 
 bool Player::HasBadge(uint32_t id)
 {
-	auto i = std::find(badges_.begin(), badges_.end(), id);
-	if(i != badges_.end())
-		return true;
-	else
-		return false;
-}
-
-bool Player::HasBadge(uint8_t index, uint8_t bit)
-{
-	if(index > 6 || bit > 32)
-		return false;
-
-	uint32_t id = (32 * index) + bit;
-
 	auto i = std::find(badges_.begin(), badges_.end(), id);
 	if(i != badges_.end())
 		return true;
