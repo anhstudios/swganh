@@ -64,74 +64,9 @@ void MapService::Startup()
 		PersistLocations();
 	});
 
-	// Get STATIC map locations.
-	try
-	{
-		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetMapLocations"));
-
-		while(result->next())
-		{
-			MapLocation location;
-			location.id = result->getUInt("id");
-			auto name = result->getString("name").asStdString();
-			location.name = std::wstring(name.begin(), name.end());
-			location.x = (float)result->getDouble("x");
-			location.y = (float)result->getDouble("y");
-			location.type_displayAsCategory = result->getUInt("category_main");
-			location.type_displayAsSubcategory = result->getUInt("category_sub");
-
-			uint32_t scene_id = result->getUInt("scene_id") + 1;
-			InsertLocation(scene_id, location);
-		}
-	}
-	catch(sql::SQLException &e) {
-		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-	}
-
-	// Get DYNAMIC map locations.
-	try
-	{
-		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetMapLocations"));
-
-		while(result->next())
-		{
-			MapLocation location;
-			location.id = result->getUInt("id");
-			auto name = result->getString("name").asStdString();
-			location.name = std::wstring(name.begin(), name.end());
-			location.x = (float)result->getDouble("x");
-			location.y = (float)result->getDouble("y");
-			location.type_displayAsCategory = result->getUInt("category_main");
-			location.type_displayAsSubcategory = result->getUInt("category_sub");
-
-			uint32_t scene_id = result->getUInt("scene_id") + 1;
-			InsertLocation(scene_id, location);
-		}
-	}
-	catch(sql::SQLException &e) {
-		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-	}
-
-	// Get next location id.
-	try 
-	{
-		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetHighestLocationId();"));
-
-		while(result->next())
-			next_location_id_ = result->getUInt(1);
-	}
-	catch(sql::SQLException &e) {
-		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-	}
+	LoadStaticLocations();
+	LoadDynamicLocations();
+	LoadHighestLocationId();
 
 	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
@@ -228,6 +163,81 @@ void MapService::InsertLocation(uint32_t scene_id, MapLocation& location)
 	}
 
 	locations_.at(scene_id).push_back(location);
+}
+
+void MapService::LoadStaticLocations()
+{
+	try
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetMapLocations"));
+
+		while(result->next())
+		{
+			MapLocation location;
+			location.id = result->getUInt("id");
+			auto name = result->getString("name").asStdString();
+			location.name = std::wstring(name.begin(), name.end());
+			location.x = (float)result->getDouble("x");
+			location.y = (float)result->getDouble("y");
+			location.type_displayAsCategory = result->getUInt("category_main");
+			location.type_displayAsSubcategory = result->getUInt("category_sub");
+
+			uint32_t scene_id = result->getUInt("scene_id") + 1;
+			InsertLocation(scene_id, location);
+		}
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+}
+
+void MapService::LoadDynamicLocations()
+{
+	try
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetMapLocations"));
+
+		while(result->next())
+		{
+			MapLocation location;
+			location.id = result->getUInt("id");
+			auto name = result->getString("name").asStdString();
+			location.name = std::wstring(name.begin(), name.end());
+			location.x = (float)result->getDouble("x");
+			location.y = (float)result->getDouble("y");
+			location.type_displayAsCategory = result->getUInt("category_main");
+			location.type_displayAsSubcategory = result->getUInt("category_sub");
+
+			uint32_t scene_id = result->getUInt("scene_id") + 1;
+			InsertLocation(scene_id, location);
+		}
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+}
+
+void MapService::LoadHighestLocationId()
+{
+	try 
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetHighestLocationId();"));
+
+		while(result->next())
+			next_location_id_ = result->getUInt(1);
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
 }
 
 void MapService::PersistLocations()

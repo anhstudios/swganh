@@ -51,6 +51,10 @@ namespace map {
 		void InsertLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
 		void SyncAddLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
 		void SyncRemoveLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
+
+		void LoadStaticLocations();
+		void LoadDynamicLocations();
+		void LoadHighestLocationId();
 		void PersistLocations();
 
 		void HandleRequestMapLocationsMessage(
