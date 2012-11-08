@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 #include <bitset>
+#include <queue>
 
 #include <boost/thread/mutex.hpp>
 
@@ -884,34 +885,26 @@ public:
 	/**
 	 * Toggles badge.
 	 *
-	 * @param index The bitmask index.
-	 * @param bit The bit to toggle.
+	 * @param id The id of the badge to remove. (Use BadgeService to look-up badge id by name.)
 	 */
-	void ToggleBadge(uint8_t index, uint8_t bit);
+	void RemoveBadge(uint32_t id);
 
 	/**
-	 * Adds a badge by id.
+	 * Adds a badge by id. (Use BadgeService to look-up badge id by name.)
 	 *
 	 * @param id Id of the badge you want to add.
 	 */
 	void AddBadge(uint32_t id);
 
 	/**
-	 * @param index The bitmask to look in.
-	 * @param bit The bit to check.
-	 * 
-	 * @return Check for badge.
-	 */
-	bool HasBadge(uint8_t index, uint8_t bit);
-
-	/**
-	 * @param id Id of the badge you want to find.
+	 * @param id Id of the badge you want to find. (Use BadgeService to look-up badge id by name.)
 	 * 
 	 * @return Check for badge.
 	 */
 	bool HasBadge(uint32_t id);
 
 	std::list<uint32_t> GetBadges() { return badges_; }
+	std::queue<std::pair<uint8_t, uint32_t>> GetBadgesSyncQueue() { return badges_sync_queue_; }
 
     // baselines
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
@@ -956,6 +949,7 @@ private:
 
 	// Badges
 	std::list<uint32_t> badges_;
+	std::queue<std::pair<uint8_t, uint32_t>> badges_sync_queue_;
 };
 
 }}  // namespace swganh::object

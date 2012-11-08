@@ -136,6 +136,7 @@ void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)
 		}
 		persist_timer_->expires_from_now(boost::posix_time::minutes(5));
 		persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
+		kernel_->GetEventDispatcher()->Dispatch(std::make_shared<BaseEvent>("ObjectManager::PersistObjectsByTimer"));
 	}
 	else
 	{
