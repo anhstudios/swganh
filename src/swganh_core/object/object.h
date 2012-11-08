@@ -379,6 +379,16 @@ public:
      * @param custom_name The new custom name for the object.
      */
     void SetCustomName(std::wstring custom_name);
+    
+    /**
+     * @return Returns the firstname of a custom name (if set) otherwise empty string is returned.
+     */
+    std::wstring GetFirstName() const;
+    
+    /**
+     * @return Returns the sir name of a custom name (if set) otherwise empty string is returned.
+     */
+    std::wstring GetSirName() const;
 
     /**
      * Returns the volume of the object, which is a measure of the "space"

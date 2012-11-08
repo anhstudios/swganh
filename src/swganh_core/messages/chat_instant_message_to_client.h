@@ -20,9 +20,18 @@ namespace messages {
     	std::string sender_character_name; // sender (the recipient receives this packet)
     	std::wstring message;
 
-    	ChatInstantMessageToClient()
-    		: game_name("SWG")
-    	{}
+        ChatInstantMessageToClient()
+        {}
+
+        ChatInstantMessageToClient(const std::string& game_name,
+            const std::string& server_name,
+            const std::wstring& sender_character_name,
+            const std::wstring& message)
+            : game_name(game_name)
+            , server_name(server_name)
+            , sender_character_name(std::begin(sender_character_name), std::end(sender_character_name))
+            , message(message)
+        {}
 
     	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
@@ -30,6 +39,7 @@ namespace messages {
     		buffer.write(server_name);
     		buffer.write(sender_character_name);
     		buffer.write(message);
+            buffer.write(uint32_t(0));
     	}
 
     	void OnDeserialize(swganh::ByteBuffer& buffer)
@@ -38,6 +48,7 @@ namespace messages {
     		server_name = buffer.read<std::string>();
     		sender_character_name = buffer.read<std::string>();
     		message = buffer.read<std::wstring>();
+            buffer.read<uint32_t>();
     	}
     };
 

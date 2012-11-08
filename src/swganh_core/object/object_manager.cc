@@ -9,6 +9,7 @@
 #include "swganh/logger.h"
 
 #include <bitset>
+#include <sstream>
 
 #include "object_factory.h"
 #include "swganh/event_dispatcher.h"
@@ -201,13 +202,35 @@ void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)
 {
+    auto check_name = custom_name;
+    std::transform(std::begin(check_name), std::end(check_name), std::begin(check_name), ::towlower);
+
     boost::shared_lock<boost::shared_mutex> lock(object_map_mutex_);
 	auto find_iter = std::find_if(
         std::begin(object_map_), 
         std::end(object_map_),
-        [custom_name] (pair<uint64_t, shared_ptr<Object>> key_value)
+        [&check_name] (pair<uint64_t, shared_ptr<Object>> key_value) -> bool
     {
-		return key_value.second->GetCustomName().compare(custom_name) == 0;
+        // Names are case insensitive, normalize by converting to lowercase before comparison checks
+        auto custom_name = key_value.second->GetCustomName();
+        std::transform(std::begin(custom_name), std::end(custom_name), std::begin(custom_name), ::towlower);
+
+        if (custom_name.compare(check_name) == 0)
+        {
+            return true;
+        }
+
+        // Only first names are unique, if a complete match fails then
+        // attempt to match the first name only.
+        std::size_t pos = custom_name.find(L" ");
+        std::wstring firstname = custom_name.substr(0, pos);
+
+        if (firstname.compare(check_name) == 0)
+        {
+            return true;
+        }
+
+        return false;
 	});
 
 	if (find_iter == object_map_.end())
