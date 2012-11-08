@@ -271,15 +271,15 @@ void SwganhApp::Start() {
 	
 	//Ground Zones
 	simulation_service->StartScene("corellia");
-	simulation_service->StartScene("dantooine");
-	simulation_service->StartScene("dathomir");
-	simulation_service->StartScene("endor");
-	simulation_service->StartScene("lok");
-	simulation_service->StartScene("naboo");
-	simulation_service->StartScene("rori");
-	simulation_service->StartScene("talus");
-	simulation_service->StartScene("tatooine");
-	simulation_service->StartScene("yavin4");
+	//simulation_service->StartScene("dantooine");
+	//simulation_service->StartScene("dathomir");
+	//simulation_service->StartScene("endor");
+	//simulation_service->StartScene("lok");
+	//simulation_service->StartScene("naboo");
+	//simulation_service->StartScene("rori");
+	//simulation_service->StartScene("talus");
+	//simulation_service->StartScene("tatooine");
+	//simulation_service->StartScene("yavin4");
 	//simulation_service->StartScene("taanab");
 
 	//Space Zones
