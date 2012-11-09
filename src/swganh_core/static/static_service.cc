@@ -271,6 +271,10 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 		{
 			object->SetAttribute("radial_filename", L"radials.bank");
 		}
+		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_travel.iff") == 0)
+		{
+			object->SetAttribute("radial_filename", L"radials.travel");
+		}
 	}
 }
 
