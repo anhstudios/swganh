@@ -10,6 +10,10 @@
 #include <swganh/connection/connection_client_interface.h>
 
 namespace swganh {
+namespace command {
+	class CommandService;
+} // namespace swganh::command
+
 namespace connection {
 	class ConnectionClientInterface;
 } // namespace swganh::connection 
@@ -45,6 +49,14 @@ namespace travel {
 		swganh::service::ServiceDescription GetServiceDescription();
 
 		virtual void BeginTicketTransaction(std::shared_ptr<swganh::object::Object> object);
+		virtual void PurchaseTicket(std::shared_ptr<swganh::object::Object> object,
+			std::string source_scene,
+			std::string source_location,
+			std::string target_scene,
+			std::string target_location,
+			uint32_t price,
+			uint32_t taxes, 
+			bool round_trip = false);
 
 	private:
 
@@ -57,5 +69,6 @@ namespace travel {
 
 		swganh::app::SwganhKernel* kernel_;
 		swganh::simulation::SimulationService* simulation_;
+		swganh::command::CommandService* command_;
 	};
 }} // namespace swganh::travel

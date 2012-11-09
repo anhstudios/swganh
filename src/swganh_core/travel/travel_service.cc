@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include <swganh_core/travel/travel_service.h>
-
+#include <swganh_core/travel/purchase_ticket_command.h>
 #include <swganh/service/service_manager.h>
 
 #include <cppconn/exception.h>
@@ -21,6 +21,10 @@
 #include <swganh_core/object/object.h>
 #include <swganh_core/simulation/simulation_service.h>
 #include <swganh_core/connection/connection_service.h>
+#include <swganh_core/command/command_service.h>
+
+#include <swganh_core/messages/out_of_band.h>
+#include <swganh_core/messages/system_message.h>
 
 using namespace swganh::travel;
 using namespace swganh::object;
@@ -28,6 +32,7 @@ using namespace swganh::service;
 using namespace swganh::simulation;
 using namespace swganh::connection;
 using namespace swganh::messages;
+using namespace swganh::command;
 
 TravelService::TravelService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
@@ -41,12 +46,18 @@ TravelService::~TravelService(void)
 void TravelService::Startup()
 {
 	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+	command_ = kernel_->GetServiceManager()->GetService<CommandService>("CommandService");
 
 	LoadStaticTravelPoints();
 
 	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 	connection_service->RegisterMessageHandler(&TravelService::HandlePlanetTravelPointListRequest, this);
+
+	command_->AddCommandCreator("purchaseticket", [=](swganh::app::SwganhKernel* kernel, const CommandProperties& properties)
+	{
+		return std::make_shared<PurchaseTicketCommand>(kernel, properties);
+	});
 }
 
 swganh::service::ServiceDescription TravelService::GetServiceDescription()
@@ -111,6 +122,27 @@ void TravelService::LoadStaticTravelPoints()
 	catch(sql::SQLException &e) {
 		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
 		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+}
+
+void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> object,
+	std::string source_scene,
+	std::string source_location,
+	std::string target_scene,
+	std::string target_location,
+	uint32_t price,
+	uint32_t taxes, 
+	bool round_trip)
+{
+	for(auto& location : travel_points_)
+	{
+		auto& location_name = location.descriptor;
+		std::replace(location_name.begin(), location_name.end(), ' ', '_');
+
+		if(location_name.compare(target_location) == 0)
+		{
+			simulation_->TransferObjectToScene(object, target_scene, location.spawn_position.x, location.spawn_position.z, location.spawn_position.y);
+		}
 	}
 }
 
