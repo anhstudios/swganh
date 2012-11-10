@@ -57,7 +57,8 @@ boost::optional<std::shared_ptr<CommandCallback>> PurchaseTicketCommand::Run()
 			std::string(target_scene.begin(), target_scene.end()),
 			std::string(target_location.begin(), target_location.end()),
 			0,
-			0);
+			0,
+			std::stoi(m[5].str()) ? true : false);
 	}
 	return boost::optional<std::shared_ptr<CommandCallback>>();
 }

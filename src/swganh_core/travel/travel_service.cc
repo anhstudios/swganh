@@ -19,6 +19,7 @@
 #include <swganh_core/messages/planet_travel_point_list_request.h>
 #include <swganh_core/messages/planet_travel_point_list_response.h>
 #include <swganh_core/object/object.h>
+#include <swganh_core/equipment/equipment_service.h>
 #include <swganh_core/simulation/simulation_service.h>
 #include <swganh_core/connection/connection_service.h>
 #include <swganh_core/command/command_service.h>
@@ -33,6 +34,7 @@ using namespace swganh::simulation;
 using namespace swganh::connection;
 using namespace swganh::messages;
 using namespace swganh::command;
+using namespace swganh::equipment;
 
 TravelService::TravelService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
@@ -134,15 +136,71 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 	uint32_t taxes, 
 	bool round_trip)
 {
+	TravelPoint source_location_tp;
+	TravelPoint target_location_tp;
+	bool source_location_found = false;
+	bool target_location_found = false;
+
+	// Find Source Location
 	for(auto& location : travel_points_)
 	{
-		auto& location_name = location.descriptor;
+		auto location_name = location.descriptor;
 		std::replace(location_name.begin(), location_name.end(), ' ', '_');
 
-		if(location_name.compare(target_location) == 0)
-		{
-			simulation_->TransferObjectToScene(object, target_scene, location.spawn_position.x, location.spawn_position.z, location.spawn_position.y);
+		if(location_name.compare(source_location) == 0) {
+			source_location_tp = location;
+			source_location_found = true;
 		}
+	}
+
+	// Find Target Location
+	for(auto& location : travel_points_)
+	{
+		auto location_name = location.descriptor;
+		std::replace(location_name.begin(), location_name.end(), ' ', '_');
+
+		if(location_name.compare(target_location) == 0) {
+			target_location_tp = location;
+			target_location_found = true;
+		}
+	}
+
+	// Verify Source and Target locations exist AND are online.
+	if(!source_location_found || !target_location_found)
+	{
+		SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+		return;
+	}
+
+	// Verify Interplanetory Route
+	if(source_location_tp.scene_id != target_location_tp.scene_id)
+	{
+		SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+		return;
+	}
+
+	// Duduct Credits + Taxes
+	
+	// Create Ticket(s)
+	auto source_planet = simulation_->SceneNameById(source_location_tp.scene_id);
+	auto target_planet = simulation_->SceneNameById(target_location_tp.scene_id);
+	auto inventory = simulation_->GetEquipmentService()->GetEquippedObject(object, "inventory");
+
+	auto ticket = simulation_->CreateObjectFromTemplate("object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff", swganh::object::DEFAULT_PERMISSION, false);
+	ticket->SetAttribute("travel_departure_planet", std::wstring(source_planet.begin(), source_planet.end()));
+	ticket->SetAttribute("travel_departure_point", std::wstring(source_location_tp.descriptor.begin(), source_location_tp.descriptor.end()));
+	ticket->SetAttribute("travel_arrival_planet", std::wstring(target_planet.begin(), target_planet.end()));
+	ticket->SetAttribute("travel_arrival_point", std::wstring(target_location_tp.descriptor.begin(), target_location_tp.descriptor.end()));
+	inventory->AddObject(object, ticket);
+
+	if(round_trip)
+	{
+		auto ticket = simulation_->CreateObjectFromTemplate("object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff", swganh::object::DEFAULT_PERMISSION, false);
+		ticket->SetAttribute("travel_departure_planet", std::wstring(target_planet.begin(), target_planet.end()));
+		ticket->SetAttribute("travel_departure_point", std::wstring(target_location_tp.descriptor.begin(), target_location_tp.descriptor.end()));
+		ticket->SetAttribute("travel_arrival_planet", std::wstring(source_planet.begin(), source_planet.end()));
+		ticket->SetAttribute("travel_arrival_point", std::wstring(source_location_tp.descriptor.begin(), source_location_tp.descriptor.end()));
+		inventory->AddObject(object, ticket);
 	}
 }
 
