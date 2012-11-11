@@ -457,14 +457,6 @@ public:
 		});
 	}
 
-	uint32_t SceneIdByName(const std::string& scene_label)
-	{
-	}
-
-	std::string SceneNameById(uint32_t scene_id)
-	{
-	}
-
 private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManagerInterface> scene_manager_;
@@ -703,4 +695,14 @@ const shared_ptr<swganh::equipment::EquipmentServiceInterface>& SimulationServic
 std::shared_ptr<swganh::object::ObjectManager> SimulationService::GetObjectManager()
 {
 	return impl_->GetObjectManager();
+}
+
+bool SimulationService::SceneExists(const std::string& scene_label)
+{
+	return impl_->GetSceneManager()->GetScene(SceneIdByName(scene_label)) ? true : false;
+}
+
+bool SimulationService::SceneExists(uint32_t scene_id)
+{
+	return impl_->GetSceneManager()->GetScene(scene_id) ? true : false;
 }

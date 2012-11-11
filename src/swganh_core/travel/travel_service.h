@@ -38,6 +38,13 @@ namespace travel {
 		glm::vec3 spawn_position;
 	};
 
+	struct PlanetaryTravelRoute
+	{
+		uint32_t departure_planet_id;
+		uint32_t arrival_planet_id;
+		uint32_t price;
+	};
+
 	class TravelService : public TravelServiceInterface
 	{
 	public:
@@ -64,8 +71,10 @@ namespace travel {
 
 		void LoadStaticTravelPoints();
 		void LoadDynamicTravelPoints();
+		void LoadPlanetaryRouteMap();
 
 		std::vector<TravelPoint> travel_points_;
+		std::vector<PlanetaryTravelRoute> planetary_travel_routes_;
 
 		swganh::app::SwganhKernel* kernel_;
 		swganh::simulation::SimulationService* simulation_;

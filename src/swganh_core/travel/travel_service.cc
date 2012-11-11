@@ -51,6 +51,7 @@ void TravelService::Startup()
 	command_ = kernel_->GetServiceManager()->GetService<CommandService>("CommandService");
 
 	LoadStaticTravelPoints();
+	LoadPlanetaryRouteMap();
 
 	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
@@ -83,6 +84,28 @@ void TravelService::BeginTicketTransaction(std::shared_ptr<Object> object)
 	enter_ticket.planet_name = simulation_->SceneNameById(object->GetSceneId());
 	enter_ticket.city_name = "Coronet Starport";
 	object->GetController()->Notify(&enter_ticket);
+}
+
+void TravelService::LoadPlanetaryRouteMap()
+{
+	try
+	{
+		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetPlanetaryTravelRoutes();"));
+
+		while(result->next())
+		{
+			PlanetaryTravelRoute route;
+			route.departure_planet_id = result->getInt("srcId");
+			route.arrival_planet_id = result->getInt("destId");
+			route.price = result->getInt("price");
+		}
+	}
+	catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
 }
 
 void TravelService::LoadStaticTravelPoints()
@@ -165,18 +188,40 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 		}
 	}
 
-	// Verify Source and Target locations exist AND are online.
+	// Verify Source and Target locations exist.
 	if(!source_location_found || !target_location_found)
 	{
-		SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+		SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "no_location_found"), false, false);
 		return;
 	}
 
-	// Verify Interplanetory Route
+	// Verify Interplanetary Route and make sure route is online.
+	PlanetaryTravelRoute planetary_travel_route;
+	bool inter_planetary = false;
 	if(source_location_tp.scene_id != target_location_tp.scene_id)
 	{
-		SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
-		return;
+		for(auto& route : planetary_travel_routes_)
+		{
+			if(route.departure_planet_id == source_location_tp.scene_id && route.arrival_planet_id == target_location_tp.scene_id)
+			{
+				planetary_travel_route = route;
+				inter_planetary = true;
+			}
+		}
+
+		// We didn't find a route, but were supposted to.
+		if(inter_planetary == false)
+		{
+			SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+			return;
+		}
+
+		// Verify our destination is online.
+		if(simulation_->SceneExists(planetary_travel_route.arrival_planet_id))
+		{
+			SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "no_location_found"), false, false);
+			return;
+		}
 	}
 
 	// Duduct Credits + Taxes
@@ -191,6 +236,7 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 	ticket->SetAttribute("travel_departure_point", std::wstring(source_location_tp.descriptor.begin(), source_location_tp.descriptor.end()));
 	ticket->SetAttribute("travel_arrival_planet", std::wstring(target_planet.begin(), target_planet.end()));
 	ticket->SetAttribute("travel_arrival_point", std::wstring(target_location_tp.descriptor.begin(), target_location_tp.descriptor.end()));
+	ticket->SetAttribute("radial_filename", L"radials.ticket");
 	inventory->AddObject(object, ticket);
 
 	if(round_trip)
@@ -200,8 +246,12 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 		ticket->SetAttribute("travel_departure_point", std::wstring(target_location_tp.descriptor.begin(), target_location_tp.descriptor.end()));
 		ticket->SetAttribute("travel_arrival_planet", std::wstring(source_planet.begin(), source_planet.end()));
 		ticket->SetAttribute("travel_arrival_point", std::wstring(source_location_tp.descriptor.begin(), source_location_tp.descriptor.end()));
+		ticket->SetAttribute("radial_filename", L"radials.ticket");
 		inventory->AddObject(object, ticket);
 	}
+
+	// This needs to be replaced with SUI box.
+	SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "ticket_purchase_complete"), false, false);
 }
 
 void TravelService::HandlePlanetTravelPointListRequest(
@@ -213,7 +263,8 @@ void TravelService::HandlePlanetTravelPointListRequest(
 
 	for(auto& location : travel_points_)
 	{
-		if(location.scene_id == 43)
+		// Scene is offline, restrict selection.
+		if(simulation_->SceneExists(location.scene_id) == false)
 			continue;
 
 		if((location.scene_id != travel_terminal->GetSceneId()) && location.port_type != 1)

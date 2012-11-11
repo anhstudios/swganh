@@ -27,6 +27,9 @@ namespace simulation {
 		virtual uint32_t SceneIdByName(const std::string& scene_label);
 		virtual std::string SceneNameById(uint32_t scene_id);
 
+		bool SceneExists(const std::string& scene_label);
+		bool SceneExists(uint32_t scene_id);
+
         void RegisterObjectFactories();
 
         void PersistObject(uint64_t object_id, bool persist_inherited = false);
