@@ -20,5 +20,13 @@ namespace travel {
 		 * @param object Target player.
 		 */
 		virtual void BeginTicketTransaction(std::shared_ptr<swganh::object::Object> object)=0;
+
+		/**
+		 * Request transportation.
+		 *
+		 * @param object Requestor.
+		 * @param ticket Ticket inventory item.
+		 */
+		virtual void UseTicket(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> ticket)=0;
 	};
 }} // namespace swganh::travel

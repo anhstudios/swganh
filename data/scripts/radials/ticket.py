@@ -12,3 +12,4 @@ class PyRadialMenu(RadialMenu):
 		
 	def handleRadial(self, owner, target, action):
 		travel_service = self.getKernel().serviceManager().travelService()
+		travel_service.useTicket(owner, target)

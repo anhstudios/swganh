@@ -19,10 +19,12 @@
 #include <swganh_core/messages/planet_travel_point_list_request.h>
 #include <swganh_core/messages/planet_travel_point_list_response.h>
 #include <swganh_core/object/object.h>
+#include <swganh_core/object/creature/creature.h>
 #include <swganh_core/equipment/equipment_service.h>
 #include <swganh_core/simulation/simulation_service.h>
 #include <swganh_core/connection/connection_service.h>
 #include <swganh_core/command/command_service.h>
+#include <swganh_core/sui/sui_service.h>
 
 #include <swganh_core/messages/out_of_band.h>
 #include <swganh_core/messages/system_message.h>
@@ -80,9 +82,11 @@ void TravelService::BeginTicketTransaction(std::shared_ptr<Object> object)
 	if(!object->HasController())
 		return;
 
+	// Find nearest ticket terminal.
+
 	swganh::messages::EnterTicketPurchaseModeMessage enter_ticket;
 	enter_ticket.planet_name = simulation_->SceneNameById(object->GetSceneId());
-	enter_ticket.city_name = "Coronet Starport";
+	enter_ticket.city_name = "Research Outpost";
 	object->GetController()->Notify(&enter_ticket);
 }
 
@@ -100,6 +104,7 @@ void TravelService::LoadPlanetaryRouteMap()
 			route.departure_planet_id = result->getInt("srcId");
 			route.arrival_planet_id = result->getInt("destId");
 			route.price = result->getInt("price");
+			planetary_travel_routes_.push_back(route);
 		}
 	}
 	catch(sql::SQLException &e) {
@@ -195,37 +200,46 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 		return;
 	}
 
-	// Verify Interplanetary Route and make sure route is online.
-	PlanetaryTravelRoute planetary_travel_route;
-	bool inter_planetary = false;
-	if(source_location_tp.scene_id != target_location_tp.scene_id)
+	// Verify Planetary Route and make sure route is online.
+	PlanetaryTravelRoute* planetary_travel_route = nullptr;
+	for(auto& route : planetary_travel_routes_)
 	{
-		for(auto& route : planetary_travel_routes_)
+		if((route.departure_planet_id == source_location_tp.scene_id) && (route.arrival_planet_id == target_location_tp.scene_id))
 		{
-			if(route.departure_planet_id == source_location_tp.scene_id && route.arrival_planet_id == target_location_tp.scene_id)
-			{
-				planetary_travel_route = route;
-				inter_planetary = true;
-			}
-		}
-
-		// We didn't find a route, but were supposted to.
-		if(inter_planetary == false)
-		{
-			SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
-			return;
-		}
-
-		// Verify our destination is online.
-		if(simulation_->SceneExists(planetary_travel_route.arrival_planet_id))
-		{
-			SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "no_location_found"), false, false);
-			return;
+			planetary_travel_route = &route;
 		}
 	}
 
+	// We didn't find a route, but we where supposted to.
+	if(planetary_travel_route == nullptr)
+	{
+		SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+		return;
+	}
+
+	// Verify our destination is online.
+	if(simulation_->SceneExists(planetary_travel_route->arrival_planet_id) == false)
+	{
+		SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+		return;
+	}
+
 	// Duduct Credits + Taxes
-	
+	price += planetary_travel_route->price;
+	price += target_location_tp.taxes;
+
+	auto creature = std::static_pointer_cast<swganh::object::Creature>(object);
+	if(creature->GetCashCredits() < price)
+	{
+		auto sui = kernel_->GetServiceManager()->GetService<swganh::sui::SUIService>("SuiService");
+		auto window = sui->CreateMessageBox(swganh::sui::MESSAGE_BOX_OK, L"The Galactic Travel Commision", L"You do not have enough money to complete the ticket purchase.", object);
+		sui->OpenSUIWindow(window);
+		return;
+	}
+
+	creature->SetCashCredits(creature->GetCashCredits() - price);
+	SystemMessage::Send(object, swganh::messages::OutOfBand("base_player", "prose_pay_acct_success", "", "", "", "", "money/acct_n", "travelsystem", price), false, false);
+
 	// Create Ticket(s)
 	auto source_planet = simulation_->SceneNameById(source_location_tp.scene_id);
 	auto target_planet = simulation_->SceneNameById(target_location_tp.scene_id);
@@ -250,8 +264,77 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 		inventory->AddObject(object, ticket);
 	}
 
-	// This needs to be replaced with SUI box.
-	SystemMessage::Send(object, swganh::messages::OutOfBand("travel", "ticket_purchase_complete"), false, false);
+	auto sui = kernel_->GetServiceManager()->GetService<swganh::sui::SUIService>("SuiService");
+	auto window = sui->CreateMessageBox(swganh::sui::MESSAGE_BOX_OK, L"The Galactic Travel Commision", L"@travel:ticket_purchase_complete", object);
+	sui->OpenSUIWindow(window);
+}
+
+void TravelService::UseTicket(std::shared_ptr<Object> requester, std::shared_ptr<Object> ticket)
+{
+	// Verify ticket properties.
+	if(ticket->HasAttribute("travel_departure_planet") == false || 
+		ticket->HasAttribute("travel_departure_point") == false || 
+		ticket->HasAttribute("travel_arrival_planet") == false ||
+		ticket->HasAttribute("travel_arrival_point") == false)
+	{
+		return;
+	}
+
+	// Find departure and destination TravelPoints.
+	TravelPoint* departure;
+	TravelPoint* arrival;
+	std::wstring departure_planetws = ticket->GetAttributeAsString("travel_departure_planet");
+	std::wstring departure_pointws = ticket->GetAttributeAsString("travel_departure_point");
+	std::wstring arrival_planetws = ticket->GetAttributeAsString("travel_arrival_planet");
+	std::wstring arrival_pointws = ticket->GetAttributeAsString("travel_arrival_point");
+
+	std::string departure_planet(departure_planetws.begin(), departure_planetws.end());
+	std::string departure_point(departure_pointws.begin(), departure_pointws.end());
+	std::string arrival_planet(arrival_planetws.begin(), arrival_planetws.end());
+	std::string arrival_point(arrival_pointws.begin(), arrival_pointws.end());
+
+	uint32_t departure_planet_id = simulation_->SceneIdByName(departure_planet);
+	uint32_t arrival_planet_id = simulation_->SceneIdByName(arrival_planet);
+
+	// Departure
+	for(auto& location : travel_points_)
+	{
+		if(location.scene_id == departure_planet_id && location.descriptor.compare(departure_point) == 0)
+		{
+			departure = &location;
+			break;
+		}
+	}
+
+	// Arrival
+	for(auto& location : travel_points_)
+	{
+		if(location.scene_id == arrival_planet_id && location.descriptor.compare(arrival_point) == 0)
+		{
+			arrival = &location;
+			break;
+		}
+	}
+
+	// Ticket Route Valid?
+	if(!departure || !arrival)
+	{
+		SystemMessage::Send(requester, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+		return;
+	}
+
+	// Find nearest shuttle.
+	// Verify we are at the correct departure point and shuttle is ready to lift off.
+
+	// Verify our destination is online.
+	if(simulation_->SceneExists(arrival->scene_id) == false)
+	{
+		SystemMessage::Send(requester, swganh::messages::OutOfBand("travel", "route_not_available"), false, false);
+		return;
+	}
+
+	// Transport
+	simulation_->TransferObjectToScene(requester, arrival_planet, arrival->spawn_position.x, arrival->spawn_position.z, arrival->spawn_position.y);
 }
 
 void TravelService::HandlePlanetTravelPointListRequest(

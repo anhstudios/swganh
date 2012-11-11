@@ -65,6 +65,8 @@ namespace travel {
 			uint32_t taxes, 
 			bool round_trip = false);
 
+		virtual void UseTicket(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<swganh::object::Object> ticket);
+
 	private:
 
 		void HandlePlanetTravelPointListRequest(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::PlanetTravelPointListRequest* message);
