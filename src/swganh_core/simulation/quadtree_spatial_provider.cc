@@ -265,6 +265,50 @@ std::list<std::shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::Quer
 	return return_vector;
 }
 
+std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpatialProvider::FindObjectsInRangeByTag(std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range)
+{
+	std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> obj_map;
+
+	if(requester->GetContainer() != __this)
+	{
+		auto root_obj = requester->GetContainer();
+		while(root_obj->GetContainer() != __this && root_obj->GetContainer() != nullptr)
+			root_obj = root_obj->GetContainer();
+
+		root_obj->ViewObjects(requester, 0, true, [=, &obj_map](std::shared_ptr<swganh::object::Object> object) {
+			if(object->HasFlag(tag))
+				obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(requester->GetAbsolutePosition(), object->GetAbsolutePosition()), object));
+		});
+
+		return obj_map;
+	}
+
+	QueryBox query_box;
+	if(range < 0) // Query the whole map.
+		query_box = QueryBox(quadtree::Point(-8300.0f, -8300.0f), quadtree::Point(8300.0f, 8300.0f));
+	else // Generate query box.
+		query_box = QueryBox(
+			quadtree::Point(requester->GetPosition().x - (range /  2.0f), requester->GetPosition().z - (range / 2.0f)),
+			quadtree::Point(requester->GetPosition().x + (range / 2.0f), requester->GetPosition().z + (range / 2.0f))
+			);
+
+	auto objects = root_node_.Query(query_box);
+	for(auto& object : objects)
+	{
+		if(object->HasFlag(tag))
+		{
+			obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(requester->GetAbsolutePosition(), object->GetAbsolutePosition()),object));
+			if(object->HasContainedObjects())
+				object->ViewObjects(object, 0, true, [=, &obj_map](std::shared_ptr<Object> object) {
+					if(object->HasFlag(tag))
+						obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(requester->GetAbsolutePosition(), object->GetAbsolutePosition()), object));
+			});
+		}
+	}
+
+	return obj_map;
+}
+
 void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)
 {
 	if(object->IsCollidable() == false)

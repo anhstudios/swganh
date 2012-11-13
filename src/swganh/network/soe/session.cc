@@ -410,6 +410,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
 		OutOfOrderA	out_of_order(sequence);
 		ByteBuffer buffer;
 		out_of_order.serialize(buffer);
+		encryption_filter_(this, &buffer);
 		SendSoePacket_(move(buffer));        
     }
 	

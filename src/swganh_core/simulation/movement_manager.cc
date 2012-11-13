@@ -88,6 +88,7 @@ void MovementManager::HandleDataTransform(
 {    
     if (!ValidateCounter_(object->GetObjectId(), message.counter))
     {
+		LOG(error) << "Counter " << message.counter << " not validated! Should be " << counter_map_[object->GetObjectId()] << ".";
         return;
     }
 
@@ -104,6 +105,7 @@ void MovementManager::HandleDataTransform(
 	else
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 
+	std::cout << "DataTransform... " << std::endl;
     SendUpdateDataTransformMessage(object);
 }
 
@@ -117,6 +119,7 @@ void MovementManager::HandleDataTransformWithParent(
 	{
 		if (!ValidateCounter_(object->GetObjectId(), message.counter))
 		{
+			LOG(error) << "Counter " << message.counter << " not validated! Should be " << counter_map_[object->GetObjectId()] << ".";
 			return;
 		}
 
@@ -131,6 +134,7 @@ void MovementManager::HandleDataTransformWithParent(
 			object->GetContainer()->TransferObject(object, object, container);
 
 		//Send the update transform
+		std::cout << "DataTransformParent..." << std::endl;
 		SendUpdateDataTransformWithParentMessage(object);
 	}
 	else
@@ -223,6 +227,14 @@ void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
 bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)
 {    
     return counter > counter_map_[object_id];
+}
+
+void MovementManager::ResetMovementCounter(std::shared_ptr<swganh::object::Object> object)
+{
+	if(counter_map_.find(object->GetObjectId()) == counter_map_.end())
+		return;
+
+	counter_map_[object->GetObjectId()] = 0;
 }
 
 void MovementManager::SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider)

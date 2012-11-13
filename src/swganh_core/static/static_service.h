@@ -86,6 +86,7 @@ namespace statics
 
 		std::map<uint64_t, std::vector<std::shared_ptr<ElevatorData>>> elevator_lookup_;
 		SkillManager skill_mod_manager_;
+		mutable boost::mutex temp_loading_mutex;
 
 	};
 }

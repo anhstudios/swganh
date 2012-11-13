@@ -205,6 +205,11 @@ public:
 		
     }
 
+	std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range=-1)
+	{
+		return scene_manager_->GetScene(requester->GetSceneId())->FindObjectsInRangeByTag(requester, tag, range);
+	}
+
 	shared_ptr<Object> GetObjectByCustomName(const wstring& custom_name)
 	{
         return object_manager_->GetObjectByCustomName(custom_name);
@@ -233,6 +238,12 @@ public:
 		// Remove from existing scene
 		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
 
+		//Update the object's scene_id
+		obj->SetSceneId(scene_obj->GetSceneId());	
+
+		//Update the object's position.
+		obj->SetPosition(position);
+
 		// Add to new scene
 		// CmdStartScene
 		if(obj->GetController() != nullptr)
@@ -248,12 +259,6 @@ public:
 
 			obj->GetController()->Notify(&start_scene);
 		}
-		
-		//Update the object's scene_id
-		obj->SetSceneId(scene_obj->GetSceneId());	
-
-		//Update the object's position.
-		obj->SetPosition(position);
 
 	    // Add object to scene and send baselines
 	    scene_obj->AddObject(obj);
@@ -627,6 +632,11 @@ void SimulationService::SendToSceneInRange(swganh::messages::BaseSwgMessage* mes
 void SimulationService::AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label)
 {
 	impl_->AddObjectToScene(object, scene_label);
+}
+
+std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> SimulationService::FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range)
+{
+	return impl_->FindObjectsInRangeByTag(requester, tag, range);
 }
 
 void SimulationService::Startup()

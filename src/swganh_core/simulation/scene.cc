@@ -71,6 +71,7 @@ public:
             return;
         }
 
+		movement_manager_->ResetMovementCounter(object);
 		EraseObject(object);             
 
 		spatial_index_->RemoveObject(nullptr, object);
@@ -207,4 +208,9 @@ void Scene::HandleDataTransformServer(const std::shared_ptr<swganh::object::Obje
 void Scene::HandleDataTransformWithParentServer(const std::shared_ptr<swganh::object::Object>& parent, const std::shared_ptr<swganh::object::Object>& object, const glm::vec3& new_position)
 {
 	impl_->GetMovementManager()->HandleDataTransformWithParentServer(parent, object, new_position);
+}
+
+std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> Scene::FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range)
+{
+	return impl_->GetSpatialIndex()->FindObjectsInRangeByTag(requester, tag, range);
 }

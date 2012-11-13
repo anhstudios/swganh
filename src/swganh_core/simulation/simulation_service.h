@@ -27,6 +27,8 @@ namespace simulation {
 		virtual uint32_t SceneIdByName(const std::string& scene_label);
 		virtual std::string SceneNameById(uint32_t scene_id);
 
+		std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range=-1);
+
 		bool SceneExists(const std::string& scene_label);
 		bool SceneExists(uint32_t scene_id);
 

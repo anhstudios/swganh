@@ -70,6 +70,8 @@ public:
         const std::shared_ptr<swganh::object::Object>& parent, 
         const std::shared_ptr<swganh::object::Object>& object,
 		const glm::vec3& new_position) = 0;
+
+	virtual std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range=-1) = 0;
 };
 
 }}  // namespace swganh::simulation

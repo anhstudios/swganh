@@ -49,10 +49,12 @@ enum PERSISTENT_NPC_TYPE
 
 StaticService::StaticService(SwganhKernel* kernel)
 	: kernel_(kernel)
+	, temp_loading_mutex()
 {
 	//Static Objects
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
+		boost::lock_guard<boost::mutex> _lock(temp_loading_mutex);
 		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
 
 		auto database_manager = kernel_->GetDatabaseManager();
@@ -105,6 +107,7 @@ StaticService::StaticService(SwganhKernel* kernel)
 		statement->getMoreResults();
 		_loadShuttles(simulation_service, spawn_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
 			real_event->scene_id, real_event->scene_label);
+		LOG(warning) << "Done loading static data for: " << real_event->scene_label;
 
 		} catch(std::exception& e) {
 			LOG(warning) << e.what();
@@ -273,6 +276,9 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 		}
 		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_travel.iff") == 0)
 		{
+			object->SetFlag("travel_terminal");
+			auto location_descriptor = result->getString(14).asStdString();
+			object->SetAttribute("location_descriptor", std::wstring(location_descriptor.begin(), location_descriptor.end()));
 			object->SetAttribute("radial_filename", L"radials.travel");
 		}
 	}
@@ -361,6 +367,10 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		auto travel_point = result->getString(14).asStdString();
+		object->SetAttribute("travel_point", std::wstring(travel_point.begin(), travel_point.end()));
+		object->SetFlag("ticket_collector");
 	}
 }
 
@@ -486,6 +496,8 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		object->SetFlag("shuttle");
 
 		spawn_service->StartManagingObject(object, L"shuttle");
 	}

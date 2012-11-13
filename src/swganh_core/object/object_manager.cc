@@ -448,7 +448,7 @@ void ObjectManager::LoadCollisionInfoForObject(std::shared_ptr<Object> obj)
 
 		if(obj_visitor->has_attribute("collisionLength") && obj_visitor->has_attribute("collisionHeight"))
 		{
-			obj->SetCollisionBoxSize(obj_visitor->attribute<float>("collisionLength"), obj_visitor->attribute<float>("collisionHeight"));
+			obj->SetCollisionBoxSize(obj_visitor->attribute<float>("collisionLength") / 2.0f, obj_visitor->attribute<float>("collisionLength") / 2.0f);
 			obj->SetCollidable(true);
 		}
 		else

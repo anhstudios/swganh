@@ -83,10 +83,17 @@ void TravelService::BeginTicketTransaction(std::shared_ptr<Object> object)
 		return;
 
 	// Find nearest ticket terminal.
+	auto terminals = simulation_->FindObjectsInRangeByTag(object, "travel_terminal", 16.0f);
+	if(terminals.size() < 1)
+		return;
+
+	std::cout << (*terminals.begin()).first << std::endl;
+	std::shared_ptr<Object> nterminal = (*terminals.begin()).second;
 
 	swganh::messages::EnterTicketPurchaseModeMessage enter_ticket;
 	enter_ticket.planet_name = simulation_->SceneNameById(object->GetSceneId());
-	enter_ticket.city_name = "Research Outpost";
+	auto descriptor = nterminal->GetAttributeAsString("location_descriptor");
+	enter_ticket.city_name = std::string(descriptor.begin(), descriptor.end());
 	object->GetController()->Notify(&enter_ticket);
 }
 
@@ -225,8 +232,8 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 	}
 
 	// Duduct Credits + Taxes
-	price += planetary_travel_route->price;
-	price += target_location_tp.taxes;
+	//price += planetary_travel_route->price;
+	//price += target_location_tp.taxes;
 
 	auto creature = std::static_pointer_cast<swganh::object::Creature>(object);
 	if(creature->GetCashCredits() < price)
@@ -324,7 +331,33 @@ void TravelService::UseTicket(std::shared_ptr<Object> requester, std::shared_ptr
 	}
 
 	// Find nearest shuttle.
+	auto ticket_collectors = simulation_->FindObjectsInRangeByTag(requester, "ticket_collector", 16.0f);
+	auto shuttles = simulation_->FindObjectsInRangeByTag(requester, "shuttle", 25.0f); 
+
+	if(ticket_collectors.size() < 1 || shuttles.size() < 1)
+	{
+		SystemMessage::Send(requester, swganh::messages::OutOfBand("travel", "boarding_too_far"), false, false);
+		return;
+	}
+
+	auto ticket_collector = (*ticket_collectors.begin()).second;
+	auto shuttle = (*shuttles.begin()).second;
+	
+
 	// Verify we are at the correct departure point and shuttle is ready to lift off.
+	auto descriptor = ticket_collector->GetAttributeAsString("travel_point");
+	if(departure->descriptor.compare(std::string(descriptor.begin(), descriptor.end())) != 0)
+	{
+		SystemMessage::Send(requester, swganh::messages::OutOfBand("travel", "boarding_too_far"), false, false);
+		return;
+	}
+
+	auto shuttle_creature = std::static_pointer_cast<Creature>(shuttle);
+	if(shuttle_creature->GetPosture() != 0)
+	{
+		SystemMessage::Send(requester, swganh::messages::OutOfBand("travel", "shuttle_not_available"), false, false);
+		return;
+	}
 
 	// Verify our destination is online.
 	if(simulation_->SceneExists(arrival->scene_id) == false)
