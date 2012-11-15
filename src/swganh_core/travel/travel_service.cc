@@ -366,6 +366,9 @@ void TravelService::UseTicket(std::shared_ptr<Object> requester, std::shared_ptr
 		return;
 	}
 
+	ticket->GetContainer()->RemoveObject(requester, ticket);
+	simulation_->RemoveObject(ticket);
+
 	// Transport
 	simulation_->TransferObjectToScene(requester, arrival_planet, arrival->spawn_position.x, arrival->spawn_position.z, arrival->spawn_position.y);
 }

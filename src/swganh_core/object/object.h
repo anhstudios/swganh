@@ -129,7 +129,7 @@ public:
 	typedef std::shared_ptr<ContainerPermissionsInterface> PermissionsObject;
 
 	Object();
-    virtual ~Object() {}
+    virtual ~Object();
 
     /**
      * @return True if object has a controller, false if not.

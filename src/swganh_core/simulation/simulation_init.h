@@ -48,7 +48,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	// Register Movement Manager
 	{
 		registration.CreateObject = [kernel, simulation_service] (swganh::plugin::ObjectParams* params) -> void* {
-			return new MovementManager(kernel);
+			return new MovementManager(kernel, "");
 		};
 		registration.DestroyObject = [] (void  * object) {
 			if (object) {

@@ -236,13 +236,19 @@ public:
 	        }
 
 		// Remove from existing scene
+		auto controller = obj->GetController();
+		obj->ClearController();
+		LOG(error) << "Removing object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
+		LOG(error) << "Done removing object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 
 		//Update the object's scene_id
 		obj->SetSceneId(scene_obj->GetSceneId());	
 
 		//Update the object's position.
 		obj->SetPosition(position);
+
+		obj->SetController(controller);
 
 		// Add to new scene
 		// CmdStartScene
@@ -261,7 +267,9 @@ public:
 		}
 
 	    // Add object to scene and send baselines
+		LOG(error) << "Adding object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 	    scene_obj->AddObject(obj);
+		LOG(error) << "Done adding object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 	}
 
 	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)

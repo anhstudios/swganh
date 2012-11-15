@@ -30,8 +30,9 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh::simulation;
 
-MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
+MovementManager::MovementManager(swganh::app::SwganhKernel* kernel, std::string scene_name)
 	: kernel_(kernel)
+	, scene_name_(scene_name)
 {
 	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 
@@ -105,7 +106,7 @@ void MovementManager::HandleDataTransform(
 	else
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 
-	std::cout << "DataTransform... " << std::endl;
+	std::cout << "DataTransform... " << object->GetSceneId() << ":" << object->GetObjectId() << ":" << message.counter <<  std::endl;
     SendUpdateDataTransformMessage(object);
 }
 
@@ -134,7 +135,7 @@ void MovementManager::HandleDataTransformWithParent(
 			object->GetContainer()->TransferObject(object, object, container);
 
 		//Send the update transform
-		std::cout << "DataTransformParent..." << std::endl;
+		std::cout << "DataTransformParent..." << object->GetSceneId() << ":" << object->GetObjectId() << ":" << message.counter << std::endl;
 		SendUpdateDataTransformWithParentMessage(object);
 	}
 	else
@@ -201,10 +202,8 @@ void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
     {
         const auto& object = static_pointer_cast<swganh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
         
-        if (counter_map_.find(object->GetObjectId()) == counter_map_.end())
-        {
-            counter_map_[object->GetObjectId()] = 0;
-        }
+		LOG(error) << "Resetting counter... " << object->GetObjectId() << ":" << scene_name_;
+		counter_map_[object->GetObjectId()] = 0;
 
         if (object->GetContainer())
         {

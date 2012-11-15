@@ -38,7 +38,7 @@ public:
 		tmp->SetSceneName(description.name);
 		spatial_index_ = tmp;
 
-		movement_manager_ = make_shared<MovementManager>(kernel);
+		movement_manager_ = make_shared<MovementManager>(kernel, description.name);
 		movement_manager_->SetSpatialProvider(spatial_index_);
 	}
 
@@ -71,10 +71,12 @@ public:
             return;
         }
 
-		movement_manager_->ResetMovementCounter(object);
 		EraseObject(object);             
 
 		spatial_index_->RemoveObject(nullptr, object);
+
+		movement_manager_->ResetMovementCounter(object);
+		std::cout << "Resetting movement counter... " << this->description_.label << ":" << object->GetObjectId() << std::endl;
     }
 
 	void InsertObject(const shared_ptr<Object>& object)

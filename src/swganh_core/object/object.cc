@@ -51,6 +51,11 @@ Object::Object()
 {
 }
 
+Object::~Object()
+{
+	std::cout << "Destroying object " << template_string_ << std::endl;
+}
+
 bool Object::HasController()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);

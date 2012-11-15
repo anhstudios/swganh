@@ -36,7 +36,7 @@ public:
 	/*
 	* Creates a new instance
 	*/
-	explicit MovementManager(swganh::app::SwganhKernel* kernel);
+	explicit MovementManager(swganh::app::SwganhKernel* kernel, std::string scene_name);
 
 	/*
 	* Handles the normal data transform (used while outside).
@@ -84,6 +84,7 @@ private:
         uint64_t, uint32_t
     > UpdateCounterMap;
 
+	std::string scene_name_;
     UpdateCounterMap counter_map_;
 	std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider_;
 	swganh::simulation::SimulationServiceInterface* simulation_service_;
