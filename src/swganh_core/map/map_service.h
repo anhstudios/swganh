@@ -2,6 +2,9 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include <queue>
+#include <tuple>
+
 #include <swganh/map/map_service_interface.h>
 
 #include <swganh_core/messages/get_map_locations_response_message.h>
@@ -49,6 +52,11 @@ namespace map {
 		void SyncAddLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
 		void SyncRemoveLocation(uint32_t scene_id, swganh::messages::MapLocation& location);
 
+		void LoadStaticLocations();
+		void LoadDynamicLocations();
+		void LoadHighestLocationId();
+		void PersistLocations();
+
 		void HandleRequestMapLocationsMessage(
 			const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
 			swganh::messages::GetMapLocationsRequestMessage* message);
@@ -56,8 +64,11 @@ namespace map {
 		swganh::app::SwganhKernel* kernel_;
 		swganh::simulation::SimulationService* simulation_;
 		std::map<uint32_t, std::list<swganh::messages::MapLocation>> locations_;
-		std::map<uint32_t, std::list<swganh::messages::MapLocation>> inserted_locations_;
-		std::map<uint32_t, std::list<swganh::messages::MapLocation>> removed_locations_;
+
+		std::queue<
+			std::tuple<uint32_t /* scene_id */, uint32_t /* add, remove, update */, swganh::messages::MapLocation>
+			> changed_locations_;
+
 		uint32_t next_location_id_;
 	};
 
