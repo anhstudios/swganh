@@ -10,11 +10,11 @@ using namespace boost;
 using namespace swganh::spawn;
 
 FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, uint32_t threads_required, std::shared_ptr<FsmStateInterface> initial_state,
-			BundleGenerator bundle_factory)
-	: shutdown_(false)
-        , bundle_factory_(bundle_factory)
-        , initial_state_(initial_state) 
-        , kernel_(kernel)
+	ControllerFactory controller_factory)
+	: kernel_(kernel)
+	, initial_state_(initial_state)
+	, controller_factory_(controller_factory)
+	, shutdown_(false)
 {
 	while(threads_required > 0)
 	{
@@ -53,14 +53,16 @@ FiniteStateMachine::~FiniteStateMachine()
 
 void FiniteStateMachine::StartManagingObject(std::shared_ptr<swganh::object::Object> object)
 {
-	auto controller = std::make_shared<FsmController>(this, object, bundle_factory_(initial_state_));
+	auto controller = controller_factory_(this, object, initial_state_);
 	{
 		lock_guard<mutex> lock(mutex_);
 		controllers_.insert(controller);
 		object->SetController(controller);
 
 		if(controller->IsDirty())
+		{
 			dirty_controllers_.insert(controller);
+		}
 	}
 }
 

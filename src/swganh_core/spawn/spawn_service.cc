@@ -28,10 +28,6 @@
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
-#include "machines/creature.h"
-#include "machines/lair.h"
-#include "machines/npc_factioned.h"
-#include "machines/npc_neutral.h"
 #include "machines/shuttle.h"
 
 using namespace swganh::service;

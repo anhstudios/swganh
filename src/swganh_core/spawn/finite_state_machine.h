@@ -34,7 +34,8 @@ namespace spawn
 	class FsmStateInterface;
 	class FsmController;
 
-	typedef std::function<std::shared_ptr<FsmBundleInterface>(std::shared_ptr<FsmStateInterface>)> BundleGenerator;
+	typedef std::function<std::shared_ptr<FsmController>(FiniteStateMachineInterface*, std::shared_ptr<swganh::object::Object>, 
+						std::shared_ptr<FsmStateInterface>)> ControllerFactory;
 
 	class FiniteStateMachine : public FiniteStateMachineInterface
 	{
@@ -42,7 +43,7 @@ namespace spawn
 	
 		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, uint32_t threads_required, 
 			std::shared_ptr<FsmStateInterface> initial_state,
-			BundleGenerator bundle_factory);
+			ControllerFactory controller_factory);
 
 		~FiniteStateMachine();
 
@@ -60,7 +61,7 @@ namespace spawn
 
 		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;
 
-		BundleGenerator bundle_factory_;
+		ControllerFactory controller_factory_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
 
 		swganh::app::SwganhKernel* kernel_;
