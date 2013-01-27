@@ -97,7 +97,7 @@ if not exist b2.exe (
     cmd /c bootstrap.bat
 )
 
-cmd /c "b2.exe" --toolset=msvc-%MSVC_VERSION%.0 variant=debug,release link=shared runtime-link=shared threading=multi define=_SCL_SECURE_NO_WARNINGS=0
+cmd /c "b2.exe" --toolset=msvc-%MSVC_VERSION%.0 --with-program_options --with-system --with-thread --with-filesystem --with-log --with-python --with-test --with-date_time variant=debug,release link=shared runtime-link=shared threading=multi define=_SCL_SECURE_NO_WARNINGS=0 define=_ITERATOR_DEBUG_LEVEL=0
 
 if not exist %VENDOR_DIR%include\boost (
     xcopy "boost" "%VENDOR_DIR%include\boost" /s /i /y
@@ -269,7 +269,7 @@ if not exist mysql-connector-cpp (
 
 cd mysql-connector-cpp
 
-cmake -G"Visual Studio 11" -DBOOST_ROOT=%VENDOR_DIR% -DMYSQL_INCLUDE_DIR=%VENDOR_DIR%include -DMYSQL_LIB_DIR=%VENDOR_DIR%lib/Release .
+cmake -G"Visual Studio 11" -DDISABLE_ITERATOR_DEBUGGING=ON -DBOOST_ROOT=%VENDOR_DIR% -DMYSQL_INCLUDE_DIR=%VENDOR_DIR%include -DMYSQL_LIB_DIR=%VENDOR_DIR%lib/Release .
 cmake --build . --target mysqlcppconn --config Debug
 cmake --build . --target mysqlcppconn --config Release
 
