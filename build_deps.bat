@@ -49,6 +49,16 @@ rem ----------------------------------------------------------------------------
 rem --- Start of BUILD_ENVIRONMENT ---------------------------------------------
 :BUILD_ENVIRONMENT
 
+call where svn /Q | findstr /c:"svn.exe" >nul && (
+    echo ***** SVN required and not found in system PATH *****
+    exit /b 1
+)
+
+call where git /Q | findstr /c:"git.exe" >nul && (
+    echo ***** Git required and not found in system PATH *****
+    exit /b 1
+)
+
 if not exist "%VS110COMNTOOLS%" (
     echo ***** Microsoft Visual Studio 11 required *****
     exit /b 1
