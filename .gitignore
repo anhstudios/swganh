@@ -23,3 +23,5 @@ data/docs/generated
 /nbproject/private/
 
 data/docs/doxygen
+
+swganh*deps*.*
