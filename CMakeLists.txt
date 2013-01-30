@@ -50,7 +50,7 @@ option(BUILD_DOCS
 
 option(BUILD_EXAMPLES
     "Explicitly force building of examples" OFF)
-    
+
 option(TREAT_WARNINGS_AS_ERRORS
     "Treat all warnings as errors" ON)
 
@@ -116,15 +116,17 @@ if(MSVC)
         message(STATUS "- MSVC: Treating all warnings as errors")
 	endif()
 
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
+
     ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
     MESSAGE(STATUS "- BOOST: Enable dynamic linking")
-    
+
     add_definitions(/D BOOST_ALL_NO_LIB)
     message(status "- BOOST: Disable automatic linking")
-    
+
     ADD_DEFINITIONS (/D _HAS_ITERATOR_DEBUGGING=0)
     MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
-    
+
     ADD_DEFINITIONS (/D _SECURE_SCL=0)
     MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
 endif()
@@ -144,13 +146,13 @@ if(NOT DEFINED VENDOR_PREFIX)
 endif()
 
 if(DEFINED VENDOR_PREFIX)
-    set(BOOST_ROOT ${VENDOR_PREFIX}/boost)
-    set(GLM_ROOT ${VENDOR_PREFIX}/glm)
-	set(ENV{MYSQL_DIR} ${VENDOR_PREFIX}/mysql-connector-c)
-    set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
-    set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
-    set(TURTLE_ROOT ${VENDOR_PREFIX}/turtle)
-    set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
+    set(BOOST_ROOT ${VENDOR_PREFIX})
+    set(GLM_ROOT ${VENDOR_PREFIX})
+	set(ENV{MYSQL_DIR} ${VENDOR_PREFIX})
+    set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX})
+    set(PYTHON_ROOT ${VENDOR_PREFIX})
+    set(TURTLE_ROOT ${VENDOR_PREFIX})
+    set(ZLIB_ROOT ${VENDOR_PREFIX})
 endif()
 
 if (NOT WIN32)
