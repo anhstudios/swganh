@@ -4,6 +4,10 @@ setlocal EnableDelayedExpansion
 rem Initialize environment variable defaults
 call :SET_DEFAULTS
 
+rem Process command line arguments first
+goto :PROCESS_ARGUMENTS
+:CONTINUE_FROM_PROCESS_ARGUMENTS
+
 rem Build the environment and bail out if it fails
 call :BUILD_ENVIRONMENT
 if x%environment_built% == x goto :eof
@@ -30,7 +34,7 @@ rem --- Start of SET_DEFAULTS --------------------------------------------------
 
 set "PROJECT_BASE=%~dp0"
 set "PROJECT_DRIVE=%~d0"
-set "BUILD_DIR=%PROJECT_BASE%build-deps\"
+set "BUILD_DIR=%PROJECT_BASE%build\deps\"
 set "VENDOR_DIR=%PROJECT_BASE%vendor\"
 set MSVC_VERSION=11
 set BOOST_VERSION=1.52.0
@@ -40,10 +44,82 @@ set ZLIB_VERSION=1.2.7
 set MYSQL_C_VERSION=6.0.2
 set "WGET=%PROJECT_BASE%tools\windows\wget.exe"
 set "ZIP=%PROJECT_BASE%tools\windows\7z.exe"
+set VENDOR_PACKAGE=swganh-deps-vc11.7z
 
 goto :eof
 rem --- End of SET_DEFAULTS ----------------------------------------------------
 rem ----------------------------------------------------------------------------
+
+rem ----------------------------------------------------------------------------
+rem --- Start of PROCESS_ARGUMENTS ---------------------------------------------
+:PROCESS_ARGUMENTS
+
+if "%~0" == "" goto :CONTINUE_FROM_PROCESS_ARGUMENTS
+
+
+if "%~0" == "-h" (
+    echo msvc_build.cmd Help
+    echo.
+    echo "    /clean    Cleans all vendor files"
+    echo "    /package  Packages the vendor directory for distribution"
+)
+
+if "%~0" == "/clean" (
+    call :CLEAN_BUILD
+    goto :eof
+)
+
+if "%~0" == "/package" (
+    call :PACKAGE_DEPENDENCIES
+    goto :eof
+)
+
+shift
+
+goto :PROCESS_ARGUMENTS
+rem --- End of PROCESS_ARGUMENTS -----------------------------------------------
+rem ----------------------------------------------------------------------------
+
+
+rem ----------------------------------------------------------------------------
+rem --- Start of CLEAN_BUILD ---------------------------------------------------
+rem --- Cleans all output created by the build process, restoring the        ---
+rem --- project to it's original state like a fresh checkout.                ---
+:CLEAN_BUILD
+
+echo Cleaning the project dependencies
+
+if exist "%BUILD_DIR%" rmdir /S /Q "%BUILD_DIR%"
+if exist "%VENDOR_DIR%" rmdir /S /Q "%VENDOR_DIR%"
+
+goto :eof
+rem --- End of CLEAN_BUILD -----------------------------------------------------
+rem ----------------------------------------------------------------------------
+
+
+rem ----------------------------------------------------------------------------
+rem --- Start of PACKAGE_DEPENDENCIES ------------------------------------------
+rem --- Packages the project dependencies for distribution ---------------------
+:PACKAGE_DEPENDENCIES
+
+echo Packaging the project dependencies
+
+if not exist "%VENDOR_DIR%" (
+    echo ***** Dependencies not built *****
+    exit /b 1
+)
+
+if exist "%PROJECT_BASE%%VENDOR_PACKAGE%" (
+    del "%PROJECT_BASE%%VENDOR_PACKAGE%"
+)
+
+%ZIP% a "%PROJECT_BASE%%VENDOR_PACKAGE%" "%VENDOR_DIR%"
+
+
+goto :eof
+rem --- End of PACKAGE_DEPENDENCIES --------------------------------------------
+rem ----------------------------------------------------------------------------
+
 
 rem ----------------------------------------------------------------------------
 rem --- Start of BUILD_ENVIRONMENT ---------------------------------------------
