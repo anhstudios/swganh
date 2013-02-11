@@ -553,11 +553,14 @@ void Object::SetPosition(glm::vec3 position)
     }
 	DISPATCH(Object, Position);
 }
-void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& quaternion, std::shared_ptr<Object> parent)
+
+void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& orientation, shared_ptr<Object> parent)
 {
-	SetOrientation(quaternion);
+	SetOrientation(orientation);
 	// Call an Event that gets handled by the movement manager
-	DISPATCH(Object, UpdatePosition);
+
+	GetEventDispatcher()->Dispatch(make_shared<UpdatePositionEvent>
+		("Object::UpdatePosition", parent, shared_from_this(), new_position));
 }
 
 glm::vec3 Object::GetPosition()

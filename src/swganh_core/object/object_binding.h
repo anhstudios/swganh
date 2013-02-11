@@ -137,6 +137,13 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
 
+void UpdatePosition(std::shared_ptr<Object> self, glm::vec3 position, glm::quat orientation, std::shared_ptr<Object> parent=nullptr)
+{
+	self->UpdatePosition(position, orientation, parent);
+}
+
+BOOST_PYTHON_FUNCTION_OVERLOADS(UpdatePosOverload, UpdatePosition, 3, 4)
+
 
 std::shared_ptr<swganh::object::Creature> ToCreature(std::shared_ptr<swganh::object::Object> obj)
 {
@@ -162,6 +169,27 @@ void exportOutOfBand()
 		.def(init<std::string, std::string, ProseType, std::wstring>())
 		.def(init<std::string, std::string>())
     ;
+}
+
+#include <swganh_core/object/creature/creature.h>
+void setSwoopCustomization(std::shared_ptr<Object> obj)
+{
+	auto creo = std::static_pointer_cast<Creature>(obj);
+	if(creo)
+	{
+		unsigned char Swoop_Customization[97] =	{ 0x02, 0x11, 0xC3, //customization data
+                                        0x9D, 0x28, 0xC3, 0xBF, 0x01, 0xC3, 0x9E, 0xC3, 0x8D, 0xC3, 0xBF, 0x01,
+                                        0xC3, 0xA2, 0x1E, 0xC3, 0xBF, 0x01, 0xC3, 0x9B, 0x1D, 0xC3, 0xBF, 0x01,
+                                        0xC3, 0x98, 0x2D, 0xC3,	0xBF, 0x01, 0xC3, 0x9A, 0x63, 0xC3, 0xBF, 0x01,
+                                        0xC3, 0x99, 0x05, 0xC3, 0xBF, 0x01, 0xC3, 0xA1, 0x19, 0xC3, 0xBF, 0x01,
+                                        0xC3, 0xA0, 0x14, 0xC3, 0xBF, 0x01, 0xC3, 0x9F, 0x05, 0xC3, 0xBF, 0x01,
+                                        0xC3, 0x9C, 0x46, 0xC3, 0xBF, 0x01, 0xC3, 0x95, 0x19, 0xC3, 0xBF, 0x01,
+                                        0x01, 0x04, 0xC3, 0x96, 0x67, 0xC3, 0xBF, 0x01, 0x22, 0x11, 0xC3, 0x97,
+                                        0xC3, 0x9B, 0xC3, 0xBF, 0x01, 0x02, 0x11, 0xC3, 0xBF, 0x03
+                                        };
+
+		creo->SetCustomization((char*)Swoop_Customization);
+	}
 }
 
 void exportObject()
@@ -240,6 +268,7 @@ void exportObject()
 		.def("updatePosition", &Object::UpdatePosition, "Updates the position and sends an update to the player")
 		.def("toCreature", ToCreature)
 		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
+		.def("updatePosition", UpdatePosition, UpdatePosOverload(args("self", "position", "orientation", "parent"),"Updates the position and sends an update to the player"))
 		;
 
 	bp::class_<std::vector<int>>("IntVector")

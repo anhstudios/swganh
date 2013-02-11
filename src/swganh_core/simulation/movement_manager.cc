@@ -152,7 +152,7 @@ void MovementManager::SendDataTransformMessage(const shared_ptr<Object>& object,
     transform.position = object->GetPosition();
     transform.speed = creature->GetWalkingSpeed();
 
-    object->GetController()->Notify(&transform);
+    object->NotifyObservers(&transform);
 }
 
 void MovementManager::SendUpdateDataTransformMessage(const shared_ptr<Object>& object)
@@ -177,7 +177,7 @@ void MovementManager::SendDataTransformWithParentMessage(const shared_ptr<Object
     transform.position      = object->GetPosition();
     transform.speed         = creature->GetWalkingSpeed();
 
-    object->GetController()->Notify(&transform);
+    object->NotifyObservers(&transform);
 }
 
 void MovementManager::SendUpdateDataTransformWithParentMessage(const shared_ptr<Object>& object)
