@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/ship/components/reactor/shared_rct_kessel_rebel_slayn_high_output_experimental.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/ship/components/reactor/shared_rct_kessel_rebel_slayn_high_output_experimental.iff"
-		result.attribute_template_id = 8
-		result.stfName("space/space_item","rct_kessel_rebel_slayn_high_output_experimental_n")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/ship/components/reactor/shared_rct_kessel_rebel_slayn_high_output_experimental.iff"
+	result.attribute_template_id = 8
+	result.stfName("space/space_item","rct_kessel_rebel_slayn_high_output_experimental_n")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

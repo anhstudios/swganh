@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/lair/salt_mynock/shared_lair_salt_mynock_mountain.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/lair/salt_mynock/shared_lair_salt_mynock_mountain.iff"
-		result.attribute_template_id = -1
-		result.stfName("lair_n","salt_mynock_mountain")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/lair/salt_mynock/shared_lair_salt_mynock_mountain.iff"
+	result.attribute_template_id = -1
+	result.stfName("lair_n","salt_mynock_mountain")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

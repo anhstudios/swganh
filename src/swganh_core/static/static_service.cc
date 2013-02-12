@@ -164,7 +164,7 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 	{
 		//Load Building Row
 		auto object = simulation_service->CreateObjectFromTemplate(result->getString(9), 
-			STATIC_CONTAINER_PERMISSION, false, true, result->getInt64(1));
+			STATIC_CONTAINER_PERMISSION, false, result->getInt64(1));
 		
 		if(object == nullptr)
 			continue;
@@ -193,7 +193,7 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
 	{
 		//Load Cells
 		auto object = simulation_service->CreateObjectFromTemplate("object/cell/shared_cell.iff",
-			WORLD_CELL_PERMISSION, false, true, result->getInt64(1));
+			WORLD_CELL_PERMISSION, false, result->getInt64(1));
 
 		if(object == nullptr)
 			continue;
@@ -228,7 +228,7 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(11),
-			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -327,7 +327,7 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(3),
-			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -369,7 +369,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, Sp
 	{
 		//Load NPCS
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(15),
-			CREATURE_PERMISSION, false, true, result->getUInt64(1)));
+			CREATURE_PERMISSION, false, result->getUInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -445,7 +445,7 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(12),
-			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;

@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/loot/loot_schematic/shared_geonosian_tenloss_dxr6_schematic.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/loot/loot_schematic/shared_geonosian_tenloss_dxr6_schematic.iff"
-		result.attribute_template_id = -1
-		result.stfName("craft_weapon_ingredients_n","geonosian_tenloss_dxr6_schematic")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/loot/loot_schematic/shared_geonosian_tenloss_dxr6_schematic.iff"
+	result.attribute_template_id = -1
+	result.stfName("craft_weapon_ingredients_n","geonosian_tenloss_dxr6_schematic")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result
