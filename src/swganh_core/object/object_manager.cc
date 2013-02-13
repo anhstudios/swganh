@@ -282,7 +282,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, ui
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& template_name, 
-			PermissionType type, bool is_persisted, bool is_initialized, uint64_t object_id)
+			PermissionType type, bool is_persisted, uint64_t object_id)
 {
 	//First find the container permission
 	auto permission_itr = permissions_objects_.find(type);
@@ -293,76 +293,48 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 	}
 
 	//Then make sure we actually can create an object of this type
-	shared_ptr<Object> created_object, prototype;
+	shared_ptr<Object> created_object;
+
+	// Call python To get Object
+	
 	{
-		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
-		auto prototype_itr = prototypes_.find(template_name);
-		if(prototype_itr != prototypes_.end())
-		{
-			prototype = prototype_itr->second;	
-		}		
-	}
-	if (!prototype)
-	{
-		// Call python To get Object
 		swganh::scripting::ScopedGilLock lock;
 		{
+			boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+			auto template_iter = object_templates_.find(template_name);
+			if (template_iter == object_templates_.end())
 			{
-				boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
-				auto template_iter = object_templates_.find(template_name);
-				if (template_iter == object_templates_.end())
-				{
-					return nullptr;	
-				}
-				// Temp
-				prototype = template_iter->second->CreateTemplate(kernel_,std::map<std::string, std::string>());
+				return nullptr;	
 			}
-
+			created_object = bp::call<std::shared_ptr<Object>>(template_iter->second.ptr(), boost::python::ptr(kernel_));
 		}
 	}
 
-	if(prototype)
+	if(created_object != nullptr)
 	{
-		if(is_initialized)
+		//Set the required stuff
+		created_object->SetPermissions(permission_itr->second);
+		created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
+		created_object->SetDatabasePersisted(is_persisted);
+		LoadSlotsForObject(created_object);
+		LoadCollisionInfoForObject(created_object);
+
+		//Set the ID based on the inputs
+		if(is_persisted)
 		{
-			created_object = prototype->Clone();
+			created_object->SetObjectId(next_persistent_id_++);
 		}
-		else
+		else if(object_id == 0)
 		{
-			boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
-			auto factory_itr = factories_.find(prototype->GetType());
-			if(factory_itr != factories_.end())
-			{
-				created_object = factory_itr->second->CreateObject();
-			}
+			created_object->SetObjectId(next_dynamic_id_++);
+		}
+		else 
+		{
+			created_object->SetObjectId(object_id);
 		}
 
-		if(created_object != nullptr)
-		{
-			//Set the required stuff
-			created_object->SetPermissions(permission_itr->second);
-			created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
-			created_object->SetDatabasePersisted(is_persisted);
-			LoadSlotsForObject(created_object);
-			LoadCollisionInfoForObject(created_object);
-
-			//Set the ID based on the inputs
-			if(is_persisted)
-			{
-				created_object->SetObjectId(next_persistent_id_++);
-			}
-			else if(object_id == 0)
-			{
-				created_object->SetObjectId(next_dynamic_id_++);
-			}
-			else 
-			{
-				created_object->SetObjectId(object_id);
-			}
-
-			//Insert it into the object map
-			InsertObject(created_object);
-		}
+		//Insert it into the object map
+		InsertObject(created_object);
 	}
 	return created_object;
 }
@@ -527,13 +499,10 @@ void ObjectManager::LoadPythonObjectTemplates()
 {
 	swganh::scripting::ScopedGilLock lock;
 	try {		
-		LOG(info) << "Loading Prototype and Template Objects";
+		LOG(info) << "Loading Template Objects";
 		auto module = bp::import("load_objects");
 		auto python_template = module.attr("templates");
-		object_templates_ = bp::extract<PythonTemplateMap>(python_template);			
-		auto python_prototypes = module.attr("prototypes");
-		prototypes_ = bp::extract<PrototypeMap>(python_prototypes);
-		LOG(info) << "Finished Loading...";
+		object_templates_ = bp::extract<PythonTemplateMap>(python_template);
 	}
 	catch(bp::error_already_set&)
 	{

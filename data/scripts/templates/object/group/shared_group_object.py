@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/group/shared_group_object.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Group()
-	
-		result.template = "object/group/shared_group_object.iff"
-		result.attribute_template_id = -1
-		result.stfName("string_id_table","")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Group()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/group/shared_group_object.iff"
+	result.attribute_template_id = -1
+	result.stfName("string_id_table","")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

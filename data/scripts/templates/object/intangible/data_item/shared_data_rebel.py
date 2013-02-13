@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/intangible/data_item/shared_data_rebel.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Intangible()
-	
-		result.template = "object/intangible/data_item/shared_data_rebel.iff"
-		result.attribute_template_id = -1
-		result.stfName("item_n","data_item_rebel")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Intangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/intangible/data_item/shared_data_rebel.iff"
+	result.attribute_template_id = -1
+	result.stfName("item_n","data_item_rebel")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

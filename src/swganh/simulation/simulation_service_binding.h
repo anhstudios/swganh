@@ -18,11 +18,11 @@ using namespace boost::python;
 using namespace std;
 
 boost::python::tuple CreateObjectFromTemplate(const std::string& template_name, 
-			PermissionType permission_type = DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
+			PermissionType permission_type = DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0)
 {
-	return boost::python::make_tuple(template_name, permission_type, is_persisted, is_initialized, object_id);
+	return boost::python::make_tuple(template_name, permission_type, is_persisted, object_id);
 }
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateObjectFromTemplate, 1, 5)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateObjectFromTemplate, 1, 4)
 
 void exportSimulationService()
 {
@@ -53,6 +53,6 @@ void exportSimulationService()
 		.def("addObjectToScene", &SimulationServiceInterface::AddObjectToScene, "Adds the Object to the specified scene")
         .def("startScene", &SimulationServiceInterface::StartScene, "starts a scene by its label")
         .def("stopScene", &SimulationServiceInterface::StopScene, "stops a scene by the given label")
-		.def("createObject", &SimulationServiceInterface::CreateObjectFromTemplate, CreateOverload(args("template_name", "permission_type", "is_persisted", "is_initialized", "object_id"), "Creates an object of the given template"))
+		.def("createObject", &SimulationServiceInterface::CreateObjectFromTemplate, CreateOverload(args("template_name", "permission_type", "is_persisted", "object_id"), "Creates an object of the given template"))
         ;
 }

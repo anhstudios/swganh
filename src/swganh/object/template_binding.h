@@ -58,12 +58,9 @@ namespace object {
 		;		
 		bp::class_<std::map<std::string, std::string>>("StringMap", "Map of Strings for Template Params")
 			.def(bp::map_indexing_suite<std::map<std::string, std::string>>())
-		;	
-		bp::class_<std::map<std::string, std::shared_ptr<Object>>>("PrototypeMap", "Map of objects")
-			.def(bp::map_indexing_suite<std::map<std::string, std::shared_ptr<Object>>, true>())
 		;
-		bp::class_<std::map<std::string, boost::shared_ptr<TemplateInterface>>>("TemplateMap", "Map of Templates")
-			.def(bp::map_indexing_suite<map<std::string, boost::shared_ptr<TemplateInterface>>,true>())
+		bp::class_<std::map<std::string, bp::object>>("TemplateMap", "Map of Templates")
+			.def(bp::map_indexing_suite<map<std::string, bp::object>,true>())
 		;
 	}
 }}

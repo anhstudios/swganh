@@ -14,3 +14,10 @@ class PyRadialMenu(RadialMenu):
 	def handleRadial(self, owner, target, action):
 		pass
 		
+def use():
+	pass
+	
+def destroy():
+	pass
+	
+	

@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/ship/components/booster/shared_bst_reward_qualdex_elite.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/ship/components/booster/shared_bst_reward_qualdex_elite.iff"
-		result.attribute_template_id = 8
-		result.stfName("space_item_n","bst_reward_qualdex_elite")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/ship/components/booster/shared_bst_reward_qualdex_elite.iff"
+	result.attribute_template_id = 8
+	result.stfName("space_item_n","bst_reward_qualdex_elite")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

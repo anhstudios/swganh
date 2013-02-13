@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/mobile/shared_dressed_rebel_brigadier_general_moncal_female.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Creature()
-	
-		result.template = "object/mobile/shared_dressed_rebel_brigadier_general_moncal_female.iff"
-		result.attribute_template_id = 9
-		result.stfName("npc_name","moncal_base_female")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Creature()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/mobile/shared_dressed_rebel_brigadier_general_moncal_female.iff"
+	result.attribute_template_id = 9
+	result.stfName("npc_name","moncal_base_female")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

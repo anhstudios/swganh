@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/mobile/shared_dressed_rebel_medic2_21b_01.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Creature()
-	
-		result.template = "object/mobile/shared_dressed_rebel_medic2_21b_01.iff"
-		result.attribute_template_id = 9
-		result.stfName("droid_name","2_1b_surgical_droid_base")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Creature()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/mobile/shared_dressed_rebel_medic2_21b_01.iff"
+	result.attribute_template_id = 9
+	result.stfName("droid_name","2_1b_surgical_droid_base")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

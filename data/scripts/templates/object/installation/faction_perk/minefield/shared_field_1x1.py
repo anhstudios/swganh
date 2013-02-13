@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/installation/faction_perk/minefield/shared_field_1x1.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Installation()
-	
-		result.template = "object/installation/faction_perk/minefield/shared_field_1x1.iff"
-		result.attribute_template_id = -1
-		result.stfName("faction_perk_n","minefield")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Installation()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/installation/faction_perk/minefield/shared_field_1x1.iff"
+	result.attribute_template_id = -1
+	result.stfName("faction_perk_n","minefield")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

@@ -73,7 +73,7 @@ namespace simulation {
 
         virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, 
-			bool is_initialized=true, uint64_t object_id=0);
+			uint64_t object_id=0);
 		
 		virtual const std::shared_ptr<swganh::equipment::EquipmentServiceInterface>& GetEquipmentService();
 

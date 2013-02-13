@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/weapon/melee/axe/shared_axe_heavy_duty.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Weapon()
-	
-		result.template = "object/weapon/melee/axe/shared_axe_heavy_duty.iff"
-		result.attribute_template_id = 10
-		result.stfName("weapon_name","axe_heavy_duty")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Weapon()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/weapon/melee/axe/shared_axe_heavy_duty.iff"
+	result.attribute_template_id = 10
+	result.stfName("weapon_name","axe_heavy_duty")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

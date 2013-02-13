@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/wearables/hat/shared_singing_mountain_clan_hat_s01.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/wearables/hat/shared_singing_mountain_clan_hat_s01.iff"
-		result.attribute_template_id = 11
-		result.stfName("wearables_name","singing_mountain_clan_hat_s01")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/wearables/hat/shared_singing_mountain_clan_hat_s01.iff"
+	result.attribute_template_id = 11
+	result.stfName("wearables_name","singing_mountain_clan_hat_s01")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

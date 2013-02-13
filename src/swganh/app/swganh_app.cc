@@ -254,7 +254,15 @@ void SwganhApp::Start() {
     // as thread in use as does the console thread.
     for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
         boost::thread t([this] () {
-            io_service_.run();
+            try
+			{
+				io_service_.run();
+			} 
+			catch(...) 
+			{
+				LOG(severity_level::error) << "A near fatal exception has occurred.";
+			}
+
         });
         
 #ifdef _WIN32

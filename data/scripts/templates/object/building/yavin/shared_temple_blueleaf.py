@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/building/yavin/shared_temple_blueleaf.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Building()
-	
-		result.template = "object/building/yavin/shared_temple_blueleaf.iff"
-		result.attribute_template_id = -1
-		result.stfName("building_name","temple_blueleaf")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Building()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/building/yavin/shared_temple_blueleaf.iff"
+	result.attribute_template_id = -1
+	result.stfName("building_name","temple_blueleaf")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

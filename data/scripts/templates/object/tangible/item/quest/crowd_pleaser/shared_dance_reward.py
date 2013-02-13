@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/item/quest/crowd_pleaser/shared_dance_reward.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/item/quest/crowd_pleaser/shared_dance_reward.iff"
-		result.attribute_template_id = -1
-		result.stfName("quest_item_n","crowd_pleaser_dance_reward")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/item/quest/crowd_pleaser/shared_dance_reward.iff"
+	result.attribute_template_id = -1
+	result.stfName("quest_item_n","crowd_pleaser_dance_reward")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

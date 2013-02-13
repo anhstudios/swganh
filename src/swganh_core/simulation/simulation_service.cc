@@ -231,7 +231,10 @@ public:
 	        }
 
 		// Remove from existing scene
-		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
+		auto old_scene = scene_manager_->GetScene(obj->GetSceneId());
+		if(old_scene) {
+			old_scene->RemoveObject(obj);
+		}
 
 		// Add to new scene
 		// CmdStartScene
@@ -682,9 +685,9 @@ void SimulationService::Startup()
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 
-											bool is_persisted, bool is_initialized, uint64_t object_id)
+											bool is_persisted, uint64_t object_id)
 {
-	return impl_->GetObjectManager()->CreateObjectFromTemplate(template_name, type, is_persisted, is_initialized, object_id);
+	return impl_->GetObjectManager()->CreateObjectFromTemplate(template_name, type, is_persisted, object_id);
 }
 
 void SimulationService::PrepareToAccomodate(uint32_t delta)

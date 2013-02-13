@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/installation/battlefield/destructible/shared_bfield_nightsister_gate.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Installation()
-	
-		result.template = "object/installation/battlefield/destructible/shared_bfield_nightsister_gate.iff"
-		result.attribute_template_id = -1
-		result.stfName("battlefield","gungan_damaged_wide_arch")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Installation()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/installation/battlefield/destructible/shared_bfield_nightsister_gate.iff"
+	result.attribute_template_id = -1
+	result.stfName("battlefield","gungan_damaged_wide_arch")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result
