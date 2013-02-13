@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/loot/quest/hero_of_tatooine/shared_mark_courage.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/loot/quest/hero_of_tatooine/shared_mark_courage.iff"
-		result.attribute_template_id = -1
-		result.stfName("quest_item_n","hero_of_tatooine_mark_courage")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/loot/quest/hero_of_tatooine/shared_mark_courage.iff"
+	result.attribute_template_id = -1
+	result.stfName("quest_item_n","hero_of_tatooine_mark_courage")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

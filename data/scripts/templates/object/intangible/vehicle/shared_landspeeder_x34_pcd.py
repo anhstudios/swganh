@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/intangible/vehicle/shared_landspeeder_x34_pcd.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Intangible()
-	
-		result.template = "object/intangible/vehicle/shared_landspeeder_x34_pcd.iff"
-		result.attribute_template_id = -1
-		result.stfName("monster_name","landspeeder_x34")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Intangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/intangible/vehicle/shared_landspeeder_x34_pcd.iff"
+	result.attribute_template_id = -1
+	result.stfName("monster_name","landspeeder_x34")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

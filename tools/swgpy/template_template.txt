@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "@MODEL_STRING@"
-	is_prototype = @IS_PROTOTYPE@
-	
-	def create(self, kernel, params):
-		result = @OBJECT_TYPE@()
-	
-		result.template = "@MODEL_STRING@"
-		result.attribute_template_id = @ATTRIBUTE_ID@
-		result.stfName("@STF_FILE@","@STF_NAME@")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = @OBJECT_TYPE@()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "@MODEL_STRING@"
+	result.attribute_template_id = @ATTRIBUTE_ID@
+	result.stfName("@STF_FILE@","@STF_NAME@")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

@@ -2,24 +2,17 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/wearables/pants/shared_pants_s17.iff"
-	is_prototype = False
+def create(kernel):
+	result = Tangible()
+
+	result.template = "object/tangible/wearables/pants/shared_pants_s17.iff"
+	result.attribute_template_id = 11
+	result.stfName("wearables_name","pants_s17")		
 	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/wearables/pants/shared_pants_s17.iff"
-		result.attribute_template_id = 11
-		result.stfName("wearables_name","pants_s17")		
-		
-		#### BEGIN MODIFICATIONS ####
+	#### BEGIN MODIFICATIONS ####
 		result.max_condition = 1000
-		####  END MODIFICATIONS  ####
-		
-		return result
-
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	####  END MODIFICATIONS  ####
+	
+	return result

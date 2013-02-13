@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/medicine/crafted/shared_medpack_poison_area_health_c.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/medicine/crafted/shared_medpack_poison_area_health_c.iff"
-		result.attribute_template_id = 7
-		result.stfName("medicine_name","medic_poison_area_health_c")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/medicine/crafted/shared_medpack_poison_area_health_c.iff"
+	result.attribute_template_id = 7
+	result.stfName("medicine_name","medic_poison_area_health_c")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

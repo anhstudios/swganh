@@ -2,25 +2,18 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/food/shared_fruit_melon.iff"
-	is_prototype = False
+def create(kernel):
+	result = Tangible()
+
+	result.template = "object/tangible/food/shared_fruit_melon.iff"
+	result.attribute_template_id = 5
+	result.stfName("food_name","fruit_melon")		
 	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/food/shared_fruit_melon.iff"
-		result.attribute_template_id = 5
-		result.stfName("food_name","fruit_melon")		
-		
-		#### BEGIN MODIFICATIONS ####
+	#### BEGIN MODIFICATIONS ####
 		# UsesRemaining
 		result.counter = 5
-		####  END MODIFICATIONS  ####
-		
-		return result
-
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	####  END MODIFICATIONS  ####
+	
+	return result

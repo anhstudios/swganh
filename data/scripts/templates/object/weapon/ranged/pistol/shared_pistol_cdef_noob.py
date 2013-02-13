@@ -2,20 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/weapon/ranged/pistol/shared_pistol_cdef_noob.iff"
-	is_prototype = False
+def create(kernel):
+	result = Weapon()
+
+	result.template = "object/weapon/ranged/pistol/shared_pistol_cdef_noob.iff"
+	result.attribute_template_id = 10
+	result.stfName("weapon_name","pistol_cdef_noob")		
 	
-	def create(self, kernel, params):
-		result = Weapon()
-	
-		result.template = "object/weapon/ranged/pistol/shared_pistol_cdef_noob.iff"
-		result.attribute_template_id = 10
-		result.stfName("weapon_name","pistol_cdef_noob")		
-		
-		#### BEGIN MODIFICATIONS ####
+	#### BEGIN MODIFICATIONS ####
 		result.setStringAttribute('wpn_armor_pierce_rating', 'None')
 		result.setFloatAttribute('wpn_attack_speed', 4.5)
 		result.setStringAttribute('cat_wpn_damage.wpn_damage_type', 'Energy')
@@ -28,8 +24,6 @@ class Template(BaseTemplate):
 		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_health', 9)
 		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_action', 20)
 		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_mind', 9)		
-		####  END MODIFICATIONS  ####
-		return result
-
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	####  END MODIFICATIONS  ####
+	
+	return result

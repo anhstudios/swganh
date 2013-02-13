@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/waypoint/shared_world_waypoint_green.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Waypoint()
-	
-		result.template = "object/waypoint/shared_world_waypoint_green.iff"
-		result.attribute_template_id = -1
-		result.stfName("obj_n","waypoint")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Waypoint()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/waypoint/shared_world_waypoint_green.iff"
+	result.attribute_template_id = -1
+	result.stfName("obj_n","waypoint")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result
