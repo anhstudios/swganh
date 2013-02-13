@@ -113,10 +113,16 @@ StaticService::StaticService(SwganhKernel* kernel)
 		{
 			// Create a combat dummy
 			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-			auto combat_dummy = simulation_service->CreateObjectFromTemplate("R2D2CombatDummy", CREATURE_PERMISSION, false, true);
+			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_r2d2.iff", CREATURE_PERMISSION, false, true);
 			if (combat_dummy)
 			{
 				auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
+				creature_dummy->SetCustomName(L"R2 D2 Combat Trainer");
+				creature_dummy->SetPvPStatus(PvPStatus_Attackable);
+				creature_dummy->SetAllStats(50000);
+				creature_dummy->SetPosition(glm::vec3(-146.0f, 28.0f, -4702.0f));
+				creature_dummy->SetOrientation(glm::quat(0.0f, 1.0f, 0.0f, -0.0016f));
+				creature_dummy->SetScale(3);
 				simulation_service->AddObjectToScene(combat_dummy, "corellia");
 			}
 		}
