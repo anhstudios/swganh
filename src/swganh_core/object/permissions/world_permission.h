@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "swganh/object/permissions/container_permissions_interface.h"
+#include "swganh_core/object/permissions/container_permissions_interface.h"
 
 namespace swganh
 {

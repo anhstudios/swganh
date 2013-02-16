@@ -2,40 +2,8 @@
 set(ANH_PYTHON_BINDINGS "")
 
 add_subdirectory(app)
-add_subdirectory(attributes)
-add_subdirectory(badge)
-add_subdirectory(chat)
-add_subdirectory(command)
-add_subdirectory(combat)
-add_subdirectory(equipment)
-add_subdirectory(map)
-add_subdirectory(object)
-add_subdirectory(player)
-add_subdirectory(social)
-add_subdirectory(simulation)
-add_subdirectory(static)
-add_subdirectory(sui)
-add_subdirectory(terrain)
 add_subdirectory(utilities)
-add_subdirectory(weather)
 
-add_custom_target(
-    swgpy ALL
-    DEPENDS
-        swgpy_app swgpy_command swgpy_chat swgpy_combat swgpy_object swgpy_social swgpy_simulation swgpy_utility
-    COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
-    VERBATIM
-)
-set_target_properties(swgpy
-	PROPERTIES
-	FOLDER "cmake_targets"
-)
-
-set_target_properties(swgpy
-	PROPERTIES
-	FOLDER "cmake_targets"
-)
 include(ANHExecutable)
 
 AddANHExecutable(swganh

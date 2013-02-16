@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include <swganh_core/badge/badge_region.h>
-#include <swganh/connection/connection_client_interface.h>
+#include <swganh_core/connection/connection_client_interface.h>
 
 #include <swganh_core/messages/chat_system_message.h>
 #include <swganh_core/messages/play_music_message.h>

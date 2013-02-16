@@ -21,7 +21,7 @@
 #include "swganh_core/messages/scene_end_baselines.h"
 #include "swganh_core/messages/controllers/object_menu_response.h"
 
-#include "swganh/object/permissions/container_permissions_interface.h"
+#include "swganh_core/object/permissions/container_permissions_interface.h"
 
 using namespace swganh::observer;
 using namespace std;

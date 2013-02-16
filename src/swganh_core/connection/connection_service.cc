@@ -17,11 +17,11 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/character/character_service_interface.h"
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_service_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 #include "ping_server.h"
 #include "connection_client.h"
-#include "swganh/connection/providers/session_provider_interface.h"
+#include "swganh_core/connection/providers/session_provider_interface.h"
 
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/player/player.h"

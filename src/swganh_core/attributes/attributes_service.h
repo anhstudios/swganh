@@ -9,8 +9,8 @@
 
 #include "swganh/hash_string.h"
 #include "swganh/scripting/python_script.h"
-#include "swganh/attributes/attributes_service_interface.h"
-#include "swganh/attributes/attribute_template_interface.h"
+#include "swganh_core/attributes/attributes_service_interface.h"
+#include "swganh_core/attributes/attribute_template_interface.h"
 
 #include "swganh_core/messages/controllers/get_attributes_batch.h"
 

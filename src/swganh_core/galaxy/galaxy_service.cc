@@ -11,7 +11,7 @@
 #include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/galaxy/providers/galaxy_provider_interface.h"
+#include "swganh_core/galaxy/providers/galaxy_provider_interface.h"
 
 using namespace swganh;
 using namespace app;

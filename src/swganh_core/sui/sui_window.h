@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-#include "swganh/sui/sui_window_interface.h"
+#include "swganh_core/sui/sui_window_interface.h"
 
 namespace swganh 
 {

@@ -30,12 +30,6 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/combat/combat_service_interface.h"
-#include "swganh/chat/chat_service_interface.h"
-#include "swganh/character/character_service_interface.h"
-#include "swganh/login/login_service_interface.h"
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/scripting/utilities.h"
 
 #include "version.h"
@@ -45,12 +39,6 @@ using namespace boost::program_options;
 using namespace std;
 using namespace swganh;
 using namespace swganh::app;
-using namespace swganh::chat;
-using namespace swganh::login;
-using namespace swganh::character;
-using namespace swganh::connection;
-using namespace swganh::simulation;
-using namespace swganh::galaxy;
 
 using swganh::plugin::RegistrationMap;
 
@@ -274,11 +262,12 @@ void SwganhApp::Start() {
     
     kernel_->GetServiceManager()->Start();
 
+    kernel_->GetEventDispatcher()->Dispatch(std::make_shared<BaseEvent>("Core::ApplicationInitComplete"));
 	//Now that services are started, start the scenes.
-	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	//auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 	
 	//Ground Zones
-	simulation_service->StartScene("corellia");
+	//simulation_service->StartScene("corellia");
 	//simulation_service->StartScene("dantooine");
 	//simulation_service->StartScene("dathomir");
 	//simulation_service->StartScene("endor");

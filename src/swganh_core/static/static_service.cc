@@ -19,13 +19,13 @@
 #include <cppconn/sqlstring.h>
 
 #include "swganh/service/service_manager.h"
-#include "swganh/object/permissions/permission_type.h"
+#include "swganh_core/object/permissions/permission_type.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/simulation/scene_events.h"
 #include "swganh_core/object/object.h"
 
-#include "swganh/spawn/spawn_service_interface.h"
+#include "swganh_core/spawn/spawn_service_interface.h"
 
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"

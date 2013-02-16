@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/static/static_service_interface.h"
-#include "swganh/static/skill_manager.h"
+#include "swganh_core/static/static_service_interface.h"
+#include "swganh_core/static/skill_manager.h"
 
 namespace sql
 {

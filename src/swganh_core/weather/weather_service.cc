@@ -13,10 +13,10 @@
 #include "swganh_core/messages/server_weather_message.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/out_of_band.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/object/player/player.h"
 #include "swganh_core/object/object_controller.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/object/object.h"
 
 using namespace std;

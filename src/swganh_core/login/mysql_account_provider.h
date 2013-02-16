@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/login/providers/account_provider_interface.h"
+#include "swganh_core/login/providers/account_provider_interface.h"
 
 namespace swganh { namespace database { class DatabaseManagerInterface; 
 }}  // swganh::database
