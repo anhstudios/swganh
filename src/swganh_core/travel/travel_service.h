@@ -66,7 +66,8 @@ namespace travel {
 			bool round_trip = false);
 
 		virtual void UseTicket(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<swganh::object::Object> ticket);
-
+		virtual std::vector<std::string> GetAvailableTickets(std::shared_ptr<swganh::object::Object> object);
+		virtual std::shared_ptr<swganh::object::Object> GetInventoryTicket(std::shared_ptr<swganh::object::Object> object, uint32_t index);
 	private:
 
 		void HandlePlanetTravelPointListRequest(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::PlanetTravelPointListRequest* message);

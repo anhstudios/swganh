@@ -6,11 +6,15 @@
 #include <Python.h>
 #endif
 
+#include <vector>
+
 #include "swganh/python_shared_ptr.h"
 #include "travel_service_interface.h"
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
+#include <boost/python/call.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 using namespace swganh::travel;
 using namespace swganh::object;
@@ -22,5 +26,7 @@ void exportTravelService()
     class_<TravelServiceInterface, std::shared_ptr<TravelServiceInterface>, boost::noncopyable>("TravelService", "", no_init)
 		.def("beginTicketTransaction", &TravelServiceInterface::BeginTicketTransaction, "")
 		.def("useTicket", &TravelServiceInterface::UseTicket, "")
+		.def("getAvailableTickets", &TravelServiceInterface::GetAvailableTickets, "")
+		.def("getInventoryTicket", &TravelServiceInterface::GetInventoryTicket, "")
 		;
 }

@@ -12,30 +12,36 @@ class PyRadialMenu(RadialMenu):
 		return radial_list
 		
 	def handleRadial(self, owner, target, action):
-		openTicketSelectionWindow(self, owner, target)
+		self.openTicketSelectionWindow(owner, target)
 
-def openTicketSelectionWindow(self, owner, target):
-	sui = self.getKernel().serviceManager().suiService()
+	def openTicketSelectionWindow(self, owner, target):
+		sui = self.getKernel().serviceManager().suiService()
+		
+		
+		equipment = self.getKernel().serviceManager().equipmentService()
+		inventory = equipment.getEquippedObject(owner, "inventory")
+		travel = self.getKernel().serviceManager().travelService()
+		self.Travel = travel
+		opts = travel.getAvailableTickets(owner)
+		options = EventResultList()
+		for i in range(0, len(opts)):
+			options.append(opts[i])
+		window = sui.createListBox(ListBoxType.OK_CANCEL, 'Select Destination', 'Select Destination', options,  owner)
+		
+		useTicketCallback = PythonCallback(self, 'useTicket')
+		
+		results = ResultList()
+		results.extend(['List.lstList:SelectedRow'])
+		window.subscribeToEventCallback(0, '', InputTrigger.OK, results, useTicketCallback)
+		window.subscribeToEventCallback(1, '', InputTrigger.CANCEL, results, useTicketCallback)
+		sui.openSUIWindow(window)
 
-	
-	equipment = self.getKernel().serviceManager().equipmentService()
-	inventory = equipment.getEquippedObject(owner, "inventory")
-	
-	options = EventResultList()
-	options.append("Hi")
-	options.append("there")
-	window = sui.createListBox(ListBoxType.OK_CANCEL, 'Select Destination', 'Select Destination', options,  owner)
-	
-	useTicketCallback = PythonCallback('radials.ticket_collector', 'useTicket')
-
-	results = ResultList()
-	results.extend(['List.lstList:SelectedRow'])
-	window.subscribeToEventCallback(0, '', InputTrigger.OK, results, useTicketCallback)
-	window.subscribeToEventCallback(1, '', InputTrigger.CANCEL, results, useTicketCallback)
-	sui.openSUIWindow(window)
-
-def useTicket(owner, event_id, results):
-	if event_id == 0 and len(results) == 2:
-		selection = str(results[1])
-		print(selection)
-	return True;
+	def useTicket(self, owner, event_id, results):
+		if event_id == 0:
+			selection = str(results[0])
+			print(int(selection))
+			#travel = kernel.serviceManager().travelService()
+			ticket = self.Travel.getInventoryTicket(owner, int(selection))
+			print(selection)
+			self.Travel.useTicket(owner, ticket)
+		return True;

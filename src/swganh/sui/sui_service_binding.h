@@ -30,14 +30,12 @@ using namespace std;
 //Converter Functions 
 struct PythonCallback
 {
-	PythonCallback(const std::string& module, const std::string& callback)
+	PythonCallback(const bp::object obj, const std::string& callback)
 	{
-		module_ = bp::import(module.c_str());
-
-		if (module_)
+		if(obj)
 		{
-			callback_ = module_.attr(callback.c_str());
-			if (callback_)
+			callback_ = obj.attr(callback.c_str());
+			if(callback_)
 			{
 				// success
 			}
@@ -49,6 +47,7 @@ struct PythonCallback
 			}
 		}
 	}
+
 	virtual ~PythonCallback(){}
 
 	bp::object module_;
@@ -154,5 +153,5 @@ void exportSuiService()
 	bp::class_<std::vector<std::wstring>>("EventResultList", "list for results the event of a SUI window")
 		.def(bp::vector_indexing_suite<std::vector<std::wstring>, true>());
 
-	bp::class_<PythonCallback>("PythonCallback", bp::init<std::string, std::string>());
+	bp::class_<PythonCallback>("PythonCallback", bp::init<bp::object, std::string>());
 }

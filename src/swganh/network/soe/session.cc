@@ -289,6 +289,7 @@ void Session::handleNetStatsClient_(NetStatsClient packet)
 
 void Session::handleChildDataA_(ChildDataA packet)
 {
+	LOG(warning) << "Sequence: " << packet.sequence;
     if(!SequenceIsValid_(packet.sequence)) {
         LOG(warning) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
         return;
@@ -307,6 +308,7 @@ void Session::handleChildDataA_(ChildDataA packet)
 
 void Session::handleDataFragA_(DataFragA packet)
 {
+	LOG(warning) << "Sequence: " << packet.sequence;
     if(!SequenceIsValid_(packet.sequence))
         return;
 
@@ -410,7 +412,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
 		OutOfOrderA	out_of_order(sequence);
 		ByteBuffer buffer;
 		out_of_order.serialize(buffer);
-		encryption_filter_(this, &buffer);
+		//encryption_filter_(this, &buffer);
 		SendSoePacket_(move(buffer));        
     }
 	

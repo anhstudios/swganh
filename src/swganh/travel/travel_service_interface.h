@@ -28,5 +28,8 @@ namespace travel {
 		 * @param ticket Ticket inventory item.
 		 */
 		virtual void UseTicket(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> ticket)=0;
+
+		virtual std::vector<std::string> GetAvailableTickets(std::shared_ptr<swganh::object::Object> object)=0;
+		virtual std::shared_ptr<swganh::object::Object> GetInventoryTicket(std::shared_ptr<swganh::object::Object> object, uint32_t index)=0;
 	};
 }} // namespace swganh::travel

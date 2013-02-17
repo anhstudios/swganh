@@ -347,7 +347,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 		{
 			if(!IsInSnapshot())
 			{
-				//DLOG(info) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
+				DLOG(info) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
 				Subscribe(observer);
 				SendCreateByCrc(observer);
 				CreateBaselines(observer);
@@ -390,7 +390,7 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 
 			if(!IsInSnapshot())
 			{
-				//DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
+				DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
 				SendDestroy(observer);
 				Unsubscribe(observer);
 			}

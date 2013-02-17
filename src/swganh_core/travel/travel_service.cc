@@ -416,3 +416,63 @@ void TravelService::HandlePlanetTravelPointListRequest(
 		client->GetController()->Notify(&response);
 	}
 }
+
+std::vector<std::string> TravelService::GetAvailableTickets(std::shared_ptr<swganh::object::Object> object)
+{
+	std::vector<std::string> in;
+	std::shared_ptr<swganh::object::Object> inventory = nullptr;
+
+	object->ViewObjects(object, 0, true, [=, &inventory](std::shared_ptr<swganh::object::Object> obj) {
+		if(obj->GetTemplate() == "object/tangible/inventory/shared_character_inventory.iff")
+			inventory = obj;
+
+	});
+
+	if(inventory == nullptr)
+		return in;
+
+
+	inventory->ViewObjects(object, 0, true, [=, &in](std::shared_ptr<swganh::object::Object> obj){
+		std::cout << "Scanning... " << obj->GetTemplate() << std::endl;
+		if(obj->GetTemplate() == "object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff")
+		{
+			std::cout << "Got one!" << std::endl;
+			std::stringstream ss;
+			std::wstring depart = obj->GetAttribute<std::wstring>("travel_departure_point");
+			std::wstring arrival = obj->GetAttribute<std::wstring>("travel_arrival_point");
+			ss << std::string(depart.begin(), depart.end()) << " -- " << std::string(arrival.begin(), arrival.end());
+			in.push_back(ss.str());
+		}
+	});
+	return in;
+}
+
+std::shared_ptr<swganh::object::Object> TravelService::GetInventoryTicket(std::shared_ptr<swganh::object::Object> object, uint32_t index)
+{
+	std::cout << "Here1" << std::endl;
+	std::shared_ptr<swganh::object::Object> inventory = nullptr;
+	std::shared_ptr<swganh::object::Object> ticket = nullptr;
+	object->ViewObjects(object, 0, true, [=, &inventory](std::shared_ptr<swganh::object::Object> obj) {
+		if(obj->GetTemplate() == "object/tangible/inventory/shared_character_inventory.iff") {
+			std::cout << "Here2" << std::endl;
+			inventory = obj;
+		}
+
+	});
+
+	if(inventory == nullptr)
+		return ticket;
+
+	uint32_t cindex = 0;
+	inventory->ViewObjects(object, 0, true, [=, &cindex, &ticket](std::shared_ptr<swganh::object::Object> obj){
+		std::cout << "Here3" << std::endl;
+		if(index == cindex) {
+			std::cout << "Here4" << std::endl;
+			ticket = obj;
+		}
+		cindex++;
+	});
+
+	return ticket;
+
+}
