@@ -7,7 +7,7 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-#include <swganh/sui/sui_window_interface.h>
+#include <swganh_core/sui/sui_window_interface.h>
 
 namespace swganh {
 namespace messages {

@@ -8,7 +8,7 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "swganh/command/command_queue_manager_interface.h"
+#include "swganh_core/command/command_queue_manager_interface.h"
 
 namespace swganh {
 namespace command {

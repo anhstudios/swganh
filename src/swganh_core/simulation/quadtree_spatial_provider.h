@@ -2,8 +2,8 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/simulation/spatial_provider_interface.h"
-#include "swganh/object/permissions/container_permissions_interface.h"
+#include "swganh_core/simulation/spatial_provider_interface.h"
+#include "swganh_core/object/permissions/container_permissions_interface.h"
 #include "node.h"
 
 namespace swganh {

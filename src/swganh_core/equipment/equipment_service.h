@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include <swganh/equipment/equipment_service_interface.h>
+#include <swganh_core/equipment/equipment_service_interface.h>
 
 namespace swganh
 {

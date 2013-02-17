@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/galaxy/providers/galaxy_provider_interface.h"
+#include "swganh_core/galaxy/providers/galaxy_provider_interface.h"
 #include <memory>
 
 namespace swganh { namespace database { class DatabaseManagerInterface; 

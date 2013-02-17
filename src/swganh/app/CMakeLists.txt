@@ -4,6 +4,7 @@ AddANHPythonBinding(app
     PREFIX_NAME swgpy
     DEPENDS
         swganh_lib
+        swganh_core_lib
 	ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}

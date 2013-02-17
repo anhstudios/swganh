@@ -3,7 +3,7 @@
 
 #include "ridable_permission.h"
 
-#include "swganh/object/container_interface.h"
+#include "swganh_core/object/container_interface.h"
 
 using namespace swganh::object;
 

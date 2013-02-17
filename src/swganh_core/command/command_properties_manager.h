@@ -7,7 +7,7 @@
 
 #include <boost/optional.hpp>
 
-#include "swganh/command/command_properties_manager_interface.h"
+#include "swganh_core/command/command_properties_manager_interface.h"
 
 namespace swganh {
 namespace tre {

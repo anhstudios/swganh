@@ -16,16 +16,16 @@
 #include "swganh_core/messages/controllers/object_menu_request.h"
 #include "swganh_core/messages/controllers/object_menu_response.h"
 
-#include "swganh/connection/connection_client_interface.h"
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/sui/sui_window_interface.h"
-#include "swganh/sui/radial_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
+#include "swganh_core/sui/sui_window_interface.h"
+#include "swganh_core/sui/radial_interface.h"
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/player/player.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
-#include "swganh/sui/python_radial_creator.h"
+#include "swganh_core/sui/python_radial_creator.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/scripting/utilities.h"

@@ -9,7 +9,7 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "swganh/connection/connection_service_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
 
 namespace swganh {
 namespace connection {

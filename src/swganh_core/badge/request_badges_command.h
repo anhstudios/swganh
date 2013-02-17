@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "swganh/command/base_swg_command.h"
+#include "swganh_core/command/base_swg_command.h"
 
 namespace swganh {
 

@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/simulation/movement_manager_interface.h"
+#include "swganh_core/simulation/movement_manager_interface.h"
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>

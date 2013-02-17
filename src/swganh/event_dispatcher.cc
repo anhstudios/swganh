@@ -42,7 +42,7 @@ CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callb
 {
     auto handler_id = GenerateCallbackId();
 
-    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+    boost::upgrade_lock<boost::shared_mutex> lg(event_handlers_mutex_);
 
     auto find_iter = event_handlers_.find(type);
 
@@ -58,7 +58,7 @@ CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callb
 
 void EventDispatcher::Unsubscribe(EventType type, CallbackId identifier)
 {
-    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+    boost::upgrade_lock<boost::shared_mutex> lg(event_handlers_mutex_);
 
     auto event_type_iter = event_handlers_.find(type);
     

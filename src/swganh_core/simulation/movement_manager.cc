@@ -18,8 +18,8 @@
 #include "swganh_core/messages/update_transform_message.h"
 #include "swganh_core/messages/update_transform_with_parent_message.h"
 
-#include "swganh/simulation/spatial_provider_interface.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/spatial_provider_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 using namespace swganh::event_dispatcher;
 using namespace std;

@@ -19,7 +19,7 @@
 #include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
 #include "swganh_core/object/slot_exclusive.h"
 #include "swganh_core/object/slot_container.h"
-#include "swganh/object/template_interface.h"
+#include "swganh_core/object/template_interface.h"
 
 #include "swganh/scripting/utilities.h"
 

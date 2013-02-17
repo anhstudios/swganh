@@ -19,7 +19,7 @@
 #include "player_events.h"
 
 #include "swganh_core/object/exception.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace swganh::database;

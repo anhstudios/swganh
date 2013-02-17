@@ -5,7 +5,7 @@
 #include <queue>
 #include <tuple>
 
-#include <swganh/map/map_service_interface.h>
+#include <swganh_core/map/map_service_interface.h>
 
 #include <swganh_core/messages/get_map_locations_response_message.h>
 #include <swganh_core/messages/get_map_locations_request_message.h>

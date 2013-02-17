@@ -3,7 +3,7 @@
 
 #include "combat_data.h"
 
-#include "swganh/command/base_combat_command.h"
+#include "swganh_core/command/base_combat_command.h"
 #include "swganh/scripting/utilities.h"
 
 using namespace swganh::combat;

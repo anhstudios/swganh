@@ -12,8 +12,8 @@
 
 #include "swganh/active_object.h"
 
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_queue_interface.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_queue_interface.h"
 
 namespace swganh {
 namespace app {

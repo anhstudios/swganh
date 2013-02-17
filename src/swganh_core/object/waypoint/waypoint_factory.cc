@@ -16,7 +16,7 @@
 #include "swganh_core/object/player/player_events.h"
 #include "swganh_core/object/player/player.h"
 #include "swganh_core/object/exception.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/messages/containers/network_map.h"
 
 using namespace std;

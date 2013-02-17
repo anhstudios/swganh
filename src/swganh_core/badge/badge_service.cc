@@ -3,8 +3,8 @@
 
 #include <swganh_core/badge/badge_service.h>
 
-#include <swganh/command/command_service_interface.h>
-#include <swganh/command/command_properties.h>
+#include <swganh_core/command/command_service_interface.h>
+#include <swganh_core/command/command_properties.h>
 
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>

@@ -15,7 +15,7 @@
 #include "swganh/database/database_manager.h"
 #include "swganh_core/object/tangible/tangible.h"
 #include "swganh_core/object/exception.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace swganh::database;

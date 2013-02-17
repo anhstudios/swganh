@@ -12,7 +12,7 @@
 
 #include "swganh_core/object/object.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>

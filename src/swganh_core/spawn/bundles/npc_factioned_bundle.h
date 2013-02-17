@@ -4,7 +4,7 @@
 
 #include <queue>
 #include <tuple>
-#include <swganh/spawn/fsm_bundle_interface.h>
+#include <swganh_core/spawn/fsm_bundle_interface.h>
 
 namespace swganh
 {

@@ -6,9 +6,9 @@
 #include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_properties.h"
-#include "swganh/command/command_service_interface.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_properties.h"
+#include "swganh_core/command/command_service_interface.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 #include "swganh/observer/observer_interface.h"
 

@@ -16,24 +16,24 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_service_interface.h"
-#include "swganh/command/python_command_creator.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_service_interface.h"
+#include "swganh_core/command/python_command_creator.h"
 
-#include "swganh/connection/connection_client_interface.h"
-#include "swganh/connection/connection_service_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
 
 #include "swganh_core/messages/select_character.h"
 
-#include "swganh/player/player_service_interface.h"
+#include "swganh_core/player/player_service_interface.h"
 
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/object_manager.h"
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/player/player.h"
 
-#include "swganh/simulation/scene_manager_interface.h"
-#include "swganh/simulation/scene_interface.h"
+#include "swganh_core/simulation/scene_manager_interface.h"
+#include "swganh_core/simulation/scene_interface.h"
 #include "swganh_core/messages/cmd_start_scene.h"
 #include "swganh_core/messages/cmd_scene_ready.h"
 #include "swganh_core/messages/obj_controller_message.h"
@@ -49,7 +49,7 @@
 #include "swganh_core/equipment/equipment_service.h"
 #include "movement_manager.h"
 #include "scene_manager.h"
-#include "swganh/simulation/movement_manager_interface.h"
+#include "swganh_core/simulation/movement_manager_interface.h"
 
 using namespace swganh;
 using namespace std;
@@ -669,6 +669,17 @@ void SimulationService::Startup()
 			scene->HandleDataTransformServer(update_event->object, update_event->position);
 		}
 		
+	});
+    
+	kernel_->GetEventDispatcher()->Subscribe("Core::ApplicationInitComplete", [this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+        //Now that services are started, start the scenes.
+        auto& scenes = kernel_->GetAppConfig().scenes;
+
+        for (auto scene : scenes)
+        {
+            StartScene(scene);
+        }
 	});
 
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");

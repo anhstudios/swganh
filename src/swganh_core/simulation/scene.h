@@ -2,8 +2,8 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/simulation/scene_interface.h"
-#include "swganh/simulation/spatial_provider_interface.h"
+#include "swganh_core/simulation/scene_interface.h"
+#include "swganh_core/simulation/spatial_provider_interface.h"
 #include <cstdint>
 #include <string>
 

@@ -3,9 +3,9 @@
 
 #include "command_filter.h"
 
-#include "swganh/command/base_swg_command.h"
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_properties.h"
+#include "swganh_core/command/base_swg_command.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_properties.h"
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
 #include "swganh_core/object/player/player.h"

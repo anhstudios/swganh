@@ -26,7 +26,7 @@
 #include <cppconn/sqlstring.h>
 
 #include "swganh_core/messages/delete_character_reply_message.h"
-#include "swganh/character/character_data.h"
+#include "swganh_core/character/character_data.h"
 #include "swganh_core/messages/delete_character_message.h"
 #include "swganh_core/messages/client_create_character.h"
 #include "swganh_core/messages/client_create_character_success.h"

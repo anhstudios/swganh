@@ -6,7 +6,7 @@
 #include <tuple>
 #include <boost/thread/mutex.hpp>
 
-#include "swganh/command/command_factory_interface.h"
+#include "swganh_core/command/command_factory_interface.h"
 
 namespace swganh {
 namespace app {

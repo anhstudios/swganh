@@ -6,7 +6,7 @@
 #include <boost/thread/mutex.hpp>
 #include <map>
 
-#include "swganh/sui/sui_service_interface.h"
+#include "swganh_core/sui/sui_service_interface.h"
 
 namespace swganh
 {

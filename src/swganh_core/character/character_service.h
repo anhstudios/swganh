@@ -6,7 +6,7 @@
 #include <tuple>
 #include <vector>
 
-#include "swganh/character/character_service_interface.h"
+#include "swganh_core/character/character_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/delete_character_message.h"

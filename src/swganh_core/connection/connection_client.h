@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 
 namespace swganh {
 namespace connection {

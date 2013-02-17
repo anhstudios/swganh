@@ -11,7 +11,7 @@
 
 #include "swganh/event_dispatcher.h"
 
-#include "swganh/command/command_service_interface.h"
+#include "swganh_core/command/command_service_interface.h"
 
 namespace swganh {
 namespace observer {

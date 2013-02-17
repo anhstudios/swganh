@@ -6,9 +6,9 @@
 #include <memory>
 #include <string>
 
-#include "swganh/chat/chat_service_interface.h"
-#include "swganh/command/command_service_interface.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/chat/chat_service_interface.h"
+#include "swganh_core/command/command_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"

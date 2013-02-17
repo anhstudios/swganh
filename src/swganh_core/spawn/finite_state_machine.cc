@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "finite_state_machine.h"
-#include "swganh/spawn/fsm_controller.h"
+#include "swganh_core/spawn/fsm_controller.h"
 #include "swganh_core/object/object.h"
 
 #include <boost/thread.hpp>

@@ -15,7 +15,7 @@
 
 #include "swganh_core/object/object.h"
 
-#include "swganh/simulation/scene_interface.h"
+#include "swganh_core/simulation/scene_interface.h"
 
 using namespace sql;
 using namespace std;

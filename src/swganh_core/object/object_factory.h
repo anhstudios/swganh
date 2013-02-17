@@ -4,7 +4,7 @@
 #ifndef SWGANH_OBJECT_OBJECT_FACTORY_H_
 #define SWGANH_OBJECT_OBJECT_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh_core/object/object_factory_interface.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh/app/swganh_kernel.h"
 

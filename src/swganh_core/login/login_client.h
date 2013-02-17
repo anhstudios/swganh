@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/login/login_client_interface.h"
+#include "swganh_core/login/login_client_interface.h"
 
 namespace swganh {
 namespace login {
