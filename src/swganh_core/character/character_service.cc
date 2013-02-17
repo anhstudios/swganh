@@ -18,18 +18,18 @@
 
 #include "swganh/service/service_manager.h"
 
-#include "swganh/login/login_service_interface.h"
-#include "swganh/login/login_client_interface.h"
-#include "swganh/login/account.h"
+#include "swganh_core/login/login_service_interface.h"
+#include "swganh_core/login/login_client_interface.h"
+#include "swganh_core/login/account.h"
 
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/messages/heart_beat.h"
 
 #include "swganh_core/messages/delete_character_reply_message.h"
-#include "swganh/character/character_data.h"
+#include "swganh_core/character/character_data.h"
 #include "swganh_core/messages/client_create_character_success.h"
 #include "swganh_core/messages/client_create_character_failed.h"
 #include "swganh_core/messages/client_random_name_response.h"

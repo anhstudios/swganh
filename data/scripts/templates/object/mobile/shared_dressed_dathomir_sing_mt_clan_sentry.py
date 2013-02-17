@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/mobile/shared_dressed_dathomir_sing_mt_clan_sentry.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Creature()
-	
-		result.template = "object/mobile/shared_dressed_dathomir_sing_mt_clan_sentry.iff"
-		result.attribute_template_id = 9
-		result.stfName("theme_park_name","singing_mt_clan_sentry")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Creature()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/mobile/shared_dressed_dathomir_sing_mt_clan_sentry.iff"
+	result.attribute_template_id = 9
+	result.stfName("theme_park_name","singing_mt_clan_sentry")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

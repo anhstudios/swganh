@@ -34,9 +34,9 @@
 #include "swganh_core/messages/obj_controller_message.h"
 
 #include "swganh/observer/observer_interface.h"
-#include "swganh/object/container_interface.h"
+#include "swganh_core/object/container_interface.h"
 
-#include "swganh/object/slot_interface.h"
+#include "swganh_core/object/slot_interface.h"
 
 #define DISPATCH(BIG, LITTLE) if(event_dispatcher_) \
 {GetEventDispatcher()->Dispatch(make_shared<BIG ## Event>(#BIG "::" #LITTLE, static_pointer_cast<BIG>(shared_from_this())));}

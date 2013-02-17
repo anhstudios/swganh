@@ -2,23 +2,19 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff"
-		result.attribute_template_id = 12
-		result.stfName("dungeon/space_dungeon","dungeon_ticket")		
+def create(kernel):
+	result = Tangible()
+
+	result.template = "object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff"
+	result.attribute_template_id = 12
+	result.stfName("dungeon/space_dungeon","dungeon_ticket")		
 		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
 		
-		return result
+	return result
 
 def loadTemplates(addTemplate):
 	addTemplate(Template())

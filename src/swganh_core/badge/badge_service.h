@@ -5,8 +5,8 @@
 #include <bitset>
 
 #include <swganh/app/swganh_kernel.h>
-#include <swganh/badge/badge_service_interface.h>
-#include <swganh/connection/connection_client_interface.h>
+#include <swganh_core/badge/badge_service_interface.h>
+#include <swganh_core/connection/connection_client_interface.h>
 
 namespace swganh {
 

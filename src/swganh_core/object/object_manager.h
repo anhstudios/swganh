@@ -14,6 +14,7 @@
 
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/asio/deadline_timer.hpp>
+#include <boost/python/object.hpp>
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -32,9 +33,9 @@ namespace concurrency {
 
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/exception.h"
-#include "swganh/object/object_factory_interface.h"
+#include "swganh_core/object/object_factory_interface.h"
 #include "swganh_core/object/object_message_builder.h"
-#include "swganh/object/permissions/permission_type.h"
+#include "swganh_core/object/permissions/permission_type.h"
 
 namespace swganh {
 namespace object {
@@ -201,7 +202,7 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
-			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0);
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0);
 		
         /**
          * Creates an instance of an object from the specified template.
@@ -211,9 +212,9 @@ namespace object {
          */
         template<typename T>
         std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
-			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0)
         {
-            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized, objectId);
+            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, objectId);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -284,8 +285,7 @@ namespace object {
             std::shared_ptr<ObjectMessageBuilder>
         > ObjectMessageBuilderMap;
 
-		typedef std::map<std::string, std::shared_ptr<swganh::object::Object>> PrototypeMap;
-		typedef std::map<std::string, boost::shared_ptr<swganh::object::TemplateInterface>> PythonTemplateMap;
+		typedef std::map<std::string, boost::python::object> PythonTemplateMap;
 
         /**
          * Registers a message builder for a specific object type
@@ -319,7 +319,6 @@ namespace object {
         ObjectFactoryMap factories_;
         ObjectMessageBuilderMap message_builders_;
         
-		PrototypeMap prototypes_; 
 		PythonTemplateMap object_templates_;
 
 		uint64_t next_dynamic_id_;

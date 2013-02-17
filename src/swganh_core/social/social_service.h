@@ -6,7 +6,7 @@
 #include <map>
 #include <memory>
 
-#include "swganh/social/social_service_interface.h"
+#include "swganh_core/social/social_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/observer/observer_interface.h"

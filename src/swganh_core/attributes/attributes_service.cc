@@ -16,12 +16,12 @@
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/object/creature/creature.h"
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/command/command_service_interface.h"
-#include "swganh/attributes/python_attributes_creator.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
+#include "swganh_core/command/command_service_interface.h"
+#include "swganh_core/attributes/python_attributes_creator.h"
 
 #include "swganh_core/connection/connection_client.h"
 #include "swganh_core/messages/attribute_list_message.h"

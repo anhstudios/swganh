@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/slot_interface.h"
+#include "swganh_core/object/slot_interface.h"
 
 namespace swganh {
 namespace object {

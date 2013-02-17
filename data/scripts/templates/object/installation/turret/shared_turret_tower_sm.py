@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/installation/turret/shared_turret_tower_sm.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Installation()
-	
-		result.template = "object/installation/turret/shared_turret_tower_sm.iff"
-		result.attribute_template_id = -1
-		result.stfName("turret_n","tower_small")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Installation()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/installation/turret/shared_turret_tower_sm.iff"
+	result.attribute_template_id = -1
+	result.stfName("turret_n","tower_small")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

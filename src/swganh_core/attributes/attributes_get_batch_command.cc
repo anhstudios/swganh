@@ -12,7 +12,7 @@
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 #include "attributes_service.h"
 

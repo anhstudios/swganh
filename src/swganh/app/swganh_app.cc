@@ -30,12 +30,6 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/combat/combat_service_interface.h"
-#include "swganh/chat/chat_service_interface.h"
-#include "swganh/character/character_service_interface.h"
-#include "swganh/login/login_service_interface.h"
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/scripting/utilities.h"
 
 #include "version.h"
@@ -45,12 +39,6 @@ using namespace boost::program_options;
 using namespace std;
 using namespace swganh;
 using namespace swganh::app;
-using namespace swganh::chat;
-using namespace swganh::login;
-using namespace swganh::character;
-using namespace swganh::connection;
-using namespace swganh::simulation;
-using namespace swganh::galaxy;
 
 using swganh::plugin::RegistrationMap;
 
@@ -139,6 +127,10 @@ options_description AppConfig::BuildConfigDescription() {
             "The port the connection service will listen for incoming client connections on")
         ("service.connection.address", boost::program_options::value<string>(&connection_config.listen_address),
             "The public address the connection service will listen for incoming client connections on")
+
+            
+        ("service.simulation.scene", boost::program_options::value<std::vector<std::string>>(&scenes),
+            "Loads the specified scene, can have multiple scenes")
     ;
 
     return desc;
@@ -254,7 +246,15 @@ void SwganhApp::Start() {
     // as thread in use as does the console thread.
     for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
         boost::thread t([this] () {
-            io_service_.run();
+            try
+			{
+				io_service_.run();
+			} 
+			catch(...) 
+			{
+				LOG(severity_level::error) << "A near fatal exception has occurred.";
+			}
+
         });
         
 #ifdef _WIN32
@@ -266,20 +266,21 @@ void SwganhApp::Start() {
     
     kernel_->GetServiceManager()->Start();
 
+    kernel_->GetEventDispatcher()->Dispatch(std::make_shared<BaseEvent>("Core::ApplicationInitComplete"));
 	//Now that services are started, start the scenes.
-	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	//auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 	
 	//Ground Zones
-	simulation_service->StartScene("corellia");
-	simulation_service->StartScene("dantooine");
-	simulation_service->StartScene("dathomir");
-	simulation_service->StartScene("endor");
-	simulation_service->StartScene("lok");
-	simulation_service->StartScene("naboo");
-	simulation_service->StartScene("rori");
-	simulation_service->StartScene("talus");
-	simulation_service->StartScene("tatooine");
-	simulation_service->StartScene("yavin4");
+	//simulation_service->StartScene("corellia");
+	//simulation_service->StartScene("dantooine");
+	//simulation_service->StartScene("dathomir");
+	//simulation_service->StartScene("endor");
+	//simulation_service->StartScene("lok");
+	//simulation_service->StartScene("naboo");
+	//simulation_service->StartScene("rori");
+	//simulation_service->StartScene("talus");
+	//simulation_service->StartScene("tatooine");
+	//simulation_service->StartScene("yavin4");
 	//simulation_service->StartScene("taanab");
 
 	//Space Zones

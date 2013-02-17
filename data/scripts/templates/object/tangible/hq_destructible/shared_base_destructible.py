@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/tangible/hq_destructible/shared_base_destructible.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/hq_destructible/shared_base_destructible.iff"
-		result.attribute_template_id = -1
-		result.stfName("hq","destructible")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/hq_destructible/shared_base_destructible.iff"
+	result.attribute_template_id = -1
+	result.stfName("hq","destructible")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

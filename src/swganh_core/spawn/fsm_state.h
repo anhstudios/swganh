@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/spawn/fsm_state_interface.h"
+#include "swganh_core/spawn/fsm_state_interface.h"
 
 namespace swganh
 {

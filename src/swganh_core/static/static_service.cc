@@ -19,13 +19,13 @@
 #include <cppconn/sqlstring.h>
 
 #include "swganh/service/service_manager.h"
-#include "swganh/object/permissions/permission_type.h"
+#include "swganh_core/object/permissions/permission_type.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/simulation/scene_events.h"
 #include "swganh_core/object/object.h"
 
-#include "swganh/spawn/spawn_service_interface.h"
+#include "swganh_core/spawn/spawn_service_interface.h"
 
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
@@ -49,80 +49,86 @@ enum PERSISTENT_NPC_TYPE
 
 StaticService::StaticService(SwganhKernel* kernel)
 	: kernel_(kernel)
-	, temp_loading_mutex()
+    , active_(kernel->GetIoService())
 {
 	//Static Objects
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
-		boost::lock_guard<boost::mutex> _lock(temp_loading_mutex);
-		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
-
-		auto database_manager = kernel_->GetDatabaseManager();
-		auto conn = database_manager->getConnection("swganh_static");
-
-		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-		auto spawn_service = kernel_->GetServiceManager()->GetService<SpawnServiceInterface>("SpawnService");
-
-		try {
-			std::stringstream ss;
-			ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
-
-			auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-			statement->execute(ss.str());
-
-			std::unique_ptr<sql::ResultSet> result;
-
-			LOG(warning) << "Loading static data for: " << real_event->scene_label;
-			_loadBuildings(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-
-			statement->getMoreResults();
-			_loadCells(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadCloneLocations(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadTerminals(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadElevatorData(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadContainers(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadTicketCollectors(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-				real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadNPCS(simulation_service, spawn_service,  std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadShuttles(simulation_service, spawn_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
-		LOG(warning) << "Done loading static data for: " << real_event->scene_label;
-
-		} catch(std::exception& e) {
-			LOG(warning) << e.what();
-		}
-		if (real_event->scene_id-1 == 0)
-		{
-			// Create a combat dummy
-			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-			auto combat_dummy = simulation_service->CreateObjectFromTemplate("R2D2CombatDummy", CREATURE_PERMISSION, false, true);
-			if (combat_dummy)
-			{
-				auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
-				simulation_service->AddObjectToScene(combat_dummy, "corellia");
-			}
-		}
+        active_.Async([=] () {
+            auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
+            
+            auto database_manager = kernel_->GetDatabaseManager();
+            auto conn = database_manager->getConnection("swganh_static");
+            
+            auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+            auto spawn_service = kernel_->GetServiceManager()->GetService<SpawnServiceInterface>("SpawnService");
+            
+            try {
+            	std::stringstream ss;
+            	ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
+            
+            	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+            	statement->execute(ss.str());
+            
+            	std::unique_ptr<sql::ResultSet> result;
+            
+            	LOG(warning) << "Loading static data for: " << real_event->scene_label;
+            	_loadBuildings(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadCells(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadCloneLocations(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadTerminals(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadElevatorData(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadContainers(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadTicketCollectors(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+            
+                statement->getMoreResults();
+                _loadNPCS(simulation_service, spawn_service,  std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+                    real_event->scene_id, real_event->scene_label);
+                
+                statement->getMoreResults();
+                _loadShuttles(simulation_service, spawn_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            	real_event->scene_id, real_event->scene_label);
+            
+            } catch(std::exception& e) {
+            	LOG(warning) << e.what();
+            }
+            if (real_event->scene_id-1 == 0)
+            {
+            	// Create a combat dummy
+            	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+            	auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_r2d2.iff", CREATURE_PERMISSION, false, true);
+            	if (combat_dummy)
+            	{
+            		auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
+            		creature_dummy->SetCustomName(L"R2 D2 Combat Trainer");
+            		creature_dummy->SetPvPStatus(PvPStatus_Attackable);
+            		creature_dummy->SetAllStats(50000);
+            		creature_dummy->SetPosition(glm::vec3(-146.0f, 28.0f, -4702.0f));
+            		creature_dummy->SetOrientation(glm::quat(0.0f, 1.0f, 0.0f, -0.0016f));
+            		creature_dummy->SetScale(3);
+            		simulation_service->AddObjectToScene(combat_dummy, "corellia");
+            	}
+            }
+        });
 	});
 }
 
@@ -167,7 +173,7 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 	{
 		//Load Building Row
 		auto object = simulation_service->CreateObjectFromTemplate(result->getString(9), 
-			STATIC_CONTAINER_PERMISSION, false, true, result->getInt64(1));
+			STATIC_CONTAINER_PERMISSION, false, result->getInt64(1));
 		
 		if(object == nullptr)
 			continue;
@@ -196,7 +202,7 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
 	{
 		//Load Cells
 		auto object = simulation_service->CreateObjectFromTemplate("object/cell/shared_cell.iff",
-			WORLD_CELL_PERMISSION, false, true, result->getInt64(1));
+			WORLD_CELL_PERMISSION, false, result->getInt64(1));
 
 		if(object == nullptr)
 			continue;
@@ -231,7 +237,7 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(11),
-			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -337,7 +343,7 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(3),
-			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -384,7 +390,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, Sp
 	{
 		//Load NPCS
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(15),
-			CREATURE_PERMISSION, false, true, result->getUInt64(1)));
+			CREATURE_PERMISSION, false, result->getUInt64(1)));
 
 		if(object == nullptr)
 			continue;
@@ -460,7 +466,7 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(12),
-			DEFAULT_PERMISSION, false, true, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
 
 		if(object == nullptr)
 			continue;

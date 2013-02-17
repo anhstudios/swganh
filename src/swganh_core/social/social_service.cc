@@ -10,8 +10,8 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 
 #include "swganh_core/object/player/player.h"
 #include "swganh_core/object/object.h"

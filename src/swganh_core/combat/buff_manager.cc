@@ -3,10 +3,10 @@
 
 #include <swganh/logger.h>
 
-#include "swganh/combat/python_buff_creator.h"
+#include "swganh_core/combat/python_buff_creator.h"
 
 #include "swganh_core/object/creature/creature.h"
-#include "swganh/combat/buff_events.h"
+#include "swganh_core/combat/buff_events.h"
 #include "buff_manager.h"
 
 #include <boost/python.hpp>

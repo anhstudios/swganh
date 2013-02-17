@@ -7,18 +7,18 @@
 #include "swganh/event_dispatcher.h"
 #include "swganh/service/service_description.h"
 #include "swganh/service/service_manager.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/object/player/player.h"
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/object_controller.h"
 #include "swganh_core/messages/system_message.h"
 #include "swganh_core/messages/out_of_band.h"
 #include "swganh_core/messages/opened_container_message.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/equipment/equipment_service.h"
 
 #include "swganh_core/messages/controllers/add_buff.h"
-#include "swganh/combat/buff_interface.h"
+#include "swganh_core/combat/buff_interface.h"
 
 #include "swganh/database/database_manager.h"
 #include <cppconn/exception.h>

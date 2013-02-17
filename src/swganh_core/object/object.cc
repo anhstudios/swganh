@@ -21,7 +21,7 @@
 #include "swganh_core/messages/scene_end_baselines.h"
 #include "swganh_core/messages/controllers/object_menu_response.h"
 
-#include "swganh/object/permissions/container_permissions_interface.h"
+#include "swganh_core/object/permissions/container_permissions_interface.h"
 
 using namespace swganh::observer;
 using namespace std;
@@ -53,7 +53,6 @@ Object::Object()
 
 Object::~Object()
 {
-	std::cout << "Destroying object " << template_string_ << std::endl;
 }
 
 bool Object::HasController()
@@ -347,7 +346,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 		{
 			if(!IsInSnapshot())
 			{
-				DLOG(info) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
+				//DLOG(info) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
 				Subscribe(observer);
 				SendCreateByCrc(observer);
 				CreateBaselines(observer);
@@ -390,7 +389,7 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 
 			if(!IsInSnapshot())
 			{
-				DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
+				//DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
 				SendDestroy(observer);
 				Unsubscribe(observer);
 			}

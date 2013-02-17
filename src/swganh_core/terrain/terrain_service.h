@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "swganh/terrain/terrain_service_interface.h"
+#include "swganh_core/terrain/terrain_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
 
 #include <boost/thread/mutex.hpp>

@@ -10,18 +10,18 @@
 #include <glm/glm.hpp>
 #include "swganh_core/messages/server_weather_message.h"
 #include "swganh_core/object/object.h"
-#include "swganh/weather/weather_service_interface.h"
+#include "swganh_core/weather/weather_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/weather/weather_data.h"
+#include "swganh_core/weather/weather_data.h"
 #include "swganh/event_dispatcher.h"
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
-#include "swganh/galaxy/galaxy_service_interface.h"
+#include "swganh_core/galaxy/galaxy_service_interface.h"
 #include "swganh/scripting/python_script.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/observer/observer_interface.h"
-#include "swganh/player/player_service_interface.h"
+#include "swganh_core/player/player_service_interface.h"
 
 
 namespace swganh {

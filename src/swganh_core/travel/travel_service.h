@@ -2,12 +2,12 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include <swganh/travel/travel_service_interface.h>
+#include <swganh_core/travel/travel_service_interface.h>
 
 #include <glm/glm.hpp>
 
 #include <swganh/app/swganh_kernel.h>
-#include <swganh/connection/connection_client_interface.h>
+#include <swganh_core/connection/connection_client_interface.h>
 
 namespace swganh {
 namespace command {

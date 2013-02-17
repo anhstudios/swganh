@@ -4,32 +4,26 @@
 
 from swgpy.object import *
 
-class Template(BaseTemplate):
-	name = "object/weapon/ranged/pistol/shared_pistol_cdef_noob.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Weapon()
-	
-		result.template = "object/weapon/ranged/pistol/shared_pistol_cdef_noob.iff"
-		result.attribute_template_id = 10
-		result.stfName("weapon_name","pistol_cdef_noob")		
-		
-		#### BEGIN MODIFICATIONS ####
-		result.setStringAttribute('wpn_armor_pierce_rating', 'None')
-		result.setFloatAttribute('wpn_attack_speed', 4.5)
-		result.setStringAttribute('cat_wpn_damage.wpn_damage_type', 'Energy')
-		result.setIntAttribute('cat_wpn_damage.wpn_damage_min', 20)
-		result.setIntAttribute('cat_wpn_damage.wpn_damage_max', 45)
-		result.setFloatAttribute('cat_wpn_damage.wpn_wound_chance', 4.5)
-		result.setIntAttribute('cat_wpn_rangemods.wpn_range_zero', 0)
-		result.setIntAttribute('cat_wpn_rangemods.wpn_range_mid', 40)
-		result.setIntAttribute('cat_wpn_rangemods.wpn_range_max', -80)
-		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_health', 9)
-		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_action', 20)
-		result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_mind', 9)		
-		####  END MODIFICATIONS  ####
-		return result
+def create(kernel):
+	result = Weapon()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/weapon/ranged/pistol/shared_pistol_cdef_noob.iff"
+	result.attribute_template_id = 10
+	result.stfName("weapon_name","pistol_cdef_noob")
+
+	#### BEGIN MODIFICATIONS ####
+	result.setStringAttribute('wpn_armor_pierce_rating', 'None')
+	result.setFloatAttribute('wpn_attack_speed', 4.5)
+	result.setStringAttribute('cat_wpn_damage.wpn_damage_type', 'Energy')
+	result.setIntAttribute('cat_wpn_damage.wpn_damage_min', 20)
+	result.setIntAttribute('cat_wpn_damage.wpn_damage_max', 45)
+	result.setFloatAttribute('cat_wpn_damage.wpn_wound_chance', 4.5)
+	result.setIntAttribute('cat_wpn_rangemods.wpn_range_zero', 0)
+	result.setIntAttribute('cat_wpn_rangemods.wpn_range_mid', 40)
+	result.setIntAttribute('cat_wpn_rangemods.wpn_range_max', -80)
+	result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_health', 9)
+	result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_action', 20)
+	result.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_mind', 9)
+	####  END MODIFICATIONS  ####
+
+	return result

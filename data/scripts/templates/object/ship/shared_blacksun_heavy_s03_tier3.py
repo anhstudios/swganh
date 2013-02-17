@@ -2,23 +2,16 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
-from swgpy.object import *
+from swgpy.object import *	
 
-class Template(BaseTemplate):
-	name = "object/ship/shared_blacksun_heavy_s03_tier3.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Ship()
-	
-		result.template = "object/ship/shared_blacksun_heavy_s03_tier3.iff"
-		result.attribute_template_id = -1
-		result.stfName("","")		
-		
-		#### BEGIN MODIFICATIONS ####
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Ship()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/ship/shared_blacksun_heavy_s03_tier3.iff"
+	result.attribute_template_id = -1
+	result.stfName("","")		
+	
+	#### BEGIN MODIFICATIONS ####
+	####  END MODIFICATIONS  ####
+	
+	return result

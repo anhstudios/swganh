@@ -8,7 +8,7 @@
 #include <string>
 
 #include "scene.h"
-#include "swganh/simulation/scene_manager_interface.h"
+#include "swganh_core/simulation/scene_manager_interface.h"
 
 namespace swganh {
 namespace simulation {

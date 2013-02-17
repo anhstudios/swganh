@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 #include "character_create.h"
 
 namespace swganh {

@@ -4,22 +4,15 @@
 
 from swgpy.object import *
 
-class Template(BaseTemplate):
-	name = "object/tangible/wearables/pants/shared_pants_s22.iff"
-	is_prototype = False
-	
-	def create(self, kernel, params):
-		result = Tangible()
-	
-		result.template = "object/tangible/wearables/pants/shared_pants_s22.iff"
-		result.attribute_template_id = 11
-		result.stfName("wearables_name","pants_s22")		
-		
-		#### BEGIN MODIFICATIONS ####
-		result.max_condition = 1000
-		####  END MODIFICATIONS  ####
-		
-		return result
+def create(kernel):
+	result = Tangible()
 
-def loadTemplates(addTemplate):
-	addTemplate(Template())
+	result.template = "object/tangible/wearables/pants/shared_pants_s22.iff"
+	result.attribute_template_id = 11
+	result.stfName("wearables_name","pants_s22")
+
+	#### BEGIN MODIFICATIONS ####
+	result.max_condition = 1000
+	####  END MODIFICATIONS  ####
+
+	return result

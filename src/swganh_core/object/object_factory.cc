@@ -16,11 +16,11 @@
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/object_manager.h"
 #include "swganh_core/object/exception.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
-#include "swganh/object/permissions/container_permissions_interface.h"
+#include "swganh_core/object/permissions/container_permissions_interface.h"
 
 using namespace sql;
 using namespace std;

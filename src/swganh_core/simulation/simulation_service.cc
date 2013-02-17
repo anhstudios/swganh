@@ -16,24 +16,24 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_service_interface.h"
-#include "swganh/command/python_command_creator.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_service_interface.h"
+#include "swganh_core/command/python_command_creator.h"
 
-#include "swganh/connection/connection_client_interface.h"
-#include "swganh/connection/connection_service_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
 
 #include "swganh_core/messages/select_character.h"
 
-#include "swganh/player/player_service_interface.h"
+#include "swganh_core/player/player_service_interface.h"
 
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/object_manager.h"
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/player/player.h"
 
-#include "swganh/simulation/scene_manager_interface.h"
-#include "swganh/simulation/scene_interface.h"
+#include "swganh_core/simulation/scene_manager_interface.h"
+#include "swganh_core/simulation/scene_interface.h"
 #include "swganh_core/messages/cmd_start_scene.h"
 #include "swganh_core/messages/cmd_scene_ready.h"
 #include "swganh_core/messages/obj_controller_message.h"
@@ -49,7 +49,7 @@
 #include "swganh_core/equipment/equipment_service.h"
 #include "movement_manager.h"
 #include "scene_manager.h"
-#include "swganh/simulation/movement_manager_interface.h"
+#include "swganh_core/simulation/movement_manager_interface.h"
 
 using namespace swganh;
 using namespace std;
@@ -230,27 +230,19 @@ public:
 		// Get Next Scene
 		auto scene_obj = scene_manager_->GetScene(scene);
 
-	        if (!scene_obj)
-	        {
-	            throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
-	        }
+	    if (!scene_obj)
+	    {
+	        throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
+	    }
+
+		auto old_scene = scene_manager_->GetScene(obj->GetSceneId());
+		if(old_scene) {
+			old_scene->RemoveObject(obj);
+		}
 
 		// Remove from existing scene
-		auto controller = obj->GetController();
-		obj->ClearController();
-		LOG(error) << "Removing object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
-		LOG(error) << "Done removing object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 
-		//Update the object's scene_id
-		obj->SetSceneId(scene_obj->GetSceneId());	
-
-		//Update the object's position.
-		obj->SetPosition(position);
-
-		obj->SetController(controller);
-
-		// Add to new scene
 		// CmdStartScene
 		if(obj->GetController() != nullptr)
 		{
@@ -265,6 +257,22 @@ public:
 
 			obj->GetController()->Notify(&start_scene);
 		}
+
+		// Clear Controller
+		auto controller = obj->GetController();
+		obj->ClearController();
+
+		//Update the object's scene_id
+		obj->SetSceneId(scene_obj->GetSceneId());	
+
+		//Update the object's position.
+		obj->SetPosition(position);
+
+		// Reset Controller
+		obj->SetController(controller);
+
+
+		// Add to new scene
 
 	    // Add object to scene and send baselines
 		LOG(error) << "Adding object " << obj->GetSceneId() << ":" << obj->GetObjectId();
@@ -680,6 +688,17 @@ void SimulationService::Startup()
 		}
 		
 	});
+    
+	kernel_->GetEventDispatcher()->Subscribe("Core::ApplicationInitComplete", [this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+        //Now that services are started, start the scenes.
+        auto& scenes = kernel_->GetAppConfig().scenes;
+
+        for (auto scene : scenes)
+        {
+            StartScene(scene);
+        }
+	});
 
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
@@ -695,9 +714,9 @@ void SimulationService::Startup()
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 
-											bool is_persisted, bool is_initialized, uint64_t object_id)
+											bool is_persisted, uint64_t object_id)
 {
-	return impl_->GetObjectManager()->CreateObjectFromTemplate(template_name, type, is_persisted, is_initialized, object_id);
+	return impl_->GetObjectManager()->CreateObjectFromTemplate(template_name, type, is_persisted, object_id);
 }
 
 void SimulationService::PrepareToAccomodate(uint32_t delta)

@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -24,5 +24,6 @@
 #define VERSION_MAJOR @swganh_VERSION_MAJOR@
 #define VERSION_MINOR @swganh_VERSION_MINOR@
 #define VERSION_PATCH @swganh_VERSION_PATCH@
+#define SWGANH_VERSION @swganh_VERSION_MAJOR@.@swganh_VERSION_MINOR@.@swganh_VERSION_PATCH@
 
 #endif  // ANH_CONFIG_

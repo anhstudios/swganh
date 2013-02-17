@@ -16,7 +16,7 @@
 #include "swganh_core/simulation/simulation_service.h"
 #include "swganh_core/simulation/scene_events.h"
 
-#include "swganh/object/permissions/permission_type.h"
+#include "swganh_core/object/permissions/permission_type.h"
 #include "swganh_core/object/object_manager.h"
 
 #include "swganh_core/object/object.h"
