@@ -19,7 +19,7 @@
 #include "swganh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 
 #include "swganh_core/messages/enumerate_character_id.h"
 #include "swganh_core/messages/error_message.h"
@@ -29,8 +29,8 @@
 
 #include "authentication_manager.h"
 #include "login_client.h"
-#include "swganh/login/providers/account_provider_interface.h"
-#include "swganh/login/encoders/encoder_interface.h"
+#include "swganh_core/login/providers/account_provider_interface.h"
+#include "swganh_core/login/encoders/encoder_interface.h"
 
 using namespace swganh;
 using namespace app;

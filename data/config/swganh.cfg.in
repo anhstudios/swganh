@@ -39,3 +39,31 @@ auto_registration = true
 udp_port = 44463
 address = 127.0.0.1
 ping_port = 44462
+
+[service.simulation]
+
+# Ground Zones
+scene = corellia
+#scene = dantooine
+#scene = dathomir
+#scene = endor
+#scene = lok
+#scene = naboo
+#scene = rori
+#scene = talus
+#scene = tatooine
+#scene = yavin4
+#scene = taanab
+
+# Space Zones
+#scene = space_corellia
+#scene = space_dantooine
+#scene = space_dathomir
+#scene = space_endor
+#scene = space_lok
+#scene = space_naboo
+#scene = space_tatooine
+#scene = space_yavin4
+
+# Special
+#scene = tutorial

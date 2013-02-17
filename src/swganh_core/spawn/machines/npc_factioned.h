@@ -1,6 +1,6 @@
 #pragma once
 
-#include "swganh/spawn/fsm_manager.h"
+#include "swganh_core/spawn/fsm_manager.h"
 #include "swganh_core/spawn/finite_state_machine.h"
 #include "swganh_core/spawn/fsm_state.h"
 #include "swganh_core/spawn/bundles/npc_factioned_bundle.h"

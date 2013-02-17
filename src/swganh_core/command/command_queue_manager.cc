@@ -3,8 +3,8 @@
 
 #include "command_queue_manager.h"
 
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_queue_interface.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_queue_interface.h"
 
 #include "swganh/observer/observer_interface.h"
 

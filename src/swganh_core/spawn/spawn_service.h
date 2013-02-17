@@ -4,10 +4,10 @@
 
 #include <boost/asio/deadline_timer.hpp>
 
-#include "swganh/spawn/spawn_service_interface.h"
+#include "swganh_core/spawn/spawn_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/permissions/permission_type.h"
-#include "swganh/spawn/fsm_manager.h"
+#include "swganh_core/object/permissions/permission_type.h"
+#include "swganh_core/spawn/fsm_manager.h"
 
 namespace swganh
 {

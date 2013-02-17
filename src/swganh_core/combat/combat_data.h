@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 #include <swganh/hash_string.h>
-#include "swganh/command/command_properties.h"
+#include "swganh_core/command/command_properties.h"
 #include "swganh/scripting/utilities.h"
 #include <boost/python.hpp>
 

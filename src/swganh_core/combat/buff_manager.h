@@ -9,7 +9,7 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/asio/deadline_timer.hpp>
-#include <swganh/combat/buff_interface.h>
+#include <swganh_core/combat/buff_interface.h>
 #include <swganh/app/swganh_kernel.h>
 
 namespace swganh

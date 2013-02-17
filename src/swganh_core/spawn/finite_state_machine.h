@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/spawn/finite_state_machine_interface.h"
+#include "swganh_core/spawn/finite_state_machine_interface.h"
 
 #include <atomic>
 #include <map>

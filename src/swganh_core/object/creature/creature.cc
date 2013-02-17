@@ -9,8 +9,8 @@
 #include "swganh_core/object/player/player.h"
 #include "creature_message_builder.h"
 
-#include "swganh/combat/buff_interface.h"
-#include "swganh/combat/buff_events.h"
+#include "swganh_core/combat/buff_interface.h"
+#include "swganh_core/combat/buff_events.h"
 #include "swganh_core/messages/controllers/add_buff.h"
 #include "swganh_core/messages/controllers/remove_buff.h"
 

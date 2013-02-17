@@ -26,14 +26,14 @@ namespace Concurrency {
 
 #endif
 
-#include "swganh/combat/combat_service_interface.h"
+#include "swganh_core/combat/combat_service_interface.h"
 #include "swganh_core/combat/buff_manager.h"
 
 #include "swganh/random_generator.h"
 #include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/command/command_properties.h"
+#include "swganh_core/command/command_properties.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {

@@ -27,6 +27,7 @@ namespace app {
 struct AppConfig {
 	std::string server_mode;
     std::vector<std::string> plugins;
+    std::vector<std::string> scenes;
     std::string plugin_directory;
     std::string script_directory;
     std::string galaxy_name;
