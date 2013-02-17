@@ -127,6 +127,10 @@ options_description AppConfig::BuildConfigDescription() {
             "The port the connection service will listen for incoming client connections on")
         ("service.connection.address", boost::program_options::value<string>(&connection_config.listen_address),
             "The public address the connection service will listen for incoming client connections on")
+
+            
+        ("service.simulation.scene", boost::program_options::value<std::vector<std::string>>(&scenes),
+            "Loads the specified scene, can have multiple scenes")
     ;
 
     return desc;

@@ -674,32 +674,12 @@ void SimulationService::Startup()
 	kernel_->GetEventDispatcher()->Subscribe("Core::ApplicationInitComplete", [this] (shared_ptr<swganh::EventInterface> incoming_event)
 	{
         //Now that services are started, start the scenes.
-	    
-	    //Ground Zones
-	    StartScene("corellia");
-	    //StartScene("dantooine");
-	    //StartScene("dathomir");
-	    //StartScene("endor");
-	    //StartScene("lok");
-	    //StartScene("naboo");
-	    //StartScene("rori");
-	    //StartScene("talus");
-	    //StartScene("tatooine");
-	    //StartScene("yavin4");
-	    //StartScene("taanab");
+        auto& scenes = kernel_->GetAppConfig().scenes;
 
-	    //Space Zones
-	    //StartScene("space_corellia");
-	    //StartScene("space_dantooine");
-	    //StartScene("space_dathomir");
-	    //StartScene("space_endor");
-	    //StartScene("space_lok");
-	    //StartScene("space_naboo");
-	    //StartScene("space_tatooine");
-	    //StartScene("space_yavin4");
-	    
-	    //Special
-	    //simulation_service->StartScene("tutorial");
+        for (auto scene : scenes)
+        {
+            StartScene(scene);
+        }
 	});
 
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
