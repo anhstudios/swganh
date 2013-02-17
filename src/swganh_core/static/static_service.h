@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 
+#include "swganh/active_object.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/static/static_service_interface.h"
 #include "swganh_core/static/skill_manager.h"
@@ -86,7 +87,7 @@ namespace statics
 
 		std::map<uint64_t, std::vector<std::shared_ptr<ElevatorData>>> elevator_lookup_;
 		SkillManager skill_mod_manager_;
-
+        swganh::ActiveObject active_;
 	};
 }
 }

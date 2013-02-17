@@ -49,83 +49,86 @@ enum PERSISTENT_NPC_TYPE
 
 StaticService::StaticService(SwganhKernel* kernel)
 	: kernel_(kernel)
+    , active_(kernel->GetIoService())
 {
 	//Static Objects
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
-		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
-
-		auto database_manager = kernel_->GetDatabaseManager();
-		auto conn = database_manager->getConnection("swganh_static");
-
-		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-		auto spawn_service = kernel_->GetServiceManager()->GetService<SpawnServiceInterface>("SpawnService");
-
-		try {
-			std::stringstream ss;
-			ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
-
-			auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-			statement->execute(ss.str());
-
-			std::unique_ptr<sql::ResultSet> result;
-
-			LOG(warning) << "Loading static data for: " << real_event->scene_label;
-			_loadBuildings(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-
-			statement->getMoreResults();
-			_loadCells(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadCloneLocations(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadTerminals(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadElevatorData(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadContainers(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-				real_event->scene_id, real_event->scene_label);
-		
-			statement->getMoreResults();
-			_loadTicketCollectors(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-				real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadNPCS(simulation_service, spawn_service,  std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadShuttles(simulation_service, spawn_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
-
-		} catch(std::exception& e) {
-			LOG(warning) << e.what();
-		}
-		if (real_event->scene_id-1 == 0)
-		{
-			// Create a combat dummy
-			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_r2d2.iff", CREATURE_PERMISSION, false, true);
-			if (combat_dummy)
-			{
-				auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
-				creature_dummy->SetCustomName(L"R2 D2 Combat Trainer");
-				creature_dummy->SetPvPStatus(PvPStatus_Attackable);
-				creature_dummy->SetAllStats(50000);
-				creature_dummy->SetPosition(glm::vec3(-146.0f, 28.0f, -4702.0f));
-				creature_dummy->SetOrientation(glm::quat(0.0f, 1.0f, 0.0f, -0.0016f));
-				creature_dummy->SetScale(3);
-				simulation_service->AddObjectToScene(combat_dummy, "corellia");
-			}
-		}
+        active_.Async([=] () {
+            auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
+            
+            auto database_manager = kernel_->GetDatabaseManager();
+            auto conn = database_manager->getConnection("swganh_static");
+            
+            auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+            auto spawn_service = kernel_->GetServiceManager()->GetService<SpawnServiceInterface>("SpawnService");
+            
+            try {
+            	std::stringstream ss;
+            	ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
+            
+            	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+            	statement->execute(ss.str());
+            
+            	std::unique_ptr<sql::ResultSet> result;
+            
+            	LOG(warning) << "Loading static data for: " << real_event->scene_label;
+            	_loadBuildings(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadCells(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadCloneLocations(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadTerminals(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadElevatorData(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadContainers(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+            		real_event->scene_id, real_event->scene_label);
+            
+            	statement->getMoreResults();
+            	_loadTicketCollectors(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+            
+                statement->getMoreResults();
+                _loadNPCS(simulation_service, spawn_service,  std::unique_ptr<sql::ResultSet>(statement->getResultSet()), 
+                    real_event->scene_id, real_event->scene_label);
+                
+                statement->getMoreResults();
+                _loadShuttles(simulation_service, spawn_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            	real_event->scene_id, real_event->scene_label);
+            
+            } catch(std::exception& e) {
+            	LOG(warning) << e.what();
+            }
+            if (real_event->scene_id-1 == 0)
+            {
+            	// Create a combat dummy
+            	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+            	auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_r2d2.iff", CREATURE_PERMISSION, false, true);
+            	if (combat_dummy)
+            	{
+            		auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
+            		creature_dummy->SetCustomName(L"R2 D2 Combat Trainer");
+            		creature_dummy->SetPvPStatus(PvPStatus_Attackable);
+            		creature_dummy->SetAllStats(50000);
+            		creature_dummy->SetPosition(glm::vec3(-146.0f, 28.0f, -4702.0f));
+            		creature_dummy->SetOrientation(glm::quat(0.0f, 1.0f, 0.0f, -0.0016f));
+            		creature_dummy->SetScale(3);
+            		simulation_service->AddObjectToScene(combat_dummy, "corellia");
+            	}
+            }
+        });
 	});
 }
 
