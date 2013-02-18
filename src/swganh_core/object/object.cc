@@ -51,6 +51,10 @@ Object::Object()
 {
 }
 
+Object::~Object()
+{
+}
+
 bool Object::HasController()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);

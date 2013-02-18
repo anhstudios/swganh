@@ -28,6 +28,7 @@
 #include "swganh_core/player/player_service_interface.h"
 #include "swganh_core/badge/badge_service_interface.h"
 #include "swganh_core/map/map_service_interface.h"
+#include "swganh_core/travel/travel_service_interface.h"
 
 #include <boost/python.hpp>
 
@@ -112,6 +113,11 @@ void exportSWGANHKernel()
 				return_value_policy<reference_existing_object>(),
 				boost::mpl::vector<swganh::map::MapServiceInterface*, swganh::service::ServiceManager*>()),
 				"returns an internal reference of the :class:`.MapService`")
+		.def("travelService", make_function(
+				std::bind(&swganh::service::ServiceManager::GetService<swganh::travel::TravelServiceInterface>, std::placeholders::_1, "TravelService"),
+				return_value_policy<reference_existing_object>(),
+				boost::mpl::vector<swganh::travel::TravelServiceInterface*, swganh::service::ServiceManager*>()),
+				"returns an internal reference of the :class:.`TravelService`")
        ;
        
 }
