@@ -235,13 +235,26 @@ public:
 	        throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
 	    }
 
-		auto old_scene = scene_manager_->GetScene(obj->GetSceneId());
+		/**auto old_scene = scene_manager_->GetScene(obj->GetSceneId());
 		if(old_scene) {
 			old_scene->RemoveObject(obj);
-		}
+		}*/
+
+		// Clear Controller
+		auto controller = obj->GetController();
+		obj->ClearController();
 
 		// Remove from existing scene
 		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
+
+		//Update the object's scene_id
+		obj->SetSceneId(scene_obj->GetSceneId());	
+
+		//Update the object's position.
+		obj->SetPosition(position);
+
+		// Reset Controller
+		obj->SetController(controller);
 
 		// CmdStartScene
 		if(obj->GetController() != nullptr)
@@ -258,26 +271,8 @@ public:
 			obj->GetController()->Notify(&start_scene);
 		}
 
-		// Clear Controller
-		auto controller = obj->GetController();
-		obj->ClearController();
-
-		//Update the object's scene_id
-		obj->SetSceneId(scene_obj->GetSceneId());	
-
-		//Update the object's position.
-		obj->SetPosition(position);
-
-		// Reset Controller
-		obj->SetController(controller);
-
-
-		// Add to new scene
-
 	    // Add object to scene and send baselines
-		LOG(error) << "Adding object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 	    scene_obj->AddObject(obj);
-		LOG(error) << "Done adding object " << obj->GetSceneId() << ":" << obj->GetObjectId();
 	}
 
 	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)

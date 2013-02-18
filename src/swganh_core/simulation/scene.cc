@@ -76,7 +76,6 @@ public:
 		spatial_index_->RemoveObject(nullptr, object);
 
 		movement_manager_->ResetMovementCounter(object);
-		std::cout << "Resetting movement counter... " << this->description_.label << ":" << object->GetObjectId() << std::endl;
     }
 
 	void InsertObject(const shared_ptr<Object>& object)

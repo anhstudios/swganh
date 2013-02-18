@@ -51,6 +51,7 @@ void TravelService::Startup()
 {
 	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 	command_ = kernel_->GetServiceManager()->GetService<CommandService>("CommandService");
+	equipment_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
 
 	LoadStaticTravelPoints();
 	LoadPlanetaryRouteMap();
@@ -252,7 +253,7 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 	auto target_planet = simulation_->SceneNameById(target_location_tp.scene_id);
 	auto inventory = simulation_->GetEquipmentService()->GetEquippedObject(object, "inventory");
 
-	auto ticket = simulation_->CreateObjectFromTemplate("object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff", swganh::object::DEFAULT_PERMISSION, false);
+	auto ticket = simulation_->CreateObjectFromTemplate("object/tangible/travel/travel_ticket/base/shared_base_travel_ticket.iff", swganh::object::DEFAULT_PERMISSION, false);
 	ticket->SetAttribute("travel_departure_planet", std::wstring(source_planet.begin(), source_planet.end()));
 	ticket->SetAttribute("travel_departure_point", std::wstring(source_location_tp.descriptor.begin(), source_location_tp.descriptor.end()));
 	ticket->SetAttribute("travel_arrival_planet", std::wstring(target_planet.begin(), target_planet.end()));
@@ -262,7 +263,7 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 
 	if(round_trip)
 	{
-		auto ticket = simulation_->CreateObjectFromTemplate("object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff", swganh::object::DEFAULT_PERMISSION, false);
+		auto ticket = simulation_->CreateObjectFromTemplate("object/tangible/travel/travel_ticket/base/shared_base_travel_ticket.iff", swganh::object::DEFAULT_PERMISSION, false);
 		ticket->SetAttribute("travel_departure_planet", std::wstring(target_planet.begin(), target_planet.end()));
 		ticket->SetAttribute("travel_departure_point", std::wstring(target_location_tp.descriptor.begin(), target_location_tp.descriptor.end()));
 		ticket->SetAttribute("travel_arrival_planet", std::wstring(source_planet.begin(), source_planet.end()));
@@ -420,54 +421,83 @@ void TravelService::HandlePlanetTravelPointListRequest(
 std::vector<std::string> TravelService::GetAvailableTickets(std::shared_ptr<swganh::object::Object> object)
 {
 	std::vector<std::string> in;
-	std::shared_ptr<swganh::object::Object> inventory = nullptr;
+	auto inventory = simulation_->GetEquipmentService()->GetEquippedObject(object, "inventory");
 
-	object->ViewObjects(object, 0, true, [=, &inventory](std::shared_ptr<swganh::object::Object> obj) {
-		if(obj->GetTemplate() == "object/tangible/inventory/shared_character_inventory.iff")
-			inventory = obj;
+	// Find nearest ticket collector.
+	auto ticket_collectors = simulation_->FindObjectsInRangeByTag(object, "ticket_collector", 16.0f);
 
-	});
-
-	if(inventory == nullptr)
+	if(inventory == nullptr || ticket_collectors.size() < 1)
 		return in;
 
+	auto ticket_collector = (*ticket_collectors.begin()).second;
 
+	if(ticket_collector == nullptr)
+		return in;
+
+	auto descriptor = ticket_collector->GetAttributeAsString("travel_point");
+	std::cout << "Ticket Collector Travel Point Descriptor: " << std::string(descriptor.begin(), descriptor.end()) << std::endl;
 	inventory->ViewObjects(object, 0, true, [=, &in](std::shared_ptr<swganh::object::Object> obj){
-		std::cout << "Scanning... " << obj->GetTemplate() << std::endl;
-		if(obj->GetTemplate() == "object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff")
+		if(obj->GetTemplate() == "object/tangible/travel/travel_ticket/base/shared_base_travel_ticket.iff")
 		{
-			std::cout << "Got one!" << std::endl;
-			std::stringstream ss;
 			std::wstring depart = obj->GetAttribute<std::wstring>("travel_departure_point");
-			std::wstring arrival = obj->GetAttribute<std::wstring>("travel_arrival_point");
-			ss << std::string(depart.begin(), depart.end()) << " -- " << std::string(arrival.begin(), arrival.end());
-			in.push_back(ss.str());
+			std::cout << "Ticket Departure: " << std::string(depart.begin(), depart.end()) << std::endl;
+			if(depart.compare(descriptor) == 0) {
+				std::stringstream ss;
+				std::wstring arrival = obj->GetAttribute<std::wstring>("travel_arrival_point");
+				ss << std::string(depart.begin(), depart.end()) << " -- " << std::string(arrival.begin(), arrival.end());
+				in.push_back(ss.str());
+			}
 		}
 	});
 	return in;
 }
 
+std::shared_ptr<swganh::object::Object> TravelService::GetAvailableInventoryTicketBySelection(std::shared_ptr<swganh::object::Object> object, uint32_t selection)
+{
+	std::shared_ptr<swganh::object::Object> out = nullptr;
+	auto inventory = simulation_->GetEquipmentService()->GetEquippedObject(object, "inventory");
+
+	// Find nearest ticket collector.
+	auto ticket_collectors = simulation_->FindObjectsInRangeByTag(object, "ticket_collector", 16.0f);
+
+	if(inventory == nullptr || ticket_collectors.size() < 1)
+		return out;
+
+	auto ticket_collector = (*ticket_collectors.begin()).second;
+
+	if(ticket_collector == nullptr)
+		return out;
+
+	auto descriptor = ticket_collector->GetAttributeAsString("travel_point");
+	uint32_t cindex = 0;
+	std::cout << "Ticket Collector Travel Point Descriptor: " << std::string(descriptor.begin(), descriptor.end()) << std::endl;
+	inventory->ViewObjects(object, 0, true, [=, &out, &cindex](std::shared_ptr<swganh::object::Object> obj){
+		if(obj->GetTemplate() == "object/tangible/travel/travel_ticket/base/shared_base_travel_ticket.iff")
+		{
+			std::wstring depart = obj->GetAttribute<std::wstring>("travel_departure_point");
+			if(depart.compare(descriptor) == 0) {
+				std::cout << "Added Ticket: " << std::string(depart.begin(), depart.end()) << std::endl;
+				if(cindex == selection) out = obj;
+				cindex++;
+			}
+		}
+	});
+
+	return out;
+}
+
+
 std::shared_ptr<swganh::object::Object> TravelService::GetInventoryTicket(std::shared_ptr<swganh::object::Object> object, uint32_t index)
 {
-	std::cout << "Here1" << std::endl;
-	std::shared_ptr<swganh::object::Object> inventory = nullptr;
+	auto inventory = simulation_->GetEquipmentService()->GetEquippedObject(object, "inventory");
 	std::shared_ptr<swganh::object::Object> ticket = nullptr;
-	object->ViewObjects(object, 0, true, [=, &inventory](std::shared_ptr<swganh::object::Object> obj) {
-		if(obj->GetTemplate() == "object/tangible/inventory/shared_character_inventory.iff") {
-			std::cout << "Here2" << std::endl;
-			inventory = obj;
-		}
-
-	});
 
 	if(inventory == nullptr)
 		return ticket;
 
 	uint32_t cindex = 0;
 	inventory->ViewObjects(object, 0, true, [=, &cindex, &ticket](std::shared_ptr<swganh::object::Object> obj){
-		std::cout << "Here3" << std::endl;
 		if(index == cindex) {
-			std::cout << "Here4" << std::endl;
 			ticket = obj;
 		}
 		cindex++;

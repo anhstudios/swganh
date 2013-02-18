@@ -28,5 +28,6 @@ void exportTravelService()
 		.def("useTicket", &TravelServiceInterface::UseTicket, "")
 		.def("getAvailableTickets", &TravelServiceInterface::GetAvailableTickets, "")
 		.def("getInventoryTicket", &TravelServiceInterface::GetInventoryTicket, "")
+		.def("getAvailableInventoryTicketBySelection", &TravelServiceInterface::GetAvailableInventoryTicketBySelection, "")
 		;
 }

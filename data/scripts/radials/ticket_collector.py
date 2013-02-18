@@ -21,7 +21,6 @@ class PyRadialMenu(RadialMenu):
 		equipment = self.getKernel().serviceManager().equipmentService()
 		inventory = equipment.getEquippedObject(owner, "inventory")
 		travel = self.getKernel().serviceManager().travelService()
-		self.Travel = travel
 		opts = travel.getAvailableTickets(owner)
 		options = EventResultList()
 		for i in range(0, len(opts)):
@@ -40,8 +39,7 @@ class PyRadialMenu(RadialMenu):
 		if event_id == 0:
 			selection = str(results[0])
 			print(int(selection))
-			#travel = kernel.serviceManager().travelService()
-			ticket = self.Travel.getInventoryTicket(owner, int(selection))
-			print(selection)
-			self.Travel.useTicket(owner, ticket)
+			travel = self.getKernel().serviceManager().travelService()
+			ticket = travel.getAvailableInventoryTicketBySelection(owner, int(selection))
+			travel.useTicket(owner, ticket)
 		return True;

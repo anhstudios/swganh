@@ -89,7 +89,7 @@ void MovementManager::HandleDataTransform(
 {    
     if (!ValidateCounter_(object->GetObjectId(), message.counter))
     {
-		LOG(error) << "Counter " << message.counter << " not validated! Should be " << counter_map_[object->GetObjectId()] << ".";
+		LOG(error) << "Movement Counter is " << message.counter << " should be " << (counter_map_[object->GetObjectId()] + 1) << ".";
         return;
     }
 
@@ -106,7 +106,6 @@ void MovementManager::HandleDataTransform(
 	else
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 
-	std::cout << "DataTransform... " << object->GetSceneId() << ":" << object->GetObjectId() << ":" << message.counter <<  std::endl;
     SendUpdateDataTransformMessage(object);
 }
 
@@ -120,7 +119,7 @@ void MovementManager::HandleDataTransformWithParent(
 	{
 		if (!ValidateCounter_(object->GetObjectId(), message.counter))
 		{
-			LOG(error) << "Counter " << message.counter << " not validated! Should be " << counter_map_[object->GetObjectId()] << ".";
+			LOG(error) << "Movement Counter is " << message.counter << " should be " << (counter_map_[object->GetObjectId()] + 1) << ".";
 			return;
 		}
 
@@ -135,7 +134,6 @@ void MovementManager::HandleDataTransformWithParent(
 			object->GetContainer()->TransferObject(object, object, container);
 
 		//Send the update transform
-		std::cout << "DataTransformParent..." << object->GetSceneId() << ":" << object->GetObjectId() << ":" << message.counter << std::endl;
 		SendUpdateDataTransformWithParentMessage(object);
 	}
 	else

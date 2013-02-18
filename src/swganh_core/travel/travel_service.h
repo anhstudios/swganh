@@ -26,6 +26,10 @@ namespace messages {
 	struct PlanetTravelPointListRequest;
 } // namespace swganh::messages
 
+namespace equipment {
+	class EquipmentService;
+}
+
 namespace travel {
 
 	struct TravelPoint
@@ -67,6 +71,7 @@ namespace travel {
 
 		virtual void UseTicket(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<swganh::object::Object> ticket);
 		virtual std::vector<std::string> GetAvailableTickets(std::shared_ptr<swganh::object::Object> object);
+		virtual std::shared_ptr<swganh::object::Object> GetAvailableInventoryTicketBySelection(std::shared_ptr<swganh::object::Object> object, uint32_t selection);
 		virtual std::shared_ptr<swganh::object::Object> GetInventoryTicket(std::shared_ptr<swganh::object::Object> object, uint32_t index);
 	private:
 
@@ -82,5 +87,6 @@ namespace travel {
 		swganh::app::SwganhKernel* kernel_;
 		swganh::simulation::SimulationService* simulation_;
 		swganh::command::CommandService* command_;
+		swganh::equipment::EquipmentService* equipment_;
 	};
 }} // namespace swganh::travel
