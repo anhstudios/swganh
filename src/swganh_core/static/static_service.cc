@@ -280,6 +280,13 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 		{
 			object->SetAttribute("radial_filename", L"radials.bank");
 		}
+		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_travel.iff") == 0)
+		{
+			object->SetFlag("travel_terminal");
+			auto location_descriptor = result->getString(14).asStdString();
+			object->SetAttribute("location_descriptor", std::wstring(location_descriptor.begin(), location_descriptor.end()));
+			object->SetAttribute("radial_filename", L"radials.travel");
+		}
 	}
 }
 
@@ -366,6 +373,11 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		auto travel_point = result->getString(14).asStdString();
+		object->SetAttribute("travel_point", std::wstring(travel_point.begin(), travel_point.end()));
+		object->SetFlag("ticket_collector");
+		object->SetAttribute("radial_filename", L"radials.ticket_collector");
 	}
 }
 
@@ -491,6 +503,8 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		object->SetFlag("shuttle");
 
 		spawn_service->StartManagingObject(object, L"shuttle");
 	}

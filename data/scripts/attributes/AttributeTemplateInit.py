@@ -12,5 +12,6 @@ attributeTemplates.extend ([
 'ShipAttributeTemplate', #8
 'StaticNPCAttributeTemplate', #9
 'WeaponAttributeTemplate', #10
-'WearableAttributeTemplate' #11
+'WearableAttributeTemplate', #11
+'TicketAttributeTemplate' # 12
 ])

@@ -16,6 +16,7 @@ add_subdirectory(simulation)
 add_subdirectory(static)
 add_subdirectory(sui)
 add_subdirectory(terrain)
+add_subdirectory(travel)
 add_subdirectory(weather)
 
 add_custom_target(

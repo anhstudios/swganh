@@ -8,7 +8,7 @@ def create(kernel):
 	result = Tangible()
 
 	result.template = "object/tangible/travel/travel_ticket/base/shared_base_travel_ticket.iff"
-	result.attribute_template_id = -1
+	result.attribute_template_id = 12
 	result.stfName("travel","base_ticket")		
 	
 	#### BEGIN MODIFICATIONS ####

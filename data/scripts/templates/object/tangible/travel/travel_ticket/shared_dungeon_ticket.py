@@ -8,10 +8,13 @@ def create(kernel):
 	result = Tangible()
 
 	result.template = "object/tangible/travel/travel_ticket/shared_dungeon_ticket.iff"
-	result.attribute_template_id = -1
+	result.attribute_template_id = 12
 	result.stfName("dungeon/space_dungeon","dungeon_ticket")		
-	
+		
 	#### BEGIN MODIFICATIONS ####
 	####  END MODIFICATIONS  ####
-	
+		
 	return result
+
+def loadTemplates(addTemplate):
+	addTemplate(Template())

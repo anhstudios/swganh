@@ -30,8 +30,9 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh::simulation;
 
-MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
+MovementManager::MovementManager(swganh::app::SwganhKernel* kernel, std::string scene_name)
 	: kernel_(kernel)
+	, scene_name_(scene_name)
 {
 	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 
@@ -88,6 +89,7 @@ void MovementManager::HandleDataTransform(
 {    
     if (!ValidateCounter_(object->GetObjectId(), message.counter))
     {
+		LOG(error) << "Movement Counter is " << message.counter << " should be " << (counter_map_[object->GetObjectId()] + 1) << ".";
         return;
     }
 
@@ -117,6 +119,7 @@ void MovementManager::HandleDataTransformWithParent(
 	{
 		if (!ValidateCounter_(object->GetObjectId(), message.counter))
 		{
+			LOG(error) << "Movement Counter is " << message.counter << " should be " << (counter_map_[object->GetObjectId()] + 1) << ".";
 			return;
 		}
 
@@ -197,10 +200,8 @@ void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
     {
         const auto& object = static_pointer_cast<swganh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
         
-        if (counter_map_.find(object->GetObjectId()) == counter_map_.end())
-        {
-            counter_map_[object->GetObjectId()] = 0;
-        }
+		LOG(error) << "Resetting counter... " << object->GetObjectId() << ":" << scene_name_;
+		counter_map_[object->GetObjectId()] = 0;
 
         if (object->GetContainer())
         {
@@ -223,6 +224,14 @@ void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
 bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)
 {    
     return counter > counter_map_[object_id];
+}
+
+void MovementManager::ResetMovementCounter(std::shared_ptr<swganh::object::Object> object)
+{
+	if(counter_map_.find(object->GetObjectId()) == counter_map_.end())
+		return;
+
+	counter_map_[object->GetObjectId()] = 0;
 }
 
 void MovementManager::SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider)
