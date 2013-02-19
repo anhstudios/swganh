@@ -20,7 +20,7 @@
 
 #include "swganh/logger.h"
 
-#include "swganh/database/database_manager_interface.h"
+#include "swganh/database/database_manager.h"
 #include "swganh/service/service_manager.h"
 #include "swganh/service/service_directory_interface.h"
 

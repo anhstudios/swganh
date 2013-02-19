@@ -85,7 +85,7 @@ public:
     uint64_t GetObjectIdByCustomName(const std::string& custom_name);
 
 private:
-    swganh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManager* db_manager_;
 	swganh::command::CommandServiceInterface* command_service_;
     swganh::simulation::SimulationServiceInterface* simulation_service_;
     swganh::app::SwganhKernel* kernel_;

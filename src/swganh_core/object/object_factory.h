@@ -13,7 +13,7 @@
 
 namespace swganh {
 namespace database {
-class DatabaseManagerInterface;
+class DatabaseManager;
 }} // swganh::database
 
 namespace sql {
@@ -69,7 +69,7 @@ namespace object {
 		// Fiils in missing data for the object from the client file...
 		void GetClientData(const std::shared_ptr<Object>& object);
 
-		swganh::database::DatabaseManagerInterface* GetDatabaseManager() { return kernel_->GetDatabaseManager(); }
+		swganh::database::DatabaseManager* GetDatabaseManager() { return kernel_->GetDatabaseManager(); }
 		swganh::EventDispatcher* GetEventDispatcher() { return kernel_->GetEventDispatcher(); }
     protected:
         void LoadContainedObjects(const std::shared_ptr<Object>& object,

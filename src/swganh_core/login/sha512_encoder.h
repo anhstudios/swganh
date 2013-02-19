@@ -5,7 +5,7 @@
 #include "swganh_core/login/encoders/encoder_interface.h"
 #include <memory>
 
-namespace swganh { namespace database { class DatabaseManagerInterface; 
+namespace swganh { namespace database { class DatabaseManager; 
 }}  // swganh::database
 
 namespace swganh {
@@ -20,7 +20,7 @@ public:
 	/**
 	* Creates a new instance
 	*/
-    explicit Sha512Encoder(swganh::database::DatabaseManagerInterface* db_manager);
+    explicit Sha512Encoder(swganh::database::DatabaseManager* db_manager);
 
 	/**
 	* Encodes a password with the given salt and returns the value
@@ -32,7 +32,7 @@ public:
 	*/
     bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
 private:
-    swganh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManager* db_manager_;
 };
 
 }}  // namespace swganh::login

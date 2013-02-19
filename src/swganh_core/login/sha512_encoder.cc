@@ -3,12 +3,6 @@
 
 #include "sha512_encoder.h"
 
-#include <cppconn/connection.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/sqlstring.h>
-
 #include "swganh/logger.h"
 
 #include "swganh/database/database_manager.h"
@@ -17,7 +11,7 @@ using namespace swganh::database;
 using namespace swganh::login;
 using namespace std;
 
-Sha512Encoder::Sha512Encoder(DatabaseManagerInterface* db_manager)
+Sha512Encoder::Sha512Encoder(DatabaseManager* db_manager)
     : db_manager_(db_manager) {}
 
 string Sha512Encoder::EncodePassword(string raw, string salt) {

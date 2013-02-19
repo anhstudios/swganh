@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include <swganh/utility_python.h>
+#include <swganh/scripting/utility_python.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 

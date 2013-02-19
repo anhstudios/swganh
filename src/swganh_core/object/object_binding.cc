@@ -5,7 +5,7 @@
 #include <Python.h>
 #endif
 
-#include "swganh/python_shared_ptr.h"
+#include "swganh/scripting/python_shared_ptr.h"
 #include "swganh_core/object/object_binding.h"
 #include "swganh_core/object/creature/creature_binding.h"
 #include "swganh_core/object/player/player_binding.h"

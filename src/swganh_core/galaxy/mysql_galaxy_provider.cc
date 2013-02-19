@@ -3,21 +3,13 @@
 
 #include "mysql_galaxy_provider.h"
 
-#include <cppconn/exception.h>
-#include <cppconn/connection.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/sqlstring.h>
-
 #include "swganh/logger.h"
-
 #include "swganh/database/database_manager.h"
 
 using namespace swganh::galaxy;
 using namespace std;
 
-MysqlGalaxyProvider::MysqlGalaxyProvider(swganh::database::DatabaseManagerInterface* db_manager)
+MysqlGalaxyProvider::MysqlGalaxyProvider(swganh::database::DatabaseManager* db_manager)
     : GalaxyProviderInterface()
     , db_manager_(db_manager) {}
 

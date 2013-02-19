@@ -6,7 +6,7 @@
 #include <Python.h>
 #endif
 
-#include "swganh/python_shared_ptr.h"
+#include "swganh/scripting/python_shared_ptr.h"
 #include "static_service_interface.h"
 
 #include <boost/python.hpp>

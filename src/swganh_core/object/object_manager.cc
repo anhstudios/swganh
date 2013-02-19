@@ -23,7 +23,7 @@
 
 #include "swganh/scripting/utilities.h"
 
-#include "swganh/database/database_manager_interface.h"
+#include "swganh/database/database_manager.h"
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
