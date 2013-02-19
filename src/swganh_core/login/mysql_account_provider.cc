@@ -5,13 +5,6 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <cppconn/exception.h>
-#include <cppconn/connection.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/sqlstring.h>
-
 #include "swganh/logger.h"
 
 #include "swganh/database/database_manager.h"
@@ -22,7 +15,7 @@ using namespace providers;
 using namespace swganh::login;
 using namespace std;
 
-MysqlAccountProvider::MysqlAccountProvider(swganh::database::DatabaseManagerInterface* db_manager)
+MysqlAccountProvider::MysqlAccountProvider(swganh::database::DatabaseManager* db_manager)
     : AccountProviderInterface()
     , db_manager_(db_manager) {}
 

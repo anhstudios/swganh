@@ -22,7 +22,7 @@
 #include <boost/program_options.hpp>
 
 #include "swganh/logger.h"
-#include "swganh/database/database_manager_interface.h"
+#include "swganh/database/database_manager.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh/service/datastore.h"

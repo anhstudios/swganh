@@ -22,7 +22,6 @@ using namespace swganh::service;
 using namespace swganh::app;
 
 using swganh::app::Version;
-using swganh::database::DatabaseManagerInterface;
 using swganh::database::DatabaseManager;
 using swganh::plugin::PluginManager;
 using swganh::service::ServiceManager;
@@ -67,7 +66,7 @@ AppConfig& SwganhKernel::GetAppConfig() {
     return app_config_;
 }
 
-DatabaseManagerInterface* SwganhKernel::GetDatabaseManager() {
+DatabaseManager* SwganhKernel::GetDatabaseManager() {
     if (!database_manager_) {
         database_manager_.reset(new DatabaseManager(sql::mysql::get_driver_instance()));
     }
