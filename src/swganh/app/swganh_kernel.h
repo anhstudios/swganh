@@ -33,6 +33,7 @@ struct AppConfig {
     std::string galaxy_name;
     std::string tre_config;
     uint32_t resource_cache_size;
+    uint32_t db_threads;
 
     /*!
     * @Brief Contains information about the database config"

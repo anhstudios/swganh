@@ -68,7 +68,7 @@ AppConfig& SwganhKernel::GetAppConfig() {
 
 DatabaseManager* SwganhKernel::GetDatabaseManager() {
     if (!database_manager_) {
-        database_manager_.reset(new DatabaseManager(sql::mysql::get_driver_instance()));
+        database_manager_.reset(new DatabaseManager(sql::mysql::get_driver_instance(), GetAppConfig().db_threads));
     }
 
     return database_manager_.get();

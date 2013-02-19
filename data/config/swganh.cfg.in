@@ -11,6 +11,8 @@ script_directory = @PROJECT_SOURCE_DIR@/data/scripts
 
 resource_cache_size = 500
 
+db_threads = 2
+
 [db.galaxy_manager]
 host = localhost
 schema = galaxy_manager
