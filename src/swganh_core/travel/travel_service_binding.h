@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "swganh/python_shared_ptr.h"
+#include "swganh/scripting/python_shared_ptr.h"
 #include "travel_service_interface.h"
 
 #include <boost/python.hpp>

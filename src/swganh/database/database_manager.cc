@@ -19,17 +19,14 @@ DatabaseManager::DatabaseManager(sql::Driver* driver)
 DatabaseManager::~DatabaseManager() 
 {
     std::for_each(connections_.begin(), connections_.end(), [] (ConnectionPoolMap::value_type& conn) {
-        if (conn.second.empty()) {
-            return;
-        }
-
-        do {
+        while (!conn.second.empty()) 
+        {
             // close each connection and pop it from the list
             std::shared_ptr<sql::Connection> connection;
             if (conn.second.try_pop(connection)) {
                 connection->close();
             }
-        } while (!conn.second.empty());
+        }
     });
 }
 

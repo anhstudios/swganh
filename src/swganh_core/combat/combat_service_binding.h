@@ -6,7 +6,7 @@
 #include <Python.h>
 #endif
 
-#include "swganh/python_shared_ptr.h"
+#include "swganh/scripting/python_shared_ptr.h"
 #include "swganh_core/combat/combat_service_interface.h"
 #include "swganh_core/combat/buff_interface.h"
 #include "swganh/scripting/utilities.h"
