@@ -16,6 +16,19 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
+#ifdef WIN32
+#include <concurrent_unordered_map.h>
+#include <concurrent_queue.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+#include <tbb/concurrent_queue.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_unordered_map;
+    using ::tbb::concurrent_queue;
+}
+#endif
+
 #include "swganh/hash_string.h"
 
 namespace swganh {
@@ -26,6 +39,20 @@ class DatabaseManagerImpl;
 /*! An identifier used to label different persistant data storage types.
 */
 typedef swganh::HashString StorageType;
+
+struct ConnectionData {
+    ConnectionData(std::string schema_, std::string host_, std::string username_, std::string password_)
+        : schema(std::move(schema_))
+        , host(std::move(host_))
+        , username(std::move(username_))
+        , password(std::move(password_))
+    {}
+
+    std::string schema;
+    std::string host;
+    std::string username;
+    std::string password;
+};
 
 /*! Exposes an API for managing mysql connector/c++ connections.
 */
@@ -70,15 +97,25 @@ public:
     */
     std::shared_ptr<sql::Connection> getConnection(const StorageType& storage_type);
     
+
+
 private:
     // disable the default constructor to ensure that DatabaseManager is always
     // created with a driver instance
     DatabaseManager();
+    
+    std::shared_ptr<sql::Connection> CreateConnection(const std::shared_ptr<ConnectionData>& connection_data, const StorageType& storage_type);
+    
+    void recycleConnection_(const StorageType& storage_type, sql::Connection* connection);
 
-    // private implementation of the database manager internals make it easier
-    // to modify how the connection pooling works under the hood without affecting
-    // users of the api
-    std::unique_ptr<DatabaseManagerImpl> pimpl_;
+    sql::Driver* driver_;
+    
+    typedef Concurrency::concurrent_unordered_map<StorageType, std::shared_ptr<ConnectionData>> ConnectionDataMap;
+    ConnectionDataMap connection_data_;
+    
+    typedef Concurrency::concurrent_queue<std::shared_ptr<sql::Connection>> ConnectionPool;
+    typedef Concurrency::concurrent_unordered_map<StorageType, ConnectionPool> ConnectionPoolMap;
+    ConnectionPoolMap connections_;
 };
 
 }  // namespace database
