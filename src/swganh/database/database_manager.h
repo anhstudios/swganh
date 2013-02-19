@@ -30,11 +30,10 @@ namespace Concurrency {
 #endif
 
 #include "swganh/hash_string.h"
+#include "swganh/thread_pool.h"
 
 namespace swganh {
 namespace database {
-
-class DatabaseManagerImpl;
 
 /*! An identifier used to label different persistant data storage types.
 */
@@ -63,8 +62,9 @@ public:
     *
     * @param driver An instance of the sql driver used to provide concrete 
     *      functionality for the database layer.
+    * @param num_threads The number of database worker threads to spin up.
     */
-    explicit DatabaseManager(sql::Driver* driver);
+    DatabaseManager(sql::Driver* driver, uint32_t num_threads = 1);
 
     ~DatabaseManager();
 
@@ -96,8 +96,33 @@ public:
     * the storage type has not been seen before.
     */
     std::shared_ptr<sql::Connection> getConnection(const StorageType& storage_type);
-    
 
+    /*! Execute an asyncronous database task on one of its dedicated worker threads.
+    *
+    * @param task The task to be executed, must accept a const std::shared_ptr<sql::Connection>& as
+    *             its only parameter.
+    * @param storage_type The storage type the task should be executed on.
+    * @return A std::future for the return value of the task.
+    */
+    template<typename T>
+    std::future<typename std::result_of<T()>::type> ExecuteAsync(T&& task, const StorageType& storage_type)
+    {
+        return thread_pool_.Schedule(std::bind(task, getConnection(storage_type)));
+    }
+
+    /*! Execute an asyncronous database task on one of its dedicated worker threads.
+    *
+    * @param task Member function pointer to the task to be executed, must accept a const std::shared_ptr<sql::Connection>& as
+    *             its only parameter.
+    * @param instance The instance of the object containing the task to be executed.
+    * @param storage_type The storage type the task should be executed on.
+    * @return A std::future for the return value of the task.
+    */
+    template<typename R, typename T, typename U>
+    std::future<R> ExecuteAsync(R (T::*task)(const std::shared_ptr<sql::Connection>&), U* instance, const StorageType& storage_type)
+    {
+        return ExecuteAsync(std::bind(task, instance, std::placeholders::_1), storage_type);
+    }
 
 private:
     // disable the default constructor to ensure that DatabaseManager is always
@@ -116,6 +141,8 @@ private:
     typedef Concurrency::concurrent_queue<std::shared_ptr<sql::Connection>> ConnectionPool;
     typedef Concurrency::concurrent_unordered_map<StorageType, ConnectionPool> ConnectionPoolMap;
     ConnectionPoolMap connections_;
+
+    ThreadPool thread_pool_;
 };
 
 }  // namespace database

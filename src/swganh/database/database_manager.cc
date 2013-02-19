@@ -12,8 +12,9 @@
 
 using namespace swganh::database;
 
-DatabaseManager::DatabaseManager(sql::Driver* driver)   
-: driver_(driver)
+DatabaseManager::DatabaseManager(sql::Driver* driver, uint32_t num_threads)   
+    : driver_(driver)
+    , thread_pool_(num_threads)
 {}
 
 DatabaseManager::~DatabaseManager() 
