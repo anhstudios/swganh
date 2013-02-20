@@ -5,9 +5,10 @@
 #include <swganh_core/travel/travel_service_interface.h>
 
 #include <glm/glm.hpp>
-
+#include "swganh/database/database_manager.h"
 #include <swganh/app/swganh_kernel.h>
 #include <swganh_core/connection/connection_client_interface.h>
+
 
 namespace swganh {
 namespace command {
@@ -77,9 +78,9 @@ namespace travel {
 
 		void HandlePlanetTravelPointListRequest(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::PlanetTravelPointListRequest* message);
 
-		void LoadStaticTravelPoints();
-		void LoadDynamicTravelPoints();
-		void LoadPlanetaryRouteMap();
+		void LoadStaticTravelPoints(const std::shared_ptr<sql::Connection>& connection);
+		void LoadDynamicTravelPoints(const std::shared_ptr<sql::Connection>& connection);
+		void LoadPlanetaryRouteMap(const std::shared_ptr<sql::Connection>& connection);
 
 		std::vector<TravelPoint> travel_points_;
 		std::vector<PlanetaryTravelRoute> planetary_travel_routes_;

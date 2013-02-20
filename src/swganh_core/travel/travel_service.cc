@@ -53,8 +53,8 @@ void TravelService::Startup()
 	command_ = kernel_->GetServiceManager()->GetService<CommandService>("CommandService");
 	equipment_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
 
-	LoadStaticTravelPoints();
-	LoadPlanetaryRouteMap();
+	kernel_->GetDatabaseManager()->ExecuteAsync(&TravelService::LoadStaticTravelPoints, this, "swganh_static").get();
+	kernel_->GetDatabaseManager()->ExecuteAsync(&TravelService::LoadPlanetaryRouteMap, this, "swganh_static").get();
 
 	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
@@ -98,12 +98,11 @@ void TravelService::BeginTicketTransaction(std::shared_ptr<Object> object)
 	object->GetController()->Notify(&enter_ticket);
 }
 
-void TravelService::LoadPlanetaryRouteMap()
+void TravelService::LoadPlanetaryRouteMap(const std::shared_ptr<sql::Connection>& connection)
 {
 	try
 	{
-		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto statement = std::shared_ptr<sql::Statement>(connection->createStatement());
 		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetPlanetaryTravelRoutes();"));
 
 		while(result->next())
@@ -121,12 +120,11 @@ void TravelService::LoadPlanetaryRouteMap()
 	}
 }
 
-void TravelService::LoadStaticTravelPoints()
+void TravelService::LoadStaticTravelPoints(const std::shared_ptr<sql::Connection>& connection)
 {
 	try
 	{
-		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto statement = std::shared_ptr<sql::Statement>(connection->createStatement());
 		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetTravelPoints();"));
 
 		while(result->next())
@@ -435,12 +433,10 @@ std::vector<std::string> TravelService::GetAvailableTickets(std::shared_ptr<swga
 		return in;
 
 	auto descriptor = ticket_collector->GetAttributeAsString("travel_point");
-	std::cout << "Ticket Collector Travel Point Descriptor: " << std::string(descriptor.begin(), descriptor.end()) << std::endl;
 	inventory->ViewObjects(object, 0, true, [=, &in](std::shared_ptr<swganh::object::Object> obj){
 		if(obj->GetTemplate() == "object/tangible/travel/travel_ticket/base/shared_base_travel_ticket.iff")
 		{
 			std::wstring depart = obj->GetAttribute<std::wstring>("travel_departure_point");
-			std::cout << "Ticket Departure: " << std::string(depart.begin(), depart.end()) << std::endl;
 			if(depart.compare(descriptor) == 0) {
 				std::stringstream ss;
 				std::wstring arrival = obj->GetAttribute<std::wstring>("travel_arrival_point");
