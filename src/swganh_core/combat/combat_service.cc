@@ -15,7 +15,7 @@
 
 #include "swganh/crc.h"
 #include "swganh/event_dispatcher.h"
-#include "swganh/database/database_manager_interface.h"
+#include "swganh/database/database_manager.h"
 #include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"

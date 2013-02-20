@@ -80,7 +80,8 @@ void BadgeService::Startup()
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 	equipment_service_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
 
-	LoadBadges_();
+    kernel_->GetDatabaseManager()->ExecuteAsync(&BadgeService::LoadBadges_, this, "swganh_static");
+
 	LoadBadgeRegions_();
 	
 	// Subscribe to requestbadges CommandQueueEnqueue.
@@ -220,12 +221,11 @@ const std::shared_ptr<Badge> BadgeService::FindBadge(std::string name)
 		return nullptr;
 }
 
-void BadgeService::LoadBadges_()
+void BadgeService::LoadBadges_(const std::shared_ptr<sql::Connection>& connection)
 {
-	try 
+	try
 	{
-		auto conn = kernel_->GetDatabaseManager()->getConnection("swganh_static");
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		auto statement = std::shared_ptr<sql::Statement>(connection->createStatement());
 		auto result = std::shared_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetBadges();"));
 
 		while(result->next())
