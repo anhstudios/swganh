@@ -111,6 +111,8 @@ StaticService::StaticService(SwganhKernel* kernel)
             } catch(std::exception& e) {
             	LOG(warning) << e.what();
             }
+
+			//@todo: remove this hardcoded spawn
             if (real_event->scene_id-1 == 0)
             {
             	// Create a combat dummy
@@ -252,6 +254,9 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 
 		object->SetStfName(result->getString(13), result->getString(12)); 
 
+		auto location_descriptor = result->getString(14).asStdString();
+		object->SetAttribute("location_descriptor", std::wstring(location_descriptor.begin(), location_descriptor.end()));
+
 		std::string name = result->getString(16);
 		object->SetCustomName(std::wstring(name.begin(), name.end()));
 
@@ -274,19 +279,6 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 				parent->AddObject(nullptr, object);
 			}
 		}
-		// Check if it's a bank
-		// TODO: Remove once prototypes are in..
-		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_bank.iff") == 0)
-		{
-			object->SetAttribute("radial_filename", L"radials.bank");
-		}
-		if (object->GetTemplate().compare("object/tangible/terminal/shared_terminal_travel.iff") == 0)
-		{
-			object->SetFlag("travel_terminal");
-			auto location_descriptor = result->getString(14).asStdString();
-			object->SetAttribute("location_descriptor", std::wstring(location_descriptor.begin(), location_descriptor.end()));
-			object->SetAttribute("radial_filename", L"radials.travel");
-		}
 	}
 }
 
@@ -301,8 +293,6 @@ void StaticService::_loadElevatorData(SimulationServiceInterface* simulation_ser
 		auto terminal = simulation_service->GetObjectById(terminal_id);
 		if(terminal == nullptr)
 			continue;
-		
-		terminal->SetAttribute<std::wstring>("radial_filename", L"radials.elevator");
 
 		elevator_data->dst_cell = result->getUInt64(2);
 		elevator_data->dst_orientation = glm::quat(
@@ -313,11 +303,6 @@ void StaticService::_loadElevatorData(SimulationServiceInterface* simulation_ser
 		elevator_data->dst_position = glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9));
 		elevator_data->effect_id = result->getUInt(10);
 		elevator_data->going_down = result->getUInt(11) != 0;
-
-		if(elevator_data->going_down)
-			terminal->SetAttribute<int32_t>("elevator_can_go_down", 0);
-		else
-			terminal->SetAttribute<int32_t>("elevator_can_go_up", 0);
 
 		auto find_itr = elevator_lookup_.find(terminal_id);
 		if(find_itr == elevator_lookup_.end())
