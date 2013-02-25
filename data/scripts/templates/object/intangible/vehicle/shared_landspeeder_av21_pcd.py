@@ -12,6 +12,7 @@ def create(kernel):
 	result.stfName("monster_name","landspeeder_av21")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.setStringAttribute("radial_filename", "radials.pcd_vehicle")
 	####  END MODIFICATIONS  ####
 	
 	return result

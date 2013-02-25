@@ -12,6 +12,8 @@ def create(kernel):
 	result.stfName("pet_deed","jetpack")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.setStringAttribute("radial_filename", "radials.deed_datapad")
+	result.setStringAttribute("deed_result", "object/intangible/vehicle/shared_jetpack_pcd.iff")
 	####  END MODIFICATIONS  ####
 	
 	return result
