@@ -15,6 +15,7 @@ class PyRadialMenu(RadialMenu):
 		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu4, 3, 'Structures Pack'))
 		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu5, 3, 'Pets Pack'))
 		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu6, 3, 'Droids Pack'))
+		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu7, 3, 'Instrument Pack'))
 		return radial_list
 	
 	def giveItems(self, owner, list):
@@ -77,7 +78,8 @@ class PyRadialMenu(RadialMenu):
 			self.giveItems(owner, self.petDeeds)
 		elif action == RadialIdentifier.serverMenu6:
 			self.giveItems(owner, self.droidDeeds)
-		
+		elif action == RadialIdentifier.serverMenu7:
+			self.giveItems(owner, self.instruments)
 				
 	vehicleDeeds = ('object/tangible/deed/vehicle_deed/shared_jetpack_deed.iff',
 					'object/tangible/deed/vehicle_deed/shared_landspeeder_av21_deed.iff',
@@ -567,3 +569,14 @@ class PyRadialMenu(RadialMenu):
 					'object/tangible/deed/pet_deed/shared_deed_treadwell_advanced_basic.iff',
 					'object/tangible/deed/pet_deed/shared_deed_treadwell_basic.iff',
 					)
+					
+	instruments = ( 'object/tangible/instrument/shared_bandfill.iff',
+					'object/tangible/instrument/shared_fanfar.iff',
+					'object/tangible/instrument/shared_fizz.iff',
+					'object/tangible/instrument/shared_flute_droopy.iff',
+					'object/tangible/instrument/shared_instrument_kloo_horn.iff',
+					'object/tangible/instrument/shared_mandoviol.iff',
+					'object/tangible/instrument/shared_nalargon.iff',
+					'object/tangible/instrument/shared_ommni_box.iff',
+					'object/tangible/instrument/shared_slitherhorn.iff',
+					'object/tangible/instrument/shared_traz.iff')
