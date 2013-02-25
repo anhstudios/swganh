@@ -67,9 +67,12 @@ class PyRadialMenu(RadialMenu):
 		elif action == RadialIdentifier.serverMenu2:
 			self.displaySUIList(owner, ['Melee Weapons', 'Ranged Weapons', 'Misc Weapons'], 'weaponCallback')
 		elif action == RadialIdentifier.serverMenu3:
-			self.displaySUIList(owner, ['Option A', 'Option B'], 'armorCallback')
+			self.displaySUIList(owner, ['Bone', 'Bounty Hunter', 'Chitin', 'Composite', 
+			'Ithorian Defender', 'Ithorian Guardian', 'Ithorian Sentinel', 'Mandalorian', 
+			'Marine', 'Padded', 'Ris', 'Stormtrooper', 'Tantel', 'Ubese'], 'armorCallback')
 		elif action == RadialIdentifier.serverMenu4:
-			self.displaySUIList(owner, ['Crafting Structures', 'Housing Structures', 'Corellia Civic Structures', 'Naboo Civic Structures', 'Tatooine Civic Structures', 'Guild Structures', 'Faction Structures'], 'structureCallback')
+			self.displaySUIList(owner, ['Crafting Structures', 'Housing Structures', 'Corellia Civic Structures', 
+			'Naboo Civic Structures', 'Tatooine Civic Structures', 'Guild Structures', 'Faction Structures'], 'structureCallback')
 		elif action == RadialIdentifier.serverMenu5:
 			self.giveItems(owner, self.petDeeds)
 		elif action == RadialIdentifier.serverMenu6:
@@ -170,7 +173,142 @@ class PyRadialMenu(RadialMenu):
 					
 					()]
 
-	armor = [()]
+	armor = [	('object/tangible/wearables/armor/bone/shared_armor_bone_s01_bicep_l.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_bicep_r.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_boots.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_bracer_l.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_bracer_r.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_chest_plate.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_gloves.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_helmet.iff',
+				 'object/tangible/wearables/armor/bone/shared_armor_bone_s01_leggings.iff',),
+				
+				('object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_belt.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_bicep_l.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_bicep_r.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_boots.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_bracer_l.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_bracer_r.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_chest_plate.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_gloves.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_helmet.iff',
+				 'object/tangible/wearables/armor/bounty_hunter/shared_armor_bounty_hunter_leggings.iff'),
+				
+				('object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_bicep_l.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_bicep_r.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_boots.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_bracer_l.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_bracer_r.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_chest_plate.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_gloves.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_helmet.iff',
+				 'object/tangible/wearables/armor/chitin/shared_armor_chitin_s01_leggings.iff'),
+				 
+				('object/tangible/wearables/armor/composite/shared_armor_composite_bicep_l.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_bicep_r.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_boots.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_bracer_l.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_bracer_r.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_chest_plate.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_gloves.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_helmet.iff',
+				 'object/tangible/wearables/armor/composite/shared_armor_composite_leggings.iff'),
+				
+				('object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_bicep_l.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_bicep_r.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_boots.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_bracer_l.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_bracer_r.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_chest_plate.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_gloves.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_helmet.iff',
+				 'object/tangible/wearables/armor/ithorian_defender/shared_ith_armor_s01_leggings.iff'),
+				
+				('object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_bicep_l.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_bicep_r.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_boots.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_bracer_l.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_bracer_r.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_chest_plate.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_gloves.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_helmet.iff',
+				 'object/tangible/wearables/armor/ithorian_guardian/shared_ith_armor_s02_leggings.iff'),
+				
+				('object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_bicep_l.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_bicep_r.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_boots.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_bracer_l.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_bracer_r.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_chest_plate.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_gloves.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_helmet.iff',
+				 'object/tangible/wearables/armor/ithorian_sentinel/shared_ith_armor_s03_leggings.iff'),
+				 
+				('object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_belt.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_bicep_l.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_bicep_r.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_bracer_l.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_bracer_r.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_chest_plate.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_gloves.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_helmet.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_leggings.iff',
+				 'object/tangible/wearables/armor/mandalorian/shared_armor_mandalorian_shoes.iff'),
+				 
+				('object/tangible/wearables/armor/marine/shared_armor_marine_backpack.iff',
+				 'object/tangible/wearables/armor/marine/shared_armor_marine_bicep_l.iff',
+				 'object/tangible/wearables/armor/marine/shared_armor_marine_bicep_r.iff',
+				 'object/tangible/wearables/armor/marine/shared_armor_marine_boots.iff',
+				 'object/tangible/wearables/armor/marine/shared_armor_marine_chest_plate.iff',
+				 'object/tangible/wearables/armor/marine/shared_armor_marine_chest_plate_rebel.iff',
+				 'object/tangible/wearables/armor/marine/shared_armor_marine_helmet.iff',
+				 'object/tangible/wearables/armor/marine/shared_armor_marine_leggings.iff'),
+				
+				('object/tangible/wearables/armor/padded/shared_armor_padded_s01_belt.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_bicep_l.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_bicep_r.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_boots.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_bracer_l.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_bracer_r.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_chest_plate.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_gloves.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_helmet.iff',
+				 'object/tangible/wearables/armor/padded/shared_armor_padded_s01_leggings.iff'),
+				 
+				('object/tangible/wearables/armor/ris/shared_armor_ris_bicep_l.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_bicep_r.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_boots.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_bracer_l.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_bracer_r.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_chest_plate.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_gloves.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_helmet.iff',
+				 'object/tangible/wearables/armor/ris/shared_armor_ris_leggings.iff'),
+				 
+				('object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_bicep_l.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_bicep_r.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_boots.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_bracer_l.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_bracer_r.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_chest_plate.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_gloves.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_helmet.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_leggings.iff',
+				 'object/tangible/wearables/armor/stormtrooper/shared_armor_stormtrooper_utility_belt.iff'),
+				 
+				('object/tangible/wearables/armor/tantel/shared_armor_tantel_skreej_boots.iff',
+				 'object/tangible/wearables/armor/tantel/shared_armor_tantel_skreej_chest_plate.iff',
+				 'object/tangible/wearables/armor/tantel/shared_armor_tantel_skreej_helmet.iff'),
+				
+				('object/tangible/wearables/armor/ubese/shared_armor_ubese_bandolier.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_boots.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_bracer_l.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_bracer_r.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_gloves.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_helmet.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_jacket.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_pants.iff',
+				 'object/tangible/wearables/armor/ubese/shared_armor_ubese_shirt.iff')]
 					
 	structureDeeds =  [('object/tangible/deed/factory_deed/shared_factory_clothing_deed.iff',
 						'object/tangible/deed/factory_deed/shared_factory_food_deed.iff',
