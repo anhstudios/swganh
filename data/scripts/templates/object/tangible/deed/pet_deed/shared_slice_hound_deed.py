@@ -12,6 +12,8 @@ def create(kernel):
 	result.stfName("pet_deed","slice_hound")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.setStringAttribute("radial_filename", "radials.deed_datapad")
+	result.setStringAttribute("deed_result", "object/intangible/pet/shared_slice_hound_hue.iff")
 	####  END MODIFICATIONS  ####
 	
 	return result

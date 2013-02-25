@@ -13,19 +13,4 @@ class PyRadialMenu(RadialMenu):
 		
 	def handleRadial(self, owner, target, action):
 		pass
-		
-def call():
-	pass
-	
-def store():
-	pass
-	
-def mount():
-	pass
-	
-def unmount():
-	pass
-
-def destroy():
-	pass
 	

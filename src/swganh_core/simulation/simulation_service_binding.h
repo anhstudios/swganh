@@ -54,5 +54,7 @@ void exportSimulationService()
         .def("startScene", &SimulationServiceInterface::StartScene, "starts a scene by its label")
         .def("stopScene", &SimulationServiceInterface::StopScene, "stops a scene by the given label")
 		.def("createObject", &SimulationServiceInterface::CreateObjectFromTemplate, CreateOverload(args("template_name", "permission_type", "is_persisted", "object_id"), "Creates an object of the given template"))
-        ;
+		.def("removeObject", &SimulationServiceInterface::RemoveObject, "Removes an object from the simulation (delete).")
+		.def("removeObjectById", &SimulationServiceInterface::RemoveObjectById, "Removes an object from the simulation by id (delete).")
+		;
 }
