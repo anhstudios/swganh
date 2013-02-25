@@ -88,6 +88,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
     set(AdditionalBoostLibs chrono regex)
 
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-delete-non-virtual-dtor")
+
     find_library(PTHREAD_LIBRARY NAMES pthread)
 endif()
 
