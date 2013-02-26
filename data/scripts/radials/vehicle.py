@@ -23,10 +23,12 @@ class PyRadialMenu(RadialMenu):
 			if action == RadialIdentifier.serverVehicleExit or action == RadialIdentifier.serverVehicleEnter:
 				if owner.container().id == target.id and action == RadialIdentifier.serverVehicleExit:
 					#Exit
+					#owner.position = target.position
 					target.transfer(owner, owner, target.container())
 					target.toggleStateOff(ACTION.MOUNTED_CREATURE)
 				elif action == RadialIdentifier.serverVehicleEnter:
 					#Enter
+					#owner.position = vector3(0, 0, 0)
 					owner.container().transfer(owner, owner, target)
 					target.toggleStateOn(ACTION.MOUNTED_CREATURE)
 			elif action == RadialIdentifier.vehicleStore:

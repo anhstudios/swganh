@@ -70,6 +70,9 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh:
 	std::vector<std::shared_ptr<Object>> deleted_objects;
 
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
+
+	auto old_objects = root_node_.Query(QueryBox(quadtree::Point(old_bounding_volume.max_corner().x() - VIEWING_RANGE, old_bounding_volume.max_corner().y() - VIEWING_RANGE), 
+		quadtree::Point(old_bounding_volume.min_corner().x() + VIEWING_RANGE, old_bounding_volume.min_corner().y() + VIEWING_RANGE)));
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 		root_node_.UpdateObject(obj, old_bounding_volume, new_bounding_volume);
@@ -77,48 +80,25 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh:
 
 	CheckCollisions(obj);
 
-	auto new_objects = root_node_.Query(GetQueryBoxViewRange(obj));
-	
-	obj->__InternalViewAwareObjects([&] (std::shared_ptr<Object> aware_object) 
+	for(auto object : root_node_.Query(GetQueryBoxViewRange(obj))) 
 	{
-		// If we are top level (aka SI can see us)
-		if (aware_object->GetContainer()->GetObjectId() == GetObjectId())
-		{
-			auto new_itr = std::find(new_objects.begin(), new_objects.end(), aware_object);
-
-			if(new_itr != new_objects.end())
-			{
-				new_objects.erase(new_itr);
-			}
-			else
-			{
-				deleted_objects.push_back(aware_object);
-			}
+		auto itr = old_objects.find(object);
+		if(itr != old_objects.end()) {
+			//It's not old, that's all we can do for now.
+			old_objects.erase(itr);
+		} else {
+			//It's new! Update!
+			object->__InternalAddAwareObject(obj);
+			obj->__InternalAddAwareObject(object);
 		}
-	});
-
-	for(auto& to_delete : deleted_objects)
-	{
-		if(to_delete->GetObjectId() == obj->GetObjectId())
-		{
-			std::cout << "Trying to delete myself!?" << std::endl;
-			std::cout << "Position: " << to_delete->GetPosition().x << ", " << to_delete->GetPosition().y << ", " << to_delete->GetPosition().z << std::endl;
-			std::cout << "Bounding Volume (World): " << to_delete->GetAABB().min_corner().x() << ", " << to_delete->GetAABB().min_corner().y() << ":" << to_delete->GetAABB().max_corner().x() << ", " << to_delete->GetAABB().max_corner().y() << std::endl;
-			auto view_box = GetQueryBoxViewRange(obj);
-			std::cout << "Viewing Box: " <<  view_box.min_corner().x() << ", " << view_box.min_corner().y() << ":" << view_box.max_corner().x() << ", " << view_box.max_corner().y() << std::endl;
-		}
-
-		//Send Destroy
-		obj->__InternalRemoveAwareObject(to_delete);
-		to_delete->__InternalRemoveAwareObject(obj);
 	}
 
-	//New Objects
-	for_each(new_objects.begin(), new_objects.end(), [&](std::shared_ptr<Object> new_obj)
+	for(auto object : old_objects) 
 	{
-		new_obj->__InternalAddAwareObject(obj);
-		obj->__InternalAddAwareObject(new_obj);
-	});
+		//It's old! Toss it!
+		obj->__InternalRemoveAwareObject(object);
+		object->__InternalRemoveAwareObject(obj);
+	}
 }
 
 void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Object> requester,std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
@@ -175,7 +155,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 
 void QuadtreeSpatialProvider::ViewObjectsInRange(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func)
 {
-	std::list<std::shared_ptr<Object>> contained_objects;
+	std::set<std::shared_ptr<Object>> contained_objects;
 
 	boost::shared_lock<boost::shared_mutex> lock(global_container_lock_);
 	contained_objects = root_node_.Query(QueryBox(swganh::object::Point(position.x - radius, position.z - radius), 
@@ -197,17 +177,12 @@ void QuadtreeSpatialProvider::ViewObjectsInRange(glm::vec3 position, float radiu
 
 void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
-	std::list<std::shared_ptr<Object>> contained_objects;
+	std::set<std::shared_ptr<Object>> contained_objects;
 	uint32_t requester_instance = 0;
 	if (requester)
 	{
 		requester_instance = requester->GetInstanceId();
 		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
-	}
-	else
-	{
-		LOG(warning) << "REQUESTER IS NULL PTR";
-		//contained_objects = root_node_.GetContainedObjects();
 	}
 
 	for (auto& object : contained_objects)
@@ -252,9 +227,9 @@ QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> o
 	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
 }
 
-std::list<std::shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::Query(boost::geometry::model::polygon<swganh::object::Point> query_box)
+std::set<std::shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::Query(boost::geometry::model::polygon<swganh::object::Point> query_box)
 {
-	std::list<std::shared_ptr<swganh::object::Object>> return_vector;
+	std::set<std::shared_ptr<swganh::object::Object>> return_vector;
 	QueryBox aabb;
 
 	boost::geometry::envelope(query_box, aabb);

@@ -47,27 +47,26 @@ void MovementManager::HandleDataTransformServer(
     
 	auto old_bounding_volume = object->GetAABB();
 
-	object->SetPosition(new_position);
-	
-	bool mounted_up = false;
-
 	//If the object was inside a container we need to move it out
 	if(object->GetContainer() != spatial_provider_)
 	{
 		std::shared_ptr<Object> old_container = std::static_pointer_cast<Object>(object->GetContainer());
 		if(old_container->GetTemplate().compare("object/cell/shared_cell.iff") == 0) 
 		{
+			object->SetPosition(new_position);
 			object->GetContainer()->TransferObject(object, object, spatial_provider_);
 		} 
 		else 
 		{
+			auto old_parent_bounding_volume = old_container->GetAABB();
 			old_container->SetPosition(new_position);
-			spatial_provider_->UpdateObject(old_container, old_container->GetAABB(), old_container->GetAABB());
+			spatial_provider_->UpdateObject(old_container, old_parent_bounding_volume, old_container->GetAABB());
 			SendDataTransformMessage(old_container);
 		}
 	}
 	else
 	{
+		object->SetPosition(new_position);
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 		SendDataTransformMessage(object);
 	}
@@ -109,13 +108,7 @@ void MovementManager::HandleDataTransform(
     }
 
     counter_map_[object->GetObjectId()] = message.counter;
-    
 	auto old_bounding_volume = object->GetAABB();
-
-	object->SetPosition(message.position);
-    object->SetOrientation(message.orientation);
-
-	bool mounted_up = false;
 
 	//If the object was inside a container we need to move it out
 	if(object->GetContainer() != spatial_provider_)
@@ -123,18 +116,23 @@ void MovementManager::HandleDataTransform(
 		std::shared_ptr<Object> old_container = std::static_pointer_cast<Object>(object->GetContainer());
 		if(old_container->GetTemplate().compare("object/cell/shared_cell.iff") == 0) 
 		{
+			object->SetPosition(message.position);
+			object->SetOrientation(message.orientation);
 			object->GetContainer()->TransferObject(object, object, spatial_provider_);
 		} 
 		else 
 		{
+			auto old_parent_bounding_volume = old_container->GetAABB();
 			old_container->SetPosition(message.position);
 			old_container->SetOrientation(message.orientation);
-			spatial_provider_->UpdateObject(old_container, old_container->GetAABB(), old_container->GetAABB());
+			spatial_provider_->UpdateObject(old_container, old_parent_bounding_volume, old_container->GetAABB());
 			SendUpdateDataTransformMessage(old_container);
 		}
 	}
 	else
 	{
+		object->SetPosition(message.position);
+		object->SetOrientation(message.orientation);
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 		SendUpdateDataTransformMessage(object);
 	}
