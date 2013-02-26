@@ -71,8 +71,8 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh:
 
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 
-	auto old_objects = root_node_.Query(QueryBox(quadtree::Point(old_bounding_volume.max_corner().x() - VIEWING_RANGE, old_bounding_volume.max_corner().y() - VIEWING_RANGE), 
-		quadtree::Point(old_bounding_volume.min_corner().x() + VIEWING_RANGE, old_bounding_volume.min_corner().y() + VIEWING_RANGE)));
+	auto old_objects = root_node_.Query(QueryBox(quadtree::Point(old_bounding_volume.min_corner().x() - VIEWING_RANGE, old_bounding_volume.min_corner().y() - VIEWING_RANGE), 
+		quadtree::Point(old_bounding_volume.max_corner().x() + VIEWING_RANGE, old_bounding_volume.max_corner().y() + VIEWING_RANGE)));
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 		root_node_.UpdateObject(obj, old_bounding_volume, new_bounding_volume);
