@@ -26,6 +26,8 @@ public:
 
 	void SetSceneName(std::string name) { scene_name_ = name; }
 
+	void SetSceneId(uint32_t id) { scene_id_ = id; }
+
 	//Object Management
 	virtual void AddObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> oldObject);
@@ -54,6 +56,7 @@ private:
 	std::shared_ptr<ContainerInterface> __this;
 	quadtree::Node root_node_;
 	std::string scene_name_;
+	uint32_t scene_id_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
 
 	void CheckCollisions(std::shared_ptr<swganh::object::Object> object);

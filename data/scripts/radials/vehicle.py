@@ -24,12 +24,16 @@ class PyRadialMenu(RadialMenu):
 				if owner.container().id == target.id and action == RadialIdentifier.serverVehicleExit:
 					#Exit
 					target.transfer(owner, owner, target.container())
+					target.toggleStateOff(ACTION.MOUNTED_CREATURE)
 				elif action == RadialIdentifier.serverVehicleEnter:
 					#Enter
 					owner.container().transfer(owner, owner, target)
+					target.toggleStateOn(ACTION.MOUNTED_CREATURE)
 			elif action == RadialIdentifier.vehicleStore:
 				sim = self.getKernel().serviceManager().simulationService()
 				pcd = sim.findObjectById(target.getIntAttribute("pcd_id"))
 				if pcd:
+					if owner.container().id == target.id:
+						target.transfer(owner, owner, target.container())
 					target.container().transfer(owner, target, pcd)
 	

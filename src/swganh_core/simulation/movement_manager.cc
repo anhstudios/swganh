@@ -49,13 +49,28 @@ void MovementManager::HandleDataTransformServer(
 
 	object->SetPosition(new_position);
 	
+	bool mounted_up = false;
+
 	//If the object was inside a container we need to move it out
 	if(object->GetContainer() != spatial_provider_)
-		object->GetContainer()->TransferObject(object, object, spatial_provider_);
+	{
+		std::shared_ptr<Object> old_container = std::static_pointer_cast<Object>(object->GetContainer());
+		if(old_container->GetTemplate().compare("object/cell/shared_cell.iff") == 0) 
+		{
+			object->GetContainer()->TransferObject(object, object, spatial_provider_);
+		} 
+		else 
+		{
+			old_container->SetPosition(new_position);
+			spatial_provider_->UpdateObject(old_container, old_container->GetAABB(), old_container->GetAABB());
+			SendDataTransformMessage(old_container);
+		}
+	}
 	else
+	{
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
-
-    SendDataTransformMessage(object);
+		SendDataTransformMessage(object);
+	}
 }
 
 void MovementManager::HandleDataTransformWithParentServer(
@@ -100,13 +115,29 @@ void MovementManager::HandleDataTransform(
 	object->SetPosition(message.position);
     object->SetOrientation(message.orientation);
 
+	bool mounted_up = false;
+
 	//If the object was inside a container we need to move it out
 	if(object->GetContainer() != spatial_provider_)
-		object->GetContainer()->TransferObject(object, object, spatial_provider_);
+	{
+		std::shared_ptr<Object> old_container = std::static_pointer_cast<Object>(object->GetContainer());
+		if(old_container->GetTemplate().compare("object/cell/shared_cell.iff") == 0) 
+		{
+			object->GetContainer()->TransferObject(object, object, spatial_provider_);
+		} 
+		else 
+		{
+			old_container->SetPosition(message.position);
+			old_container->SetOrientation(message.orientation);
+			spatial_provider_->UpdateObject(old_container, old_container->GetAABB(), old_container->GetAABB());
+			SendUpdateDataTransformMessage(old_container);
+		}
+	}
 	else
+	{
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
-
-    SendUpdateDataTransformMessage(object);
+		SendUpdateDataTransformMessage(object);
+	}
 }
 
 void MovementManager::HandleDataTransformWithParent(

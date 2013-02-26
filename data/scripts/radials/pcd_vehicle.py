@@ -30,5 +30,8 @@ class PyRadialMenu(RadialMenu):
 					mobile.container().transfer(mobile, mobile, owner.container())
 				else:
 					#Store it!
+					if owner.container().id == mobile.id:
+						#Move the player out first
+						mobile.transfer(owner, owner, mobile.container())
 					mobile.container().transfer(owner, mobile, target)
 	

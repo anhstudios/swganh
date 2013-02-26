@@ -37,6 +37,7 @@ void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> 
 		root_node_.InsertObject(object);
 		object->SetContainer(__this);
 		object->SetArrangementId(arrangement_id);
+		object->SetSceneId(scene_id_);
 	}
 
 	CheckCollisions(object);
@@ -236,6 +237,7 @@ int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object
 {
 	root_node_.InsertObject(object);
 	object->SetContainer(__this);
+	object->SetSceneId(scene_id_);
 	return -1;
 }
 
