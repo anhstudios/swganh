@@ -140,12 +140,15 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 		});
 
 		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
-			auto itr = oldObservers.find(observer);
-			if(itr != oldObservers.end()) {
-				oldObservers.erase(itr);
-				bothObservers.insert(observer);
-			} else {
-				newObservers.insert(observer);
+			if(newContainer->GetPermissions()->canView(newContainer, observer))
+			{
+				auto itr = oldObservers.find(observer);
+				if(itr != oldObservers.end()) {
+					oldObservers.erase(itr);
+					bothObservers.insert(observer);
+				} else {
+					newObservers.insert(observer);
+				}
 			}
 		});
 

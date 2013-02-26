@@ -14,6 +14,7 @@ def create(kernel):
 	#### BEGIN MODIFICATIONS ####
 	result.setStringAttribute("radial_filename", "radials.deed_datapad")
 	result.setStringAttribute("deed_result", "object/intangible/pet/shared_shear_mite_hue.iff")
+	result.setStringAttribute("deed_mobile", "object/mobile/shared_shear_mite_hue.iff")
 	####  END MODIFICATIONS  ####
 	
 	return result

@@ -235,8 +235,8 @@ void exportObject()
 		.def("hasAttribute", &Object::HasAttribute, "Returns true if the object has the given attribute.")
 		.def("getFloatAttribute", &Object::GetAttribute<float>, "Gets the float attribute value")
 		.def("setFloatAttribute", &Object::SetAttribute<float>, "Sets the float attribute value")
-		.def("getIntAttribute", &Object::GetAttribute<int32_t>, "Gets the int attribute value")
-		.def("setIntAttribute", &Object::SetAttribute<int32_t>, "Sets the int attribute value")
+		.def("getIntAttribute", &Object::GetAttribute<int64_t>, "Gets the int attribute value")
+		.def("setIntAttribute", &Object::SetAttribute<int64_t>, "Sets the int attribute value")
 		.def("getStringAttribute", &Object::GetAttributeAsString, "Gets the string attribute value")
 		.def("setStringAttribute", &Object::SetAttribute<wstring>, "sets the string attribute value")
 		.def("getAttributeRecursive", &Object::GetAttributeRecursiveAsString, "Gets the attribute as a string recursively")
@@ -257,6 +257,10 @@ void exportObject()
 	class_<Intangible, bases<Object>, std::shared_ptr<Intangible>, boost::noncopyable>("Intangible");
 
 	implicitly_convertible<std::shared_ptr<Intangible>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Intangible>, std::shared_ptr<ContainerInterface>>();
+	
 	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<Intangible>>();
+	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<ContainerInterface>>();
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();
 }

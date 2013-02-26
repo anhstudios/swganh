@@ -137,7 +137,7 @@ SkillModsMap SkillManager::GetSkillMods(const std::shared_ptr<Creature>& creatur
 			auto modifier = child->GetAttributeRecursive(mod.first);
 			if(modifier.which() == 1)
 			{
-				mod.second.second += boost::get<int32_t>(modifier);
+				mod.second.second += boost::get<uint32_t>(modifier);
 			}
 		}
 	});

@@ -205,7 +205,7 @@ void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
 				}
 				else if (unparsed_value.find_first_of("0123456789") == 0)
 				{
-					object->SetAttribute(attr_name, boost::lexical_cast<int>(unparsed_value));
+					object->SetAttribute(attr_name, boost::lexical_cast<int64_t>(unparsed_value));
 				}
 				else
 				{

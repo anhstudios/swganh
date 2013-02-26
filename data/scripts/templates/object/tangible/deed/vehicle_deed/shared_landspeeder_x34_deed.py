@@ -13,7 +13,8 @@ def create(kernel):
 	
 	#### BEGIN MODIFICATIONS ####
 	result.setStringAttribute("radial_filename", "radials.deed_datapad")
-	result.setStringAttribute("deed_result", "object/intangible/vehicle/shared_landspeeder_x34_pcd.iff")
+	result.setStringAttribute("deed_pcd", "object/intangible/vehicle/shared_landspeeder_x34_pcd.iff")
+	result.setStringAttribute("deed_mobile", "object/mobile/vehicle/shared_landspeeder_x34.iff")
 	####  END MODIFICATIONS  ####
 	
 	return result

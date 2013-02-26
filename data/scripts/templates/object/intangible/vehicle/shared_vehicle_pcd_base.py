@@ -2,6 +2,9 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
+#### MODIFIED ####
+
+from swgpy.simulation import ContainerPermission
 from swgpy.object import *	
 
 def create(kernel):
@@ -12,7 +15,6 @@ def create(kernel):
 	result.stfName("","")		
 	
 	#### BEGIN MODIFICATIONS ####
-	result.setStringAttribute("radial_filename", "radials.pcd_vehicle")
 	####  END MODIFICATIONS  ####
 	
 	return result

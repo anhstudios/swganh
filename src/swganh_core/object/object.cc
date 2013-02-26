@@ -766,7 +766,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	//DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+	DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -788,7 +788,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
 
-	//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+	DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
 
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
@@ -799,7 +799,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	//DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
+	DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
@@ -841,7 +841,7 @@ int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 
 	// Find appropriate arrangement
 	int32_t arrangement_id = 4;
-	int32_t filled_arrangement_id = 0;
+	int32_t filled_arrangement_id = -1;
 	// In each arrangment
 	for ( auto& arrangement : other->slot_arrangements_)
 	{
@@ -974,7 +974,7 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 				attribute << boost::get<float>(val);
 				break;
 			case 1:
-				attribute << boost::get<int32_t>(val);
+				attribute << boost::get<int64_t>(val);
 				break;
 			case 2:
 				return boost::get<wstring>(val);
@@ -1007,7 +1007,7 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 				 ss << boost::get<float>(val);
 				break;
 			case 1:
-				ss << boost::get<int32_t>(val);
+				ss << boost::get<int64_t>(val);
 				break;
 			case 2:
 				ss << boost::get<wstring>(val);
@@ -1045,7 +1045,7 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		float float_val;
-		int32_t int_val;
+		int64_t int_val;
 		wstring attr_val;
 		switch(val.which())
 		{
@@ -1054,8 +1054,8 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 				float_val = boost::get<float>(val);
 				return AddAttributeRecursive<float>(float_val, name);			
 			case 1:
-				int_val = boost::get<int32_t>(val);
-				return AddAttributeRecursive<int32_t>(int_val, name);			
+				int_val = boost::get<int64_t>(val);
+				return AddAttributeRecursive<int64_t>(int_val, name);			
 			case 2:
 				attr_val = boost::get<wstring>(val);
 				return AddAttributeRecursive<wstring>(attr_val, name);			

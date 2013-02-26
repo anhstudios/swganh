@@ -54,7 +54,7 @@ typedef std::vector<
 
 typedef std::map<
 	swganh::HashString,
-	boost::variant<float, int32_t, std::wstring>
+	boost::variant<float, int64_t, std::wstring>
 > AttributesMap;
 
 typedef std::map<
@@ -62,7 +62,7 @@ typedef std::map<
 	std::shared_ptr<SlotInterface>
 > ObjectSlots;
 
-typedef boost::variant<float, int32_t, std::wstring, boost::blank> AttributeVariant;
+typedef boost::variant<float, int64_t, std::wstring, boost::blank> AttributeVariant;
 
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
@@ -586,7 +586,7 @@ public:
 
 		return val;
 	}
-	boost::variant<float, int32_t, std::wstring> AddAttributeRecursive(boost::variant<float, int32_t, std::wstring> val, const std::string& name);
+	boost::variant<float, int32_t, std::wstring> AddAttributeRecursive(boost::variant<float, int64_t, std::wstring> val, const std::string& name);
 
 	int8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(int8_t attribute_template_id);

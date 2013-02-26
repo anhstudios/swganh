@@ -223,7 +223,7 @@ void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
 
 bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)
 {    
-    return counter > counter_map_[object_id];
+    return counter >= counter_map_[object_id];
 }
 
 void MovementManager::ResetMovementCounter(std::shared_ptr<swganh::object::Object> object)
