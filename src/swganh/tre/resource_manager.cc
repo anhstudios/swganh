@@ -17,7 +17,8 @@ ResourceManager::ResourceManager(std::shared_ptr<TreArchive> archive)
 
 void ResourceManager::LoadResourceByName(const std::string& name, std::shared_ptr<VisitorInterface> type, bool is_cached) 
 {
-	iff_file::loadIFF(archive_->GetResource(name), type);
+	auto resource = archive_->GetResource(name);
+	iff_file::loadIFF(resource, type);
 	if(is_cached)
 	{
 		boost::lock_guard<boost::mutex> lock(resource_mutex_);
