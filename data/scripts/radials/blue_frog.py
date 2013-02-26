@@ -2,6 +2,7 @@ import swgpy
 from swgpy.object import *
 from swgpy.sui import *
 from swgpy.utility import vector3, quat
+import random
 
 class PyRadialMenu(RadialMenu):
 	
@@ -18,12 +19,73 @@ class PyRadialMenu(RadialMenu):
 		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu7, 3, 'Instrument Pack'))
 		return radial_list
 	
-	def giveItems(self, owner, list):
+	levels = ('None', 'Light', 'Medium', 'Heavy')
+	
+	damage_types = ('Energy', 'Kinetic', 'Acid', 'Cold', 'Electricity', 'Heat')
+	
+	def defaultPostProcess(self, item):
+		pass
+	
+	def weaponPostProcess(self, item):
+		
+		item.max_condition = random.randint(100, 10000)
+		item.setStringAttribute('wpn_armor_pierce_rating', random.choice(self.levels))
+		item.setFloatAttribute('wpn_attack_speed', random.uniform(0.1, 5))
+		item.setStringAttribute('cat_wpn_damage.wpn_damage_type', random.choice(self.damage_types))
+		min_damage = random.randint(1, 1000)
+		max_damage = random.randint(min_damage, 1000)
+		item.setIntAttribute('cat_wpn_damage.wpn_damage_min', min_damage)
+		item.setIntAttribute('cat_wpn_damage.wpn_damage_max', max_damage)
+		item.setFloatAttribute('cat_wpn_damage.wpn_wound_chance', random.uniform(0, 100))
+		item.setIntAttribute('cat_wpn_rangemods.wpn_range_zero', 0)
+		item.setIntAttribute('cat_wpn_rangemods.wpn_range_mid', 40)
+		item.setIntAttribute('cat_wpn_rangemods.wpn_range_max', -80)
+		item.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_health', random.randint(1, 200))
+		item.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_action', random.randint(1, 200))
+		item.setIntAttribute('cat_wpn_attack_cost.wpn_attack_cost_mind', random.randint(1, 200))
+	
+	def armorPostProcess(self, item):
+		item.max_condition = random.randint(100, 10000)
+		item.setStringAttribute('armor_rating', random.choice(self.levels))
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_kinetic', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_energy', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_blast', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_stun', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_elemental_heat', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_elemental_cold', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_elemental_acid', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_elemental_electrical', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_special_protection.armor_eff_restraint', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_restraint', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_energy', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_blast', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_stun', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_elemental_heat', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_elemental_cold', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_elemental_acid', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_elemental_electrical', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_effectiveness.armor_eff_restraint', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_kinetic', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_energy', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_blast', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_stun', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_elemental_heat', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_elemental_cold', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_elemental_acid', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_elemental_electrical', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setFloatAttribute('cat_armor_vulnerability.armor_eff_restraint', random.uniform(0, 100) if random.random()>0.7 else 0)
+		item.setIntAttribute('cat_armor_encumbrance.armor_health_encumbrance', random.randint(20, 300))
+		item.setIntAttribute('cat_armor_encumbrance.armor_action_encumbrance', random.randint(20, 300))
+		item.setIntAttribute('cat_armor_encumbrance.armor_mind_encumbrance', random.randint(20, 300))
+		item.setStringAttribute('crafter', 'Blue Frog, Inc.')
+	
+	def giveItems(self, owner, list, postProcess):
 		sim = self.getKernel().serviceManager().simulationService()
 		inv = self.getKernel().serviceManager().equipmentService().getEquippedObject(owner, "inventory")
 		for name in list:
 			item = sim.createObject(name, swgpy.ContainerPermission.DEFAULT)
 			if item is not None:
+				postProcess(item)
 				inv.add(owner, item)
 	
 	def displaySUIList(self, owner, list, callbackName):
@@ -48,23 +110,24 @@ class PyRadialMenu(RadialMenu):
 	
 	def weaponCallback(self, owner, event_id, results):
 		if event_id == 0:
-			print(int(results[0]))
-			self.giveItems(owner, self.weapons[int(results[0])])
+			self.giveItems(owner, self.weapons[int(results[0])], self.weaponPostProcess)
 		return True
+	
+	
 	
 	def armorCallback(self, owner, event_id, results):
 		if event_id == 0:
-			self.giveItems(owner, self.armor[int(results[0])])
+			self.giveItems(owner, self.armor[int(results[0])], self.armorPostProcess)
 		return True
 		
 	def structureCallback(self, owner, event_id, results):
 		if event_id == 0:
-			self.giveItems(owner, self.structureDeeds[int(results[0])])
+			self.giveItems(owner, self.structureDeeds[int(results[0])], self.defaultPostProcess)
 		return True
 		
 	def handleRadial(self, owner, target, action):
 		if action == RadialIdentifier.serverMenu1:
-			self.giveItems(owner, self.vehicleDeeds)
+			self.giveItems(owner, self.vehicleDeeds, self.defaultPostProcess)
 		elif action == RadialIdentifier.serverMenu2:
 			self.displaySUIList(owner, ['Melee Weapons', 'Ranged Weapons', 'Misc Weapons'], 'weaponCallback')
 		elif action == RadialIdentifier.serverMenu3:
@@ -75,11 +138,11 @@ class PyRadialMenu(RadialMenu):
 			self.displaySUIList(owner, ['Crafting Structures', 'Housing Structures', 'Corellia Civic Structures', 
 			'Naboo Civic Structures', 'Tatooine Civic Structures', 'Guild Structures', 'Faction Structures'], 'structureCallback')
 		elif action == RadialIdentifier.serverMenu5:
-			self.giveItems(owner, self.petDeeds)
+			self.giveItems(owner, self.petDeeds, self.defaultPostProcess)
 		elif action == RadialIdentifier.serverMenu6:
-			self.giveItems(owner, self.droidDeeds)
+			self.giveItems(owner, self.droidDeeds, self.defaultPostProcess)
 		elif action == RadialIdentifier.serverMenu7:
-			self.giveItems(owner, self.instruments)
+			self.giveItems(owner, self.instruments, self.defaultPostProcess)
 				
 	vehicleDeeds = ('object/tangible/deed/vehicle_deed/shared_jetpack_deed.iff',
 					'object/tangible/deed/vehicle_deed/shared_landspeeder_av21_deed.iff',
