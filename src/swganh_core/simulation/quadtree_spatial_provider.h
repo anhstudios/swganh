@@ -42,7 +42,7 @@ public:
 	// FOR USE BY TRANSFER OBJECT DO NOT CALL IN OUTSIDE CODE
 	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
 	virtual void __InternalViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
-
+	virtual void __InternalGetObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<swganh::object::Object>>& out);
 
 	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
 

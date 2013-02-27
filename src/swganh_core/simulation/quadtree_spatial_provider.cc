@@ -203,6 +203,34 @@ void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requ
 	}
 }
 
+void QuadtreeSpatialProvider::__InternalGetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<Object>>& out)
+{
+	std::set<std::shared_ptr<Object>> contained_objects;
+	uint32_t requester_instance = 0;
+	if (requester)
+	{
+		requester_instance = requester->GetInstanceId();
+		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
+	}
+
+	for (auto object : contained_objects)
+	{
+		uint32_t object_instance = object->GetInstanceId();
+
+		if(object_instance == 0 || object_instance == requester_instance)
+		{
+			if (topDown)
+				out.push_back(object);
+
+			if (max_depth != 1)
+				object->__InternalGetObjects(requester, (max_depth == 0 ? 0 : max_depth - 1), topDown, out);
+
+			if (!topDown)
+				out.push_back(object);
+		}
+	}
+}
+
 void QuadtreeSpatialProvider::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint)
 {
 	__InternalViewObjects(hint, 0, true, func);

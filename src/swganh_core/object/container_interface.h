@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <list>
 #include <memory>
 #include <functional>
 
@@ -30,6 +31,12 @@ namespace object
 		virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id) {};
 
 		bool HasContainedObjects();
+		bool __InternalHasContainedObjects();
+
+		std::list<std::shared_ptr<Object>> GetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown);
+		void GetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<Object>>& out);
+		virtual void __InternalGetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<Object>>& out) = 0;
+
 		void ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func);
 		virtual void __InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func) = 0;
 

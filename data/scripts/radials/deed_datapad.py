@@ -29,6 +29,9 @@ class PyRadialMenu(RadialMenu):
 				mobile.setIntAttribute("pcd_id", pcd.id)
 				pcd.setIntAttribute("mobile_id", mobile.id)
 				
+				#Store any called vehicles
+				self.getKernel().serviceManager().playerService().storeAllCalledMounts(owner)
+				
 				#Add the the pcd to the datapad, and mobile to world
 				datapad.add(owner, pcd)
 				

@@ -13,6 +13,7 @@ def create(kernel):
 	
 	#### BEGIN MODIFICATIONS ####
 	result.setStringAttribute("radial_filename", "radials.pcd_vehicle")
+	result.setIntAttribute("is_mount", 1)
 	####  END MODIFICATIONS  ####
 	
 	return result

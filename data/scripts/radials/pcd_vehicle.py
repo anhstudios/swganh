@@ -24,6 +24,8 @@ class PyRadialMenu(RadialMenu):
 			if mobile:
 				if target.hasContainedObjects():
 					#Call it!
+					playServ = self.getKernel().serviceManager().playerService()
+					playServ.storeAllCalledMounts(owner)
 					pos = owner.position
 					mobile.position = vector3(pos.x, pos.y-0.3, pos.z)
 					mobile.orientation = owner.orientation

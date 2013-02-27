@@ -16,20 +16,39 @@ std::shared_ptr<ContainerPermissionsInterface> ContainerInterface::GetPermission
 	return container_permissions_; 
 }
 
-void ContainerInterface::SetPermissions(std::shared_ptr<ContainerPermissionsInterface> obj) { 
+void ContainerInterface::SetPermissions(std::shared_ptr<ContainerPermissionsInterface> obj) 
+{ 
 	container_permissions_ = obj; 
 }
 
 bool ContainerInterface::HasContainedObjects()
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
-	bool has_objects = false;
-	__InternalViewObjects(nullptr, 1, true, [&](std::shared_ptr<Object> obj){
-		has_objects = true;		
-	});
-
-	return has_objects;
+	return __InternalHasContainedObjects();
 }
+
+bool ContainerInterface::__InternalHasContainedObjects() 
+{
+	bool has_objects = false;
+	std::list<std::shared_ptr<Object>> out;
+	__InternalGetObjects(nullptr, 1, true, out);
+	return out.size() > 0;
+}
+
+std::list<std::shared_ptr<Object>> ContainerInterface::GetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown)
+{
+	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
+	std::list<std::shared_ptr<Object>> out;
+	__InternalGetObjects(requester, max_depth, topDown, out);
+	return out;
+}
+
+void ContainerInterface::GetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<Object>>& out)
+{
+	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
+	__InternalGetObjects(requester, max_depth, topDown, out);
+}
+
 void ContainerInterface::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
