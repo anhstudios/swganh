@@ -12,6 +12,8 @@ def create(kernel):
 	result.stfName("droid_name","le_repair_droid")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.options_mask = 0x100
+	result.pvp_status = PVPSTATUS.PvPStatus_None
 	####  END MODIFICATIONS  ####
 	
 	return result
