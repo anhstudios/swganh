@@ -15,6 +15,8 @@ def create(kernel):
 	result.setStringAttribute("radial_filename", "radials.deed_datapad")
 	result.setStringAttribute("deed_pcd", "object/intangible/pet/shared_bantha_hue.iff")
 	result.setStringAttribute("deed_mobile", "object/mobile/shared_bantha_hue.iff")
+	result.options_mask = 0x100
+	result.pvp_status = PVPSTATUS.PvPStatus_None
 	####  END MODIFICATIONS  ####
 	
 	return result
