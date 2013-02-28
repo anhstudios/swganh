@@ -130,6 +130,9 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetEventDispatcher(GetEventDispatcher());
         object->SetSceneId(result->getUInt("scene_id"));
         object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
+		object->UpdateWorldCollisionBox();
+		object->UpdateAABB();
+
         object->SetOrientation(glm::quat(
             static_cast<float>(result->getDouble("w_orientation")),
 			static_cast<float>(result->getDouble("x_orientation")),

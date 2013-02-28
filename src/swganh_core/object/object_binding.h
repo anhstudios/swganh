@@ -33,9 +33,9 @@ boost::python::tuple AddObject(std::shared_ptr<Object> requester, std::shared_pt
 	return boost::python::make_tuple(requester, newObject,  arrangement_id);
 }
 
-boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
+boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, glm::vec3 new_position, int32_t arrangement_id=-2)
 {
-	return boost::python::make_tuple(requester, object, newContainer, arrangement_id);
+	return boost::python::make_tuple(requester, object, newContainer, new_position, arrangement_id);
 }
 
 void SendSystemMessage1(std::shared_ptr<Object> requester, std::string filename, std::string label)
@@ -135,7 +135,7 @@ void PlayMusic3(std::shared_ptr<swganh::object::Object> object, std::string musi
 BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 4, 5)
 
 void UpdatePosition(std::shared_ptr<Object> self, glm::vec3 position, glm::quat orientation, std::shared_ptr<Object> parent=nullptr)
 {

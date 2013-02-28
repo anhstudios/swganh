@@ -43,9 +43,9 @@ void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> 
 	CheckCollisions(object);
 
 	// Make objects aware
-	__InternalViewObjects(object, 0, true, [&](shared_ptr<Object> found_object){
-		found_object->__InternalAddAwareObject(object);
-		object->__InternalAddAwareObject(found_object);
+	__InternalViewObjects(object, 1, true, [&](shared_ptr<Object> found_object){
+		found_object->__InternalAddAwareObject(object, true);
+		object->__InternalAddAwareObject(found_object, true);
 	});
 }
 
@@ -53,9 +53,9 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 {
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 
-    __InternalViewObjects(object, 0, false, [&](shared_ptr<Object> found_object){
-		found_object->__InternalRemoveAwareObject(object);
-		object->__InternalRemoveAwareObject(found_object);
+    __InternalViewObjects(object, 1, false, [&](shared_ptr<Object> found_object){
+		found_object->__InternalRemoveAwareObject(object, true);
+		object->__InternalRemoveAwareObject(found_object, true);
 	});
 
 	{
@@ -71,8 +71,7 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh:
 
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 
-	auto old_objects = root_node_.Query(QueryBox(quadtree::Point(old_bounding_volume.min_corner().x() - VIEWING_RANGE, old_bounding_volume.min_corner().y() - VIEWING_RANGE), 
-		quadtree::Point(old_bounding_volume.max_corner().x() + VIEWING_RANGE, old_bounding_volume.max_corner().y() + VIEWING_RANGE)));
+	auto old_objects = root_node_.Query(GetQueryBoxViewRange(old_bounding_volume));
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 		root_node_.UpdateObject(obj, old_bounding_volume, new_bounding_volume);
@@ -80,7 +79,7 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh:
 
 	CheckCollisions(obj);
 
-	for(auto object : root_node_.Query(GetQueryBoxViewRange(obj))) 
+	for(auto object : root_node_.Query(GetQueryBoxViewRange(new_bounding_volume))) 
 	{
 		auto itr = old_objects.find(object);
 		if(itr != old_objects.end()) {
@@ -88,20 +87,20 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh:
 			old_objects.erase(itr);
 		} else {
 			//It's new! Update!
-			object->__InternalAddAwareObject(obj);
-			obj->__InternalAddAwareObject(object);
+			object->__InternalAddAwareObject(obj, true);
+			obj->__InternalAddAwareObject(object, true);
 		}
 	}
 
 	for(auto object : old_objects) 
 	{
 		//It's old! Toss it!
-		obj->__InternalRemoveAwareObject(object);
-		object->__InternalRemoveAwareObject(obj);
+		obj->__InternalRemoveAwareObject(object, true);
+		object->__InternalRemoveAwareObject(obj, true);
 	}
 }
 
-void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Object> requester,std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
+void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Object> requester,std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, glm::vec3 new_position, int32_t arrangement_id)
 {
 	//Perform the transfer
 	if (object != newContainer)
@@ -110,7 +109,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 		{
 			boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 			root_node_.RemoveObject(object);
-			arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+			arrangement_id = newContainer->__InternalInsert(object, new_position, arrangement_id);
 		}
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
@@ -136,7 +135,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 		//Send Creates to only new
 		for_each(newObservers.begin(), newObservers.end(), [&object](shared_ptr<Object> observer)
 		{
-			object->__InternalAddAwareObject(observer);
+			object->__InternalAddAwareObject(observer, true);
 		});
 
 		//Send updates to both
@@ -148,7 +147,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 		//Send destroys to only ours
 		for_each(oldObservers.begin(), oldObservers.end(), [&object](shared_ptr<Object> observer)
 		{
-			object->__InternalRemoveAwareObject(observer);
+			object->__InternalRemoveAwareObject(observer, true);
 		});
 	}
 }
@@ -182,7 +181,7 @@ void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requ
 	if (requester)
 	{
 		requester_instance = requester->GetInstanceId();
-		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
+		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester->GetAABB()));		
 	}
 
 	for (auto& object : contained_objects)
@@ -210,7 +209,7 @@ void QuadtreeSpatialProvider::__InternalGetObjects(std::shared_ptr<Object> reque
 	if (requester)
 	{
 		requester_instance = requester->GetInstanceId();
-		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
+		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester->GetAABB()));		
 	}
 
 	for (auto object : contained_objects)
@@ -236,23 +235,38 @@ void QuadtreeSpatialProvider::__InternalViewAwareObjects(std::function<void(std:
 	__InternalViewObjects(hint, 0, true, func);
 }
 
-int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
+int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_position, int32_t arrangement_id)
 {
-	root_node_.InsertObject(object);
+	//Update position now to make sure the object ends up where it needs to be.
 	object->SetContainer(__this);
+	object->SetPosition(new_position);
+	object->__InternalUpdateWorldCollisionBox();
+	object->UpdateAABB();
+	root_node_.InsertObject(object);
 	object->SetSceneId(scene_id_);
 	return -1;
 }
 
-glm::vec3 QuadtreeSpatialProvider::__InternalGetAbsolutePosition()
+void QuadtreeSpatialProvider::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& rot)
 {
-	return glm::vec3(0, 0, 0);
+	pos = glm::vec3();
+	rot = glm::quat();
 }
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
-	auto position = object->__InternalGetAbsolutePosition();
-	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
+	glm::vec3 position;
+	object->__InternalGetAbsolutes(position, glm::quat());
+	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), 
+					quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
+}
+
+QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(const swganh::object::AABB& box)
+{
+	auto &min = box.min_corner(), &max = box.max_corner();
+
+	return QueryBox(quadtree::Point(min.x() - VIEWING_RANGE, min.y() - VIEWING_RANGE), 
+					quadtree::Point(max.x() + VIEWING_RANGE, max.y() + VIEWING_RANGE));	
 }
 
 std::set<std::shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::Query(boost::geometry::model::polygon<swganh::object::Point> query_box)
@@ -285,7 +299,12 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 
 		root_obj->ViewObjects(requester, 0, true, [=, &obj_map](std::shared_ptr<swganh::object::Object> object) {
 			if(object->HasFlag(tag))
-				obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(requester->GetAbsolutePosition(), object->GetAbsolutePosition()), object));
+			{
+				glm::vec3 pos1, pos2;
+				requester->GetAbsolutes(pos1, glm::quat());
+				object->GetAbsolutes(pos2, glm::quat());
+				obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(pos1, pos2), object));
+			}
 		});
 
 		return obj_map;
@@ -305,15 +324,22 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 	{
 		if(object->HasFlag(tag))
 		{
-			obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(requester->GetAbsolutePosition(), object->GetAbsolutePosition()),object));
-			if(object->HasContainedObjects())
-				object->ViewObjects(object, 0, true, [=, &obj_map](std::shared_ptr<Object> object) {
-					if(object->HasFlag(tag))
-						obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(requester->GetAbsolutePosition(), object->GetAbsolutePosition()), object));
+			glm::vec3 pos1, pos2;
+			requester->GetAbsolutes(pos1, glm::quat());
+			object->GetAbsolutes(pos2, glm::quat());
+
+			obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(pos1, pos2),object));
+			object->ViewObjects(object, 0, true, [=, &obj_map](std::shared_ptr<Object> object) {
+				glm::vec3 pos1, pos2;
+				if(object->HasFlag(tag))
+				{
+					requester->GetAbsolutes(pos1, glm::quat());
+					object->GetAbsolutes(pos2, glm::quat());
+					obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(pos1, pos2), object));
+				}
 			});
 		}
 	}
-
 	return obj_map;
 }
 

@@ -31,7 +31,7 @@ public:
 	//Object Management
 	virtual void AddObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> oldObject);
-	virtual void TransferObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
+	virtual void TransferObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, glm::vec3 new_position, int32_t arrangement_id=-2);
 	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume);
 	virtual std::set<std::shared_ptr<swganh::object::Object>> Query(boost::geometry::model::polygon<swganh::object::Point> query_box);
 
@@ -40,7 +40,7 @@ public:
 	virtual void ViewObjectsInRange(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
 
 	// FOR USE BY TRANSFER OBJECT DO NOT CALL IN OUTSIDE CODE
-	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
+	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, glm::vec3 new_position, int32_t arrangement_id=-2);
 	virtual void __InternalViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
 	virtual void __InternalGetObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<swganh::object::Object>>& out);
 
@@ -49,7 +49,7 @@ public:
 	virtual std::shared_ptr<ContainerInterface> GetContainer() { return nullptr; }
 	virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) {}
 
-	virtual glm::vec3 __InternalGetAbsolutePosition();
+	virtual void __InternalGetAbsolutes(glm::vec3& pos, glm::quat& rot);
 
 	void SetThis(std::shared_ptr<ContainerInterface> si) { __this = si; }
 private:
@@ -58,6 +58,7 @@ private:
 	std::string scene_name_;
 	uint32_t scene_id_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
+	quadtree::QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(const swganh::object::AABB& box);
 
 	void CheckCollisions(std::shared_ptr<swganh::object::Object> object);
 };

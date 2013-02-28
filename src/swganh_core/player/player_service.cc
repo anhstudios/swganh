@@ -219,7 +219,7 @@ void PlayerService::StoreAllCalledMounts(std::shared_ptr<swganh::object::Creatur
 				auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id"));
 				if(mobile)
 				{
-					mobile->GetContainer()->TransferObject(owner, mobile, object);
+					mobile->GetContainer()->TransferObject(owner, mobile, object, glm::vec3(0, 0, 0));
 				}
 			}
 		}
@@ -239,7 +239,7 @@ void PlayerService::StoreAllCalledObjects(std::shared_ptr<swganh::object::Creatu
 				auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id"));
 				if(mobile)
 				{
-					mobile->GetContainer()->TransferObject(owner, mobile, object);
+					mobile->GetContainer()->TransferObject(owner, mobile, object, glm::vec3(0, 0, 0));
 				}
 			}
 		});

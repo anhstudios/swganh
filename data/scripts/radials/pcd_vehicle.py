@@ -27,13 +27,12 @@ class PyRadialMenu(RadialMenu):
 					playServ = self.getKernel().serviceManager().playerService()
 					playServ.storeAllCalledMounts(owner)
 					pos = owner.position
-					mobile.position = vector3(pos.x, pos.y-0.3, pos.z)
 					mobile.orientation = owner.orientation
-					mobile.container().transfer(mobile, mobile, owner.container())
+					mobile.container().transfer(mobile, mobile, owner.container(), vector3(pos.x, pos.y-0.3, pos.z))
 				else:
 					#Store it!
 					if owner.container().id == mobile.id:
 						#Move the player out first
-						mobile.transfer(owner, owner, mobile.container())
-					mobile.container().transfer(owner, mobile, target)
+						mobile.transfer(owner, owner, mobile.container(), mobile.position)
+					mobile.container().transfer(owner, mobile, target, vector3(0, 0, 0))
 	

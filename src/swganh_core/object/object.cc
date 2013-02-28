@@ -98,13 +98,13 @@ void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object
 		//Add Object To Datastructure
 		{
 			boost::upgrade_to_unique_lock<boost::shared_mutex> unique_lock(lock);
-			arrangement_id = __InternalInsert(obj, arrangement_id);
+			arrangement_id = __InternalInsert(obj, obj->GetPosition(), arrangement_id);
 		}
 
 		//Update our observers with the new object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			obj->__InternalAddAwareObject(object);		
-			object->__InternalAddAwareObject(obj);
+			obj->__InternalAddAwareObject(object, true);		
+			object->__InternalAddAwareObject(obj, true);
 		});
 	}
 }
@@ -117,8 +117,8 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 
 		//Update our observers about the dead object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			oldObject->__InternalRemoveAwareObject(object);	
-			object->__InternalRemoveAwareObject(oldObject);
+			oldObject->__InternalRemoveAwareObject(object, true);	
+			object->__InternalRemoveAwareObject(oldObject, true);
 		});
 
 		{
@@ -133,7 +133,7 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 	}
 }
 
-void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
+void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, glm::vec3 new_position, int32_t arrangement_id)
 {
 	if(	requester == nullptr || (
 		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
@@ -150,7 +150,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 				slot.second->remove_object(object);
 			}
 
-			arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+			arrangement_id = newContainer->__InternalInsert(object, new_position, arrangement_id);
 		}
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
@@ -179,7 +179,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 
 		//Send Creates to only new
 		for(auto& observer : newObservers) {
-			object->__InternalAddAwareObject(observer);
+			object->__InternalAddAwareObject(observer, true);
 		}
 
 		//Send updates to both
@@ -189,7 +189,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 
 		//Send destroys to only ours
 		for(auto& observer : oldObservers) {
-			object->__InternalRemoveAwareObject(observer);
+			object->__InternalRemoveAwareObject(observer, true);
 		}
 	}
 }
@@ -250,7 +250,7 @@ void Object::__InternalGetObjects(std::shared_ptr<Object> requester, uint32_t ma
 	}
 }
 
-int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
+int32_t Object::__InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_position, int32_t arrangement_id)
 {
 	std::shared_ptr<Object> removed_object = nullptr;
 	if(arrangement_id == -2)
@@ -285,6 +285,11 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrange
 	object->SetContainer(shared_from_this());
 	object->SetSceneId(scene_id_);
 
+	//Time to update the position to the new coordinates/update AABB
+	object->SetPosition(new_position);
+	object->__InternalUpdateWorldCollisionBox();
+	object->UpdateAABB();
+
 	//Because we may have calculated it internally, send the arrangement_id used back
 	//To the caller so it can send the appropriate update.
 	return arrangement_id;
@@ -300,7 +305,7 @@ void Object::SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object
 		{
 			slot.second->remove_object(object);
 		}
-		__InternalInsert(object, new_arrangement_id);
+		__InternalInsert(object, object->GetPosition(), new_arrangement_id);
 	}
 
 	__InternalViewAwareObjects([&] (std::shared_ptr<Object> aware_object) {
@@ -316,7 +321,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 			this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
 			newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
 			{
-				arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+				arrangement_id = newContainer->__InternalInsert(object, object->GetPosition(), arrangement_id);
 
 			//Split into 3 groups -- only ours, only new, and both ours and new
 			std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
@@ -344,7 +349,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 
 			//Send Creates to only new
 			for(auto& observer : newObservers) {
-				object->__InternalAddAwareObject(observer);
+				object->__InternalAddAwareObject(observer, true);
 			}
 
 			//Send updates to both
@@ -354,7 +359,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 
 			//Send destroys to only ours
 			for(auto& observer : oldObservers) {
-				object->__InternalRemoveAwareObject(observer);
+				object->__InternalRemoveAwareObject(observer, true);
 			}
 		}
 	} catch(const std::exception& e){
@@ -363,7 +368,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 }
 
 
-void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object)
+void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {	
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr == aware_objects_.end())
@@ -384,12 +389,18 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 
 		if(GetPermissions()->canView(shared_from_this(), object))
 		{
-			for(auto& slot : slot_descriptor_)
-			{
-				slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-					v->__InternalAddAwareObject(object);
-				});
-			}
+			reverse_still_valid = false;
+		}
+		
+		for(auto& slot : slot_descriptor_)
+		{
+			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+				v->__InternalAddAwareObject(object, reverse_still_valid);
+				if(reverse_still_valid)
+				{
+					object->__InternalAddAwareObject(v, reverse_still_valid);
+				}
+			});
 		}
 	}
 }
@@ -399,7 +410,7 @@ void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swgan
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), func);
 }
 
-void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
+void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr != aware_objects_.end())
@@ -407,11 +418,19 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 		auto observer = object->GetController();
 		aware_objects_.erase(object);
 
+		if(GetPermissions()->canView(shared_from_this(), object))
+		{
+			reverse_still_valid = false;
+		}
 		
 		for(auto& slot : slot_descriptor_)
 		{
 			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-				v->__InternalRemoveAwareObject(object);
+				v->__InternalRemoveAwareObject(object, reverse_still_valid);
+				if(reverse_still_valid)
+				{
+					object->__InternalRemoveAwareObject(v, reverse_still_valid);
+				}
 			});
 		}
 
@@ -432,17 +451,22 @@ bool Object::__HasAwareObject(std::shared_ptr<Object> object)
 	return aware_objects_.find(object) != aware_objects_.end();
 }
 
-glm::vec3 Object::__InternalGetAbsolutePosition()
+void Object::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& rot)
 {
 	auto parentContainer = GetContainer();
-	glm::vec3 parentPos(0, 0, 0);
 	if(parentContainer)
 	{
-		 parentPos = GetContainer()->__InternalGetAbsolutePosition();
+		 parentContainer->__InternalGetAbsolutes(pos, rot);
+	}
+	else
+	{
+		pos = glm::vec3();
+		rot = glm::quat();
 	}
 
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	return glm::vec3(parentPos.x + position_.x, parentPos.y + position_.y, parentPos.z + position_.z);
+	pos = (rot * position_) + pos;
+	rot = rot * orientation_;
 }
 
 string Object::GetTemplate()
@@ -584,8 +608,6 @@ void Object::SetPosition(glm::vec3 position)
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         position_ = position;
 	}
-	UpdateWorldCollisionBox();
-	UpdateAABB();
 	DISPATCH(Object, Position);
 }
 
@@ -801,7 +823,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	//DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+	DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -823,7 +845,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
 
-	//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+	DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
 
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
@@ -834,7 +856,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	//DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
+	DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
@@ -1057,21 +1079,30 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 
 void Object::UpdateWorldCollisionBox(void)
 { 
-		auto rot = glm::yaw(orientation_);
+	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
+	__InternalUpdateWorldCollisionBox();
+}
 
-		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
+void Object::__InternalUpdateWorldCollisionBox()
+{
+	glm::vec3 pos;
+	glm::quat rotation;
+	__InternalGetAbsolutes(pos, rotation);
+	
+	auto rot = glm::yaw(rotation);
+	boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(pos.x, pos.z);
 
-		if(rot <= DBL_MAX && rot >= -DBL_MAX) // glm::yaw sometimes results in a non-real float (-1.#IND) that will cause problems if not filted through.
-		{
-			//std::cout << "Orientation: " << rot << std::endl;
-			boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
-			boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
-			boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
-		}
-		else
-		{
-			boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
-		}
+	if(rot <= DBL_MAX && rot >= -DBL_MAX) // glm::yaw sometimes results in a non-real float (-1.#IND) that will cause problems if not filted through.
+	{
+		//std::cout << "Orientation: " << rot << std::endl;
+		boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
+		boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
+		boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
+	}
+	else
+	{
+		boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
+	}
 }
 
 AttributeVariant Object::GetAttributeRecursive(const std::string& name)
@@ -1140,4 +1171,26 @@ void Object::Clone(std::shared_ptr<Object> other)
 	__InternalViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
 		other->AddObject(nullptr, object->Clone());
 	});
+}
+
+void Object::BuildSpatialProfile()
+{
+	BuildCollisionBox();
+	BuildBoundingVolume();
+}
+
+void Object::BuildBoundingVolume()
+{
+	UpdateAABB();
+}
+
+void Object::BuildCollisionBox()
+{
+	__BuildCollisionBox();
+	__InternalUpdateWorldCollisionBox();
+}
+
+void Object::UpdateAABB() 
+{ 
+	boost::geometry::envelope(world_collision_box_, aabb_);
 }

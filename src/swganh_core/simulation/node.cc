@@ -71,7 +71,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 	objects_.insert(obj);
 }
 
-void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
+bool Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 {
 	// Search this node for the object by id, if it it found
 	// we can return;
@@ -80,7 +80,7 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 		if(obj->GetObjectId() == (*i)->GetObjectId())
 		{
 			i = objects_.erase(i);
-			return;
+			return true;
 		}
 		i++;
 	}
@@ -90,16 +90,32 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 	if(state_ == BRANCH)
 	{
 		auto bounding_volume = obj->GetAABB();
+		std::set<std::shared_ptr<Node>> checked_nodes_;
+
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// If we can actually fit inside the node, traverse farther.
 			if(boost::geometry::within(bounding_volume, node->GetRegion()))
 			{
-				node->RemoveObject(obj);
-				return;
+				checked_nodes_.insert(node);
+				if(node->RemoveObject(obj)) {
+					return true;
+				}
+			}
+		}
+
+		//Clearly we're still in there somewhere...we just don't know where anymore.
+		//Position must've been mucked with before removal.
+		bool output = false;
+		for(auto node : leaf_nodes_) {
+			if(checked_nodes_.find(node) != checked_nodes_.end()) {
+				if(node->RemoveObject(obj)) {
+					return true;
+				}
 			}
 		}
 	}
+	return false;
 }
 
 void Node::Split()

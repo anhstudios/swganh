@@ -56,7 +56,7 @@ public:
 	~Node(void);
 
 	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
-	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
+	bool RemoveObject(std::shared_ptr<swganh::object::Object> obj);
 	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume);
 	void Split();
 

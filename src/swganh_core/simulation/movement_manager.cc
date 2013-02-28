@@ -45,7 +45,7 @@ void MovementManager::HandleDataTransformServer(
 {
     counter_map_[object->GetObjectId()] = counter_map_[object->GetObjectId()];
     
-	auto old_bounding_volume = object->GetAABB();
+	AABB old_bounding_volume = object->GetAABB();
 
 	//If the object was inside a container we need to move it out
 	if(object->GetContainer() != spatial_provider_)
@@ -53,13 +53,18 @@ void MovementManager::HandleDataTransformServer(
 		std::shared_ptr<Object> old_container = std::static_pointer_cast<Object>(object->GetContainer());
 		if(old_container->GetTemplate().compare("object/cell/shared_cell.iff") == 0) 
 		{
-			object->SetPosition(new_position);
-			object->GetContainer()->TransferObject(object, object, spatial_provider_);
+			object->GetContainer()->TransferObject(object, object, spatial_provider_, new_position);
 		} 
 		else 
 		{
-			auto old_parent_bounding_volume = old_container->GetAABB();
+			AABB old_parent_bounding_volume = old_container->GetAABB();
 			old_container->SetPosition(new_position);
+			old_container->UpdateWorldCollisionBox();
+			old_container->UpdateAABB();
+
+			object->UpdateWorldCollisionBox();
+			object->UpdateAABB();
+			
 			spatial_provider_->UpdateObject(old_container, old_parent_bounding_volume, old_container->GetAABB());
 			SendDataTransformMessage(old_container);
 		}
@@ -67,6 +72,8 @@ void MovementManager::HandleDataTransformServer(
 	else
 	{
 		object->SetPosition(new_position);
+		object->UpdateWorldCollisionBox();
+		object->UpdateAABB();
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 		SendDataTransformMessage(object);
 	}
@@ -80,12 +87,17 @@ void MovementManager::HandleDataTransformWithParentServer(
 {
 	if(parent != nullptr)
 	{
-		//Set the new position and orientation
-		object->SetPosition(new_position);
-		
-		//Perform the transfer
+		//Perform the transfer if needed
 		if(object->GetContainer() != parent)
-			object->GetContainer()->TransferObject(object, object, parent);
+		{
+			object->GetContainer()->TransferObject(object, object, parent, new_position);
+		}
+		else
+		{
+			object->SetPosition(new_position);
+			object->UpdateWorldCollisionBox();
+			object->UpdateAABB();
+		}
 		
 		//Send the update transform
 		SendDataTransformWithParentMessage(object);
@@ -108,7 +120,7 @@ void MovementManager::HandleDataTransform(
     }
 
     counter_map_[object->GetObjectId()] = message.counter;
-	auto old_bounding_volume = object->GetAABB();
+	AABB old_bounding_volume = object->GetAABB();
 
 	//If the object was inside a container we need to move it out
 	if(object->GetContainer() != spatial_provider_)
@@ -116,15 +128,20 @@ void MovementManager::HandleDataTransform(
 		std::shared_ptr<Object> old_container = std::static_pointer_cast<Object>(object->GetContainer());
 		if(old_container->GetTemplate().compare("object/cell/shared_cell.iff") == 0) 
 		{
-			object->SetPosition(message.position);
 			object->SetOrientation(message.orientation);
-			object->GetContainer()->TransferObject(object, object, spatial_provider_);
+			object->GetContainer()->TransferObject(object, object, spatial_provider_, message.position);
 		} 
 		else 
 		{
-			auto old_parent_bounding_volume = old_container->GetAABB();
-			old_container->SetPosition(message.position);
+			AABB old_parent_bounding_volume = old_container->GetAABB();
 			old_container->SetOrientation(message.orientation);
+			old_container->SetPosition(message.position);
+			old_container->UpdateWorldCollisionBox();
+			old_container->UpdateAABB();
+			
+			object->UpdateWorldCollisionBox();
+			object->UpdateAABB();
+
 			spatial_provider_->UpdateObject(old_container, old_parent_bounding_volume, old_container->GetAABB());
 			SendUpdateDataTransformMessage(old_container);
 		}
@@ -133,6 +150,8 @@ void MovementManager::HandleDataTransform(
 	{
 		object->SetPosition(message.position);
 		object->SetOrientation(message.orientation);
+		object->UpdateWorldCollisionBox();
+		object->UpdateAABB();
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 		SendUpdateDataTransformMessage(object);
 	}
@@ -155,12 +174,19 @@ void MovementManager::HandleDataTransformWithParent(
 		counter_map_[object->GetObjectId()] = message.counter;
 
 		//Set the new position and orientation
-		object->SetPosition(message.position);
 		object->SetOrientation(message.orientation);
     
 		//Perform the transfer
 		if(object->GetContainer() != container)
-			object->GetContainer()->TransferObject(object, object, container);
+		{
+			object->GetContainer()->TransferObject(object, object, container, message.position);
+		}
+		else
+		{
+			object->SetPosition(message.position);
+			object->UpdateWorldCollisionBox();
+			object->UpdateAABB();
+		}
 
 		//Send the update transform
 		SendUpdateDataTransformWithParentMessage(object);

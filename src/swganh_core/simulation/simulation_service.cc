@@ -257,6 +257,8 @@ public:
 
 		//Update the object's position.
 		obj->SetPosition(position);
+		obj->UpdateWorldCollisionBox();
+		obj->UpdateAABB();
 
 		// Reset Controller
 		obj->SetController(controller);

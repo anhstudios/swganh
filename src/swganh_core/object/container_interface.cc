@@ -58,7 +58,7 @@ void ContainerInterface::ViewObjects(std::shared_ptr<Object> requester, uint32_t
 void ContainerInterface::AddAwareObject(std::shared_ptr<swganh::object::Object> observer)
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
-	__InternalAddAwareObject(observer);
+	__InternalAddAwareObject(observer, true);
 }
 
 void ContainerInterface::ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint)
@@ -70,11 +70,16 @@ void ContainerInterface::ViewAwareObjects(std::function<void(std::shared_ptr<swg
 void ContainerInterface::RemoveAwareObject(std::shared_ptr<swganh::object::Object> observer)
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
-	__InternalRemoveAwareObject(observer);
+	__InternalRemoveAwareObject(observer, true);
 }
 
-glm::vec3 ContainerInterface::GetAbsolutePosition()
+void ContainerInterface::GetAbsolutes(glm::vec3& pos, glm::quat& rot)
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
-	return __InternalGetAbsolutePosition();
+	__InternalGetAbsolutes(pos, rot);
 }
+
+//void ContainerInterface::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
+//{
+	//TransferObject(requester, object, newContainer, object->GetPosition(), arrangement_id);
+//}
