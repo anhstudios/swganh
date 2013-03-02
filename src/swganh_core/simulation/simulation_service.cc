@@ -377,6 +377,7 @@ public:
         SelectCharacter* message)
     {
         auto object = LoadObjectById(message->character_id, Creature::type);        
+		object->SetFlag("player_creature");
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
 		auto player = GetEquipmentService()->GetEquippedObject<Player>(object, "ghost");
@@ -713,6 +714,9 @@ void SimulationService::Startup()
 	command_service->AddCommandCreator("transferitemarmor", swganh::command::PythonCommandCreator("commands.transferItemArmor", "TransferItemArmor"));
 	command_service->AddCommandCreator("transferitemweapon", swganh::command::PythonCommandCreator("commands.transferItemWeapon", "TransferItemWeapon"));
 	command_service->AddCommandCreator("tip", swganh::command::PythonCommandCreator("commands.tip", "TipCommand"));
+	command_service->AddCommandCreator("consent", swganh::command::PythonCommandCreator("commands.consent", "ConsentCommand"));
+	command_service->AddCommandCreator("unconsent", swganh::command::PythonCommandCreator("commands.unconsent", "UnconsentCommand"));
+	command_service->AddCommandCreator("haveconsent", swganh::command::PythonCommandCreator("commands.haveconsent", "HaveConsentCommand"));
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 

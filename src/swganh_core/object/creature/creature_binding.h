@@ -10,6 +10,8 @@
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
 
+#include <swganh/scripting/set_wrap.h>
+
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
@@ -23,6 +25,17 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addBuffOverload, AddBuff, 1, 2)
 
 void exportCreature()
 {
+	bool (Creature::*GrantConsent1)(std::shared_ptr<Creature>) = &Creature::GrantConsent;
+	bool (Creature::*GrantConsent2)(uint64_t) = &Creature::GrantConsent;
+
+	bool (Creature::*RevokeConsent1)(std::shared_ptr<Creature>) = &Creature::RevokeConsent;
+	bool (Creature::*RevokeConsent2)(uint64_t) = &Creature::RevokeConsent;
+
+	bool (Creature::*HasConsent1)(std::shared_ptr<Object>) = &Creature::HasConsent;
+	bool (Creature::*HasConsent2)(uint64_t) = &Creature::HasConsent;
+
+	set_wrapper<uint64_t>::wrap("IdSet");
+
 	// ENUMS
 	enum_<Posture>("POSTURE", "The Possible postures a creature can be in")
 		.value("UPRIGHT", UPRIGHT)
@@ -116,6 +129,7 @@ void exportCreature()
 		.def_readwrite("modifier", &SkillMod::modifier)
 		.def("__eq__", &SkillMod::operator==)
 		;
+
 	class_<Creature, bases<Tangible>, std::shared_ptr<Creature>, boost::noncopyable>("Creature", "Object that describes the creature object, child of Tangible")
 		// STATS
 		.def("setStatBase", &Creature::SetStatBase, "sets the base :class:`.STATS` value")
@@ -137,7 +151,6 @@ void exportCreature()
 		.def("deductStatMax", &Creature::DeductStatMax, "deducts from the given MAX :class:`.STATS`")
 		.def("getStatMax", &Creature::GetStatMax, "gets the value of the current MAX :class:`.STATS`")
 		.def("setAllStats", &Creature::SetAllStats, "Sets HAM of base/current/max to a given value")
-		//
 		.def("addSkill", &Creature::AddSkill, "adds skill to the creature")
 		.def("removeSkill", &Creature::RemoveSkill, "removes skill from the creature")
 		.def("hasSkill", &Creature::HasSkill, "returns true if the creature has the skill")
@@ -185,6 +198,13 @@ void exportCreature()
 		.def("addBuff", &Creature::AddBuff, addBuffOverload(args("buff_name", "duration", "force"), "Adds a new buff to the creature"))
 		.def("removeBuff", &Creature::RemoveBuff, "Instantly removes a buff from the creature")
 		.def("setCustomization", &Creature::SetCustomization, "Sets customization string")
+		.def("grantConsent", GrantConsent1, "Grants the given player consent.")
+		.def("grantConsent", GrantConsent2, "Grants the given player consent.")
+		.def("revokeConsent", RevokeConsent1, "Revokes the given player's consent.")
+		.def("revokeConsent", RevokeConsent2, "Revokes the given player's consent.")
+		.def("hasConsent", HasConsent1, "Returns true if the given player has consent.")
+		.def("hasConsent", HasConsent2, "Returns true if the given player has consent.")
+		.def("getConsentedPlayers", &Creature::GetConsentedPlayers, "Returns a set of consented players.")
         ;
 
 	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Tangible>>();

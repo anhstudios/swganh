@@ -90,12 +90,12 @@ class PyRadialMenu(RadialMenu):
 		results.extend(
 			['transaction.txtInputFrom:Text','transaction.txtInputTo:Text']
 		)
-		transferCallback = PythonCallback(self, 'transferCallback')
+		transferCallback = PythonCallback(self, None, 'transferCallback')
 		window.subscribeToEventCallback(0, '', InputTrigger.OK, results, transferCallback)
 		window.subscribeToEventCallback(1, '', InputTrigger.CANCEL, results, transferCallback)
 		sui.openSUIWindow(window)
 		
-	def transferCallback(self, owner, event_id, results):
+	def transferCallback(self, session_data, owner, event_id, results):
 		if event_id == 0 and len(results) == 2:
 			cash = int(results[0])
 			bank = int(results[1])
@@ -104,7 +104,7 @@ class PyRadialMenu(RadialMenu):
 				owner.cash_credits = cash
 				SystemMessage.sendSystemMessage(owner, swgpy.OutOfBand('base_player', 'bank_success'), False, False)
 			else:
-				SystemMessage.sendSystemMessage(owner, 'NOPE', False, False)
+				SystemMessage.sendSystemMessage(owner, 'An internal error occurred. Try again.', False, False)
 		return True
 				
 			

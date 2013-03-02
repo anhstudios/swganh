@@ -497,9 +497,9 @@ uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& att
 uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<Weapon>& weapon, std::shared_ptr<CombatData> combat_data) { 
     uint16_t bonus = 0;
 	auto acc_bonus_pair = combat_data->attacker_skill_mods["attack_accuracy"];
-	bonus += acc_bonus_pair.first + acc_bonus_pair.second;
+	bonus += acc_bonus_pair.base + acc_bonus_pair.modifier;
 	auto priv_acc_bonus = combat_data->attacker_skill_mods["attack_accuracy"];
-	bonus += priv_acc_bonus.first + priv_acc_bonus.second;	
+	bonus += priv_acc_bonus.base + priv_acc_bonus.modifier;	
 
 	if (weapon)
 	{

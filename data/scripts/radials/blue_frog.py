@@ -91,8 +91,8 @@ class PyRadialMenu(RadialMenu):
 	def displaySUIList(self, owner, list, callbackName):
 		sui = self.getKernel().serviceManager().suiService()
 		
-		#if sui.getSUIWindowByScriptName(owner, 'Script.listBox') != None:
-			#return
+		if sui.getSUIWindowByScriptName(owner, 'Script.listBox') != None:
+			return
 
 		options = EventResultList()
 		for option in list:
@@ -102,25 +102,23 @@ class PyRadialMenu(RadialMenu):
 			
 		results = ResultList()
 		results.append('List.lstList:SelectedRow')
-		callback = PythonCallback(self, callbackName)
+		callback = PythonCallback(self, None, callbackName)
 		
 		window.subscribeToEventCallback(0, '', InputTrigger.OK, results, callback)
 		window.subscribeToEventCallback(1, '', InputTrigger.CANCEL, results, callback)
 		sui.openSUIWindow(window)
 	
-	def weaponCallback(self, owner, event_id, results):
+	def weaponCallback(self, session_data, owner, event_id, results):
 		if event_id == 0:
 			self.giveItems(owner, self.weapons[int(results[0])], self.weaponPostProcess)
 		return True
 	
-	
-	
-	def armorCallback(self, owner, event_id, results):
+	def armorCallback(self, session_data, owner, event_id, results):
 		if event_id == 0:
 			self.giveItems(owner, self.armor[int(results[0])], self.armorPostProcess)
 		return True
 		
-	def structureCallback(self, owner, event_id, results):
+	def structureCallback(self, session_data, owner, event_id, results):
 		if event_id == 0:
 			self.giveItems(owner, self.structureDeeds[int(results[0])], self.defaultPostProcess)
 		return True

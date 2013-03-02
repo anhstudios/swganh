@@ -525,12 +525,17 @@ std::vector<std::shared_ptr<ElevatorData>> StaticService::GetElevatorDataForObje
 	return std::vector<std::shared_ptr<ElevatorData>>();
 }
 
-std::pair<uint32_t, uint32_t> StaticService::GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+swganh::object::SkillMod StaticService::GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
 {
 	return skill_mod_manager_.GetSkillMod(creature, skill_mod_name);
 }
 		
-std::map<std::string, std::pair<uint32_t, uint32_t>> StaticService::GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature)
+std::map<std::string, swganh::object::SkillMod> StaticService::GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature)
 {
 	return skill_mod_manager_.GetSkillMods(creature);
+}
+
+std::shared_ptr<SkillInfo> StaticService::GetSkillInfo(std::string skillname)
+{
+	return skill_mod_manager_.GetSkillInfo(skillname);
 }

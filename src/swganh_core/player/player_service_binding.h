@@ -28,5 +28,6 @@ void exportPlayerService()
 		.def("hasCalledMount", &PlayerServiceInterface::HasCalledMount)
 		.def("storeAllCalledMounts", &PlayerServiceInterface::StoreAllCalledMounts)
 		.def("storeAllCalledObjects", &PlayerServiceInterface::StoreAllCalledObjects)
+		.def("getPlayerByFirstName", &PlayerServiceInterface::GetPlayerByFirstName)
         ;
 }

@@ -4,6 +4,7 @@
 
 #include "swganh_core/player/player_service_interface.h"
 
+#include <unordered_map>
 #include <boost/asio.hpp>
 
 #include "swganh/app/swganh_kernel.h"
@@ -70,6 +71,8 @@ public:
 	
 	virtual void StoreAllCalledObjects(std::shared_ptr<swganh::object::Creature> owner);
 
+	virtual std::shared_ptr<swganh::object::Object> GetPlayerByFirstName(const std::wstring& first_name);
+
 private:
 	void RemoveClientTimerHandler_(
 		const boost::system::error_code& e, 
@@ -82,6 +85,9 @@ private:
 	swganh::simulation::SimulationServiceInterface* simulation_service_;
 	swganh::CallbackId player_selected_callback_;
 	swganh::CallbackId player_removed_;
+
+	boost::mutex player_character_lock_;
+	std::unordered_map<std::wstring, std::shared_ptr<swganh::object::Object>> player_characters_;
 };
 
 }} // swganh::player

@@ -389,7 +389,7 @@ public:
     /**
      * @return Returns the sir name of a custom name (if set) otherwise empty string is returned.
      */
-    std::wstring GetSirName() const;
+    std::wstring GetSurName() const;
 
     /**
      * Returns the volume of the object, which is a measure of the "space"

@@ -13,6 +13,11 @@
 #include "swganh_core/messages/containers/network_map.h"
 #include "swganh_core/messages/containers/network_sorted_list.h"
 
+#include "swganh_core/static/skill.h"
+#include "swganh_core/static/skill_mod.h"
+
+#define MAX_CONSENTED_PLAYERS 5
+
 namespace swganh {
 namespace combat
 {
@@ -158,48 +163,6 @@ enum PvpStatus
 /**
  *
  */
-struct SkillMod
-{
-    SkillMod()
-    {}
-
-    SkillMod(std::string identifier_, uint32_t base_, uint32_t modifier_)
-        : identifier(identifier_)
-        , base(base_)
-        , modifier(modifier_)
-    {}
-
-    ~SkillMod(void)
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint8_t>(0);                 // Unused
-        message.data.write<std::string>(identifier);    // Identifier
-        message.data.write<uint32_t>(base);             // Base
-        message.data.write<uint32_t>(modifier);         // Modifier
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<std::string>(identifier);    // Identifier
-        message.data.write<uint32_t>(base);             // Base
-        message.data.write<uint32_t>(modifier);         // Modifier
-    }
-
-    bool operator==(const SkillMod& other)
-    {
-        return (identifier == other.identifier);
-    }
-
-    std::string identifier;
-    uint32_t base;
-    uint32_t modifier;
-};
-
-/**
- *
- */
 struct Stat
 {
     Stat(void)
@@ -314,35 +277,6 @@ struct MissionCriticalObject
     }
 };
 
-/**
- *
- */
-struct Skill
-{
-    Skill(std::string name_)
-        : name(name_)
-    {}
-
-    ~Skill()
-    {}
-
-    std::string name;
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<std::string>(name);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<std::string>(name);
-    }
-
-    bool operator==(const Skill& other)
-    {
-        return (name == other.name);
-    }
-};
 /**
  *
  */
@@ -624,8 +558,32 @@ public:
 	
     typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Creature> other);
+	/**
+	*
+	*/
+
+
+	/**
+	* @return true if the player was added, 
+	* false if the player has granted 5 people already.
+	*/
+	bool GrantConsent(std::shared_ptr<Creature> object);
+	bool GrantConsent(uint64_t player_id);
+	
+	/**
+	* @return true if the player was removed,
+	* false if the player was not consented.
+	*/
+	bool RevokeConsent(std::shared_ptr<Creature> object);
+	bool RevokeConsent(uint64_t player_id);
+
+	/**
+	*@return true if the given player has consent, false otherwise.
+	*/
+	bool HasConsent(std::shared_ptr<Object> object);
+	bool HasConsent(uint64_t player_id);
+
+	std::set<uint64_t> GetConsentedPlayers();
 
 private:
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
@@ -673,6 +631,8 @@ private:
     std::atomic<bool> stationary_;                                                                        // update 6 variable 17
     PvpStatus pvp_status_;
     std::vector<uint64_t> duel_list_;
+	
+	std::set<uint64_t> consented_players_;
 
 	BuffMap buffs_;
 };
