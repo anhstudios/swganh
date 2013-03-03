@@ -11,11 +11,16 @@
 #include "swganh/event_dispatcher.h"
 
 namespace swganh {
+namespace messages {
+namespace controllers {
+	class ChangeTarget;
+}
+}
 namespace equipment {
 	class EquipmentService;
 }
 namespace object {
-	class ObjectController;	
+	class ObjectController;
 } // object
 namespace simulation {
 	class SimulationServiceInterface;
@@ -79,6 +84,8 @@ private:
 		std::shared_ptr<boost::asio::deadline_timer> timer, 
 		int delay_in_secs, 
 		std::shared_ptr<swganh::object::ObjectController> controller);
+
+	void _handleTargetChange(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ChangeTarget* message);
 
 	swganh::app::SwganhKernel* kernel_;
 	swganh::equipment::EquipmentService* equipment_service_;

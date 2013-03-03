@@ -13,6 +13,7 @@
 #include "swganh_core/object/object_controller.h"
 #include "swganh_core/messages/system_message.h"
 #include "swganh_core/messages/out_of_band.h"
+#include "swganh_core/messages/controllers/change_target.h"
 #include "swganh_core/messages/opened_container_message.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/equipment/equipment_service.h"
@@ -101,6 +102,8 @@ void PlayerService::Startup()
 {
 	simulation_service_ = kernel_->GetServiceManager()->
 		GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
+
+	simulation_service_->RegisterControllerHandler(&PlayerService::_handleTargetChange, this);
 
 	equipment_service_ = kernel_->GetServiceManager()->
 		GetService<swganh::equipment::EquipmentService>("EquipmentService");
@@ -317,4 +320,11 @@ std::shared_ptr<swganh::object::Object> PlayerService::GetPlayerByFirstName(cons
 		return find_itr->second;
 	}
 	return nullptr;
+}
+
+void PlayerService::_handleTargetChange(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ChangeTarget* message)
+{
+	//@TODO test how the client reacts to an invalid target
+	//and add a check in here to insure the validity of this target if needed.
+	std::static_pointer_cast<Creature>(object)->SetTargetId(message->target_id_);
 }
