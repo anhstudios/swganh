@@ -14,8 +14,8 @@ class Account;
 
 class LoginClientInterface : public swganh::network::soe::Session {
 public:    
-    LoginClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
-		:Session(server, io_service, remote_endpoint)
+    LoginClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint)
+		:Session(server, cpu_pool, remote_endpoint)
 	{
 	}
     

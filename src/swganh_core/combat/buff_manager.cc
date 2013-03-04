@@ -21,7 +21,7 @@ using namespace std;
 
 BuffManager::BuffManager(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
-	, timer_(kernel_->GetIoService())
+	, timer_(kernel_->GetCpuThreadPool())
 {}
 
 void BuffManager::Start()

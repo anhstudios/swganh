@@ -30,10 +30,10 @@ using swganh::object::Tangible;
 CommandQueue::CommandQueue(
     swganh::app::SwganhKernel* kernel)
     : kernel_(kernel)
-    , timer_(kernel->GetIoService())
+    , timer_(kernel->GetCpuThreadPool())
     , processing_(false)
     , default_command_(nullptr)
-    , active_(kernel->GetIoService())
+    , active_(kernel->GetCpuThreadPool())
 {
     command_service_ = kernel->GetServiceManager()->GetService<CommandService>("CommandService");
 }

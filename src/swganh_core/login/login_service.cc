@@ -49,12 +49,12 @@ using boost::asio::ip::udp;
 using swganh::app::SwganhKernel;
 
 LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKernel* kernel)
-    : swganh::login::LoginServiceInterface(kernel->GetIoService())
+    : swganh::login::LoginServiceInterface(kernel->GetCpuThreadPool())
     , kernel_(kernel)
-    , galaxy_status_timer_(kernel->GetIoService())
+	, galaxy_status_timer_(kernel->GetCpuThreadPool())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
-    , active_(kernel->GetIoService())
+	, active_(kernel->GetCpuThreadPool())
 {
     account_provider_ = kernel->GetPluginManager()->CreateObject<swganh::login::providers::AccountProviderInterface>("Login::AccountProvider");
     
@@ -93,7 +93,7 @@ shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<LoginClient>(this, kernel_->GetIoService(), endpoint);
+            session = make_shared<LoginClient>(this, kernel_->GetCpuThreadPool(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
         }
     }
@@ -274,7 +274,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterfa
 
         login_client->SendTo(error);
 
-        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)
