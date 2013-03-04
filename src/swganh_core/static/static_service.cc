@@ -49,7 +49,7 @@ enum PERSISTENT_NPC_TYPE
 
 StaticService::StaticService(SwganhKernel* kernel)
 	: kernel_(kernel)
-    , active_(kernel->GetIoService())
+    , active_(kernel->GetCpuThreadPool())
 {
 	//Static Objects
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)

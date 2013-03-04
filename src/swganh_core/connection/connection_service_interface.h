@@ -50,7 +50,7 @@ class ConnectionServiceInterface : public swganh::service::ServiceInterface, pub
 public:
     
 	ConnectionServiceInterface(swganh::app::SwganhKernel* kernel)
-		: swganh::network::BaseSwgServer(kernel->GetIoService())
+		: swganh::network::BaseSwgServer(kernel->GetIoThreadPool())
 	{
 	}
 
