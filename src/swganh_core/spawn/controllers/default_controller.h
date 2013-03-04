@@ -6,7 +6,7 @@
 
 #include <queue>
 #include <tuple>
-#include <swganh/spawn/fsm_controller.h>
+#include <swganh_core/spawn/fsm_controller.h>
 
 namespace swganh
 {

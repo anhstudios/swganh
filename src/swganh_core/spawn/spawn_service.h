@@ -13,30 +13,37 @@ namespace swganh
 {
 namespace spawn
 {
+
 	class SpawnService : public swganh::spawn::SpawnServiceInterface
 	{
 	public:
 		SpawnService(swganh::app::SwganhKernel* kernel);
 		~SpawnService();
+		
+		swganh::service::ServiceDescription GetServiceDescription();
+	
+		void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine);
 
-		virtual void Initialize();
-        virtual void Startup();
+		void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
 
-        virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine)
-        {
-            fsm_manager_.StartManagingObject(object, machine);
-        }
+		void AddLootGroup(std::string name, std::shared_ptr<LootGroup> group);
 
-		virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object)
-		{
-			fsm_manager_.StopManagingObject(object);
-		}
-        
+		std::shared_ptr<LootGroup> GetLootGroup(std::string name);
+
+		void AddSpawnRegion(uint32_t scene_id, std::shared_ptr<SpawnRegion> region);
+
+		void Startup();
+
 	private:
 		void _timerTick(const boost::system::error_code& e);
 
 		FsmManager fsm_manager_;
 
+		std::mutex region_lock_;
+		std::map<std::string, std::shared_ptr<LootGroup>> loot_groups_;
+		std::map<uint32_t, std::shared_ptr<SpawnRegion>> spawn_regions_;
+
+		uint32_t next_region_id_;
 		swganh::app::SwganhKernel* kernel_;
 
 		boost::asio::deadline_timer timer_;

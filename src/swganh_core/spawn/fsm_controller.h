@@ -4,7 +4,7 @@
 
 #include <swganh/observer/observer_interface.h>
 
-#include <swganh/spawn/fsm_state_interface.h>
+#include <swganh_core/spawn/fsm_state_interface.h>
 
 #include "boost/date_time/posix_time/posix_time_types.hpp"
 #include <queue>
@@ -75,7 +75,9 @@ public:
 	*/
 	virtual swganh::messages::BaseSwgMessage* CurrentMessage();
 
-private:
+	virtual void ClearMessages();
+
+protected:
 	std::mutex message_mutex_;
 
 	FiniteStateMachineInterface* parent_machine_;

@@ -43,6 +43,8 @@
 #include "permissions/world_cell_permission.h"
 #include "permissions/no_view_permission.h"
 
+#include "collision_data.h"
+
 using namespace std;
 using namespace swganh;
 using namespace swganh::tre;
