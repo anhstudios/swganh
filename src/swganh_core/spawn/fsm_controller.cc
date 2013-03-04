@@ -11,9 +11,9 @@ using namespace swganh::messages;
 FsmController::FsmController(FiniteStateMachineInterface* parent, std::shared_ptr<swganh::object::Object> object,
 	std::shared_ptr<FsmStateInterface> initial_state)
 	: parent_machine_(parent)
-	, object_(object)
-	, current_state_(initial_state)
+	, object_(object) 
 {
+	SetCurrentState(initial_state, boost::posix_time::second_clock::local_time());
 }
 	
 FsmController::~FsmController()

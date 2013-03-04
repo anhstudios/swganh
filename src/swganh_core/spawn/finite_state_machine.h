@@ -13,6 +13,11 @@
 
 namespace boost
 {
+namespace asio
+{
+class io_service;
+}
+
 class thread;
 }
 
@@ -41,7 +46,7 @@ namespace spawn
 	{
 	public:
 	
-		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, uint32_t threads_required, 
+		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, 
 			std::shared_ptr<FsmStateInterface> initial_state,
 			ControllerFactory controller_factory);
 
@@ -55,6 +60,9 @@ namespace spawn
 		swganh::app::SwganhKernel* GetKernel() { return kernel_; }
 
 	private:
+
+		void HandleDispatch();
+
 		std::atomic<bool> shutdown_;
 		std::vector<std::thread> threads_;
 		boost::mutex mutex_;
@@ -64,6 +72,7 @@ namespace spawn
 		ControllerFactory controller_factory_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
 
+		boost::asio::io_service* io_service_;
 		swganh::app::SwganhKernel* kernel_;
 	};
 }

@@ -5,44 +5,41 @@
 #include "swganh_core/spawn/fsm_controller.h"
 #include "swganh_core/object/object.h"
 
-
 using namespace boost;
 using namespace swganh::spawn;
 
-FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, uint32_t threads_required, std::shared_ptr<FsmStateInterface> initial_state,
-	ControllerFactory controller_factory)
+FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, std::shared_ptr<FsmStateInterface> initial_state,
+			ControllerFactory controller_factory)
 	: kernel_(kernel)
+	, io_service_(&kernel_->GetIoService())
 	, initial_state_(initial_state)
 	, controller_factory_(controller_factory)
 	, shutdown_(false)
 {
-	while(threads_required > 0)
-	{
-		threads_.emplace_back([this] () {
-			while(!shutdown_)
+}
+
+void FiniteStateMachine::HandleDispatch()
+{
+	io_service_->dispatch([this] () {
+		while(!shutdown_)
+		{
+			std::set<std::shared_ptr<FsmController>> to_process_;
 			{
-				std::set<std::shared_ptr<FsmController>> to_process_;
-				{
-					lock_guard<mutex> lock(mutex_);
-					to_process_.swap(dirty_controllers_);
-				}
-
-				for(auto& c : to_process_)
-				{
-					c->Cleanup(boost::posix_time::second_clock::local_time());
-					if(c->IsDirty()) 
-					{
-						MarkDirty(c);
-					}
-				}
-
-				std::this_thread::yield();
+				lock_guard<mutex> lock(mutex_);
+				to_process_.swap(dirty_controllers_);
 			}
-		});
 
-		
-		--threads_required;
-	}
+			HandleDispatch();
+			for(auto& c : to_process_)
+			{
+				c->Cleanup(boost::posix_time::second_clock::local_time());
+				if(c->IsDirty()) 
+				{
+					MarkDirty(c);
+				}
+			}
+		}
+	});
 }
 
 FiniteStateMachine::~FiniteStateMachine()

@@ -44,7 +44,7 @@ void _buildShuttleMachine(swganh::app::SwganhKernel* kernel, FsmManager& manager
 	landing_state->AddTimedTransition(boost::posix_time::seconds(20), in_port_state,
 	[] (FsmController* controller, std::shared_ptr<swganh::object::Object> object) -> bool {return true;});
 
-	manager_.RegisterAutomaton(L"shuttle", std::make_shared<FiniteStateMachine>(kernel, 1, in_port_state,
+	manager_.RegisterAutomaton(L"shuttle", std::make_shared<FiniteStateMachine>(kernel, in_port_state,
 	[] (FiniteStateMachineInterface* machine, std::shared_ptr<Object> obj, std::shared_ptr<FsmStateInterface> initial_state) 
 	{
 		return std::make_shared<DefaultController>(machine, obj, initial_state);
