@@ -1,3 +1,6 @@
+
+#### MODIFIED ####
+
 from swgpy.command import BaseSwgCommand
 
 class SetMoodInternalCommand(BaseSwgCommand):

@@ -1,3 +1,6 @@
+
+#### MODIFIED ####
+
 from swgpy.object import *
 from swgpy.command import BaseSwgCommand
 from swgpy import PVPSTATUS, OutOfBand, ProseType

@@ -1,3 +1,6 @@
+
+#### MODIFIED ####
+
 import swgpy
 from swgpy.object import *
 from swgpy.command import BaseSwgCommand

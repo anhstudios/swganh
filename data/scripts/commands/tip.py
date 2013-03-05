@@ -1,3 +1,6 @@
+
+#### MODIFIED ####
+
 import swgpy
 from swgpy.command import BaseSwgCommand
 from swgpy.object import SystemMessage
