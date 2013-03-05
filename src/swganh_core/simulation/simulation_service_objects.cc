@@ -77,39 +77,20 @@ using namespace swganh::object;
 void SimulationService::RegisterObjectFactories()
 {
     auto object_manager = GetObjectManager();
-
-	std::promise<bool> prom1, prom2, prom3;
-	std::future<bool> fut1=prom1.get_future(), fut2= prom2.get_future(), fut3 = prom3.get_future();
-
-	kernel_->GetIoService().post([&] () {
-		object_manager->RegisterObjectType<Object>();
-		object_manager->RegisterObjectType<Static>();
-		object_manager->RegisterObjectType<Intangible>();
-		object_manager->RegisterObjectType<Installation>();
-		object_manager->RegisterObjectType<HarvesterInstallation>();
-		object_manager->RegisterObjectType<Mission>();
-		object_manager->RegisterObjectType<Guild>();
-		object_manager->RegisterObjectType<Waypoint>();
-		object_manager->RegisterObjectType<Cell>();
-		object_manager->RegisterObjectType<Player>();
-		object_manager->RegisterObjectType<ResourceContainer>();
-		object_manager->RegisterObjectType<FactoryCrate>();
-		object_manager->RegisterObjectType<Weapon>();
-		object_manager->RegisterObjectType<Building>();
-		prom1.set_value(true);
-	});
-
-	kernel_->GetIoService().post([&] () {
-		object_manager->RegisterObjectType<Tangible>();
-		prom2.set_value(true);
-	});
-
-	kernel_->GetIoService().post([&] () {
-		object_manager->RegisterObjectType<Creature>();
-		prom3.set_value(true);
-	});
-
-	fut1.wait();
-	fut2.wait();
-	fut3.wait();
+	object_manager->RegisterObjectType<Object>();
+	object_manager->RegisterObjectType<Static>();
+	object_manager->RegisterObjectType<Intangible>();
+	object_manager->RegisterObjectType<Installation>();
+	object_manager->RegisterObjectType<HarvesterInstallation>();
+	object_manager->RegisterObjectType<Mission>();
+	object_manager->RegisterObjectType<Guild>();
+	object_manager->RegisterObjectType<Waypoint>();
+	object_manager->RegisterObjectType<Cell>();
+	object_manager->RegisterObjectType<Player>();
+	object_manager->RegisterObjectType<ResourceContainer>();
+	object_manager->RegisterObjectType<FactoryCrate>();
+	object_manager->RegisterObjectType<Weapon>();
+	object_manager->RegisterObjectType<Building>();
+	object_manager->RegisterObjectType<Tangible>();
+	object_manager->RegisterObjectType<Creature>();
 }

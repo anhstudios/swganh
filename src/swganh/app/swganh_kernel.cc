@@ -29,8 +29,9 @@ using swganh::service::ServiceManager;
 using std::make_shared;
 using std::shared_ptr;
 
-SwganhKernel::SwganhKernel(boost::asio::io_service& io_service)
-    : io_service_(io_service)
+SwganhKernel::SwganhKernel(boost::asio::io_service& io_pool, boost::asio::io_service& cpu_pool)
+    : io_pool_(io_pool)
+	, cpu_pool_(cpu_pool)
 {
     version_.major = VERSION_MAJOR;
     version_.minor = VERSION_MINOR;
@@ -76,7 +77,7 @@ DatabaseManager* SwganhKernel::GetDatabaseManager() {
 
 swganh::EventDispatcher* SwganhKernel::GetEventDispatcher() {
     if (!event_dispatcher_) {
-        event_dispatcher_.reset(new swganh::EventDispatcher(GetIoService()));
+        event_dispatcher_.reset(new swganh::EventDispatcher(GetCpuThreadPool()));
     }
 
     return event_dispatcher_.get();
@@ -112,8 +113,14 @@ ServiceDirectoryInterface* SwganhKernel::GetServiceDirectory() {
     return service_directory_.get();
 }
 
-boost::asio::io_service& SwganhKernel::GetIoService() {
-    return io_service_;
+boost::asio::io_service& SwganhKernel::GetIoThreadPool() 
+{
+    return io_pool_;
+}
+
+boost::asio::io_service& SwganhKernel::GetCpuThreadPool() 
+{
+    return cpu_pool_;
 }
 
 swganh::tre::ResourceManager* SwganhKernel::GetResourceManager()

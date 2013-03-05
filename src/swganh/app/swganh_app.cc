@@ -58,8 +58,8 @@ options_description AppConfig::BuildConfigDescription() {
     desc.add_options()
         ("help,h", "Display help message and config options")
 
-		("server_mode", boost::program_options::value<std::string>(&server_mode)->default_value("all"),
-			"Specifies the service configuration mode to run the server in.")
+        ("server_mode", boost::program_options::value<std::string>(&server_mode)->default_value("all"),
+            "Specifies the service configuration mode to run the server in.")
 
         ("plugin,p", boost::program_options::value<std::vector<std::string>>(&plugins),
             "Only used when single_server_mode is disabled, loads a module of the specified name")
@@ -80,6 +80,12 @@ options_description AppConfig::BuildConfigDescription() {
             
         ("db_threads", value<uint32_t>(&db_threads)->default_value(2),
             "Total number of threads to allocate for database management")
+
+        ("io_threads", value<uint32_t>(&io_threads)->default_value(2),
+            "Total number of threads to allocate for pulling threads off the wire")
+
+        ("cpu_threads", value<uint32_t>(&cpu_threads)->default_value(boost::thread::hardware_concurrency()),
+            "Total number of threads to allocate for processing.")
 
         ("db.galaxy_manager.host", boost::program_options::value<std::string>(&galaxy_manager_db.host),
             "Host address for the galaxy_manager datastore")
@@ -140,10 +146,12 @@ options_description AppConfig::BuildConfigDescription() {
 }
 
 SwganhApp::SwganhApp(int argc, char* argv[])
-    : io_service_()
-    , io_work_(new boost::asio::io_service::work(io_service_))
+    : io_pool_()
+	, cpu_pool_()
+    , io_work_(new boost::asio::io_service::work(io_pool_))
+	, cpu_work_(new boost::asio::io_service::work(cpu_pool_))
 {
-    kernel_ = make_shared<SwganhKernel>(io_service_);
+    kernel_ = make_shared<SwganhKernel>(io_pool_, cpu_pool_);
     running_ = false;
     initialized_ = false;
 
@@ -158,9 +166,11 @@ SwganhApp::~SwganhApp()
 	kernel_->Shutdown();
 
 	io_work_.reset();
+	cpu_work_.reset();
 	
 	// join the threadpool threads until each one has exited.
 	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+	for_each(cpu_threads_.begin(), cpu_threads_.end(), std::mem_fn(&boost::thread::join));
 
 	kernel_.reset();
 }
@@ -244,27 +254,45 @@ void SwganhApp::Start() {
 
     running_ = true;
 
-    // Start up a threadpool for running io_service based tasks/active objects
-    // The increment starts at 2 because the main thread of execution already counts
-    // as thread in use as does the console thread.
-    for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
-        boost::thread t([this] () {
-            try
+	//Create a number of threads to pull packets off the wire.
+	for (uint32_t i = 0; i < kernel_->GetAppConfig().io_threads; ++i) {
+		boost::thread t([this] () {
+			//Continue looping despite errors.
+			//If we successfully leave the run method we return.
+			while(true)
 			{
-				io_service_.run();
-			} 
-			catch(...) 
-			{
-				LOG(severity_level::error) << "A near fatal exception has occurred.";
+				try
+				{
+					io_pool_.run();
+					return;
+				} 
+				catch(...) 
+				{
+					LOG(severity_level::error) << "A near fatal exception has occurred.";
+				}
 			}
-
-        });
-        
-#ifdef _WIN32
-        SetPriorityClass(t.native_handle(), REALTIME_PRIORITY_CLASS);
-#endif
-
+		});  
         io_threads_.push_back(move(t));
+    }
+
+	for (uint32_t i = 0; i < kernel_->GetAppConfig().cpu_threads; ++i) {
+		boost::thread t([this] () {
+			//Continue looping despite errors.
+			//If we successfully leave the run method we return.
+			while(true)
+			{
+				try
+				{
+					cpu_pool_.run();
+					return;
+				} 
+				catch(...) 
+				{
+					LOG(severity_level::error) << "A near fatal exception has occurred.";
+				}
+			}
+		});
+        cpu_threads_.push_back(move(t));
     }
     
     kernel_->GetServiceManager()->Start();

@@ -44,7 +44,7 @@ using namespace swganh::scripting;
 SpawnService::SpawnService(SwganhKernel* kernel) 
 	: kernel_(kernel)
 	, fsm_manager_(kernel->GetEventDispatcher())
-	, timer_(kernel_->GetIoService(), boost::posix_time::seconds(60))
+	, timer_(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(60))
 {
 }
 

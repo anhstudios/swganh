@@ -53,7 +53,7 @@ ConnectionService::ConnectionService(
     : ConnectionServiceInterface(kernel)
     , kernel_(kernel)
     , ping_server_(nullptr)
-    , active_(kernel->GetIoService())
+	, active_(kernel->GetIoThreadPool())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , ping_port_(ping_port)
@@ -85,7 +85,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
 }
 
 void ConnectionService::Startup() {
-    ping_server_ = make_shared<PingServer>(kernel_->GetIoService(), ping_port_);
+	ping_server_ = make_shared<PingServer>(kernel_->GetIoThreadPool(), ping_port_);
 
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
     login_service_ = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
@@ -128,7 +128,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<ConnectionClient>(this, kernel_->GetIoService(), endpoint);
+            session = make_shared<ConnectionClient>(this, kernel_->GetCpuThreadPool(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
 			LOG(info) << "Created Connection Service Session for " << endpoint.address().to_string();
         }

@@ -256,7 +256,7 @@ public:
 		obj->UpdateAABB();
 
 		// CmdStartScene
-		if(obj->GetController() != nullptr)
+		if(controller != nullptr)
 		{
 			CmdStartScene start_scene;
 			start_scene.ignore_layout = 0;
@@ -267,7 +267,7 @@ public:
 			start_scene.shared_race_template = obj->GetTemplate();
 			start_scene.galaxy_time = 0;
 
-			obj->GetController()->Notify(&start_scene, [=](uint16_t sequence) {
+			controller->Notify(&start_scene, [=](uint16_t sequence) {
 				// Reset Controller
 				obj->SetController(controller);
 

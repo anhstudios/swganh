@@ -48,7 +48,7 @@ public:
     /**
      * Adds itself to the Session Manager.
      */
-    Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
+    Session(ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint);
     ~Session();
 
 	typedef std::function<void(uint16_t /* sequence */)> SequencedCallback;

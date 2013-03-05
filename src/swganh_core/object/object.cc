@@ -403,11 +403,6 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 			}
 		}
 	}
-
-	if(GetPermissions()->canView(shared_from_this(), object))
-	{
-		//reverse_still_valid = false;
-	}
 		
 	for(auto& slot : slot_descriptor_)
 	{
@@ -428,11 +423,6 @@ void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swgan
 
 void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {
-	if(GetPermissions()->canView(shared_from_this(), object))
-	{
-		//reverse_still_valid = false;
-	}
-		
 	for(auto& slot : slot_descriptor_)
 	{
 		slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {

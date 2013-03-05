@@ -55,7 +55,7 @@ uint64_t GalaxyService::GetGalaxyTimeInMilliseconds()
 }
 void GalaxyService::Startup()
 {
-    galaxy_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
+    galaxy_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(10));
 
     galaxy_timer_->async_wait(boost::bind(&GalaxyService::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, 10));
 }

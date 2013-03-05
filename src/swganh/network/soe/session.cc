@@ -17,11 +17,11 @@ using namespace swganh::network;
 using namespace swganh::network::soe;
 using namespace std;
 
-Session::Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
+Session::Session(ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint)
     : std::enable_shared_from_this<Session>()
     , remote_endpoint_(remote_endpoint)
     , server_(server)
-    , strand_(io_service)
+    , strand_(cpu_pool)
     , connected_(false)
     , crc_seed_(0xDEADBABE)
     , last_acknowledged_sequence_(0)
