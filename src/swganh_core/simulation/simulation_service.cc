@@ -697,10 +697,6 @@ void SimulationService::Startup()
 
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
-    command_service_->AddCommandCreator("overchargeshot1", swganh::command::PythonCommandCreator("commands.overchargeshot1", "OverchargeShot1Command"));
-    command_service_->AddCommandCreator("sitserver", swganh::command::PythonCommandCreator("commands.sitserver", "SitServerCommand"));
-    command_service_->AddCommandCreator("stand", swganh::command::PythonCommandCreator("commands.stand", "StandCommand"));
-
 	//command_service->AddCommandCreator("actionshot1", swganh::command::PythonCommandCreator("commands.actionshot1", "ActionShot1Command"));
 	//command_service->AddCommandCreator("actionshot2", swganh::command::PythonCommandCreator("commands.actionshot2", "ActionShot2Command"));
 	//command_service->AddCommandCreator("activateclone", swganh::command::PythonCommandCreator("commands.activateclone", "ActivateCloneCommand"));
