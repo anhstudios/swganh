@@ -60,7 +60,7 @@ using swganh::app::SwganhKernel;
 
 CombatService::CombatService(SwganhKernel* kernel)
 : generator_(1, 100)
-, active_(kernel->GetIoService())
+, active_(kernel->GetCpuThreadPool())
 , kernel_(kernel)
 , buff_manager_(kernel)
 {
