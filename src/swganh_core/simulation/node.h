@@ -56,7 +56,7 @@ public:
 	~Node(void);
 
 	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
-	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
+	bool RemoveObject(std::shared_ptr<swganh::object::Object> obj);
 	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume);
 	void Split();
 
@@ -64,7 +64,7 @@ public:
 	void SvgDumpRegions(std::ofstream& file);
 	void SvgDumpObjects(std::ofstream& file);
 
-	std::list<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
+	std::set<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
 
 	const NodeQuadrant& GetQuadrant(void) { return quadrant_; }
 	const uint32_t& GetLevel(void) { return level_; }
@@ -72,7 +72,7 @@ public:
 	const Region& GetRegion(void) { return region_; }
 	const boost::array<std::shared_ptr<Node>, 4>& GetLeafNodes(void) { return leaf_nodes_; }
 	const std::set<std::shared_ptr<swganh::object::Object>>& GetObjects(void) { return objects_; }
-	std::list<std::shared_ptr<swganh::object::Object>> GetContainedObjects(void);
+	std::set<std::shared_ptr<swganh::object::Object>> GetContainedObjects(void);
 
 protected:
 	void InsertObject_(std::shared_ptr<swganh::object::Object> obj);

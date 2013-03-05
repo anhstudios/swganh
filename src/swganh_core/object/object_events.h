@@ -31,15 +31,15 @@ struct ObserverEvent : swganh::BaseEvent
 
 struct UpdatePositionEvent : swganh::BaseEvent
 {
-	UpdatePositionEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> contained_object_, std::shared_ptr<swganh::object::Object> object_, glm::vec3 new_position)
+	UpdatePositionEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> parent_, std::shared_ptr<swganh::object::Object> object_, glm::vec3 new_position)
 		: BaseEvent(type)
-		, contained_object(contained_object_)
+		, parent(parent_)
 		, object(object_)
 		, position(new_position)
 	{}
 
 	std::shared_ptr<swganh::object::Object> object;
-	std::shared_ptr<swganh::object::Object> contained_object;
+	std::shared_ptr<swganh::object::Object> parent;
 	glm::vec3 position;
 };
 

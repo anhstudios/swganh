@@ -12,6 +12,8 @@ def create(kernel):
 	result.stfName("deed","power_advanced_basic_deed")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.options_mask = 0x100
+	result.pvp_status = PVPSTATUS.PvPStatus_None
 	####  END MODIFICATIONS  ####
 	
 	return result

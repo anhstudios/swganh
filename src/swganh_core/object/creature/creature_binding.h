@@ -184,6 +184,7 @@ void exportCreature()
         .def("removeDuelList", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")
 		.def("addBuff", &Creature::AddBuff, addBuffOverload(args("buff_name", "duration", "force"), "Adds a new buff to the creature"))
 		.def("removeBuff", &Creature::RemoveBuff, "Instantly removes a buff from the creature")
+		.def("setCustomization", &Creature::SetCustomization, "Sets customization string")
         ;
 
 	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Tangible>>();

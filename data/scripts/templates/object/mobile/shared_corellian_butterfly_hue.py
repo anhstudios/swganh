@@ -12,6 +12,9 @@ def create(kernel):
 	result.stfName("monster_name","corellian_butterfly")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.options_mask = 0x100
+	result.pvp_status = PVPSTATUS.PvPStatus_None
+	result.setStringAttribute("radial_filename", "radials.player_pet")
 	####  END MODIFICATIONS  ####
 	
 	return result

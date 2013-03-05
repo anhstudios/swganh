@@ -27,7 +27,8 @@ INSERT INTO `container_permissions` (`type`, `name`) VALUES
 	(4, 'world cell'),
 	(5, 'creature'),
 	(6, 'creature container'),
-	(7, 'rideable');
+	(7, 'rideable'),
+	(8, 'no view');
 /*!40000 ALTER TABLE `container_permissions` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

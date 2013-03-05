@@ -43,7 +43,7 @@ Tangible::Tangible(const std::string& customization, std::vector<uint32_t> compo
     });
 }
 
-void Tangible::AddCustomization(const string& customization)
+void Tangible::AddCustomization(const std::string& customization)
 {
     {
         boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -58,7 +58,7 @@ std::string Tangible::GetCustomization(void)
     return customization_;
 }
 
-void Tangible::SetCustomization(const string& customization)
+void Tangible::SetCustomization(const std::string& customization)
 {
     {
         boost::lock_guard<boost::mutex> lock(object_mutex_);

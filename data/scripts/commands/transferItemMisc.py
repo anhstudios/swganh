@@ -7,4 +7,4 @@ class TransferItem(BaseSwgCommand):
         split = re.split('\W+', self.getCommandString())
         container_id = split[1]
         c = self.getKernel().serviceManager().simulationService().findObjectById(int(container_id))
-        self.getTarget().container().transfer(self.getActor(), self.getTarget(), c)
+        self.getTarget().container().transfer(self.getActor(), self.getTarget(), c, vector3(0, 0, 0))

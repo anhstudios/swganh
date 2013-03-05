@@ -2,6 +2,9 @@
 #### MODIFICATIONS MAY BE LOST IF DONE IMPROPERLY
 #### PLEASE SEE THE ONLINE DOCUMENTATION FOR EXAMPLES
 
+#### MODIFIED ####
+
+from swgpy.simulation import ContainerPermission
 from swgpy.object import *	
 
 def create(kernel):

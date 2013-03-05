@@ -19,7 +19,8 @@ using namespace swganh::object;
 void exportTangible()
 {
 	class_<Tangible, bases<swganh::object::Object>, std::shared_ptr<Tangible>, boost::noncopyable>("Tangible")
-		.add_property("customization", &Tangible::GetCustomization, &Tangible::SetCustomizationFromInts, "Gets and Sets the tangible customization")
+		.add_property("customization", &Tangible::GetCustomization, &Tangible::SetCustomization, "Gets and Sets the tangible customization")
+		.def("setCustomizationFromInts", &Tangible::SetCustomizationFromInts)
 		//.def("customization.__add__", &Tangible::AddCustomization, "Adds a string to the existing customization")
         //.def("componentCustomization", &Tangible::GetComponentCustomization, return_value_policy<copy_const_reference>(),"Gets the current component_customization")
         .def("addComponentCustomization", &Tangible::AddComponentCustomization, "Adds a string to the component_customization")

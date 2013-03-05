@@ -43,6 +43,8 @@ BOOST_AUTO_TEST_CASE(CanInsertRemoveObject)
 	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
 	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 10.0f, 10.0f));
+	obj->UpdateWorldCollisionBox();
+	obj->UpdateAABB();
 
 	root_node_.InsertObject(obj);
 	BOOST_CHECK_EQUAL(1, root_node_.GetContainedObjects().size());
@@ -66,10 +68,22 @@ BOOST_AUTO_TEST_CASE(VerifyQuadrantSplit)
 	obj3->SetObjectId(3);
 	obj4->SetObjectId(4);
 	
+
 	obj1->SetPosition(glm::vec3(-10.0f, 0.0f, 10.0f));
+	obj1->UpdateWorldCollisionBox();
+	obj1->UpdateAABB();
+	
 	obj2->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
+	obj2->UpdateWorldCollisionBox();
+	obj2->UpdateAABB();
+	
 	obj3->SetPosition(glm::vec3(-10.0f, 0.0f, -10.0f));
+	obj3->UpdateWorldCollisionBox();
+	obj3->UpdateAABB();
+	
 	obj4->SetPosition(glm::vec3(10.0f, 0.0f, -10.0f));
+	obj4->UpdateWorldCollisionBox();
+	obj4->UpdateAABB();
 
 	root_node_.InsertObject(obj1);
 	root_node_.InsertObject(obj2);
@@ -101,6 +115,8 @@ BOOST_AUTO_TEST_CASE(CanQuery)
 	obj->SetObjectId(0xDEADBABE);
 	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
+	obj->UpdateWorldCollisionBox();
+	obj->UpdateAABB();
 
 	root_node_.InsertObject(obj);
 
@@ -118,6 +134,8 @@ BOOST_AUTO_TEST_CASE(CanUpdateObject)
 	obj->SetObjectId(0xDEADBABE);
 	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
+	obj->UpdateWorldCollisionBox();
+	obj->UpdateAABB();
 
 	root_node_.InsertObject(obj);
 
@@ -149,6 +167,8 @@ BOOST_AUTO_TEST_CASE(CanInsertRemoveQueryOneThousand)
 		objects[i]->SetObjectId(id_generator(gen));
 		objects[i]->SetEventDispatcher(&event_dispatcher_);
 		objects[i]->SetPosition(glm::vec3(random_generator(gen), 0.0f, random_generator(gen)));
+		objects[i]->UpdateWorldCollisionBox();
+		objects[i]->UpdateAABB();
 		root_node_.InsertObject(objects[i]);
 	}
 

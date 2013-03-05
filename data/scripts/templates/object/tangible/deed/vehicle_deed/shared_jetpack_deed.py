@@ -9,9 +9,12 @@ def create(kernel):
 
 	result.template = "object/tangible/deed/vehicle_deed/shared_jetpack_deed.iff"
 	result.attribute_template_id = 2
-	result.stfName("pet_deed","jetpack")		
+	result.stfName("pet_deed","jetpack")
 	
 	#### BEGIN MODIFICATIONS ####
+	result.setStringAttribute("radial_filename", "radials.deed_datapad")
+	result.setStringAttribute("deed_pcd", "object/intangible/vehicle/shared_jetpack_pcd.iff")
+	result.setStringAttribute("deed_mobile", "object/mobile/vehicle/shared_jetpack.iff")
 	####  END MODIFICATIONS  ####
 	
 	return result

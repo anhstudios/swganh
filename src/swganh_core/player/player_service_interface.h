@@ -25,6 +25,12 @@ public:
 	
 	virtual void OpenContainer(const std::shared_ptr<swganh::object::Creature>& owner, std::shared_ptr<swganh::object::Object> object) = 0;
 
+	virtual bool HasCalledMount(std::shared_ptr<swganh::object::Creature> owner) = 0;
+
+	virtual void StoreAllCalledMounts(std::shared_ptr<swganh::object::Creature> owner) = 0;
+	
+	virtual void StoreAllCalledObjects(std::shared_ptr<swganh::object::Creature> owner) = 0;
+
 };
 
 

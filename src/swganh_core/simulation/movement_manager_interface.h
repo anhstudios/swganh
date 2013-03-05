@@ -51,6 +51,9 @@ namespace simulation {
 			const std::shared_ptr<swganh::object::Object>& object,
 			const glm::vec3& new_position) = 0;
 
+		/**
+		* Used internally for server movements (ie: NPCS)
+		*/
 		virtual void HandleDataTransformWithParentServer(
 			const std::shared_ptr<swganh::object::Object>& parent, 
 			const std::shared_ptr<swganh::object::Object>& object,

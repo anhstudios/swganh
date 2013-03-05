@@ -25,5 +25,8 @@ void exportPlayerService()
 	class_<PlayerServiceInterface, shared_ptr<PlayerServiceInterface>, boost::noncopyable>("PlayerService", "The player service handles player specific actions", no_init)
         .def("sendTip", &PlayerServiceInterface::SendTip, "Sends a bank tip from the given player to the given player of the alloted amount")
         .def("openContainer", OpenContainer, "Opens the given container for a player")
+		.def("hasCalledMount", &PlayerServiceInterface::HasCalledMount)
+		.def("storeAllCalledMounts", &PlayerServiceInterface::StoreAllCalledMounts)
+		.def("storeAllCalledObjects", &PlayerServiceInterface::StoreAllCalledObjects)
         ;
 }

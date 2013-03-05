@@ -188,6 +188,64 @@ void PlayerService::OpenContainer(const std::shared_ptr<swganh::object::Creature
 	owner->NotifyObservers(&opened_container);
 }
 
+bool PlayerService::HasCalledMount(std::shared_ptr<swganh::object::Creature> owner)
+{
+	auto equipment = kernel_->GetServiceManager()->GetService<swganh::equipment::EquipmentServiceInterface>("EquipmentService");
+	auto datapad = equipment->GetEquippedObject(owner, "datapad");
+	bool result = false;
+	if(datapad)
+	{
+		datapad->ViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
+			if(!result && object->HasAttribute("is_mount") && !object->HasContainedObjects())
+			{
+				result = true;
+			}
+		});
+	}
+	return result;
+}
+
+void PlayerService::StoreAllCalledMounts(std::shared_ptr<swganh::object::Creature> owner)
+{
+	auto simulation = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
+	auto equipment = kernel_->GetServiceManager()->GetService<swganh::equipment::EquipmentServiceInterface>("EquipmentService");
+	auto datapad = equipment->GetEquippedObject(owner, "datapad");
+	if(datapad)
+	{
+		std::list<std::shared_ptr<Object>> objects = datapad->GetObjects(nullptr, 1, true);
+		for(auto& object : objects) {
+			if(object->HasAttribute("is_mount") && !object->HasContainedObjects())
+			{
+				auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id"));
+				if(mobile)
+				{
+					mobile->GetContainer()->TransferObject(owner, mobile, object, glm::vec3(0, 0, 0));
+				}
+			}
+		}
+	}
+}
+	
+void PlayerService::StoreAllCalledObjects(std::shared_ptr<swganh::object::Creature> owner)
+{
+	auto simulation = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
+	auto equipment = kernel_->GetServiceManager()->GetService<swganh::equipment::EquipmentServiceInterface>("EquipmentService");
+	auto datapad = equipment->GetEquippedObject(owner, "datapad");
+	if(datapad)
+	{
+		datapad->ViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
+			if(object->HasAttribute("mobile_id") && !object->HasContainedObjects())
+			{
+				auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id"));
+				if(mobile)
+				{
+					mobile->GetContainer()->TransferObject(owner, mobile, object, glm::vec3(0, 0, 0));
+				}
+			}
+		});
+	}
+}
+
 void PlayerService::RemoveClientTimerHandler_(
     const boost::system::error_code& e,
     shared_ptr<boost::asio::deadline_timer> timer,

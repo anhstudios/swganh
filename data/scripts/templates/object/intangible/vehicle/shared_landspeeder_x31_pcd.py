@@ -12,6 +12,8 @@ def create(kernel):
 	result.stfName("monster_name","landspeeder_x31")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.setStringAttribute("radial_filename", "radials.pcd_vehicle")
+	result.setIntAttribute("is_mount", 1)
 	####  END MODIFICATIONS  ####
 	
 	return result

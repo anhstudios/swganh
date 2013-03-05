@@ -40,7 +40,15 @@ std::shared_ptr<RadialInterface> PythonRadialCreator::operator() (swganh::app::S
     {
 
 #ifdef _DEBUG
-        module_ = bp::object(bp::handle<>(PyImport_ReloadModule(module_.ptr())));
+		//If our first attempt to load the module crashed, we want to import instead of reload!
+		if(!module_.is_none()) 
+		{
+			module_ = bp::object(bp::handle<>(PyImport_ReloadModule(module_.ptr())));
+		} 
+		else 
+		{
+			module_ = bp::import(module_name_.c_str());
+		}
 #endif
         
         auto new_instance = module_.attr(class_name_.c_str())(bp::ptr(kernel));

@@ -25,7 +25,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	creature.custom_name = full_name
 	creature.position = vector3(startLoc.x, startLoc.y, startLoc.z)
 	if customization:
-		creature.customization = customization
+		creature.setCustomizationFromInts(customization)
 	creature.bank_credits = 2000
 	creature.speed_base = 5.75
 	# Set Starting Stats
@@ -53,7 +53,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	creature.add(creature, bank)
 	creature.add(creature, mission)
 	if (hair):
-		hair.customization = hair_customization
+		hair.setCustomizationFromInts(hair_customization)
 		creature.add(creature, hair)		
 	creature.add(creature, player)
 	# Now add the objects to the inventory
