@@ -13,41 +13,41 @@ using namespace swganh::spawn;
 FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, std::shared_ptr<FsmStateInterface> initial_state,
 	ControllerFactory controller_factory)
 	: kernel_(kernel)
-	, io_service_(&kernel->GetCpuThreadPool())
+	, machine_cleaner_(kernel->GetCpuThreadPool())
 	, initial_state_(initial_state)
 	, controller_factory_(controller_factory)
-	, shutdown_(false)
 {
-	HandleDispatch();
+	machine_cleaner_.expires_from_now(boost::posix_time::milliseconds(20));
+	machine_cleaner_.async_wait(bind(&FiniteStateMachine::HandleDispatch, this, boost::asio::placeholders::error));
 }
 
-void FiniteStateMachine::HandleDispatch()
+void FiniteStateMachine::HandleDispatch(const boost::system::error_code& error)
 {
-	io_service_->dispatch([this] () {
-		while(!shutdown_)
+	if(!error)
+	{
+		std::set<std::shared_ptr<FsmController>> to_process_;
 		{
-			std::set<std::shared_ptr<FsmController>> to_process_;
-			{
-				lock_guard<mutex> lock(mutex_);
-				to_process_.swap(dirty_controllers_);
-			}
+			lock_guard<mutex> lock(mutex_);
+			to_process_.swap(dirty_controllers_);
+		}
 
-			HandleDispatch();
-			for(auto& c : to_process_)
+		//Setup timer for next batch
+		machine_cleaner_.expires_from_now(boost::posix_time::milliseconds(20));
+		machine_cleaner_.async_wait(bind(&FiniteStateMachine::HandleDispatch, this, boost::asio::placeholders::error));
+		
+		for(auto& c : to_process_)
+		{
+			c->Cleanup(boost::posix_time::second_clock::local_time());
+			if(c->IsDirty()) 
 			{
-				c->Cleanup(boost::posix_time::second_clock::local_time());
-				if(c->IsDirty()) 
-				{
-					MarkDirty(c);
-				}
+				MarkDirty(c);
 			}
 		}
-	});
+	}
 }
 
 FiniteStateMachine::~FiniteStateMachine()
 {
-	shutdown_ = true;
 }
 
 void FiniteStateMachine::StartManagingObject(std::shared_ptr<swganh::object::Object> object)

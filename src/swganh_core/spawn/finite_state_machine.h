@@ -9,7 +9,8 @@
 #include <set>
 #include <thread>
 #include <boost/thread/mutex.hpp>
-#include <swganh/event_dispatcher.h>
+
+#include <boost/asio.hpp>
 
 namespace boost
 {
@@ -61,9 +62,8 @@ namespace spawn
 
 	private:
 
-		void HandleDispatch();
-
-		std::atomic<bool> shutdown_;
+		void HandleDispatch(const boost::system::error_code& error);
+		
 		boost::mutex mutex_;
 
 		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;
@@ -71,7 +71,7 @@ namespace spawn
 		ControllerFactory controller_factory_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
 
-		boost::asio::io_service* io_service_;
+		boost::asio::deadline_timer machine_cleaner_;
 		swganh::app::SwganhKernel* kernel_;
 	};
 }
