@@ -235,11 +235,6 @@ public:
 	        throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
 	    }
 
-		/**auto old_scene = scene_manager_->GetScene(obj->GetSceneId());
-		if(old_scene) {
-			old_scene->RemoveObject(obj);
-		}*/
-
 		// Clear Controller
 		auto controller = obj->GetController();
 		obj->ClearController();
@@ -260,9 +255,6 @@ public:
 		obj->UpdateWorldCollisionBox();
 		obj->UpdateAABB();
 
-		// Reset Controller
-		obj->SetController(controller);
-
 		// CmdStartScene
 		if(obj->GetController() != nullptr)
 		{
@@ -275,11 +267,14 @@ public:
 			start_scene.shared_race_template = obj->GetTemplate();
 			start_scene.galaxy_time = 0;
 
-			obj->GetController()->Notify(&start_scene);
-		}
+			obj->GetController()->Notify(&start_scene, [=](uint16_t sequence) {
+				// Reset Controller
+				obj->SetController(controller);
 
-	    // Add object to scene and send baselines
-	    scene_obj->AddObject(obj);
+				// Add object to scene and send baselines
+				scene_obj->AddObject(obj);
+			});
+		}
 	}
 
 	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)

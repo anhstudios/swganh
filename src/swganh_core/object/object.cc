@@ -145,10 +145,10 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 			boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 
 			//Perform the transfer
-			for(auto& slot : slot_descriptor_)
-			{
-				slot.second->remove_object(object);
-			}
+			//for(auto& slot : slot_descriptor_)
+			//{
+			//	slot.second->remove_object(object);
+			//}
 
 			arrangement_id = newContainer->__InternalInsert(object, new_position, arrangement_id);
 		}
@@ -406,7 +406,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 
 	if(GetPermissions()->canView(shared_from_this(), object))
 	{
-		reverse_still_valid = false;
+		//reverse_still_valid = false;
 	}
 		
 	for(auto& slot : slot_descriptor_)
@@ -430,14 +430,14 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 {
 	if(GetPermissions()->canView(shared_from_this(), object))
 	{
-		reverse_still_valid = false;
+		//reverse_still_valid = false;
 	}
 		
 	for(auto& slot : slot_descriptor_)
 	{
 		slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
 			v->__InternalRemoveAwareObject(object, reverse_still_valid);
-			if(reverse_still_valid)
+			if(!reverse_still_valid)
 			{
 				object->__InternalRemoveAwareObject(v, reverse_still_valid);
 			}
