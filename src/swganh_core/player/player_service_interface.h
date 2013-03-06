@@ -31,6 +31,7 @@ public:
 	
 	virtual void StoreAllCalledObjects(std::shared_ptr<swganh::object::Creature> owner) = 0;
 
+	virtual std::shared_ptr<swganh::object::Object> GetPlayerByFirstName(const std::wstring& first_name) = 0;
 };
 
 

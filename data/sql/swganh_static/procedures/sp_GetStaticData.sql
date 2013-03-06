@@ -12,10 +12,18 @@ BEGIN
 	LEFT JOIN skills s ON r.skill_id = s.skill_id
 	LEFT JOIN skills s2 ON r.required_skill = s2.skill_id;
 
+	SELECT s.skill_name, r.name FROM skills_species_required l
+	LEFT JOIN skills s ON s.skill_id = l.skill_id
+	LEFT JOIN race r ON r.id = l.species_id;
+	
 	SELECT s.skill_name, smod.skillmod_name, m.value FROM skills_skillmods m
 	LEFT JOIN skills s ON s.skill_id = m.skill_id
 	LEFT JOIN skillmods smod ON smod.skillmod_id = m.skillmod_id;
 
+	SELECT s.skill_name, c.name FROM skills_skillcommands l
+	LEFT JOIN skills s ON s.skill_id = l.skill_id
+	LEFT JOIN skillcommands c ON c.id = l.skillcommand_id;
+	
 END $$
 
 DELIMITER ;

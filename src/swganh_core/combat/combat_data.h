@@ -14,13 +14,15 @@
 #include "swganh/scripting/utilities.h"
 #include <boost/python.hpp>
 
+#include "swganh_core/static/skill_mod.h"
+
 namespace swganh {
 namespace combat {
     
 /**
 * Data used in combat
 */
-typedef std::map<std::string, std::pair<uint32_t, uint32_t>>SkillModsMap;
+typedef std::map<std::string, swganh::object::SkillMod>SkillModsMap;
 
 struct CombatData : public swganh::command::CommandProperties
 {

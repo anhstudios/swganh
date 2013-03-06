@@ -13,6 +13,7 @@
 #include "swganh_core/object/object_controller.h"
 #include "swganh_core/messages/system_message.h"
 #include "swganh_core/messages/out_of_band.h"
+#include "swganh_core/messages/controllers/change_target.h"
 #include "swganh_core/messages/opened_container_message.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/equipment/equipment_service.h"
@@ -102,6 +103,8 @@ void PlayerService::Startup()
 	simulation_service_ = kernel_->GetServiceManager()->
 		GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
 
+	simulation_service_->RegisterControllerHandler(&PlayerService::_handleTargetChange, this);
+
 	equipment_service_ = kernel_->GetServiceManager()->
 		GetService<swganh::equipment::EquipmentService>("EquipmentService");
 }
@@ -111,6 +114,16 @@ void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::Player> player)
     if (player)
     {
 	    player->ClearStatusFlags();
+		{
+			{
+				auto object = std::static_pointer_cast<Object>(player->GetContainer());
+				std::wstring custom_name = object->GetCustomName();
+				boost::lock_guard<boost::mutex> guard_(player_character_lock_);
+				std::size_t pos = custom_name.find(L" ");
+				std::wstring firstname = custom_name.substr(0, pos);
+				player_characters_.insert(std::make_pair(firstname, object));
+			}
+		}
     }
 }
 
@@ -262,6 +275,18 @@ void PlayerService::RemoveClientTimerHandler_(
 
             simulation_service_->RemoveObject(object);
 
+			{
+				std::wstring custom_name = object->GetCustomName();
+				boost::lock_guard<boost::mutex> guard_(player_character_lock_);
+				std::size_t pos = custom_name.find(L" ");
+				std::wstring firstname = custom_name.substr(0, pos);
+				auto find_itr = player_characters_.find(firstname);
+				if(find_itr != player_characters_.end())
+				{
+					player_characters_.erase(find_itr);
+				}
+			}
+
 			//Persist buffs
 			auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
 			auto object_id = object->GetObjectId();
@@ -284,4 +309,22 @@ void PlayerService::RemoveClientTimerHandler_(
                 make_shared<ValueEvent<shared_ptr<swganh::object::Object>>>("ObjectRemovedEvent", object));
         }
     }
+}
+
+std::shared_ptr<swganh::object::Object> PlayerService::GetPlayerByFirstName(const std::wstring& first_name)
+{
+	boost::lock_guard<boost::mutex> guard_(player_character_lock_);
+	auto find_itr = player_characters_.find(first_name);
+	if(find_itr != player_characters_.end())
+	{
+		return find_itr->second;
+	}
+	return nullptr;
+}
+
+void PlayerService::_handleTargetChange(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ChangeTarget* message)
+{
+	//@TODO test how the client reacts to an invalid target
+	//and add a check in here to insure the validity of this target if needed.
+	std::static_pointer_cast<Creature>(object)->SetTargetId(message->target_id_);
 }

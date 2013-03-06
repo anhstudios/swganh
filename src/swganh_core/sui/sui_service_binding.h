@@ -30,8 +30,9 @@ using namespace std;
 //Converter Functions 
 struct PythonCallback
 {
-	PythonCallback(const bp::object obj, const std::string& callback)
+	PythonCallback(const bp::object obj, bp::object session_data, const std::string& callback)
 	{
+		session_data_ = session_data;
 		if(obj)
 		{
 			callback_ = obj.attr(callback.c_str());
@@ -51,6 +52,7 @@ struct PythonCallback
 	virtual ~PythonCallback(){}
 
 	bp::object module_;
+	bp::object session_data_;
 	bp::object callback_;
 };
 
@@ -62,7 +64,15 @@ std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInt
 	[=](std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
 	{ 
 		swganh::scripting::ScopedGilLock lock;
-		return funct.callback_(object, event_type, result_list);
+		try
+		{
+			return funct.callback_(funct.session_data_, object, event_type, result_list);
+		}
+		catch(...)
+		{
+			PyErr_Print();
+		}
+		return true;
 	});
 }
 
@@ -153,5 +163,5 @@ void exportSuiService()
 	bp::class_<std::vector<std::wstring>>("EventResultList", "list for results the event of a SUI window")
 		.def(bp::vector_indexing_suite<std::vector<std::wstring>, true>());
 
-	bp::class_<PythonCallback>("PythonCallback", bp::init<bp::object, std::string>());
+	bp::class_<PythonCallback>("PythonCallback", bp::init<bp::object, bp::object, std::string>());
 }

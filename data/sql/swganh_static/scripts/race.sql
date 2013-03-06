@@ -13,7 +13,7 @@
 -- Dumping structure for table swganh_static.race
 DROP TABLE IF EXISTS `race`;
 CREATE TABLE IF NOT EXISTS `race` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Character Starting Attributes Table ID',
+  `id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Character Starting Attributes Table ID',
   `name` varchar(24) NOT NULL DEFAULT '' COMMENT 'Race Name',
   `health_min` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Health Minimum',
   `health_max` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Health Maximum',
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `race` (
   `willpower_max` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Willpower Maximum',
   `total` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table swganh_static.race: ~10 rows (approximately)
 /*!40000 ALTER TABLE `race` DISABLE KEYS */;

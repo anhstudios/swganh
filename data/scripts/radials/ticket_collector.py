@@ -23,11 +23,11 @@ class PyRadialMenu(RadialMenu):
 		travel = self.getKernel().serviceManager().travelService()
 		opts = travel.getAvailableTickets(owner)
 		options = EventResultList()
-		for i in range(0, len(opts)):
-			options.append(opts[i])
+		for i in opts:
+			options.append(i)
 		window = sui.createListBox(ListBoxType.OK_CANCEL, 'Select Destination', 'Select Destination', options,  owner)
 		
-		useTicketCallback = PythonCallback(self, 'useTicket')
+		useTicketCallback = PythonCallback(self, , 'useTicket')
 		
 		results = ResultList()
 		results.extend(['List.lstList:SelectedRow'])
@@ -35,7 +35,7 @@ class PyRadialMenu(RadialMenu):
 		window.subscribeToEventCallback(1, '', InputTrigger.CANCEL, results, useTicketCallback)
 		sui.openSUIWindow(window)
 
-	def useTicket(self, owner, event_id, results):
+	def useTicket(self, session_data, owner, event_id, results):
 		if event_id == 0:
 			selection = str(results[0])
 			print(int(selection))
