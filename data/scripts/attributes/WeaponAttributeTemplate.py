@@ -23,9 +23,9 @@ class WeaponAttributeTemplate(BaseAttributeTemplate):
 		SetOptionalAttribute(attributes, "cat_wpn_rangemods.@obj_attr_n:wpn_range_zero", "cat_wpn_rangemods.wpn_range_zero", object, True)
 		SetOptionalAttribute(attributes, "cat_wpn_rangemods.@obj_attr_n:wpn_range_mid", "cat_wpn_rangemods.wpn_range_mid", object, True)
 		SetOptionalAttribute(attributes, "cat_wpn_rangemods.@obj_attr_n:wpn_range_max", "cat_wpn_rangemods.wpn_range_max", object, True)
-		SetOptionalAttribute(attributes, "cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_health", "cat_wpn_attack_cost.wpn_attack_cost_health", object, True)
-		SetOptionalAttribute(attributes, "cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_action", "cat_wpn_attack_cost.wpn_attack_cost_action", object, True)
-		SetOptionalAttribute(attributes, "cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_mind", "cat_wpn_attack_cost.wpn_attack_cost_mind", object, True)
+		SetOptionalAttribute(attributes, "cat_wpn_attack_cost.@obj_attr_n:health", "cat_wpn_attack_cost.wpn_attack_cost_health", object, True)
+		SetOptionalAttribute(attributes, "cat_wpn_attack_cost.@obj_attr_n:action", "cat_wpn_attack_cost.wpn_attack_cost_action", object, True)
+		SetOptionalAttribute(attributes, "cat_wpn_attack_cost.@obj_attr_n:mind", "cat_wpn_attack_cost.wpn_attack_cost_mind", object, True)
 		
 		attribute_list_message.attributes = attributes
 		return attribute_list_message

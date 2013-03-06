@@ -98,13 +98,13 @@ void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object
 		//Add Object To Datastructure
 		{
 			boost::upgrade_to_unique_lock<boost::shared_mutex> unique_lock(lock);
-			arrangement_id = __InternalInsert(obj, arrangement_id);
+			arrangement_id = __InternalInsert(obj, obj->GetPosition(), arrangement_id);
 		}
 
 		//Update our observers with the new object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			obj->__InternalAddAwareObject(object);		
-			object->__InternalAddAwareObject(obj);
+			obj->__InternalAddAwareObject(object, true);		
+			object->__InternalAddAwareObject(obj, true);
 		});
 	}
 }
@@ -117,8 +117,8 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 
 		//Update our observers about the dead object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			oldObject->__InternalRemoveAwareObject(object);	
-			object->__InternalRemoveAwareObject(oldObject);
+			oldObject->__InternalRemoveAwareObject(object, true);	
+			object->__InternalRemoveAwareObject(oldObject, true);
 		});
 
 		{
@@ -133,7 +133,7 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 	}
 }
 
-void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
+void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, glm::vec3 new_position, int32_t arrangement_id)
 {
 	if(	requester == nullptr || (
 		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
@@ -150,7 +150,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 				slot.second->remove_object(object);
 			}
 
-			arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+			arrangement_id = newContainer->__InternalInsert(object, new_position, arrangement_id);
 		}
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
@@ -179,7 +179,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 
 		//Send Creates to only new
 		for(auto& observer : newObservers) {
-			object->__InternalAddAwareObject(observer);
+			object->__InternalAddAwareObject(observer, true);
 		}
 
 		//Send updates to both
@@ -189,7 +189,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 
 		//Send destroys to only ours
 		for(auto& observer : oldObservers) {
-			object->__InternalRemoveAwareObject(observer);
+			object->__InternalRemoveAwareObject(observer, true);
 		}
 	}
 }
@@ -222,7 +222,35 @@ void Object::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t m
 	}
 }
 
-int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
+void Object::__InternalGetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<Object>>& out)
+{
+	if(requester == nullptr || container_permissions_->canView(shared_from_this(), requester))
+	{
+		uint32_t requester_instance = 0;
+		if(requester)
+			requester_instance = requester->GetInstanceId();
+
+		for(auto& slot : slot_descriptor_)
+		{
+			slot.second->view_objects([&] (const std::shared_ptr<Object>& object) {
+				uint32_t object_instance = object->GetInstanceId();
+				if(object_instance == 0 || object_instance == requester_instance)
+				{
+					if(topDown)
+						out.push_back(object);
+
+					if(max_depth != 1)
+						object->__InternalGetObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, out);
+
+					if(!topDown)
+						out.push_back(object);
+				}
+			});
+		}
+	}
+}
+
+int32_t Object::__InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_position, int32_t arrangement_id)
 {
 	std::shared_ptr<Object> removed_object = nullptr;
 	if(arrangement_id == -2)
@@ -255,6 +283,12 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrange
 	}
 	object->SetArrangementId(arrangement_id);
 	object->SetContainer(shared_from_this());
+	object->SetSceneId(scene_id_);
+
+	//Time to update the position to the new coordinates/update AABB
+	object->SetPosition(new_position);
+	object->__InternalUpdateWorldCollisionBox();
+	object->UpdateAABB();
 
 	//Because we may have calculated it internally, send the arrangement_id used back
 	//To the caller so it can send the appropriate update.
@@ -271,7 +305,7 @@ void Object::SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object
 		{
 			slot.second->remove_object(object);
 		}
-		__InternalInsert(object, new_arrangement_id);
+		__InternalInsert(object, object->GetPosition(), new_arrangement_id);
 	}
 
 	__InternalViewAwareObjects([&] (std::shared_ptr<Object> aware_object) {
@@ -287,7 +321,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 			this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
 			newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
 			{
-				arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+				arrangement_id = newContainer->__InternalInsert(object, object->GetPosition(), arrangement_id);
 
 			//Split into 3 groups -- only ours, only new, and both ours and new
 			std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
@@ -315,7 +349,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 
 			//Send Creates to only new
 			for(auto& observer : newObservers) {
-				object->__InternalAddAwareObject(observer);
+				object->__InternalAddAwareObject(observer, true);
 			}
 
 			//Send updates to both
@@ -325,7 +359,7 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 
 			//Send destroys to only ours
 			for(auto& observer : oldObservers) {
-				object->__InternalRemoveAwareObject(observer);
+				object->__InternalRemoveAwareObject(observer, true);
 			}
 		}
 	} catch(const std::exception& e){
@@ -334,34 +368,56 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 }
 
 
-void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object)
+void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {	
+	std::shared_ptr<ObserverInterface> observer;
+
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr == aware_objects_.end())
 	{
-		auto observer = object->GetController();
 		aware_objects_.insert(object);
-
-		if(observer)
+		if(!IsInSnapshot())
 		{
-			if(!IsInSnapshot())
+			observer = object->GetController();
+			if(observer)
 			{
-				//DLOG(info) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
 				Subscribe(observer);
 				SendCreateByCrc(observer);
 				CreateBaselines(observer);
 			}
+		}
+	}
 
-			if(GetPermissions()->canView(shared_from_this(), object))
+	find_itr = object->aware_objects_.find(shared_from_this());
+	if(find_itr == object->aware_objects_.end())
+	{
+		object->aware_objects_.insert(shared_from_this());
+		if(!object->IsInSnapshot())
+		{
+			observer = GetController();
+			if(observer)
 			{
-				for(auto& slot : slot_descriptor_)
-				{
-					slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-						v->__InternalAddAwareObject(object);
-					});
-				}
+				object->Subscribe(observer);
+				object->SendCreateByCrc(observer);
+				object->CreateBaselines(observer);
 			}
 		}
+	}
+
+	if(GetPermissions()->canView(shared_from_this(), object))
+	{
+		reverse_still_valid = false;
+	}
+		
+	for(auto& slot : slot_descriptor_)
+	{
+		slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+			v->__InternalAddAwareObject(object, reverse_still_valid);
+			if(reverse_still_valid)
+			{
+				object->__InternalAddAwareObject(v, reverse_still_valid);
+			}
+		});
 	}
 }
 
@@ -370,28 +426,52 @@ void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swgan
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), func);
 }
 
-void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
+void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {
+	if(GetPermissions()->canView(shared_from_this(), object))
+	{
+		reverse_still_valid = false;
+	}
+		
+	for(auto& slot : slot_descriptor_)
+	{
+		slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+			v->__InternalRemoveAwareObject(object, reverse_still_valid);
+			if(reverse_still_valid)
+			{
+				object->__InternalRemoveAwareObject(v, reverse_still_valid);
+			}
+		});
+	}
+
+	std::shared_ptr<ObserverInterface> observer;
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr != aware_objects_.end())
 	{
-		auto observer = object->GetController();
-		aware_objects_.erase(object);
-
-		if(observer)
+		aware_objects_.erase(find_itr);
+		if(!IsInSnapshot())
 		{
-			for(auto& slot : slot_descriptor_)
-			{
-				slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-					v->__InternalRemoveAwareObject(object);
-				});
-			}
-
-			if(!IsInSnapshot())
+			observer = object->GetController();
+			if(observer)
 			{
 				//DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
 				SendDestroy(observer);
 				Unsubscribe(observer);
+			}
+		}
+	}
+
+	find_itr = object->aware_objects_.find(shared_from_this());
+	if(find_itr != object->aware_objects_.end())
+	{
+		object->aware_objects_.erase(find_itr);
+		if(!object->IsInSnapshot())
+		{
+			observer = GetController();
+			if(observer)
+			{
+				object->SendDestroy(observer);
+				object->Unsubscribe(observer);
 			}
 		}
 	}
@@ -402,12 +482,22 @@ bool Object::__HasAwareObject(std::shared_ptr<Object> object)
 	return aware_objects_.find(object) != aware_objects_.end();
 }
 
-glm::vec3 Object::__InternalGetAbsolutePosition()
+void Object::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& rot)
 {
-	glm::vec3 parentPos = GetContainer()->__InternalGetAbsolutePosition();
+	auto parentContainer = GetContainer();
+	if(parentContainer)
+	{
+		 parentContainer->__InternalGetAbsolutes(pos, rot);
+	}
+	else
+	{
+		pos = glm::vec3();
+		rot = glm::quat();
+	}
 
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	return glm::vec3(parentPos.x + position_.x, parentPos.y + position_.y, parentPos.z + position_.z);
+	pos = (rot * position_) + pos;
+	rot = rot * orientation_;
 }
 
 string Object::GetTemplate()
@@ -548,16 +638,17 @@ void Object::SetPosition(glm::vec3 position)
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         position_ = position;
-		UpdateWorldCollisionBox();
-		UpdateAABB();
-    }
+	}
 	DISPATCH(Object, Position);
 }
-void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& quaternion, std::shared_ptr<Object> parent)
+
+void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& orientation, shared_ptr<Object> parent)
 {
-	SetOrientation(quaternion);
+	SetOrientation(orientation);
 	// Call an Event that gets handled by the movement manager
-	DISPATCH(Object, UpdatePosition);
+
+	GetEventDispatcher()->Dispatch(make_shared<UpdatePositionEvent>
+		("Object::UpdatePosition", parent, shared_from_this(), new_position));
 }
 
 glm::vec3 Object::GetPosition()
@@ -763,7 +854,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	//DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+	DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -785,7 +876,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
 
-	//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+	DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
 
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
@@ -796,7 +887,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	//DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
+	DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
@@ -838,7 +929,7 @@ int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 
 	// Find appropriate arrangement
 	int32_t arrangement_id = 4;
-	int32_t filled_arrangement_id = 0;
+	int32_t filled_arrangement_id = -1;
 	// In each arrangment
 	for ( auto& arrangement : other->slot_arrangements_)
 	{
@@ -971,7 +1062,7 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 				attribute << boost::get<float>(val);
 				break;
 			case 1:
-				attribute << boost::get<int32_t>(val);
+				attribute << boost::get<int64_t>(val);
 				break;
 			case 2:
 				return boost::get<wstring>(val);
@@ -1004,7 +1095,7 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 				 ss << boost::get<float>(val);
 				break;
 			case 1:
-				ss << boost::get<int32_t>(val);
+				ss << boost::get<int64_t>(val);
 				break;
 			case 2:
 				ss << boost::get<wstring>(val);
@@ -1019,21 +1110,30 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 
 void Object::UpdateWorldCollisionBox(void)
 { 
-		auto rot = glm::yaw(orientation_);
+	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
+	__InternalUpdateWorldCollisionBox();
+}
 
-		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
+void Object::__InternalUpdateWorldCollisionBox()
+{
+	glm::vec3 pos;
+	glm::quat rotation;
+	__InternalGetAbsolutes(pos, rotation);
+	
+	auto rot = glm::yaw(rotation);
+	boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(pos.x, pos.z);
 
-		if(rot <= DBL_MAX && rot >= -DBL_MAX) // glm::yaw sometimes results in a non-real float (-1.#IND) that will cause problems if not filted through.
-		{
-			//std::cout << "Orientation: " << rot << std::endl;
-			boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
-			boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
-			boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
-		}
-		else
-		{
-			boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
-		}
+	if(rot <= DBL_MAX && rot >= -DBL_MAX) // glm::yaw sometimes results in a non-real float (-1.#IND) that will cause problems if not filted through.
+	{
+		//std::cout << "Orientation: " << rot << std::endl;
+		boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
+		boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
+		boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
+	}
+	else
+	{
+		boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
+	}
 }
 
 AttributeVariant Object::GetAttributeRecursive(const std::string& name)
@@ -1042,7 +1142,7 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		float float_val;
-		int32_t int_val;
+		int64_t int_val;
 		wstring attr_val;
 		switch(val.which())
 		{
@@ -1051,8 +1151,8 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 				float_val = boost::get<float>(val);
 				return AddAttributeRecursive<float>(float_val, name);			
 			case 1:
-				int_val = boost::get<int32_t>(val);
-				return AddAttributeRecursive<int32_t>(int_val, name);			
+				int_val = boost::get<int64_t>(val);
+				return AddAttributeRecursive<int64_t>(int_val, name);			
 			case 2:
 				attr_val = boost::get<wstring>(val);
 				return AddAttributeRecursive<wstring>(attr_val, name);			
@@ -1102,4 +1202,26 @@ void Object::Clone(std::shared_ptr<Object> other)
 	__InternalViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
 		other->AddObject(nullptr, object->Clone());
 	});
+}
+
+void Object::BuildSpatialProfile()
+{
+	BuildCollisionBox();
+	BuildBoundingVolume();
+}
+
+void Object::BuildBoundingVolume()
+{
+	UpdateAABB();
+}
+
+void Object::BuildCollisionBox()
+{
+	__BuildCollisionBox();
+	__InternalUpdateWorldCollisionBox();
+}
+
+void Object::UpdateAABB() 
+{ 
+	boost::geometry::envelope(world_collision_box_, aabb_);
 }

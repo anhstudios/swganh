@@ -33,9 +33,9 @@ boost::python::tuple AddObject(std::shared_ptr<Object> requester, std::shared_pt
 	return boost::python::make_tuple(requester, newObject,  arrangement_id);
 }
 
-boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
+boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, glm::vec3 new_position, int32_t arrangement_id=-2)
 {
-	return boost::python::make_tuple(requester, object, newContainer, arrangement_id);
+	return boost::python::make_tuple(requester, object, newContainer, new_position, arrangement_id);
 }
 
 void SendSystemMessage1(std::shared_ptr<Object> requester, std::string filename, std::string label)
@@ -135,7 +135,14 @@ void PlayMusic3(std::shared_ptr<swganh::object::Object> object, std::string musi
 BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 4, 5)
+
+void UpdatePosition(std::shared_ptr<Object> self, glm::vec3 position, glm::quat orientation, std::shared_ptr<Object> parent=nullptr)
+{
+	self->UpdatePosition(position, orientation, parent);
+}
+
+BOOST_PYTHON_FUNCTION_OVERLOADS(UpdatePosOverload, UpdatePosition, 3, 4)
 
 
 std::shared_ptr<swganh::object::Creature> ToCreature(std::shared_ptr<swganh::object::Object> obj)
@@ -228,8 +235,8 @@ void exportObject()
 		.def("hasAttribute", &Object::HasAttribute, "Returns true if the object has the given attribute.")
 		.def("getFloatAttribute", &Object::GetAttribute<float>, "Gets the float attribute value")
 		.def("setFloatAttribute", &Object::SetAttribute<float>, "Sets the float attribute value")
-		.def("getIntAttribute", &Object::GetAttribute<int32_t>, "Gets the int attribute value")
-		.def("setIntAttribute", &Object::SetAttribute<int32_t>, "Sets the int attribute value")
+		.def("getIntAttribute", &Object::GetAttribute<int64_t>, "Gets the int attribute value")
+		.def("setIntAttribute", &Object::SetAttribute<int64_t>, "Sets the int attribute value")
 		.def("getStringAttribute", &Object::GetAttributeAsString, "Gets the string attribute value")
 		.def("setStringAttribute", &Object::SetAttribute<wstring>, "sets the string attribute value")
 		.def("getAttributeRecursive", &Object::GetAttributeRecursiveAsString, "Gets the attribute as a string recursively")
@@ -240,6 +247,7 @@ void exportObject()
 		.def("updatePosition", &Object::UpdatePosition, "Updates the position and sends an update to the player")
 		.def("toCreature", ToCreature)
 		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
+		.def("updatePosition", UpdatePosition, UpdatePosOverload(args("self", "position", "orientation", "parent"),"Updates the position and sends an update to the player"))
 		;
 
 	bp::class_<std::vector<int>>("IntVector")
@@ -249,6 +257,10 @@ void exportObject()
 	class_<Intangible, bases<Object>, std::shared_ptr<Intangible>, boost::noncopyable>("Intangible");
 
 	implicitly_convertible<std::shared_ptr<Intangible>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Intangible>, std::shared_ptr<ContainerInterface>>();
+	
 	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<Intangible>>();
+	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<ContainerInterface>>();
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();
 }

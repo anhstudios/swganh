@@ -54,7 +54,7 @@ typedef std::vector<
 
 typedef std::map<
 	swganh::HashString,
-	boost::variant<float, int32_t, std::wstring>
+	boost::variant<float, int64_t, std::wstring>
 > AttributesMap;
 
 typedef std::map<
@@ -62,7 +62,7 @@ typedef std::map<
 	std::shared_ptr<SlotInterface>
 > ObjectSlots;
 
-typedef boost::variant<float, int32_t, std::wstring, boost::blank> AttributeVariant;
+typedef boost::variant<float, int64_t, std::wstring, boost::blank> AttributeVariant;
 
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
@@ -157,19 +157,20 @@ public:
 
 	virtual void AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject);
-	virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
+	virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, glm::vec3 new_position,  int32_t arrangement_id=-2);
 	virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id);
 	
 	virtual void __InternalTransfer(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual bool __HasAwareObject(std::shared_ptr<Object> object);
-	virtual void __InternalAddAwareObject(std::shared_ptr<Object> object);
+	virtual void __InternalAddAwareObject(std::shared_ptr<Object> object, bool reverse_still_valid);
 	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
-	virtual void __InternalRemoveAwareObject(std::shared_ptr<Object> object);
+	virtual void __InternalRemoveAwareObject(std::shared_ptr<Object> object, bool reverse_still_valid);
 
-	virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2);
+	virtual int32_t __InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_position, int32_t arrangement_id=-2);
     virtual void __InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func);
+	virtual void __InternalGetObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::list<std::shared_ptr<Object>>& out);
 
-	virtual glm::vec3 __InternalGetAbsolutePosition();
+	virtual void __InternalGetAbsolutes(glm::vec3& pos, glm::quat& rot);
 
 	/**
      * Returns whether or not this observable object has any observers.
@@ -586,7 +587,7 @@ public:
 
 		return val;
 	}
-	boost::variant<float, int32_t, std::wstring> AddAttributeRecursive(boost::variant<float, int32_t, std::wstring> val, const std::string& name);
+	boost::variant<float, int32_t, std::wstring> AddAttributeRecursive(boost::variant<float, int64_t, std::wstring> val, const std::string& name);
 
 	int8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(int8_t attribute_template_id);
@@ -601,29 +602,12 @@ public:
 	virtual void OnCollisionStay(std::shared_ptr<Object> collider) { }
 	virtual void OnCollisionLeave(std::shared_ptr<Object> collider) { }
 
-	void BuildSpatialProfile(void)
-	{
-		BuildCollisionBox();
-		BuildBoundingVolume();
-	}
-
-	void BuildBoundingVolume(void)
-	{
-		UpdateAABB();
-	}
-
-	void BuildCollisionBox(void)
-	{
-		__BuildCollisionBox();
-		UpdateWorldCollisionBox();
-	}
-
-	void UpdateAABB() 
-	{ 
-		boost::geometry::envelope(world_collision_box_, aabb_);
-	}
-
+	void BuildSpatialProfile();
+	void BuildBoundingVolume();
+	void BuildCollisionBox();
+	void UpdateAABB();
 	void UpdateWorldCollisionBox();
+	void __InternalUpdateWorldCollisionBox();
 
 	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
 	void AddCollidedObject(std::shared_ptr<Object> obj)

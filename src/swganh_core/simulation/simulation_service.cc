@@ -244,14 +244,21 @@ public:
 		auto controller = obj->GetController();
 		obj->ClearController();
 
+
 		// Remove from existing scene
-		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
+		auto old_scene = scene_manager_->GetScene(obj->GetSceneId());
+		if(old_scene)
+		{
+			old_scene->RemoveObject(obj);
+		}
 
 		//Update the object's scene_id
 		obj->SetSceneId(scene_obj->GetSceneId());	
 
 		//Update the object's position.
 		obj->SetPosition(position);
+		obj->UpdateWorldCollisionBox();
+		obj->UpdateAABB();
 
 		// Reset Controller
 		obj->SetController(controller);
@@ -672,10 +679,10 @@ void SimulationService::Startup()
 	{
 		const auto& update_event = static_pointer_cast<swganh::object::UpdatePositionEvent>(incoming_event);
 		auto scene = impl_->GetSceneManager()->GetScene(update_event->object->GetSceneId());
-		
-		if (update_event->contained_object && update_event->contained_object->GetObjectId() != 0)
+
+		if (update_event->parent && update_event->parent->GetObjectId() != 0)
 		{
-			scene->HandleDataTransformWithParentServer(update_event->contained_object, update_event->object, update_event->position);
+			scene->HandleDataTransformWithParentServer(update_event->parent, update_event->object, update_event->position);
 		}
 		else
 		{
