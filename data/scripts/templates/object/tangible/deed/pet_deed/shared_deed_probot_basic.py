@@ -12,6 +12,9 @@ def create(kernel):
 	result.stfName("deed","probot_basic_deed")		
 	
 	#### BEGIN MODIFICATIONS ####
+	result.setStringAttribute("radial_filename", "radials.deed_datapad")
+	result.setStringAttribute("deed_pcd", "object/intangible/pet/shared_probot.iff")
+	result.setStringAttribute("deed_mobile", "object/mobile/shared_probot.iff")
 	####  END MODIFICATIONS  ####
 	
 	return result

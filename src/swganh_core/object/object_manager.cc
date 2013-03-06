@@ -38,6 +38,7 @@
 #include "permissions/creature_container_permission.h"
 #include "permissions/ridable_permission.h"
 #include "permissions/world_cell_permission.h"
+#include "permissions/no_view_permission.h"
 
 using namespace std;
 using namespace swganh;
@@ -65,6 +66,7 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 	AddContainerPermissionType_(CREATURE_PERMISSION, new CreaturePermission());
 	AddContainerPermissionType_(CREATURE_CONTAINER_PERMISSION, new CreatureContainerPermission());
 	AddContainerPermissionType_(RIDEABLE_PERMISSION, new RideablePermission());
+	AddContainerPermissionType_(NO_VIEW_PERMISSION, new NoViewPermission());
 
 	//Load slot definitions
 	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
@@ -296,7 +298,6 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 	shared_ptr<Object> created_object;
 
 	// Call python To get Object
-	
 	{
 		swganh::scripting::ScopedGilLock lock;
 		{

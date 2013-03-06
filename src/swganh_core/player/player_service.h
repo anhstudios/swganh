@@ -64,6 +64,11 @@ public:
 	 */
 	virtual void OpenContainer(const std::shared_ptr<swganh::object::Creature>& owner, std::shared_ptr<swganh::object::Object> object);
 
+	virtual bool HasCalledMount(std::shared_ptr<swganh::object::Creature> owner);
+
+	virtual void StoreAllCalledMounts(std::shared_ptr<swganh::object::Creature> owner);
+	
+	virtual void StoreAllCalledObjects(std::shared_ptr<swganh::object::Creature> owner);
 
 private:
 	void RemoveClientTimerHandler_(

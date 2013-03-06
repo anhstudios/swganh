@@ -40,7 +40,9 @@ void exportSimulationService()
 		.value("WORLD_CELL", WORLD_CELL_PERMISSION)
 		.value("CREATURE", CREATURE_PERMISSION)
 		.value("CREATURE_CONTAINER", CREATURE_CONTAINER_PERMISSION)
-		.value("RIDEABLE", RIDEABLE_PERMISSION);
+		.value("RIDEABLE", RIDEABLE_PERMISSION)
+		.value("NO_VIEW", NO_VIEW_PERMISSION)
+		;
 
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
         .def("persist", &SimulationServiceInterface::PersistObject, "persists the specified object and it's containing objects")
@@ -54,5 +56,7 @@ void exportSimulationService()
         .def("startScene", &SimulationServiceInterface::StartScene, "starts a scene by its label")
         .def("stopScene", &SimulationServiceInterface::StopScene, "stops a scene by the given label")
 		.def("createObject", &SimulationServiceInterface::CreateObjectFromTemplate, CreateOverload(args("template_name", "permission_type", "is_persisted", "object_id"), "Creates an object of the given template"))
-        ;
+		.def("removeObject", &SimulationServiceInterface::RemoveObject, "Removes an object from the simulation (delete).")
+		.def("removeObjectById", &SimulationServiceInterface::RemoveObjectById, "Removes an object from the simulation by id (delete).")
+		;
 }

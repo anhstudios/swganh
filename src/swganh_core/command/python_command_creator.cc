@@ -49,7 +49,15 @@ std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
     {
 
 #ifdef _DEBUG
-        command_module_ = bp::object(bp::handle<>(PyImport_ReloadModule(command_module_.ptr())));
+		//If our first attempt to load the module crashed, we want to import instead of reload!
+		if(!command_module_.is_none())
+		{
+			command_module_ = bp::object(bp::handle<>(PyImport_ReloadModule(command_module_.ptr())));
+		}
+		else
+		{
+			command_module_ = bp::import(module_name_.c_str());
+		}
 #endif
         
         auto new_instance = command_module_.attr(class_name_.c_str())(bp::ptr(kernel), boost::ref(properties));

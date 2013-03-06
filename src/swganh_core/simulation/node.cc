@@ -71,7 +71,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 	objects_.insert(obj);
 }
 
-void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
+bool Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 {
 	// Search this node for the object by id, if it it found
 	// we can return;
@@ -80,7 +80,7 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 		if(obj->GetObjectId() == (*i)->GetObjectId())
 		{
 			i = objects_.erase(i);
-			return;
+			return true;
 		}
 		i++;
 	}
@@ -90,16 +90,32 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 	if(state_ == BRANCH)
 	{
 		auto bounding_volume = obj->GetAABB();
+		std::set<std::shared_ptr<Node>> checked_nodes_;
+
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// If we can actually fit inside the node, traverse farther.
 			if(boost::geometry::within(bounding_volume, node->GetRegion()))
 			{
-				node->RemoveObject(obj);
-				return;
+				checked_nodes_.insert(node);
+				if(node->RemoveObject(obj)) {
+					return true;
+				}
+			}
+		}
+
+		//Clearly we're still in there somewhere...we just don't know where anymore.
+		//Position must've been mucked with before removal.
+		bool output = false;
+		for(auto node : leaf_nodes_) {
+			if(checked_nodes_.find(node) != checked_nodes_.end()) {
+				if(node->RemoveObject(obj)) {
+					return true;
+				}
 			}
 		}
 	}
+	return false;
 }
 
 void Node::Split()
@@ -141,13 +157,13 @@ void Node::Split()
 	}
 }
 
-std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box)
+std::set<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box)
 {
-	std::list<std::shared_ptr<swganh::object::Object>> return_list;
+	std::set<std::shared_ptr<swganh::object::Object>> return_list;
 
 	std::for_each(objects_.begin(), objects_.end(), [=,& return_list](std::shared_ptr<swganh::object::Object> obj) {
 		if(boost::geometry::intersects(obj->GetAABB(), query_box))
-			return_list.push_back(obj);
+			return_list.insert(obj);
 	});
 
 	if(state_ == BRANCH)
@@ -157,21 +173,24 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_bo
 			// Node is within Query Box.
 			if(boost::geometry::within(node->GetRegion(), query_box))
 			{
-				return_list.splice(return_list.end(), node->GetContainedObjects());
+				auto sub_objects = node->GetContainedObjects();
+				return_list.insert(sub_objects.begin(), sub_objects.end());
 				continue;
 			}
 			
 			// Query Box is within node.
 			if(boost::geometry::within(query_box, node->GetRegion()))
 			{
-				return_list.splice( return_list.end(), node->Query(query_box) );
+				auto sub_objects = node->Query(query_box);
+				return_list.insert(sub_objects.begin(), sub_objects.end());
 				break;
 			}
 
 			// Query Box intersects with node.
 			if(boost::geometry::intersects(query_box, node->GetRegion()))
 			{
-				return_list.splice( return_list.end(), node->Query(query_box) );
+				auto sub_objects = node->Query(query_box);
+				return_list.insert( sub_objects.begin(), sub_objects.end() );
 			}
 		}
 	}
@@ -179,14 +198,15 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_bo
 	return return_list;
 }
 
-std::list<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(void)
+std::set<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(void)
 {
-	std::list<std::shared_ptr<swganh::object::Object>> objs(objects_.begin(), objects_.end());
+	std::set<std::shared_ptr<swganh::object::Object>> objs(objects_.begin(), objects_.end());
 	if(state_ == BRANCH)
 	{
 		for(const std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			objs.splice(objs.end(), node->GetContainedObjects());
+			auto sub_objects = node->GetContainedObjects();
+			objs.insert(sub_objects.begin(), sub_objects.end());
 		}
 	}
 	return objs;
@@ -311,6 +331,35 @@ void Node::SvgDumpObjects(std::ofstream& file)
 		file << "<text x=\"" << obj->GetPosition().x << "\" y=\"" << obj->GetPosition().z * -1.0f << "\" fill=\"black\" style=\"text-anchor: middle;\" font-size=\"8px\">" << std::string(name.begin(), name.end()) << "<" << '/' << "text>\n";
 		file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
 		file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";
+
+		obj->ViewObjects(obj, 0, true, [=, &file](std::shared_ptr<swganh::object::Object> object) {
+			if(object->GetCustomName().size() > 0)
+			{
+				std::cout << "Printing internal object of ";
+				std::wcout << obj->GetCustomName() << " : ";
+				std::wcout << object->GetCustomName() << std::endl;
+			}
+			std::stringstream bounding_volume_points;
+
+			auto bounding_volume = object->GetAABB();
+			auto collision_box = object->GetWorldCollisionBox();
+
+			current_collision_points = std::stringstream();
+			boost::geometry::for_each_point(collision_box, GetCollisionBoxPoints<Point>);
+		
+			boost::geometry::box_view<swganh::object::AABB> bounding_volume_view(bounding_volume);
+			for(boost::range_iterator<boost::geometry::box_view<swganh::object::AABB>>::type it = boost::begin(bounding_volume_view); it != boost::end(bounding_volume_view); ++it) 
+			{
+				bounding_volume_points << " " << (*it).x() << "," << (*it).y() * -1.0f;
+			}
+
+			auto name = object->GetCustomName();
+			auto abs_position = glm::vec3();
+			object->GetAbsolutes(abs_position, object->GetOrientation());
+			file << "<text x=\"" << abs_position.x << "\" y=\"" << abs_position.z * -1.0f << "\" fill=\"black\" style=\"text-anchor: middle;\" font-size=\"8px\">" << std::string(name.begin(), name.end()) << " * <" << '/' << "text>\n";
+			file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
+			file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";
+		});
 	}
 
 	if(state_ == BRANCH)
