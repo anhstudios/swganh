@@ -67,6 +67,14 @@ void ObjectController::Notify(BaseSwgMessage* message)
 {
 	swganh::ByteBuffer buffer;
 	message->SetObserverId(GetId());
-	message->Serialize(buffer);	
-    client_->SendTo(buffer);
+	message->Serialize(buffer);
+	client_->SendTo(buffer, boost::optional<swganh::network::soe::Session::SequencedCallback>());
+}
+
+void ObjectController::Notify(BaseSwgMessage* message, swganh::network::soe::Session::SequencedCallback&& callback)
+{
+	swganh::ByteBuffer buffer;
+	message->SetObserverId(GetId());
+	message->Serialize(buffer);
+    client_->SendTo(buffer, move(callback));
 }

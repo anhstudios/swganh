@@ -172,7 +172,7 @@ void WeatherService::tickPlanetWeather_()
 
 void WeatherService::RunWeatherSequence()
 {		
-	weather_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
+	weather_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(10));
 	weather_timer_->async_wait(boost::bind(&WeatherService::RunWeatherSequenceTimer, this, boost::asio::placeholders::error, 10 ));
 }
 

@@ -19,6 +19,7 @@ namespace Concurrency {
 #endif
 
 #include <boost/asio.hpp>
+#include <boost/optional.hpp>
 
 #include "swganh/network/soe/protocol_packets.h"
 #include "swganh/network/soe/server_interface.h"
@@ -47,8 +48,12 @@ public:
     /**
      * Adds itself to the Session Manager.
      */
-    Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
+    Session(ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint);
     ~Session();
+
+	typedef std::function<void(uint16_t /* sequence */)> SequencedCallback;
+	typedef std::list<SequencedCallback> SequencedCallbacks;
+	typedef std::pair<ByteBuffer, boost::optional<SequencedCallback>> OutgoingMessage;
 
     /**
     * @return The current send sequence for the server.
@@ -96,7 +101,7 @@ public:
     *
     * @param message The payload to send in the data channel message(s).
     */
-    void SendTo(swganh::ByteBuffer message);
+    void SendTo(ByteBuffer message, boost::optional<SequencedCallback> callback = boost::optional<SequencedCallback>());
 
     /**
     * Sends a data channel message to the remote client.
@@ -108,11 +113,11 @@ public:
     * @param message The payload to send in the data channel message(s).
     */
     template<typename T>
-    void SendTo(const T& message) {
+    void SendTo(const T& message, boost::optional<SequencedCallback> callback = boost::optional<SequencedCallback>()) {
         ByteBuffer message_buffer;
         message.Serialize(message_buffer);
 
-        outgoing_data_messages_.push(std::move(message_buffer));
+        outgoing_data_messages_.push(OutgoingMessage(std::move(message_buffer), callback));
     }
 
     void HandleMessage(swganh::ByteBuffer message);
@@ -142,7 +147,7 @@ private:
 
     typedef swganh::ByteBuffer(*HeaderBuilder)(uint16_t);
 
-    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);
+    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
 
     virtual void OnClose() {}
 
@@ -162,6 +167,8 @@ private:
 
     bool SequenceIsValid_(const uint16_t& sequence);
     void AcknowledgeSequence_(const uint16_t& sequence);
+	void QueueSequencedCallback(uint16_t sequence, SequencedCallbacks);
+	void DequeueSequencedCallback(uint16_t sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     ServerInterface*					server_; // owner
@@ -188,9 +195,10 @@ private:
     // Net Stats
     NetStatsServer						server_net_stats_;
 
-    Concurrency::concurrent_queue<swganh::ByteBuffer> outgoing_data_messages_;
+    Concurrency::concurrent_queue<OutgoingMessage> outgoing_data_messages_;
 
     std::list<swganh::ByteBuffer>			incoming_fragmented_messages_;
+
     uint16_t							incoming_fragmented_total_len_;
     uint16_t							incoming_fragmented_curr_len_;
 
@@ -201,6 +209,8 @@ private:
     filters::DecryptionFilter decryption_filter_;
     filters::EncryptionFilter encryption_filter_;
     filters::SecurityFilter security_filter_;
+
+	std::map<uint16_t, SequencedCallbacks> acknowledgement_callbacks_;
 };
 
 }}} // namespace swganh::network::soe

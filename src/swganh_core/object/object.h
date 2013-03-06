@@ -201,7 +201,7 @@ public:
     template<typename T>
     void NotifyObservers(swganh::messages::BaseBaselinesMessage* message)
     {
-        if (! (message.view_type == 3 || message.view_type == 6))
+        if (! (message->view_type == 3 || message->view_type == 6))
         {
             if (HasController())
             {

@@ -26,9 +26,9 @@ public:
         DISCONNECTING
     };
    
-	ConnectionClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, 
+	ConnectionClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& cpu_pool, 
 									boost::asio::ip::udp::endpoint remote_endpoint) 
-		: Session(server, io_service, remote_endpoint)
+		: Session(server, cpu_pool, remote_endpoint)
 	{
 	}
 

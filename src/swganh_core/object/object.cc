@@ -145,10 +145,10 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 			boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 
 			//Perform the transfer
-			for(auto& slot : slot_descriptor_)
-			{
-				slot.second->remove_object(object);
-			}
+			//for(auto& slot : slot_descriptor_)
+			//{
+			//	slot.second->remove_object(object);
+			//}
 
 			arrangement_id = newContainer->__InternalInsert(object, new_position, arrangement_id);
 		}
@@ -403,11 +403,6 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 			}
 		}
 	}
-
-	if(GetPermissions()->canView(shared_from_this(), object))
-	{
-		reverse_still_valid = false;
-	}
 		
 	for(auto& slot : slot_descriptor_)
 	{
@@ -428,16 +423,11 @@ void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swgan
 
 void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {
-	if(GetPermissions()->canView(shared_from_this(), object))
-	{
-		reverse_still_valid = false;
-	}
-		
 	for(auto& slot : slot_descriptor_)
 	{
 		slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
 			v->__InternalRemoveAwareObject(object, reverse_still_valid);
-			if(reverse_still_valid)
+			if(!reverse_still_valid)
 			{
 				object->__InternalRemoveAwareObject(v, reverse_still_valid);
 			}
@@ -854,7 +844,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+	//DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -876,7 +866,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
 
-	DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+	//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
 
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
@@ -887,7 +877,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
+	//DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();

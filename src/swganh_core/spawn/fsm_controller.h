@@ -25,6 +25,7 @@ public:
 	virtual uint64_t GetId() const;
 
     virtual void Notify(swganh::messages::BaseSwgMessage* message);
+	virtual void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::soe::Session::SequencedCallback&& callback) { };
 
 	virtual void Cleanup(boost::posix_time::ptime current_time_);
 

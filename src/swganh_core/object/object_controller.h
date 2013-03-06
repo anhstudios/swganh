@@ -80,7 +80,15 @@ namespace object {
          *
          * @param message The message to be delivered to the remote client.
          */
-        void Notify(swganh::messages::BaseSwgMessage* message);        
+        void Notify(swganh::messages::BaseSwgMessage* message);    
+
+        /**
+         * Notifies the controller when the object has been updated.
+         *
+         * @param message The message to be delivered to the remote client.
+		 * @param callback SequencedCallback fired once acknowledgement is received.
+         */
+		void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::soe::Session::SequencedCallback&& callback); 
         
     private:
 
