@@ -844,7 +844,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+	//DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -866,7 +866,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
 
-	DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+	//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
 
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
@@ -877,7 +877,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
+	//DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();

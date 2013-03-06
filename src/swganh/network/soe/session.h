@@ -113,11 +113,11 @@ public:
     * @param message The payload to send in the data channel message(s).
     */
     template<typename T>
-    void SendTo(const T& message) {
+    void SendTo(const T& message, boost::optional<SequencedCallback> callback = boost::optional<SequencedCallback>()) {
         ByteBuffer message_buffer;
         message.Serialize(message_buffer);
 
-        outgoing_data_messages_.push(OutgoingMessage(std::move(message_buffer), boost::optional<SequencedCallback>()));
+        outgoing_data_messages_.push(OutgoingMessage(std::move(message_buffer), callback));
     }
 
     void HandleMessage(swganh::ByteBuffer message);
@@ -147,7 +147,7 @@ private:
 
     typedef swganh::ByteBuffer(*HeaderBuilder)(uint16_t);
 
-    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, SequencedCallbacks callbacks);
+    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
 
     virtual void OnClose() {}
 
