@@ -42,8 +42,7 @@ struct PythonCallback
 			else
 			{
 				// Error
-				LOG(warning) << "Error getting callback";
-				PyErr_Print();
+				swganh::scripting::logPythonException();
 			}
 		}
 	}

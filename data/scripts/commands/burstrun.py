@@ -27,6 +27,8 @@ class BurstRunCommand(BaseSwgCommand):
 	def run(self):
 		actor = self.getActor()            
 		
+		abc = defg
+		
 		actor.setFlag("BurstRunning")
 		actor.setFlag("BurstRunCooldown")
 		

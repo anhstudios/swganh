@@ -47,7 +47,7 @@ namespace attributes {
 			}
 			catch (bp::error_already_set&)
 			{
-				PyErr_Print();
+				swganh::scripting::logPythonException();
 			}
 			return AttributeListMessage();
 		}

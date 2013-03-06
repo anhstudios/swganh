@@ -504,8 +504,8 @@ void ObjectManager::LoadPythonObjectTemplates()
 		auto python_template = module.attr("templates");
 		object_templates_ = bp::extract<PythonTemplateMap>(python_template);
 	}
-	catch(bp::error_already_set&)
+	catch (bp::error_already_set&)
 	{
-		PyErr_Print();		
+		swganh::scripting::logPythonException();
 	}
 }
