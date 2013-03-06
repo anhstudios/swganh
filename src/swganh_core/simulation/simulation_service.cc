@@ -235,11 +235,6 @@ public:
 	        throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
 	    }
 
-		/**auto old_scene = scene_manager_->GetScene(obj->GetSceneId());
-		if(old_scene) {
-			old_scene->RemoveObject(obj);
-		}*/
-
 		// Clear Controller
 		auto controller = obj->GetController();
 		obj->ClearController();
@@ -260,11 +255,8 @@ public:
 		obj->UpdateWorldCollisionBox();
 		obj->UpdateAABB();
 
-		// Reset Controller
-		obj->SetController(controller);
-
 		// CmdStartScene
-		if(obj->GetController() != nullptr)
+		if(controller != nullptr)
 		{
 			CmdStartScene start_scene;
 			start_scene.ignore_layout = 0;
@@ -275,11 +267,15 @@ public:
 			start_scene.shared_race_template = obj->GetTemplate();
 			start_scene.galaxy_time = 0;
 
-			obj->GetController()->Notify(&start_scene);
-		}
+			controller->Notify(&start_scene, [=](uint16_t sequence) {
+				std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!Attaching controller...." << std::endl;
+				// Reset Controller
+				obj->SetController(controller);
 
-	    // Add object to scene and send baselines
-	    scene_obj->AddObject(obj);
+				// Add object to scene and send baselines
+				scene_obj->AddObject(obj);
+			});
+		}
 	}
 
 	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)
@@ -391,6 +387,8 @@ public:
             throw std::runtime_error("Invalid scene selected for object");
         }
 
+		object->SetCollidable(false);
+
 		// CmdStartScene
         CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
@@ -400,37 +398,39 @@ public:
         start_scene.position = object->GetPosition();
         start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
-        client->SendTo(start_scene);
 
-		object->SetCollidable(false);
+		client->SendTo(start_scene, boost::optional<Session::SequencedCallback>(
+			[=](uint16_t sequence){
+				LOG(warning) << "here.";
+				if(object->GetContainer() == nullptr)
+				{
+					scene->AddObject(object);
+				}
 
-		if(object->GetContainer() == nullptr)
-		{
-			scene->AddObject(object);
-		}
+				//Attach the controller
+				StartControllingObject(object, client);
 
-		//Attach the controller
-		StartControllingObject(object, client);
+				//Make sure the controller gets his awareness creates
+				//regardless of the current state of awareness.
+				auto controller = object->GetController();
+				scene->ViewObjects(object, 0, true, [&] (std::shared_ptr<swganh::object::Object> aware) {
+					if(aware->__HasAwareObject(object) && !aware->IsInSnapshot())
+					{
+						//Send create manually
+						aware->Subscribe(controller);
+						aware->SendCreateByCrc(controller);
+						aware->CreateBaselines(controller);
+					}
+					else
+					{
+						aware->AddAwareObject(object);
+						object->AddAwareObject(aware);
+					}
+				});
+				
 
-		//Make sure the controller gets his awareness creates
-		//regardless of the current state of awareness.
-		auto controller = object->GetController();
-		scene->ViewObjects(object, 0, true, [&] (std::shared_ptr<swganh::object::Object> aware) {
-			if(aware->__HasAwareObject(object) && !aware->IsInSnapshot())
-			{
-				//Send create manually
-				aware->Subscribe(controller);
-				aware->SendCreateByCrc(controller);
-				aware->CreateBaselines(controller);
-			}
-			else
-			{
-				aware->AddAwareObject(object);
-				object->AddAwareObject(aware);
-			}
-		});
-
-		object->SetCollidable(true);
+				object->SetCollidable(true);
+		}));
     }
 
 	void SendToAll(swganh::messages::BaseSwgMessage* message)

@@ -93,11 +93,14 @@ void Session::Update() {
     // Build up a list of data messages to process
     uint32_t message_count = outgoing_data_messages_.unsafe_size();
     list<ByteBuffer> process_list;
-    ByteBuffer tmp;
+	SequencedCallbacks callbacks;
+    OutgoingMessage tmp;
 
     for (uint32_t i = 0; i < message_count; ++i) {
         if (outgoing_data_messages_.try_pop(tmp)) {
-            process_list.push_back(tmp);
+			process_list.push_back(tmp.first);
+			if(tmp.second.is_initialized())
+				callbacks.push_back(tmp.second.get());
         }
     }
 
@@ -113,17 +116,26 @@ void Session::Update() {
             data_channel_payload,
             max_data_channel_size);
 
-        for_each(fragmented_message.begin(), fragmented_message.end(), [this] (ByteBuffer& fragment) {
-            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment));
+		uint16_t frag_list_size = fragmented_message.size();
+        for_each(fragmented_message.begin(), fragmented_message.end(), [this, &callbacks, &frag_list_size] (ByteBuffer& fragment) {
+ 
+			if(frag_list_size > 1) {
+				SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), SequencedCallbacks());
+			}
+			else
+			{
+				SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), callbacks);
+			}
+			frag_list_size--;
         });
     } else {
-        SendSequencedMessage_(&BuildDataChannelHeader, move(data_channel_payload));
+        SendSequencedMessage_(&BuildDataChannelHeader, move(data_channel_payload), callbacks);
     }
 }
 
-void Session::SendTo(ByteBuffer message)
+void Session::SendTo(ByteBuffer message, boost::optional<SequencedCallback> callback)
 {
-    outgoing_data_messages_.push(move(message));
+    outgoing_data_messages_.push(OutgoingMessage(move(message), callback));
 }
 
 void Session::Close(void)
@@ -218,7 +230,7 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
 }
 
 
-void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message) {
+void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks) {
     // Get the next sequence number
     uint16_t message_sequence = server_sequence_++;
 
@@ -229,6 +241,9 @@ void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer mes
 
     // Send it over the wire
     SendSoePacket_(data_channel_message);
+
+	if(callbacks.get().size() > 0)
+		QueueSequencedCallback(message_sequence, callbacks.get());
 
     // Store it for resending later if necessary
     sent_messages_.push_back(make_pair(message_sequence, move(data_channel_message)));
@@ -362,6 +377,7 @@ void Session::handleAckA_(AckA packet)
     sent_messages_.erase(sent_messages_.begin(), it);
 
     last_acknowledged_sequence_ = packet.sequence;
+	DequeueSequencedCallback(packet.sequence);
 }
 
 void Session::handleOutOfOrderA_(OutOfOrderA packet)
@@ -426,4 +442,35 @@ void Session::AcknowledgeSequence_(const uint16_t& sequence)
 
     next_client_sequence_ = sequence + 1;
     current_client_sequence_ = sequence;
+}
+
+void Session::QueueSequencedCallback(uint16_t sequence, SequencedCallbacks callbacks)
+{
+	auto iter = acknowledgement_callbacks_.find(sequence);
+	if(iter == acknowledgement_callbacks_.end())
+	{
+		acknowledgement_callbacks_.insert(std::pair<uint16_t, SequencedCallbacks>(sequence, callbacks));
+	}
+	else
+		LOG(error) << "Sequence callback is slotted but has not been dequeued.";
+}
+
+void Session::DequeueSequencedCallback(uint16_t sequence)
+{
+	for(std::map<uint16_t, SequencedCallbacks>::iterator iter = acknowledgement_callbacks_.begin(); iter != acknowledgement_callbacks_.end(); iter++)
+	{
+		if((*iter).first > sequence)
+			break;
+
+		for(auto& func : (*iter).second)
+		{
+			func((*iter).first);
+		}
+	}
+	
+	auto iter = acknowledgement_callbacks_.find(sequence);
+	if(iter != acknowledgement_callbacks_.end()) {
+		acknowledgement_callbacks_.erase(acknowledgement_callbacks_.begin(), iter);
+		acknowledgement_callbacks_.erase(iter);
+	}
 }
