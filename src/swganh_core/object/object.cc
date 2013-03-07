@@ -145,10 +145,10 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 			boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 
 			//Perform the transfer
-			//for(auto& slot : slot_descriptor_)
-			//{
-			//	slot.second->remove_object(object);
-			//}
+			for(auto& slot : slot_descriptor_)
+			{
+				slot.second->remove_object(object);
+			}
 
 			arrangement_id = newContainer->__InternalInsert(object, new_position, arrangement_id);
 		}
@@ -370,15 +370,13 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
 
 void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {	
-	std::shared_ptr<ObserverInterface> observer;
-
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr == aware_objects_.end())
 	{
 		aware_objects_.insert(object);
 		if(!IsInSnapshot())
 		{
-			observer = object->GetController();
+			auto observer = object->GetController();
 			if(observer)
 			{
 				Subscribe(observer);
@@ -386,33 +384,20 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 				CreateBaselines(observer);
 			}
 		}
-	}
-
-	find_itr = object->aware_objects_.find(shared_from_this());
-	if(find_itr == object->aware_objects_.end())
-	{
-		object->aware_objects_.insert(shared_from_this());
-		if(!object->IsInSnapshot())
-		{
-			observer = GetController();
-			if(observer)
-			{
-				object->Subscribe(observer);
-				object->SendCreateByCrc(observer);
-				object->CreateBaselines(observer);
-			}
-		}
-	}
+	
+		bool old_reverse = reverse_still_valid;
+		reverse_still_valid = GetPermissions()->canView(shared_from_this(), object);
 		
-	for(auto& slot : slot_descriptor_)
-	{
-		slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-			v->__InternalAddAwareObject(object, reverse_still_valid);
-			if(reverse_still_valid)
-			{
-				object->__InternalAddAwareObject(v, reverse_still_valid);
-			}
-		});
+		for(auto& slot : slot_descriptor_)
+		{
+			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+				if(old_reverse)
+					object->__InternalAddAwareObject(v, false);
+
+				if(reverse_still_valid)
+					v->__InternalAddAwareObject(object, reverse_still_valid);
+			});
+		}
 	}
 }
 
@@ -423,45 +408,33 @@ void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swgan
 
 void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {
-	for(auto& slot : slot_descriptor_)
-	{
-		slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-			v->__InternalRemoveAwareObject(object, reverse_still_valid);
-			if(!reverse_still_valid)
-			{
-				object->__InternalRemoveAwareObject(v, reverse_still_valid);
-			}
-		});
-	}
-
-	std::shared_ptr<ObserverInterface> observer;
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr != aware_objects_.end())
 	{
+		bool old_reverse = reverse_still_valid;
+		reverse_still_valid = GetPermissions()->canView(shared_from_this(), object);
+
+		for(auto& slot : slot_descriptor_)
+		{
+			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+				if(reverse_still_valid)
+					v->__InternalRemoveAwareObject(object, reverse_still_valid);
+
+				if(old_reverse)
+					object->__InternalRemoveAwareObject(v, false);
+			});
+		}
+
 		aware_objects_.erase(find_itr);
+
 		if(!IsInSnapshot())
 		{
-			observer = object->GetController();
+			auto observer = object->GetController();
 			if(observer)
 			{
 				//DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
 				SendDestroy(observer);
 				Unsubscribe(observer);
-			}
-		}
-	}
-
-	find_itr = object->aware_objects_.find(shared_from_this());
-	if(find_itr != object->aware_objects_.end())
-	{
-		object->aware_objects_.erase(find_itr);
-		if(!object->IsInSnapshot())
-		{
-			observer = GetController();
-			if(observer)
-			{
-				object->SendDestroy(observer);
-				object->Unsubscribe(observer);
 			}
 		}
 	}
