@@ -54,13 +54,15 @@ namespace statics
 		 * @brief Gets a given skill mod and any affected Attributes if exist
 		 * @return a pair of base, modifier
 		 */
-		std::pair<uint32_t, uint32_t> GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
+		swganh::object::SkillMod GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
 		
 		/*
 		 * @brief Gets All SkillMods that are applicable for this creature.
 		 * @return a map of pairs of base, modifier
 		 */
-		std::map<std::string, std::pair<uint32_t, uint32_t>> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
+		std::map<std::string, swganh::object::SkillMod> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
+
+		std::shared_ptr<SkillInfo> GetSkillInfo(std::string skillname);
 
 	private:
 

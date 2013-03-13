@@ -42,23 +42,26 @@ void SystemMessage::Send(
 	const std::wstring& custom_message, 
 	bool chatbox_only, bool send_to_inrange)
 {
-	// Use regex to check if the chat string matches the stf string format.
-    static const regex pattern("@([a-zA-Z0-9/_]+):([a-zA-Z0-9_]+)");
-    smatch result;
+	if(auto controller = sender->GetController())
+	{
+		// Use regex to check if the chat string matches the stf string format.
+		static const regex pattern("@([a-zA-Z0-9/_]+):([a-zA-Z0-9_]+)");
+		smatch result;
 
-    string stf_string(custom_message.begin(), custom_message.end());
+		string stf_string(custom_message.begin(), custom_message.end());
 
-    // If it's an exact match (2 sub-patterns + the full string = 3 elements) it's an stf string.
-    // Reroute the call to the appropriate overload.
-    if (regex_search(stf_string, result, pattern))
-    {
-        string file(result[1].str());
-        string string(result[2].str());
+		// If it's an exact match (2 sub-patterns + the full string = 3 elements) it's an stf string.
+		// Reroute the call to the appropriate overload.
+		if (regex_search(stf_string, result, pattern))
+		{
+			string file(result[1].str());
+			string string(result[2].str());
 
-        Send(sender, L"", OutOfBand(file, string), chatbox_only, send_to_inrange);
-    }
+			Send(sender, L"", OutOfBand(file, string), chatbox_only, send_to_inrange);
+		}
 
-    Send(sender, custom_message, OutOfBand(),chatbox_only, send_to_inrange);
+		Send(sender, custom_message, OutOfBand(),chatbox_only, send_to_inrange);
+	}
 }
 void SystemMessage::Send(
 	std::shared_ptr<swganh::object::Object> sender, 
@@ -74,19 +77,23 @@ void SystemMessage::Send(
 	bool chatbox_only, bool send_in_range)
 {
 	uint8_t chatbox = chatbox_only == true ? 2 : 0;
-    ChatSystemMessage SystemMessage;
+	ChatSystemMessage SystemMessage;
 
-    SystemMessage.message = custom_message;
-    SystemMessage.display_type = chatbox;
-    if (out_of_band.Length() > 0)
-    {
-        SystemMessage.AddProsePackage(out_of_band.Pack());
-    }
+	SystemMessage.message = custom_message;
+	SystemMessage.display_type = chatbox;
+	if (out_of_band.Length() > 0)
+	{
+		SystemMessage.AddProsePackage(out_of_band.Pack());
+	}
 
-    if (send_in_range)
-        sender->NotifyObservers(&SystemMessage);
-    else
-        sender->GetController()->Notify(&SystemMessage);
+	if (send_in_range)
+	{
+		sender->NotifyObservers(&SystemMessage);
+	}
+	else if(auto controller = sender->GetController())
+	{
+		controller->Notify(&SystemMessage);
+	}
 }
 
 void SystemMessage::FlyText(
@@ -168,8 +175,7 @@ void SystemMessage::ClientEffect(std::shared_ptr<swganh::object::Object> object,
 	}
 	else
 	{
-		auto controller = object->GetController();
-		if(controller)
+		if(auto controller = object->GetController())
 		{
 			controller->Notify(&msg);
 		}

@@ -7,11 +7,12 @@ class DuelCommand(BaseSwgCommand):
 		actor = self.getActor()
 		target = self.getTarget()
 		
-		if not actor.inDuelList(target.id):
+		if target.hasFlag("player_creature") and not actor.inDuelList(target.id):
 			actor.addDuelList(target.id)
 			#system message
 			SystemMessage.sendSystemMessage(actor, OutOfBand("duel", "challenge_self", ProseType.TT, target.id) , False, False)
 			SystemMessage.sendSystemMessage(target, OutOfBand("duel", "challenge_target", ProseType.TT, actor.id), False, False)
+		
 		if actor.inDuelList(target.id) and target.inDuelList(actor.id):
 			# Start The Duel
 			SystemMessage.sendSystemMessage(actor, OutOfBand("duel", "accept_target", ProseType.TT, target.id), False, False)

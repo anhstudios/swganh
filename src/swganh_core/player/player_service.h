@@ -4,17 +4,23 @@
 
 #include "swganh_core/player/player_service_interface.h"
 
+#include <unordered_map>
 #include <boost/asio.hpp>
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/event_dispatcher.h"
 
 namespace swganh {
+namespace messages {
+namespace controllers {
+	class ChangeTarget;
+}
+}
 namespace equipment {
 	class EquipmentService;
 }
 namespace object {
-	class ObjectController;	
+	class ObjectController;
 } // object
 namespace simulation {
 	class SimulationServiceInterface;
@@ -70,6 +76,8 @@ public:
 	
 	virtual void StoreAllCalledObjects(std::shared_ptr<swganh::object::Creature> owner);
 
+	virtual std::shared_ptr<swganh::object::Object> GetPlayerByFirstName(const std::wstring& first_name);
+
 private:
 	void RemoveClientTimerHandler_(
 		const boost::system::error_code& e, 
@@ -77,11 +85,16 @@ private:
 		int delay_in_secs, 
 		std::shared_ptr<swganh::object::ObjectController> controller);
 
+	void _handleTargetChange(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ChangeTarget* message);
+
 	swganh::app::SwganhKernel* kernel_;
 	swganh::equipment::EquipmentService* equipment_service_;
 	swganh::simulation::SimulationServiceInterface* simulation_service_;
 	swganh::CallbackId player_selected_callback_;
 	swganh::CallbackId player_removed_;
+
+	boost::mutex player_character_lock_;
+	std::unordered_map<std::wstring, std::shared_ptr<swganh::object::Object>> player_characters_;
 };
 
 }} // swganh::player

@@ -105,7 +105,16 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 	//Now use the callback 
 	if(func != nullptr)
 	{
-		bool result = func(owner_obj, message->event_type, message->returnList);
+		bool result = false;
+		
+		try
+		{
+			result = func(owner_obj, message->event_type, message->returnList);
+		}
+		catch(...)
+		{
+			result = true;
+		}
 		
 		//If it returned true then we need to go back in and try to delete the window.
 		if(result)

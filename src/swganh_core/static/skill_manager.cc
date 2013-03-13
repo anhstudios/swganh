@@ -3,6 +3,8 @@
 
 #include "skill_manager.h"
 
+#include "swganh_core/object/creature/creature.h"
+
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -20,11 +22,14 @@ void SkillManager::Start(std::shared_ptr<sql::Statement> statement)
 	statement->getMoreResults();
 	_loadSkillPrereqs(std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())));
 
-	//statement->getMoreResults();
-	//_loadSkillsRequiredSpecies(std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())));
+	statement->getMoreResults();
+	_loadSkillsRequiredSpecies(std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())));
 
 	statement->getMoreResults();
 	_loadSkillMods(std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())));
+
+	statement->getMoreResults();
+	_loadSkillCommands(std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())));
 
 }
 
@@ -32,7 +37,7 @@ void SkillManager::_loadSkills(std::unique_ptr<sql::ResultSet> result)
 {
 	while(result->next())
 	{
-		auto skill = std::make_shared<Skill>();
+		auto skill = std::make_shared<SkillInfo>();
 
 		std::string name = result->getString(1);
 		skill->is_title = result->getBoolean(2);
@@ -64,8 +69,21 @@ void SkillManager::_loadSkillPrereqs(std::unique_ptr<sql::ResultSet> result)
 	}
 }
 
-void SkillManager::_loadSkillsRequiredSpecies(std::unique_ptr<sql::ResultSet> results)
+void SkillManager::_loadSkillsRequiredSpecies(std::unique_ptr<sql::ResultSet> result)
 {
+	while(result->next())
+	{
+		std::string skillname = result->getString(1);
+		auto find_itr = skills_.find(skillname);
+
+		if(find_itr != skills_.end())
+		{
+			std::string species = result->getString(2);
+			auto required_species_ = find_itr->second->required_species_;
+			required_species_.insert("object/creature/player/shared_" + species + "_male.iff");
+			required_species_.insert("object/creature/player/shared_" + species + "_female.iff");
+		}
+	}
 }
 
 void SkillManager::_loadSkillMods(std::unique_ptr<sql::ResultSet> result)
@@ -83,9 +101,24 @@ void SkillManager::_loadSkillMods(std::unique_ptr<sql::ResultSet> result)
 	}
 }
 
-std::pair<uint32_t, uint32_t> SkillManager::GetSkillMod(const std::shared_ptr<Creature>& creature, const std::string& skill_mod_name)
+void SkillManager::_loadSkillCommands(std::unique_ptr<sql::ResultSet> result)
 {
-	std::map<std::string, std::pair<uint32_t, uint32_t>> mods = GetSkillMods(creature);
+	while(result->next())
+	{
+		std::string skillname = result->getString(1);
+		auto find_itr = skills_.find(skillname);
+
+		if(find_itr != skills_.end())
+		{
+			std::string command_name = result->getString(2);
+			find_itr->second->commands_.insert(command_name);
+		}
+	}
+}
+
+SkillMod SkillManager::GetSkillMod(const std::shared_ptr<Creature>& creature, const std::string& skill_mod_name)
+{
+	SkillModsMap mods = GetSkillMods(creature);
 
 	auto find_itr = mods.find(skill_mod_name);
 	
@@ -94,27 +127,27 @@ std::pair<uint32_t, uint32_t> SkillManager::GetSkillMod(const std::shared_ptr<Cr
 		return find_itr->second;
 	}
 
-	return std::make_pair<uint32_t, uint32_t>(0, 0);
+	return SkillMod();
 }
 
-void addMod(std::map<std::string, std::pair<uint32_t, uint32_t>>& map, std::string modname, uint32_t baseDelta, uint32_t modDelta)
+void addMod(std::map<std::string, SkillMod>& map, std::string modname, uint32_t baseDelta, uint32_t modDelta)
 {
 	auto lb = map.lower_bound(modname);
 
 	if(lb != map.end() && !(map.key_comp()(modname, lb->first)))
 	{
-		lb->second.first += baseDelta;
-		lb->second.second += modDelta;
+		lb->second.base += baseDelta;
+		lb->second.modifier += modDelta;
 	}
 	else
 	{
-		map.insert(lb, std::make_pair(modname, std::make_pair(baseDelta, modDelta)));
+		map.insert(lb, std::make_pair(modname, SkillMod(modname, baseDelta, modDelta)));
 	}
 }
 
 SkillModsMap SkillManager::GetSkillMods(const std::shared_ptr<Creature>& creature)
 {
-	std::map<std::string, std::pair<uint32_t, uint32_t>> result;
+	SkillModsMap result;
 
 	//Add the base values
 	auto skill_end = this->skills_.end();
@@ -137,10 +170,20 @@ SkillModsMap SkillManager::GetSkillMods(const std::shared_ptr<Creature>& creatur
 			auto modifier = child->GetAttributeRecursive(mod.first);
 			if(modifier.which() == 1)
 			{
-				mod.second.second += boost::get<int32_t>(modifier);
+				mod.second.modifier += boost::get<int32_t>(modifier);
 			}
 		}
 	});
 
 	return result;
+}
+
+std::shared_ptr<SkillInfo> SkillManager::GetSkillInfo(const std::string& name)
+{
+	auto find_itr = skills_.find(name);
+	if(find_itr != skills_.end())
+	{
+		return find_itr->second;
+	}
+	return nullptr;
 }

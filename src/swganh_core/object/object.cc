@@ -534,7 +534,7 @@ std::wstring Object::GetFirstName() const
     return custom_name_.substr(0, pos);
 }
 
-std::wstring Object::GetSirName() const
+std::wstring Object::GetSurName() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
     std::size_t pos = custom_name_.find(L" ");
