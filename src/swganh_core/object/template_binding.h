@@ -43,7 +43,7 @@ namespace object {
 			}
 			catch (bp::error_already_set&)
 			{
-				PyErr_Print();
+				swganh::scripting::logPythonException();
 			}
 			return make_shared<Object>();
 		}

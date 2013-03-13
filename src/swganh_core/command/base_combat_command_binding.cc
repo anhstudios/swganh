@@ -56,10 +56,10 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
             
             this->BaseCombatCommand::Run();
         }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
 
         return callback;
     }
@@ -79,10 +79,10 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
                 this->BaseCombatCommand::SetCommandProperties(properties);
             }
         }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }        
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}    
 	}
 
 private:

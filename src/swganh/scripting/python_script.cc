@@ -40,7 +40,7 @@ PythonScript::PythonScript(const string& filename)
     catch (error_already_set &)
     {
 		ScopedGilLock lock;
-        PyErr_Print();
+		swganh::scripting::logPythonException();
     }
 }
 
@@ -90,7 +90,7 @@ void PythonScript::GetPythonException()
         os << typestr << std::flush;
     } catch (error_already_set const &) {
         os << "Internal error getting error type:\n";
-        PyErr_Print();
+		swganh::scripting::logPythonException();
     }
 
     os << ": ";
@@ -101,7 +101,7 @@ void PythonScript::GetPythonException()
         os  << valuestr << std::flush;
     } catch (error_already_set const &) {
         os << "Internal error getting value type:\n";
-        PyErr_Print();
+		swganh::scripting::logPythonException();
     }
 
     if (tb) {
@@ -113,7 +113,7 @@ void PythonScript::GetPythonException()
             os << "\nTraceback (recent call last):\n" << str;
         } catch (error_already_set const &) {
             os << "Internal error getting traceback:\n";
-            PyErr_Print();
+			swganh::scripting::logPythonException();
         }
     } else {
         os << std::endl;
