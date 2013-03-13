@@ -81,10 +81,10 @@ void SpawnService::Startup()
 		SHUTTLE_AWAY_TIME_SECONDS = boost::python::extract<uint32_t>(config.attr("SHUTTLE_AWAY_TIME_SECONDS"));
 		SHUTTLE_IN_PORT_TIME_SECONDS = boost::python::extract<uint32_t>(config.attr("SHUTTLE_IN_PORT_TIME_SECONDS"));
     }
-    catch(boost::python::error_already_set& /*e*/)
-    {
-        PyErr_Print();
-    }
+	catch (boost::python::error_already_set&)
+	{
+		swganh::scripting::logPythonException();
+	}
 
 	//Build the default machines
 	//_buildCreatureMachine(kernel_, fsm_manager_);

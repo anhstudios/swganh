@@ -44,9 +44,9 @@ uint64_t PyCharacterCreate::CreateCharacter(
 			return created_creature->GetObjectId();
 		}
 	}
-	catch(bp::error_already_set& /*e*/)
-    {
-        PyErr_Print();
-    }
+	catch (bp::error_already_set&)
+	{
+		swganh::scripting::logPythonException();
+	}
 	return 0;
 }

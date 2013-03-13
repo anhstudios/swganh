@@ -39,10 +39,10 @@ public:
                 run(creature);
             }
         }
-        catch(boost::python::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
+        catch (error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
 	}
 
 	virtual void RemoveBuff(std::shared_ptr<swganh::object::Creature> creature)
@@ -55,10 +55,10 @@ public:
                 run(creature);
             }
         }
-        catch(boost::python::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
+        catch (error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
 	}
 
 	virtual std::string GetName()
@@ -71,10 +71,10 @@ public:
                 return run().as<std::string>();
             }
         }
-        catch(boost::python::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
+        catch (boost::python::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
 
 		return "";
 	}
@@ -89,10 +89,10 @@ public:
                 return run();
             }
         }
-        catch(boost::python::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
+        catch (boost::python::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
 
 		return 0;
 	}

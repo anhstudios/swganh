@@ -76,4 +76,6 @@ namespace scripting {
 			}
 	}
 
+	void logPythonException();
+	
 }}  // namespace swganh::scripting

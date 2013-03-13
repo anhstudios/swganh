@@ -22,10 +22,10 @@ PythonBuffCreator::PythonBuffCreator(std::string module_name, std::string class_
     {
         module_ = bp::import(module_name_.c_str());
     }
-    catch(bp::error_already_set& /*e*/)
-    {
-        PyErr_Print();
-    }
+	catch (bp::error_already_set&)
+	{
+		swganh::scripting::logPythonException();
+	}
 }
 
 std::shared_ptr<BuffInterface> PythonBuffCreator::operator() ()
@@ -48,10 +48,10 @@ std::shared_ptr<BuffInterface> PythonBuffCreator::operator() ()
             buff.reset(obj_pointer, [new_instance] (BuffInterface*) {});
         }
     }
-    catch(bp::error_already_set& /*e*/)
-    {
-        PyErr_Print();
-    }
+    catch (bp::error_already_set&)
+	{
+		swganh::scripting::logPythonException();
+	}
 
     return buff;
 }

@@ -19,8 +19,8 @@ PythonScriptCreator::PythonScriptCreator(std::string module_name, std::string cl
     {
         module_ = bp::import(module_name_.c_str());
     }
-    catch(bp::error_already_set& /*e*/)
-    {
-        PyErr_Print();
-    }
+	catch (bp::error_already_set&)
+	{
+		swganh::scripting::logPythonException();
+	}
 }

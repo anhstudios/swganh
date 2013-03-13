@@ -50,10 +50,10 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
                 validated = this->BaseSwgCommand::Validate();
             }
         }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
 
         return validated;
     }
@@ -74,10 +74,10 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
                 callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));  
             }
         }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
 
         return callback;
     }
@@ -96,10 +96,10 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
                 this->BaseSwgCommand::SetCommandProperties(properties);
             }
         }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }        
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}       
 	}
 	void PostRun(bool success)
 	{
@@ -116,10 +116,10 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
                 this->BaseSwgCommand::PostRun(success);
             }
         }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }        
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}      
 	}
 };
 
@@ -147,10 +147,10 @@ public:
                     callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));  
                 }
             }
-            catch(bp::error_already_set& /*e*/)
-            {
-                PyErr_Print();
-            }
+			catch (bp::error_already_set&)
+			{
+				swganh::scripting::logPythonException();
+			}
         }
 
         return callback;

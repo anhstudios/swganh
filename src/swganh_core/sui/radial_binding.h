@@ -48,9 +48,9 @@ namespace sui {
 			{
 				return this->get_override("buildRadial")(static_pointer_cast<swganh::object::Creature>(owner), target, radials);
 			}
-			catch (bp::error_already_set& )
+			catch (bp::error_already_set&)
 			{
-				PyErr_Print();
+				swganh::scripting::logPythonException();
 			}
 			return std::vector<RadialOptions>();
 		}
@@ -61,9 +61,9 @@ namespace sui {
 			{				
 				this->get_override("handleRadial")(static_pointer_cast<swganh::object::Creature>(owner), target, action);
 			}
-			catch (bp::error_already_set& )
+			catch (bp::error_already_set&)
 			{
-				PyErr_Print();				
+				swganh::scripting::logPythonException();
 			}
 		}
 	private:

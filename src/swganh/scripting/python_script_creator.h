@@ -36,10 +36,10 @@ namespace scripting {
                     interfaceObj.reset(obj_pointer, [new_instance] (T*) {});
                 }
             }
-            catch(boost::python::error_already_set& /*e*/)
-            {
-                PyErr_Print();
-            }
+			catch (bp::error_already_set&)
+			{
+				swganh::scripting::logPythonException();
+			}
 
             return interfaceObj;
         }

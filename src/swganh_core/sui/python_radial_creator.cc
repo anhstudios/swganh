@@ -24,10 +24,10 @@ PythonRadialCreator::PythonRadialCreator(std::string module_name, std::string cl
     {
         module_ = bp::import(module_name_.c_str());
     }
-    catch(bp::error_already_set& /*e*/)
-    {
-        PyErr_Print();
-    }
+	catch (bp::error_already_set&)
+	{
+		swganh::scripting::logPythonException();
+	}
 }
 
 std::shared_ptr<RadialInterface> PythonRadialCreator::operator() (swganh::app::SwganhKernel* kernel)
@@ -59,10 +59,10 @@ std::shared_ptr<RadialInterface> PythonRadialCreator::operator() (swganh::app::S
             radial.reset(obj_pointer, [new_instance] (RadialInterface*) {});
         }
     }
-    catch(bp::error_already_set& /*e*/)
-    {
-        PyErr_Print();
-    }
+	catch (bp::error_already_set&)
+	{
+		swganh::scripting::logPythonException();
+	}
 
     return radial;
 }
