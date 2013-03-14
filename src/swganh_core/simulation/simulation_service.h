@@ -88,6 +88,7 @@ namespace simulation {
 		void Startup();
 
     private:
+		void RegisterCommandCreators();
 
         std::unique_ptr<SimulationServiceImpl> impl_;
 		std::shared_ptr<swganh::network::soe::ServerInterface> server_;

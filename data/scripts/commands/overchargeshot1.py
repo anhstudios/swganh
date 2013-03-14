@@ -1,3 +1,6 @@
+
+#### MODIFIED ####
+
 from swgpy.command import BaseCombatCommand
 
 class OverchargeShot1Command(BaseCombatCommand):

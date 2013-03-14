@@ -1,8 +1,11 @@
+
+#### MODIFIED ####
+
 import re
 import swgpy
 from swgpy.command import BaseSwgCommand
 
-class TransferItem(BaseSwgCommand):
+class TransferItemMiscCommand(BaseSwgCommand):
     def run(self):
         split = re.split('\W+', self.getCommandString())
         container_id = split[1]

@@ -16,10 +16,6 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh_core/command/command_interface.h"
-#include "swganh_core/command/command_service_interface.h"
-#include "swganh_core/command/python_command_creator.h"
-
 #include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/connection/connection_service_interface.h"
 
@@ -675,6 +671,8 @@ void SimulationService::Startup()
     SimulationServiceInterface::RegisterControllerHandler(
 		&SimulationServiceImpl::HandleDataTransformWithParent, impl_.get());
 
+	RegisterCommandCreators();
+
 	kernel_->GetEventDispatcher()->Subscribe("Object::UpdatePosition", [this] (shared_ptr<swganh::EventInterface> incoming_event)
 	{
 		const auto& update_event = static_pointer_cast<swganh::object::UpdatePositionEvent>(incoming_event);
@@ -702,17 +700,6 @@ void SimulationService::Startup()
         }
 	});
 
-	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
-
-    command_service->AddCommandCreator("burstrun", swganh::command::PythonCommandCreator("commands.burstrun", "BurstRunCommand"));
-	command_service->AddCommandCreator("addfriend", swganh::command::PythonCommandCreator("commands.addfriend", "AddFriendCommand"));
-	command_service->AddCommandCreator("removefriend", swganh::command::PythonCommandCreator("commands.removefriend", "RemoveFriendCommand"));
-	command_service->AddCommandCreator("setmoodinternal", swganh::command::PythonCommandCreator("commands.setmoodinternal", "SetMoodInternalCommand"));
-	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferItemMisc", "TransferItem"));
-	command_service->AddCommandCreator("transferitem", swganh::command::PythonCommandCreator("commands.transferItem", "TransferItem"));
-	command_service->AddCommandCreator("transferitemarmor", swganh::command::PythonCommandCreator("commands.transferItemArmor", "TransferItemArmor"));
-	command_service->AddCommandCreator("transferitemweapon", swganh::command::PythonCommandCreator("commands.transferItemWeapon", "TransferItemWeapon"));
-	command_service->AddCommandCreator("tip", swganh::command::PythonCommandCreator("commands.tip", "TipCommand"));
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 

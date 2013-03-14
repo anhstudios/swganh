@@ -1,3 +1,6 @@
+
+#### MODIFIED ####
+
 from swgpy.command import BaseCombatCommand
 from swgpy.object import SystemMessage, FlyTextColor
 

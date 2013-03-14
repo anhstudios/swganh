@@ -1,3 +1,6 @@
+
+#### MODIFIED ####
+
 import re
 import swgpy.equipment
 from swgpy.object import *
