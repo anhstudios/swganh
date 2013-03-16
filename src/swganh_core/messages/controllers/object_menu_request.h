@@ -77,7 +77,7 @@ namespace controllers {
 				r.custom_description = buffer.read<std::wstring>();
 				radial_options.push_back(r);
 			}
-            
+			response_count = buffer.read<uint8_t>();
         }
     };
 
