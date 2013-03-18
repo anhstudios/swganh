@@ -95,14 +95,9 @@ void ManufactureSchematicMessageBuilder::SendBaselines(
     const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, 
     const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	manufacture_schematic->AddBaselineToCache(&BuildBaseline3(manufacture_schematic));
-	manufacture_schematic->AddBaselineToCache(&BuildBaseline6(manufacture_schematic));
-	manufacture_schematic->AddBaselineToCache(&BuildBaseline7(manufacture_schematic));
-
-	for (auto& baseline : manufacture_schematic->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
+	observer->Notify(&BuildBaseline3(manufacture_schematic));
+	observer->Notify(&BuildBaseline6(manufacture_schematic));
+	observer->Notify(&BuildBaseline7(manufacture_schematic));
         
     SendEndBaselines(manufacture_schematic, observer);
 }
