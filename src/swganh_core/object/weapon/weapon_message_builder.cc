@@ -21,13 +21,8 @@ void WeaponMessageBuilder::RegisterEventHandlers()
 
 void WeaponMessageBuilder::SendBaselines(const shared_ptr<Weapon>& weapon, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    weapon->AddBaselineToCache(&BuildBaseline3(weapon));
-    weapon->AddBaselineToCache(&BuildBaseline6(weapon));
-
-    for (auto& baseline : weapon->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
+    observer->Notify(&BuildBaseline3(weapon));
+    observer->Notify(&BuildBaseline6(weapon));
         
     SendEndBaselines(weapon, observer);
 }

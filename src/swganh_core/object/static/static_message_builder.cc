@@ -15,8 +15,8 @@ void StaticMessageBuilder::RegisterEventHandlers()
 
 void StaticMessageBuilder::SendBaselines(const std::shared_ptr<Static>& static_object, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	static_object->AddBaselineToCache(&BuildBaseline3(static_object));
-    static_object->AddBaselineToCache(&BuildBaseline6(static_object));
+	observer->Notify(&BuildBaseline3(static_object));
+    observer->Notify(&BuildBaseline6(static_object));
 
     for (auto& baseline : static_object->GetBaselines())
     {

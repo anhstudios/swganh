@@ -1,1 +1,0 @@
-profession += '_novice'

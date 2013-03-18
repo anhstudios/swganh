@@ -21,14 +21,9 @@ void HarvesterInstallationMessageBuilder::RegisterEventHandlers()
 
 void HarvesterInstallationMessageBuilder::SendBaselines(const shared_ptr<HarvesterInstallation>& harvester_installation, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    harvester_installation->AddBaselineToCache(&BuildBaseline3(harvester_installation));
-    harvester_installation->AddBaselineToCache(&BuildBaseline6(harvester_installation));
-	harvester_installation->AddBaselineToCache(&BuildBaseline7(harvester_installation));
-
-    for (auto& baseline : harvester_installation->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
+    observer->Notify(&BuildBaseline3(harvester_installation));
+    observer->Notify(&BuildBaseline6(harvester_installation));
+	observer->Notify(&BuildBaseline7(harvester_installation));
         
     SendEndBaselines(harvester_installation, observer);
 }

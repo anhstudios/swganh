@@ -73,14 +73,9 @@ void TangibleMessageBuilder::RegisterEventHandlers()
 }
 void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    tangible->AddBaselineToCache(&BuildBaseline3(tangible));
-    tangible->AddBaselineToCache(&BuildBaseline6(tangible));
-    tangible->AddBaselineToCache(&BuildBaseline7(tangible));
-
-    for (auto& baseline : tangible->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
+    observer->Notify(&BuildBaseline3(tangible));
+    observer->Notify(&BuildBaseline6(tangible));
+    observer->Notify(&BuildBaseline7(tangible));
         
     SendEndBaselines(tangible, observer);
 }

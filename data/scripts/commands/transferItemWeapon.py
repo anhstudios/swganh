@@ -1,6 +1,7 @@
 import re
 import swgpy
 from swgpy.command import BaseSwgCommand
+from swgpy.utility import *
 
 class TransferItemWeapon(BaseSwgCommand):
     def run(self):
