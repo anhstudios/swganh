@@ -482,7 +482,7 @@ public:
 	/**
 	 * @brief sends the update containment message for the given observer of this object
 	 */
-	virtual void SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer);
+	virtual void SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent=true);
 	/**
 	 * @brief sends the destroy message for the given observer of this object
 	 */
