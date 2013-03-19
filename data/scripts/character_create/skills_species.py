@@ -1,71 +1,100 @@
 
 baseSpeciesSkills = {
 
-'human'      : 'social_language',
-'human'      : 'social_language_basic',
-'human'      : 'social_language_basic_speak',
-'human'      : 'species_human',
-'rodian'     : 'social_language',
-'rodian'     : 'social_language_basic',
-'rodian'     : 'social_language_basic_speak',
-'rodian'     : 'social_language_rodian',
-'rodian'     : 'social_language_rodian_speak',
-'rodian'     : 'social_language_rodian_comprehend',
-'rodian'     : 'species_rodian',
-'trandoshan' : 'social_language',
-'trandoshan' : 'social_language_basic',
-'trandoshan' : 'social_language_basic_speak',
-'trandoshan' : 'social_language_trandoshan',
-'trandoshan' : 'social_language_trandoshan_speak',
-'trandoshan' : 'social_language_trandoshan_comprehend',
-'trandoshan' : 'species_trandoshan',
-'moncal'     : 'social_language',
-'moncal'     : 'social_language_basic',
-'moncal'     : 'social_language_basic_speak',
-'moncal'     : 'social_language_moncalamari',
-'moncal'     : 'social_language_moncalamari_speak',
-'moncal'     : 'social_language_moncalamari_comprehend',
-'moncal'     : 'species_moncal',
-'wookiee'    : 'social_language',
-'wookiee'    : 'social_language_basic',
-'wookiee'    : 'social_language_basic_speak',
-'wookiee'    : 'social_language_wookiee',
-'wookiee'    : 'social_language_wookiee_speak',
-'wookiee'    : 'social_language_wookiee_comprehend',
-'wookiee'    : 'species_wookiee',
-'bothan'     : 'social_language',
-'bothan'     : 'social_language_basic',
-'bothan'     : 'social_language_basic_speak',
-'bothan'     : 'social_language_bothan',
-'bothan'     : 'social_language_bothan_speak',
-'bothan'     : 'social_language_bothan_comprehend',
-'bothan'     : 'species_bothan',
-'twilek'     : 'social_language',
-'twilek'     : 'social_language_basic',
-'twilek'     : 'social_language_basic_speak',
-'twilek'     : 'social_language_twilek',
-'twilek'     : 'social_language_twilek_speak',
-'twilek'     : 'social_language_twilek_comprehend',
-'twilek'     : 'species_twilek',
-'zabrak'     : 'social_language',
-'zabrak'     : 'social_language_basic',
-'zabrak'     : 'social_language_basic_speak',
-'zabrak'     : 'social_language_zabrak',
-'zabrak'     : 'social_language_zabrak_speak',
-'zabrak'     : 'social_language_zabrak_comprehend',
-'zabrak'     : 'species_zabrak',
-'ithorian'   : 'social_language',
-'ithorian'   : 'social_language_basic',
-'ithorian'   : 'social_language_basic_speak',
-'ithorian'   : 'social_language_ithorian',
-'ithorian'   : 'social_language_ithorian_speak',
-'ithorian'   : 'social_language_ithorian_comprehend',
-'ithorian'   : 'species_ithorian',
-'sullustan'  : 'social_language',
-'sullustan'  : 'social_language_basic',
-'sullustan'  : 'social_language_basic_speak',
-'sullustan'  : 'social_language_sullustan',
-'sullustan'  : 'social_language_sullustan_speak',
-'sullustan'  : 'social_language_sullustan_comprehend',
-'sullustan'  : 'species_sullustan',
+	'human'      : (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'species_human'
+					),
+
+	'rodian'     : (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_rodian',
+						'social_language_rodian_speak',
+						'social_language_rodian_comprehend',
+						'species_rodian'
+					),
+
+	'trandoshan' : (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_trandoshan',
+						'social_language_trandoshan_speak',
+						'social_language_trandoshan_comprehend',
+						'species_trandoshan'
+					),
+
+	'moncal'     : (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_moncalamari',
+						'social_language_moncalamari_speak',
+						'social_language_moncalamari_comprehend',
+						'species_moncal'
+					),
+
+	'wookiee'    :  (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_wookiee',
+						'social_language_wookiee_speak',
+						'social_language_wookiee_comprehend',
+						'species_wookiee'
+					),
+
+	'bothan'     :  (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_bothan',
+						'social_language_bothan_speak',
+						'social_language_bothan_comprehend',
+						'species_bothan'
+					),
+
+	'twilek'     : (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_twilek',
+						'social_language_twilek_speak',
+						'social_language_twilek_comprehend',
+						'species_twilek'
+					),
+
+	'zabrak'     : (
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_zabrak',
+						'social_language_zabrak_speak',
+						'social_language_zabrak_comprehend',
+						'species_zabrak',
+					),
+
+	'ithorian'   : (	
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_ithorian',
+						'social_language_ithorian_speak',
+						'social_language_ithorian_comprehend',
+						'species_ithorian'
+					),
+
+	'sullustan'  : (	
+						'social_language',
+						'social_language_basic',
+						'social_language_basic_speak',
+						'social_language_sullustan',
+						'social_language_sullustan_speak',
+						'social_language_sullustan_comprehend',
+						'species_sullustan'
+					)
 }          

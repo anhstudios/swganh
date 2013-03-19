@@ -67,6 +67,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	
 	simulation.addObjectToScene(creature, startLoc.name)
 	return creature
+	
 def GetSpecies(base_model):
 	match = re.search('player/(.*)_', base_model)
 	return match.group(1)
