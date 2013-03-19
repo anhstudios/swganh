@@ -568,20 +568,10 @@ void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message)
     });
 }
 
-bool Object::IsDirty()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return !deltas_.empty();
-}
 void Object::ClearBaselines()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     baselines_.clear();
-}
-void Object::ClearDeltas()
-{
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-    deltas_.clear();
 }
 
 BaselinesCacheContainer Object::GetBaselines()
@@ -590,18 +580,9 @@ BaselinesCacheContainer Object::GetBaselines()
     return baselines_;
 }
 
-DeltasCacheContainer Object::GetDeltas(uint64_t viewer_id)
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return deltas_;
-}
-
 void Object::AddDeltasUpdate(DeltasMessage* message)
 {
     NotifyObservers(message);
-
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    deltas_.push_back(*message);
 }
 void Object::AddBaselineToCache(swganh::messages::BaselinesMessage* baseline)
 {
