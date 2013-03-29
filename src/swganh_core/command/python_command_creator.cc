@@ -60,11 +60,18 @@ std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
 		}
 #endif
         
-        auto new_instance = command_module_.attr(class_name_.c_str())(bp::ptr(kernel), boost::ref(properties));
+        // Create an instance of the python class and store it in a shared pointer
+        // so it's deletion can be properly wrapped in a GIL lock
+        std::shared_ptr<bp::object> new_instance = std::shared_ptr<bp::object>(
+            new bp::object(command_module_.attr(class_name_.c_str())(bp::ptr(kernel), boost::ref(properties))),
+            [] (bp::object* obj) { ScopedGilLock lock; delete obj; });
 
-        if (!new_instance.is_none())
+        if (!new_instance->is_none())
         {
-            CommandInterface* obj_pointer = bp::extract<CommandInterface*>(new_instance);
+            // Extract the C++ base pointer from the python object and store both in a shared pointer
+            // to ensure there are no lifetime issues (if the bp::object goes out of scope the interface
+            // pointer is invalidated)
+            CommandInterface* obj_pointer = bp::extract<CommandInterface*>(*new_instance);
             command.reset(obj_pointer, [new_instance] (CommandInterface*) {});
 			command->SetCommandProperties(properties);
         }
