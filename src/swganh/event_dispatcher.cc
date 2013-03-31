@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "event_dispatcher.h"
+#include "logger.h"
 
 #include <algorithm>
 
@@ -105,7 +106,14 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
             end(event_type_iter->second), 
             [&dispatch_event] (const EventHandlerList::value_type& handler) 
         {
-            handler.second(dispatch_event);
+            try
+            {
+                handler.second(dispatch_event);
+            }
+            catch(...)
+            {
+            	DLOG(warning) << "A handler callback caused an exception.";
+            }
         });
     }
 }
