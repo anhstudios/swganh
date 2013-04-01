@@ -85,10 +85,7 @@ void BadgeService::Startup()
 	LoadBadgeRegions_();
 	
 	// Subscribe to requestbadges CommandQueueEnqueue.
-	command_service_->AddCommandCreator("requestbadges", [] ()
-	{
-		return std::make_shared<RequestBadgesCommand>();
-	});
+	command_service_->AddCommandCreator<RequestBadgesCommand>("requestbadges");
 }
 
 swganh::service::ServiceDescription BadgeService::GetServiceDescription()

@@ -164,11 +164,7 @@ void ChatService::Startup()
 
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
-    command_service_->AddCommandCreator("spatialchatinternal",
-        [] ()
-    {
-        return std::make_shared<SpatialChatInternalCommand>();
-    });
+    command_service_->AddCommandCreator<SpatialChatInternalCommand>("spatialchatinternal");
 
     
 	kernel_->GetEventDispatcher()->Subscribe(

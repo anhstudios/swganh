@@ -12,7 +12,7 @@
 
 namespace swganh {
 namespace command {
-	class CommandService;
+	class CommandServiceInterface;
 } // namespace swganh::command
 
 namespace connection {
@@ -20,7 +20,7 @@ namespace connection {
 } // namespace swganh::connection 
 
 namespace simulation {
-	class SimulationService;
+	class SimulationServiceInterface;
 } // namespace swganh::simulation
 
 namespace messages {
@@ -28,7 +28,7 @@ namespace messages {
 } // namespace swganh::messages
 
 namespace equipment {
-	class EquipmentService;
+	class EquipmentServiceInterface;
 }
 
 namespace travel {
@@ -86,8 +86,8 @@ namespace travel {
 		std::vector<PlanetaryTravelRoute> planetary_travel_routes_;
 
 		swganh::app::SwganhKernel* kernel_;
-		swganh::simulation::SimulationService* simulation_;
-		swganh::command::CommandService* command_;
-		swganh::equipment::EquipmentService* equipment_;
+		swganh::simulation::SimulationServiceInterface* simulation_;
+		swganh::command::CommandServiceInterface* command_;
+		swganh::equipment::EquipmentServiceInterface* equipment_;
 	};
 }} // namespace swganh::travel

@@ -49,9 +49,9 @@ TravelService::~TravelService(void)
 
 void TravelService::Startup()
 {
-	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-	command_ = kernel_->GetServiceManager()->GetService<CommandService>("CommandService");
-	equipment_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
+	simulation_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	command_ = kernel_->GetServiceManager()->GetService<CommandServiceInterface>("CommandService");
+	equipment_ = kernel_->GetServiceManager()->GetService<EquipmentServiceInterface>("EquipmentService");
 
 	kernel_->GetDatabaseManager()->ExecuteAsync(&TravelService::LoadStaticTravelPoints, this, "swganh_static").get();
 	kernel_->GetDatabaseManager()->ExecuteAsync(&TravelService::LoadPlanetaryRouteMap, this, "swganh_static").get();
@@ -60,10 +60,7 @@ void TravelService::Startup()
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 	connection_service->RegisterMessageHandler(&TravelService::HandlePlanetTravelPointListRequest, this);
 
-	command_->AddCommandCreator("purchaseticket", [] ()
-	{
-		return std::make_shared<PurchaseTicketCommand>();
-	});
+	command_->AddCommandCreator<PurchaseTicketCommand>("purchaseticket");
 }
 
 swganh::service::ServiceDescription TravelService::GetServiceDescription()

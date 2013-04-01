@@ -45,7 +45,7 @@ namespace command {
     {
     public:
         virtual ~CommandServiceInterface() {}
-
+        
         /**
          * Adds a filter to use while validating a command prior to enqueuing.
          */
@@ -56,6 +56,12 @@ namespace command {
          */
         virtual void AddCommandProcessFilter(CommandFilter&& filter) = 0;
         
+        template<typename T>
+        void AddCommandCreator(swganh::HashString command)
+        {
+            AddCommandCreator(command, [] () { return std::make_shared<T>(); });
+        }
+
         /**
          * Adds a creator for a given command type. Only the most recently added creator for
          * a type is used.
