@@ -27,9 +27,7 @@ namespace command {
     struct CommandProperties;
 
     typedef std::function<
-        std::shared_ptr<CommandInterface> (
-            swganh::app::SwganhKernel* kernel,
-            const CommandProperties& properties)
+        std::shared_ptr<CommandInterface> ()
     > CommandCreator;
 
     /**

@@ -31,9 +31,7 @@ namespace command {
     public:
         PythonCommandCreator(std::string module_name, std::string class_name);
 
-        std::shared_ptr<CommandInterface> operator() (
-            swganh::app::SwganhKernel* kernel,
-            const CommandProperties& properties);
+        std::shared_ptr<CommandInterface> operator() ();
 
     private:
         std::string module_name_;

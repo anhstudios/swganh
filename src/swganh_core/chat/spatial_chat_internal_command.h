@@ -21,7 +21,7 @@ namespace chat {
 		/**
 			Creates a new instance
 		*/
-        SpatialChatInternalCommand(
+        virtual void Initialize(
             swganh::app::SwganhKernel* kernel,
             const swganh::command::CommandProperties& properties);
 

@@ -53,7 +53,8 @@ std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(swganh::HashStri
     if (creators_iter != command_creators_.end())
     {
         auto& creator = creators_iter->second;
-        new_command = creator.creator_func(kernel_, creator.properties);
+        new_command = creator.creator_func();
+        new_command->Initialize(kernel_, creator.properties);
     }
 
     return new_command;

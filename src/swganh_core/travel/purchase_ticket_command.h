@@ -14,9 +14,6 @@ namespace travel {
 	class PurchaseTicketCommand : public swganh::command::BaseSwgCommand
 	{
 	public:
-		PurchaseTicketCommand(swganh::app::SwganhKernel* kernel,
-			const swganh::command::CommandProperties& properties);
-
 		virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
 
 	private:

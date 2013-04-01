@@ -85,9 +85,9 @@ void BadgeService::Startup()
 	LoadBadgeRegions_();
 	
 	// Subscribe to requestbadges CommandQueueEnqueue.
-	command_service_->AddCommandCreator("requestbadges", [] (swganh::app::SwganhKernel* kernel, const CommandProperties& properties)
+	command_service_->AddCommandCreator("requestbadges", [] ()
 	{
-		return std::make_shared<RequestBadgesCommand>(kernel, properties);
+		return std::make_shared<RequestBadgesCommand>();
 	});
 }
 

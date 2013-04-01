@@ -37,9 +37,7 @@ PythonCommandCreator::PythonCommandCreator(std::string module_name, std::string 
 	}
 }
 
-std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
-    swganh::app::SwganhKernel* kernel,
-    const CommandProperties& properties)
+std::shared_ptr<CommandInterface> PythonCommandCreator::operator() ()
 {
     std::shared_ptr<CommandInterface> command = nullptr;
     
@@ -63,7 +61,7 @@ std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
         // Create an instance of the python class and store it in a shared pointer
         // so it's deletion can be properly wrapped in a GIL lock
         std::shared_ptr<bp::object> new_instance = std::shared_ptr<bp::object>(
-            new bp::object(command_module_.attr(class_name_.c_str())(bp::ptr(kernel), boost::ref(properties))),
+            new bp::object(command_module_.attr(class_name_.c_str())()),
             [] (bp::object* obj) { ScopedGilLock lock; delete obj; });
 
         if (!new_instance->is_none())
@@ -73,7 +71,6 @@ std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
             // pointer is invalidated)
             CommandInterface* obj_pointer = bp::extract<CommandInterface*>(*new_instance);
             command.reset(obj_pointer, [new_instance] (CommandInterface*) {});
-			command->SetCommandProperties(properties);
         }
     }
     catch (bp::error_already_set&)

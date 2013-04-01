@@ -28,14 +28,9 @@ namespace attributes {
 		* Creates a new instance using the kernel
 		* and the given properties
 		*/
-        GetAttributesBatchCommand(
+        void Initialize(
             swganh::app::SwganhKernel* kernel,
             const swganh::command::CommandProperties& properties);
-
-		/*!
-		* Custom Destructor
-		*/
-        virtual ~GetAttributesBatchCommand();
 
 		/*!
 		* Method that is called when the command is processed.

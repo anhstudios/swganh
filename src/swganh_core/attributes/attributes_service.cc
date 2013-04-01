@@ -64,11 +64,9 @@ void AttributesService::Startup()
 	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
-    command_service->AddCommandCreator("getattributesbatch", [] (
-        swganh::app::SwganhKernel* kernel,
-        const swganh::command::CommandProperties& properties)
+    command_service->AddCommandCreator("getattributesbatch", [] ()
     {
-        return std::make_shared<GetAttributesBatchCommand>(kernel, properties);
+        return std::make_shared<GetAttributesBatchCommand>();
     });	
 
 	LoadAttributeTemplates_();

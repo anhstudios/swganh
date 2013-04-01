@@ -23,11 +23,7 @@ using swganh::scripting::ScopedGilLock;
 
 struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
 {
-    BaseSwgCommandWrapper(
-        PyObject* obj,
-        swganh::app::SwganhKernel* kernel,
-        const CommandProperties& properties)
-        : BaseSwgCommand(kernel, properties)
+    BaseSwgCommandWrapper(PyObject* obj)
     {
         ScopedGilLock lock;
         bp::detail::initialize_wrapper(obj, this);
@@ -47,7 +43,7 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
             }
             else
             {
-                validated = this->BaseSwgCommand::Validate();
+                validated = BaseSwgCommand::Validate();
             }
         }
 		catch (bp::error_already_set&)
@@ -81,26 +77,7 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
 
         return callback;
     }
-	void SetCommandProperties(const CommandProperties& properties)
-	{
-		ScopedGilLock lock;
-        try 
-        {
-            auto setup = this->get_override("setup");
-            if (setup)
-            {
-                setup();
-            }
-            else
-            {
-                this->BaseSwgCommand::SetCommandProperties(properties);
-            }
-        }
-		catch (bp::error_already_set&)
-		{
-			swganh::scripting::logPythonException();
-		}       
-	}
+
 	void PostRun(bool success)
 	{
 		ScopedGilLock lock;
@@ -191,7 +168,7 @@ void swganh::command::ExportCommand()
 	;
 
     bp::class_<BaseSwgCommand, BaseSwgCommandWrapper, bp::bases<CommandInterface>, boost::noncopyable>
-        ("BaseSwgCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
+        ("BaseSwgCommand", bp::init<>())
         .def("validate", &BaseSwgCommandWrapper::Validate)
 		.def("setup", &BaseSwgCommand::SetCommandProperties)
 		.def("postRun", &BaseSwgCommand::PostRun)

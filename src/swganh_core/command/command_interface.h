@@ -8,6 +8,8 @@
 
 #include <boost/optional.hpp>
 
+#include "swganh/app/swganh_kernel.h"
+
 namespace swganh {
 namespace observer {
 	class ObserverInterface;
@@ -56,14 +58,21 @@ namespace command {
     {
     public:
         virtual ~CommandInterface() {}
+        
+        /**
+         * Serves as the constructor for the CommandInterface and is called by the service that
+         * invokes the command creation (ie., CommandService).
+         *
+         * @param kernel Kernel instance holding application data
+         * @param properties Configuration data for this particular command
+         */
+        virtual void Initialize(swganh::app::SwganhKernel* kernel, const CommandProperties& properties) = 0;
 
         /**
          * @return The controller associated with this command invocation.
          */
         virtual const std::shared_ptr<swganh::observer::ObserverInterface> GetController() const = 0;
         
-        virtual void SetCommandProperties(const CommandProperties& properties) = 0;
-
         /**
          * Validates the command.
          *

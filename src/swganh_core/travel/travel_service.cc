@@ -60,9 +60,9 @@ void TravelService::Startup()
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 	connection_service->RegisterMessageHandler(&TravelService::HandlePlanetTravelPointListRequest, this);
 
-	command_->AddCommandCreator("purchaseticket", [=](swganh::app::SwganhKernel* kernel, const CommandProperties& properties)
+	command_->AddCommandCreator("purchaseticket", [] ()
 	{
-		return std::make_shared<PurchaseTicketCommand>(kernel, properties);
+		return std::make_shared<PurchaseTicketCommand>();
 	});
 }
 
