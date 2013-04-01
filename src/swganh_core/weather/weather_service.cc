@@ -188,7 +188,7 @@ void WeatherService::WeatherScript()
 {
 	try
     {
-        script_.SetContext("kernel", boost::python::ptr(kernel_));
+        script_.SetGlobal("kernel", boost::python::ptr(kernel_));
         script_.Run();
     }
     catch (std::exception& e)
