@@ -21,8 +21,31 @@ namespace bp = boost::python;
 PythonScript::PythonScript(const std::string& filename)
         : filename_(filename)
 {
-    ReadFileContents();
-    
+    ReadFileContents_();    
+    PreparePythonEnvironment_();
+}
+
+void PythonScript::Run()
+{
+	ScopedGilLock lock;
+
+	try
+    {
+#ifdef _DEBUG
+        ReadFileContents_();
+#endif
+
+        DLOG(info) << "Executing script: " << filename_;
+        file_object_ = bp::exec(filecontents_.c_str(), globals_, globals_);
+    }
+    catch (bp::error_already_set&)
+    {
+		logPythonException();
+    }
+}
+
+void PythonScript::PreparePythonEnvironment_()
+{
     ScopedGilLock lock;
 
     try
@@ -39,26 +62,7 @@ PythonScript::PythonScript(const std::string& filename)
     }
 }
 
-void PythonScript::Run()
-{
-	ScopedGilLock lock;
-
-	try
-    {
-#ifdef _DEBUG
-        ReadFileContents();
-#endif
-
-        DLOG(info) << "Executing script: " << filename_;
-        file_object_ = bp::exec(filecontents_.c_str(), globals_, globals_);
-    }
-    catch (bp::error_already_set&)
-    {
-		logPythonException();
-    }
-}
-
-void PythonScript::ReadFileContents()
+void PythonScript::ReadFileContents_()
 {
     std::ifstream filestream(filename_);
     filestream >> std::noskipws;

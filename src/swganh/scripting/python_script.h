@@ -132,7 +132,8 @@ namespace scripting {
     private:
         PythonScript();
 
-        void ReadFileContents();
+        void PreparePythonEnvironment_();
+        void ReadFileContents_();
 
         std::string filename_;
         std::string filecontents_;
