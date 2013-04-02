@@ -69,6 +69,7 @@ using swganh::network::soe::ServerInterface;
 using swganh::network::soe::Session;
 using swganh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
+using swganh::command::PythonCommandCreator;
 
 namespace swganh {
 namespace simulation {
@@ -704,15 +705,15 @@ void SimulationService::Startup()
 
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
-    command_service->AddCommandCreator("burstrun", swganh::command::PythonCommandCreator("commands.burstrun", "BurstRunCommand"));
-	command_service->AddCommandCreator("addfriend", swganh::command::PythonCommandCreator("commands.addfriend", "AddFriendCommand"));
-	command_service->AddCommandCreator("removefriend", swganh::command::PythonCommandCreator("commands.removefriend", "RemoveFriendCommand"));
-	command_service->AddCommandCreator("setmoodinternal", swganh::command::PythonCommandCreator("commands.setmoodinternal", "SetMoodInternalCommand"));
-	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferItemMisc", "TransferItem"));
-	command_service->AddCommandCreator("transferitem", swganh::command::PythonCommandCreator("commands.transferItem", "TransferItem"));
-	command_service->AddCommandCreator("transferitemarmor", swganh::command::PythonCommandCreator("commands.transferItemArmor", "TransferItemArmor"));
-	command_service->AddCommandCreator("transferitemweapon", swganh::command::PythonCommandCreator("commands.transferItemWeapon", "TransferItemWeapon"));
-	command_service->AddCommandCreator("tip", swganh::command::PythonCommandCreator("commands.tip", "TipCommand"));
+    command_service->AddCommandCreator("burstrun", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/burstrun.py", "BurstRunCommand"));
+	command_service->AddCommandCreator("addfriend", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/addfriend.py", "AddFriendCommand"));
+	command_service->AddCommandCreator("removefriend", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/removefriend.py", "RemoveFriendCommand"));
+	command_service->AddCommandCreator("setmoodinternal", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/setmoodinternal.py", "SetMoodInternalCommand"));
+	command_service->AddCommandCreator("transferitemmisc", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/transferItemMisc.py", "TransferItem"));
+	command_service->AddCommandCreator("transferitem", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/transferItem.py", "TransferItem"));
+	command_service->AddCommandCreator("transferitemarmor", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/transferItemArmor.py", "TransferItemArmor"));
+	command_service->AddCommandCreator("transferitemweapon", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/transferItemWeapon.py", "TransferItemWeapon"));
+	command_service->AddCommandCreator("tip", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/tip.py", "TipCommand"));
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 
