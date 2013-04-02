@@ -72,7 +72,9 @@ namespace scripting {
          * @param A shared pointer to the python object for the requested value.
          */
         std::shared_ptr<boost::python::object> GetGlobal(const std::string& name)
-        {            
+        {
+            Run();
+
             std::shared_ptr<boost::python::object> instance = nullptr;
 
             ScopedGilLock lock;
@@ -105,6 +107,8 @@ namespace scripting {
         template<typename T>
         std::shared_ptr<T> CreateInstance(const std::string& class_name)
         {
+            Run();
+
             std::shared_ptr<T> cpp_instance = nullptr;
 
             ScopedGilLock lock;
