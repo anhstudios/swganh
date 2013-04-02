@@ -28,11 +28,10 @@ using swganh::scripting::ScopedGilLock;
 namespace swganh {
 namespace attributes {
 
-	struct AttributeTemplateWrap : AttributeTemplateInterface, bp::wrapper<AttributeTemplateInterface>
+	struct AttributeTemplateWrap : BaseAttributeTemplate, bp::wrapper<BaseAttributeTemplate>
 	{
-		AttributeTemplateWrap(PyObject* obj, swganh::app::SwganhKernel* kernel)
-			: AttributeTemplateInterface(kernel)
-			, self_(bp::handle<>(bp::borrowed(obj)))
+		AttributeTemplateWrap(PyObject* obj)
+			: self_(bp::handle<>(bp::borrowed(obj)))
 		{
 			ScopedGilLock lock;
 			bp::detail::initialize_wrapper(obj, this);
@@ -57,7 +56,7 @@ namespace attributes {
 
 	void exportAttributes()
 	{
-		bp::class_<AttributeTemplateInterface, AttributeTemplateWrap, boost::noncopyable>("BaseAttributeTemplate", bp::init<swganh::app::SwganhKernel*>())
+		bp::class_<BaseAttributeTemplate, AttributeTemplateWrap, boost::noncopyable>("BaseAttributeTemplate", bp::init<>())
 			.def("buildAttributeTemplate", &AttributeTemplateWrap::BuildAttributeTemplate)
 			.def("getKernel", &AttributeTemplateWrap::GetKernel, bp::return_internal_reference<>())
 		;

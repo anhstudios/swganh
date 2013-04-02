@@ -21,12 +21,11 @@
 
 #include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/command/command_service_interface.h"
-#include "swganh_core/attributes/python_attributes_creator.h"
 
 #include "swganh_core/connection/connection_client.h"
 #include "swganh_core/messages/attribute_list_message.h"
 
-#include "swganh/scripting/python_script_creator.h"
+#include "swganh/scripting/python_script.h"
 
 
 namespace bp = boost::python;
@@ -139,12 +138,10 @@ void AttributesService::SendAttributesMessage(const std::shared_ptr<swganh::obje
 }
 void AttributesService::LoadAttributeTemplates_()
 {
-	ScopedGilLock lock;
-	auto module_filename = "attributes.AttributeTemplateInit";
-	auto module = bp::import(module_filename);
-	auto filename = "attributeTemplates";
-	auto new_instance = module.attr(filename);
-	python_attribute_templates_ = bp::extract<std::vector<std::string>>(new_instance);		
+    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/attributes/AttributeTemplateInit.py");
+
+    python_attribute_templates_ = script.GetGlobalAs<std::vector<std::string>>("attributeTemplates");
+
 	// If Not debug load these up here and not again
 #ifndef _DEBUG
 	int template_id = 0;
@@ -156,7 +153,10 @@ void AttributesService::LoadAttributeTemplates_()
 }
 std::shared_ptr<AttributeTemplateInterface> AttributesService::GetPythonAttributeTemplate(std::string filename)
 {
-	auto creator = std::make_shared<PythonAttributesCreator>("attributes." + filename, filename);
-	std::shared_ptr<AttributeTemplateInterface> attribute_template_creator = (*creator)(kernel_);
+    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/attributes/" + filename + ".py");
+
+    auto attribute_template_creator = script.CreateInstance<AttributeTemplateInterface>(filename);
+    attribute_template_creator->SetKernel(kernel_);
+
 	return attribute_template_creator;
 }
