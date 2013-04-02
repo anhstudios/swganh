@@ -75,10 +75,7 @@ public:
     void Stop();
 
 private:
-    typedef std::map<std::string, std::pair<
-        std::shared_ptr<ServiceDescription>, 
-        std::shared_ptr<ServiceInterface>>
-    > ServiceMap;
+    typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
     ServiceMap services_;
 
     ServiceDirectoryInterface* service_directory_;

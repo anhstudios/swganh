@@ -14,6 +14,12 @@ public:
 
     virtual ServiceDescription GetServiceDescription() = 0;
 
+    /**
+     * @brief Initializes all internal state. Only requests for other
+     * services and internal plugin implentations should go here.
+     */
+    virtual void Initialize() {}
+
     /*
     * @brief Starts up the service, sets running_ to true
     */
