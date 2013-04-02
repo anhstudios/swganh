@@ -38,6 +38,8 @@ namespace command {
     public:
         virtual ~CommandFactoryInterface() {}
 
+        virtual void Initialize(app::SwganhKernel* kernel) = 0;
+
         /**
          * Adds a creator for a given command type. Only the most recently added creator for
          * a type is used.
@@ -45,7 +47,7 @@ namespace command {
          * @param command The name/crc of the command.
          * @param creator The creator associated with the specified command.
          */
-        virtual void AddCommandCreator(swganh::HashString command, CommandCreator&& creator) = 0;
+        virtual void AddCommandCreator(swganh::HashString command, CommandCreator creator) = 0;
 
         /**
          * Removes the creator for a given command type if one is set.

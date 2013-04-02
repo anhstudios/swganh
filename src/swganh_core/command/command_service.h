@@ -56,7 +56,7 @@ namespace command {
 		* @param command the name of the command
 		* @param creator the object that will create the command.
 		*/
-        void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator);
+        void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator creator);
 
 		/**
 		* Removes a command creator by name
@@ -114,6 +114,8 @@ namespace command {
 		* Tries to find properities for a particular command.
 		*/
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(swganh::HashString command);
+
+        void Initialize();
 
 		/**
 		* Called on startup

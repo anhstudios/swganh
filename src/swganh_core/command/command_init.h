@@ -33,7 +33,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     
     { // Command::CommandFactory
         registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-            return new CommandFactory(kernel);
+            return new CommandFactory();
         };
 
         registration.DestroyObject = [] (void * object) {
@@ -91,18 +91,6 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
             auto command_service = new CommandService(kernel);
             
-            // add filters
-            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
-            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
-            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
-            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
-            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
-            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
-            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
-            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
-            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
-            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
-
             return command_service;
         };
 

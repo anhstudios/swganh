@@ -4,23 +4,20 @@
 #include "command_service.h"
 
 #include "swganh/logger.h"
-
 #include "swganh/event_dispatcher.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh/service/service_manager.h"
-
 #include "swganh/app/swganh_kernel.h"
 
 #include "swganh_core/messages/controllers/command_queue_remove.h"
-
 #include "swganh_core/simulation/simulation_service_interface.h"
-
-#include "swganh_core/command/base_swg_command.h"
-#include "swganh_core/command/command_properties_manager_interface.h"
-#include "swganh_core/command/command_queue_interface.h"
-#include "swganh_core/command/command_queue_manager_interface.h"
-
 #include "swganh_core/object/object.h"
+
+#include "base_swg_command.h"
+#include "command_filter.h"
+#include "command_properties_manager_interface.h"
+#include "command_queue_interface.h"
+#include "command_queue_manager_interface.h"
 
 using swganh::service::ServiceDescription;
 using swganh::command::CommandService;
@@ -41,12 +38,12 @@ using swganh::object::Object;
 using swganh::simulation::SimulationServiceInterface;
 
 CommandService::CommandService(SwganhKernel* kernel)
-: kernel_(kernel)
+    : kernel_(kernel)
 {
-    command_factory_impl_ = kernel->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
-    command_properties_manager_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesManagerInterface>("Command::CommandPropertiesManager");
-    command_queue_manager_impl_ = kernel->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
-    command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
+    command_factory_impl_ = kernel_->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
+    command_properties_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandPropertiesManagerInterface>("Command::CommandPropertiesManager");
+    command_queue_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
+    command_validator_impl_ = kernel_->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
 }
 
 ServiceDescription CommandService::GetServiceDescription()
@@ -73,7 +70,7 @@ void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
     command_validator_impl_->AddCommandProcessFilter(std::move(filter));
 }
 
-void CommandService::AddCommandCreator(swganh::HashString command, CommandCreator&& creator)
+void CommandService::AddCommandCreator(swganh::HashString command, CommandCreator creator)
 {
     command_factory_impl_->AddCommandCreator(command, std::move(creator));
 }
@@ -144,8 +141,25 @@ boost::optional<const CommandProperties&> CommandService::FindPropertiesForComma
     return command_properties_manager_impl_->FindPropertiesForCommand(command);
 }
 
+void CommandService::Initialize()
+{
+    command_factory_impl_->Initialize(kernel_);
+}
+
 void CommandService::Startup()
 {
+    // add default filters
+    AddCommandEnqueueFilter(std::bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
+    AddCommandEnqueueFilter(std::bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
+    AddCommandEnqueueFilter(std::bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
+    AddCommandEnqueueFilter(std::bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
+    AddCommandEnqueueFilter(std::bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
+    AddCommandProcessFilter(std::bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
+    AddCommandProcessFilter(std::bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
+    AddCommandProcessFilter(std::bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
+    AddCommandProcessFilter(std::bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
+    AddCommandProcessFilter(std::bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
+
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");

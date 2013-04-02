@@ -69,7 +69,7 @@ namespace command {
          * @param command The name/crc of the command.
          * @param creator The creator associated with the specified command.
          */
-        virtual void AddCommandCreator(swganh::HashString command, CommandCreator&& creator) = 0;
+        virtual void AddCommandCreator(swganh::HashString command, CommandCreator creator) = 0;
         
         /**
          * Removes the creator for a given command type if one is set.
