@@ -50,11 +50,11 @@ void PythonScript::PreparePythonEnvironment_()
 
     try
     {
-        bp::object main = bp::object(bp::handle<>(bp::borrowed(
+        main_ = bp::object(bp::handle<>(bp::borrowed(
             PyImport_AddModule("__main__")
         )));
 
-        globals_ = main.attr("__dict__");
+        globals_ = main_.attr("__dict__");
     }
     catch (bp::error_already_set&)
     {

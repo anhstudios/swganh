@@ -115,8 +115,11 @@ namespace scripting {
             
 	        try
             {
+                auto creator = globals_[class_name.c_str()];
+                auto instance = creator();
+
                 std::shared_ptr<boost::python::object> py_instance = std::shared_ptr<boost::python::object>(
-                    new boost::python::object(file_object_.attr(class_name.c_str())()),
+                    new boost::python::object(instance),
                     [] (boost::python::object* obj) { ScopedGilLock lock; delete obj; });
 
                 if(!py_instance->is_none())
@@ -136,6 +139,9 @@ namespace scripting {
     private:
         PythonScript();
 
+        void DumpEnvironment()
+        {}
+
         void PreparePythonEnvironment_();
         void ReadFileContents_();
 
@@ -143,6 +149,7 @@ namespace scripting {
         std::string filecontents_;
         boost::python::object file_object_;
         boost::python::object globals_;
+        boost::python::object main_;
     };
 
 }}  // namespace swganh::scripting
