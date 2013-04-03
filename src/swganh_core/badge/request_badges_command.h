@@ -23,6 +23,8 @@ namespace badge {
     {
     public:
 
+        virtual std::string GetCommandName() { return "requestbadges"; }
+
 		/**
 			Creates a new instance
 		*/

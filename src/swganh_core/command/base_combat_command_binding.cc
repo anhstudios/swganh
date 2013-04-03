@@ -31,6 +31,29 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
         ScopedGilLock lock;
         bp::detail::initialize_wrapper(obj, this);
     }
+    
+
+    std::string GetCommandName()
+    {
+        std::string command;
+        
+        ScopedGilLock lock;
+        try 
+        {
+            auto overrider = this->get_override("getCommandName");
+            if (overrider)
+            {
+                bp::object name = overrider();
+                command = bp::extract<std::string>(name);
+            }
+        }
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
+
+        return command;
+    }
 
     boost::optional<std::shared_ptr<CommandCallback>> Run()
     {

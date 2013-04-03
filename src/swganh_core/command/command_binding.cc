@@ -24,9 +24,27 @@ using swganh::scripting::ScopedGilLock;
 struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
 {
     BaseSwgCommandWrapper(PyObject* obj)
+        : self_(obj)
     {
         ScopedGilLock lock;
         bp::detail::initialize_wrapper(obj, this);
+    }
+
+    std::string GetCommandName()
+    {
+        std::string command;
+        
+        ScopedGilLock lock;
+        try 
+        {
+            command = bp::call_method<std::string>(self_, "getCommandName");
+        }
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
+
+        return command;
     }
 
     bool Validate()
@@ -98,6 +116,9 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
 			swganh::scripting::logPythonException();
 		}      
 	}
+
+private:
+    PyObject* self_;
 };
 
 class CommandCallbackWrapper : public CommandCallback, bp::wrapper<CommandCallback>
@@ -150,6 +171,7 @@ void swganh::command::ExportCommand()
         .def("validate", bp::pure_virtual(&CommandInterface::Validate))
         .def("run", bp::pure_virtual(&CommandInterface::Run))
 		.def("postRun", bp::pure_virtual(&CommandInterface::PostRun))
+        .def("getCommandName", bp::pure_virtual(&CommandInterface::GetCommandName))
     ;
     
 	bp::class_<CommandProperties>("CommandProperties", bp::no_init)
@@ -169,6 +191,7 @@ void swganh::command::ExportCommand()
 
     bp::class_<BaseSwgCommand, BaseSwgCommandWrapper, bp::bases<CommandInterface>, boost::noncopyable>
         ("BaseSwgCommand")
+        .def("getCommandName", &BaseSwgCommandWrapper::GetCommandName)
         .def("validate", &BaseSwgCommandWrapper::Validate)
 		.def("setup", &BaseSwgCommand::SetCommandProperties)
 		.def("postRun", &BaseSwgCommand::PostRun)

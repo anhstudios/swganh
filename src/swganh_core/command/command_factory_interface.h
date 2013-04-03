@@ -40,6 +40,8 @@ namespace command {
 
         virtual void Initialize(swganh::app::SwganhKernel* kernel) = 0;
 
+        virtual bool IsRegistered(swganh::HashString command) = 0;
+
         /**
          * Adds a creator for a given command type. Only the most recently added creator for
          * a type is used.

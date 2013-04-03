@@ -3,12 +3,15 @@
 
 #include "command_service.h"
 
+#include <boost/filesystem.hpp>
+
 #include "swganh/logger.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh/service/service_manager.h"
 #include "swganh/app/swganh_kernel.h"
-
+#include "swganh/scripting/python_script.h"
+#include "swganh/scripting/python_instance_creator.h"
 #include "swganh_core/messages/controllers/command_queue_remove.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/object/object.h"
@@ -19,6 +22,11 @@
 #include "command_queue_interface.h"
 #include "command_queue_manager_interface.h"
 
+namespace bf = boost::filesystem;
+
+using swganh::scripting::ScopedGilLock;
+using swganh::scripting::PythonScript;
+using swganh::scripting::PythonInstanceCreator;
 using swganh::service::ServiceDescription;
 using swganh::command::CommandService;
 using swganh::app::SwganhKernel;
@@ -168,6 +176,8 @@ void CommandService::Startup()
 
     SubscribeObjectReadyEvent(event_dispatcher);
     SubscribeObjectRemovedEvent(event_dispatcher);
+
+    LoadPythonCommands();
 }
 
 void CommandService::SendCommandQueueRemove(
@@ -212,4 +222,65 @@ void CommandService::SubscribeObjectRemovedEvent(swganh::EventDispatcher* dispat
         const auto& object = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
         command_queue_manager_impl_->RemoveQueue(object->GetObjectId());
     });
+}
+
+void CommandService::LoadPythonCommands()
+{
+    bf::path p(kernel_->GetAppConfig().script_directory + "/commands");
+
+    try 
+    {
+        if (bf::exists(p) && bf::is_directory(p))
+        {
+            std::for_each(bf::directory_iterator(p), bf::directory_iterator(),
+                [this] (const bf::directory_entry& entry)
+            {
+                std::string script_path = entry.path().string();
+                std::string extension = bf::extension(entry.path());
+
+                if (extension.compare(".py") == 0)
+                {
+                    LoadPythonCommands(script_path);
+                }
+            });
+        }
+    }
+    catch (const bf::filesystem_error& ex)
+    {
+        LOG(error) << ex.what();
+    }
+}
+
+void CommandService::LoadPythonCommands(const std::string& command_script)
+{
+    PythonScript script(command_script);
+
+    auto globals = script.GetGlobals();
+        
+    ScopedGilLock lock;
+    try {
+        auto keys = globals.keys();
+
+        auto length = boost::python::len(keys);
+        for (int i = 0; i < length; ++i)
+        {
+            std::string key = boost::python::extract<std::string>(keys[i]);
+
+            if (key.find("Command") != std::string::npos && key.find("Base") == std::string::npos 
+                && commands_loaded_.find(key) == commands_loaded_.end())
+            {
+                auto creator = PythonInstanceCreator<CommandInterface>(command_script, key);
+                auto command = creator();
+
+                commands_loaded_.insert(key);
+
+                AddCommandCreator(command->GetCommandName(), creator);
+            }
+        }
+    }
+    catch (boost::python::error_already_set&)
+    {
+        ScopedGilLock lock;
+		swganh::scripting::logPythonException();
+    }
 }

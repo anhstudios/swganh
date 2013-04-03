@@ -23,6 +23,11 @@ void CommandFactory::Initialize(SwganhKernel* kernel)
     command_service_ = kernel_->GetServiceManager()->GetService<CommandServiceInterface>("CommandService");
 }
 
+bool CommandFactory::IsRegistered(swganh::HashString command)
+{
+    return command_creators_.find(command) != command_creators_.end();
+}
+
 void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator creator)
 {    
     auto properties = command_service_->FindPropertiesForCommand(command);

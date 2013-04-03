@@ -92,19 +92,6 @@ void CombatService::Initialize()
 
 void CombatService::Startup()
 {
-    command_service_->AddCommandCreator("attack", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/attack.py", "AttackCommand"));
-    command_service_->AddCommandCreator("deathblow", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/deathblow.py", "DeathBlowCommand")); 
-    command_service_->AddCommandCreator("defaultattack", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/defaultattack.py", "DefaultAttackCommand"));
-    command_service_->AddCommandCreator("duel", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/duel.py", "DuelCommand"));
-    command_service_->AddCommandCreator("endduel", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/endduel.py", "EndDuelCommand"));
-    command_service_->AddCommandCreator("kneel", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/kneel.py", "KneelCommand"));
-    command_service_->AddCommandCreator("berserk1", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/berserk1.py", "Berserk1Command"));
-    command_service_->AddCommandCreator("overchargeshot1", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/overchargeshot1.py", "OverchargeShot1Command"));
-    command_service_->AddCommandCreator("peace", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/peace.py", "PeaceCommand"));
-    command_service_->AddCommandCreator("prone", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/prone.py", "ProneCommand"));
-    command_service_->AddCommandCreator("sitserver", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/sitserver.py", "SitServerCommand"));
-    command_service_->AddCommandCreator("stand", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/stand.py", "StandCommand"));
-
 	buff_manager_.Start();
 }
 

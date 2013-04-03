@@ -152,6 +152,9 @@ namespace command {
 
         void SubscribeObjectRemovedEvent(swganh::EventDispatcher* dispatcher);
                         
+        void LoadPythonCommands();
+        void LoadPythonCommands(const std::string& command_script);
+
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<swganh::command::CommandFactoryInterface> command_factory_impl_;
         std::shared_ptr<swganh::command::CommandPropertiesManagerInterface> command_properties_manager_impl_;
@@ -161,6 +164,7 @@ namespace command {
         std::string script_prefix_;
         swganh::CallbackId obj_ready_id_;
         swganh::CallbackId obj_removed_id_;
+        std::set<std::string> commands_loaded_;
     };
 
 }}  // namespace swganh::command

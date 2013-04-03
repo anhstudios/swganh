@@ -34,6 +34,8 @@ namespace command {
 
         virtual void Initialize(swganh::app::SwganhKernel* kernel);
 
+        virtual bool IsRegistered(swganh::HashString command);
+
 		/**
 		* Associates a particular command name with a creator
 		* @param command the name

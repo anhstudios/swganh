@@ -700,18 +700,6 @@ void SimulationService::Startup()
             StartScene(scene);
         }
 	});
-
-	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
-
-    command_service->AddCommandCreator("burstrun", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/burstrun.py", "BurstRunCommand"));
-	command_service->AddCommandCreator("addfriend", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/addfriend.py", "AddFriendCommand"));
-	command_service->AddCommandCreator("removefriend", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/removefriend.py", "RemoveFriendCommand"));
-	command_service->AddCommandCreator("setmoodinternal", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/setmoodinternal.py", "SetMoodInternalCommand"));
-	command_service->AddCommandCreator("transferitemmisc", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/transferItemMisc.py", "TransferItem"));
-	command_service->AddCommandCreator("transferitem", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/transferItem.py", "TransferItem"));
-	command_service->AddCommandCreator("transferitemarmor", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/transferItemArmor.py", "TransferItemArmor"));
-	command_service->AddCommandCreator("transferitemweapon", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/transferItemWeapon.py", "TransferItemWeapon"));
-	command_service->AddCommandCreator("tip", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/tip.py", "TipCommand"));
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 

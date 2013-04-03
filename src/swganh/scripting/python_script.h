@@ -71,25 +71,9 @@ namespace scripting {
          * @param name The name of the variable to grab from the global namespace.
          * @param A shared pointer to the python object for the requested value.
          */
-        std::shared_ptr<boost::python::object> GetGlobal(const std::string& name)
-        {
-            std::shared_ptr<boost::python::object> instance = nullptr;
+        std::shared_ptr<boost::python::object> GetGlobal(const std::string& name);
 
-            ScopedGilLock lock;
-
-	        try
-            {
-                instance = std::shared_ptr<boost::python::object>(
-                    new boost::python::object(globals_[name.c_str()]),
-                    [] (boost::python::object* obj) { ScopedGilLock lock; delete obj; });            
-            } 
-            catch(boost::python::error_already_set&) 
-            {
-                swganh::scripting::logPythonException();
-            }   
-
-            return instance;
-        }
+        boost::python::dict GetGlobals();
 
         /**
          * Creates a python implementation of the given C++ interface.
