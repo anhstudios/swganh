@@ -17,7 +17,7 @@
 #include "swganh/event_dispatcher.h"
 #include "swganh/database/database_manager.h"
 #include "swganh/service/service_manager.h"
-
+#include "swganh/scripting/python_instance_creator.h"
 #include "swganh/app/swganh_kernel.h"
 
 #include "swganh_core/object/creature/creature.h"
@@ -29,7 +29,6 @@
 
 #include "swganh_core/command/command_service_interface.h"
 #include "swganh_core/command/base_swg_command.h"
-#include "swganh_core/command/python_command_creator.h"
 #include "swganh_core/command/command_properties.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
 
@@ -57,7 +56,7 @@ using namespace swganh::combat;
 using namespace swganh::command;
 
 using swganh::app::SwganhKernel;
-using swganh::command::PythonCommandCreator;
+using swganh::scripting::PythonInstanceCreator;
 
 CombatService::CombatService(SwganhKernel* kernel)
 : generator_(1, 100)
@@ -93,18 +92,18 @@ void CombatService::Initialize()
 
 void CombatService::Startup()
 {
-    command_service_->AddCommandCreator("attack", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/attack.py", "AttackCommand"));
-    command_service_->AddCommandCreator("deathblow", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/deathblow.py", "DeathBlowCommand")); 
-    command_service_->AddCommandCreator("defaultattack", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/defaultattack.py", "DefaultAttackCommand"));
-    command_service_->AddCommandCreator("duel", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/duel.py", "DuelCommand"));
-    command_service_->AddCommandCreator("endduel", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/endduel.py", "EndDuelCommand"));
-    command_service_->AddCommandCreator("kneel", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/kneel.py", "KneelCommand"));
-    command_service_->AddCommandCreator("berserk1", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/berserk1.py", "Berserk1Command"));
-    command_service_->AddCommandCreator("overchargeshot1", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/overchargeshot1.py", "OverchargeShot1Command"));
-    command_service_->AddCommandCreator("peace", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/peace.py", "PeaceCommand"));
-    command_service_->AddCommandCreator("prone", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/prone.py", "ProneCommand"));
-    command_service_->AddCommandCreator("sitserver", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/sitserver.py", "SitServerCommand"));
-    command_service_->AddCommandCreator("stand", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/stand.py", "StandCommand"));
+    command_service_->AddCommandCreator("attack", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/attack.py", "AttackCommand"));
+    command_service_->AddCommandCreator("deathblow", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/deathblow.py", "DeathBlowCommand")); 
+    command_service_->AddCommandCreator("defaultattack", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/defaultattack.py", "DefaultAttackCommand"));
+    command_service_->AddCommandCreator("duel", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/duel.py", "DuelCommand"));
+    command_service_->AddCommandCreator("endduel", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/endduel.py", "EndDuelCommand"));
+    command_service_->AddCommandCreator("kneel", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/kneel.py", "KneelCommand"));
+    command_service_->AddCommandCreator("berserk1", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/berserk1.py", "Berserk1Command"));
+    command_service_->AddCommandCreator("overchargeshot1", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/overchargeshot1.py", "OverchargeShot1Command"));
+    command_service_->AddCommandCreator("peace", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/peace.py", "PeaceCommand"));
+    command_service_->AddCommandCreator("prone", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/prone.py", "ProneCommand"));
+    command_service_->AddCommandCreator("sitserver", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/sitserver.py", "SitServerCommand"));
+    command_service_->AddCommandCreator("stand", PythonInstanceCreator<CommandInterface>(kernel_->GetAppConfig().script_directory + "/commands/stand.py", "StandCommand"));
 
 	buff_manager_.Start();
 }
