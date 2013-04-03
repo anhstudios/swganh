@@ -39,7 +39,7 @@ using swganh::simulation::SimulationServiceInterface;
 
 
 WeatherService::WeatherService(SwganhKernel* kernel)
-	: kernel_(kernel), script_(kernel_->GetAppConfig().script_directory + "/weather/weather.py")
+	: kernel_(kernel), script_(kernel_->GetAppConfig().script_directory + "/weather/weather.py", true)
 {
 	player_selected_callback_ = kernel_->GetEventDispatcher()->Subscribe(
 		"ObjectReadyEvent",
