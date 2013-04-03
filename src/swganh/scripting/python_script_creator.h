@@ -25,7 +25,7 @@ namespace scripting {
             {
 
         #ifdef _DEBUG
-                module_ = boost::python::object(bp::handle<>(PyImport_ReloadModule(module_.ptr())));
+                module_ = boost::python::object(boost::python::handle<>(PyImport_ReloadModule(module_.ptr())));
         #endif
                 
                 auto new_instance = module_.attr(class_name_.c_str())();
@@ -36,7 +36,7 @@ namespace scripting {
                     interfaceObj.reset(obj_pointer, [new_instance] (T*) {});
                 }
             }
-			catch (bp::error_already_set&)
+			catch (boost::python::error_already_set&)
 			{
 				swganh::scripting::logPythonException();
 			}
