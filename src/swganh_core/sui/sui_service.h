@@ -32,6 +32,7 @@ namespace object
 {
 	class Object;
 }
+
 namespace simulation
 {
 	class SimulationServiceInterface;
@@ -39,8 +40,14 @@ namespace simulation
 
 namespace sui
 {
+	class RadialInterface;
 	class SUIWindowInterface;
-	class PythonRadialCreator;
+}
+
+namespace scripting
+{
+    template<typename T>
+    class PythonInstanceCreator;
 }
 
 namespace messages
@@ -59,9 +66,6 @@ namespace swganh
 {
 namespace sui
 {
-	
-	class RadialInterface;
-
 	typedef std::multimap<uint64_t,std::shared_ptr<swganh::sui::SUIWindowInterface>> WindowMap;
 	typedef std::pair<WindowMap::iterator, WindowMap::iterator> WindowMapRange;
 
@@ -115,7 +119,7 @@ namespace sui
 		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ObjectMenuRequest* message);
 		void _handlePlayerLogoutEvent();
 
-		std::map<std::string, std::shared_ptr<PythonRadialCreator>> radial_menus_;
+		std::map<std::string, std::shared_ptr<swganh::scripting::PythonInstanceCreator<RadialInterface>>> radial_menus_;
 
 		swganh::app::SwganhKernel* kernel_;
 		std::string script_directory_;

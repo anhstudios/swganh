@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "swganh/observer/observer_interface.h"
+#include "swganh/scripting/python_instance_creator.h"
 
 #include "swganh_core/messages/sui_create_page_message.h"
 #include "swganh_core/messages/sui_event_notification.h"
@@ -44,6 +45,8 @@ using namespace swganh::connection;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::simulation;
+
+using swganh::scripting::PythonInstanceCreator;
 
 SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
@@ -148,10 +151,11 @@ std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::sh
 		std::wstring filenames = target->GetAttribute<std::wstring>("radial_filename");
 
 		radial_filename.insert(radial_filename.end(), filenames.begin(), filenames.end());
+        radial_filename = kernel_->GetAppConfig().script_directory + "/" + radial_filename;
 	}
 	else
 	{
-		radial_filename.insert(0, "radials.default_radial");
+        radial_filename.insert(0, kernel_->GetAppConfig().script_directory + "/radials/default_radial.py");
 	}
 
 	//Find or build the appropriate creator
@@ -159,13 +163,15 @@ std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::sh
 	auto find_itr = radial_menus_.find(radial_filename);
 	if(find_itr == radial_menus_.end())
 	{
-		auto creator = std::make_shared<PythonRadialCreator>(radial_filename, "PyRadialMenu");
-		radial_creator = (*creator)(kernel_);
+		auto creator = std::make_shared<PythonInstanceCreator<RadialInterface>>(radial_filename, "PyRadialMenu");
+		radial_creator = (*creator)();
+        radial_creator->Initialize(kernel_);
 		radial_menus_.insert(std::make_pair(radial_filename, creator));
 	} 
 	else 
 	{
-		radial_creator = (*find_itr->second)(kernel_);
+		radial_creator = (*find_itr->second)();
+        radial_creator->Initialize(kernel_);
 	}
 	return radial_creator;
 }

@@ -12,7 +12,7 @@ def create(kernel):
 	result.stfName("terminal_name","terminal_character_builder")		
 	
 	#### BEGIN MODIFICATIONS ####
-	result.setStringAttribute("radial_filename", "radials.blue_frog")
+	result.setStringAttribute("radial_filename", "radials/blue_frog.py")
 	####  END MODIFICATIONS  ####
 	
 	return result

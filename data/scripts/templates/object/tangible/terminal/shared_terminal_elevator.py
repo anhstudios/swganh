@@ -12,7 +12,7 @@ def create(kernel):
 	result.stfName("terminal_name","terminal_elevator")		
 	
 	#### BEGIN MODIFICATIONS ####
-	result.setStringAttribute("radial_filename", "radials.elevator")
+	result.setStringAttribute("radial_filename", "radials/elevator.py")
 	####  END MODIFICATIONS  ####
 	
 	return result
