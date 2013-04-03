@@ -33,7 +33,8 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     
     { // Command::CommandFactory
         registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-            return new CommandFactory();
+            auto factory = new CommandFactory();
+            return factory;
         };
 
         registration.DestroyObject = [] (void * object) {

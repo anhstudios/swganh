@@ -47,14 +47,14 @@ namespace weather {
         explicit WeatherService(swganh::app::SwganhKernel* kernel);
     
         ~WeatherService();
+        
+        virtual void Initialize();
+		virtual void Startup();
+		virtual void Shutdown();
 
-        swganh::service::ServiceDescription GetServiceDescription();
-		
 		swganh::weather::Weather GetSceneWeather(uint32_t scene_id);
 		void SetSceneWeather(uint32_t scene_id,  std::vector<swganh::weather::WeatherEvent> weather_sequence_);
 		void swganh::weather::WeatherService::RunWeatherSequence();
-		void Startup();
-		void Shutdown();
 
     private:
 		void WeatherService::tickPlanetWeather_();

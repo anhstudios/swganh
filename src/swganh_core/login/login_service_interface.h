@@ -53,7 +53,7 @@ class AccountProviderInterface;
 }
 
 class LoginServiceInterface
-    : public swganh::service::ServiceInterface
+    : public swganh::service::BaseService
     , public swganh::network::BaseSwgServer
 {
 public:
@@ -62,8 +62,8 @@ public:
 	{
 	}
     
-    virtual swganh::service::ServiceDescription GetServiceDescription() = 0;
-    
+    virtual ~LoginServiceInterface() {}
+
     virtual bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session) = 0;
 
     virtual std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;

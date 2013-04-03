@@ -30,7 +30,9 @@ namespace command {
 		*/
         CommandFactory();
 
-        virtual void Initialize(app::SwganhKernel* kernel);
+        ~CommandFactory();
+
+        virtual void Initialize(swganh::app::SwganhKernel* kernel);
 
 		/**
 		* Associates a particular command name with a creator

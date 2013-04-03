@@ -30,7 +30,7 @@ namespace attributes {
 		virtual swganh::app::SwganhKernel* GetKernel() = 0;
     };
 
-    class BaseAttributeTemplate
+    class BaseAttributeTemplate : public AttributeTemplateInterface
     {
     public:
         virtual ~BaseAttributeTemplate() {}

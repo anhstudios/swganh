@@ -36,16 +36,11 @@ namespace chat {
 class ChatService: public swganh::chat::ChatServiceInterface
 {
 public:
-
 	/**
 	* Creates a new instance
 	*/
     explicit ChatService(swganh::app::SwganhKernel* kernel);
-
-	/**
-	* @return the service description for this service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
+    virtual ~ChatService();
 
     bool SendPersistentMessage(
         const std::string& recipient,
@@ -77,9 +72,7 @@ public:
         uint16_t chat_type,
         uint16_t mood);
 
-	/**
-	* Called on startup
-	*/
+	void Initialize();
     void Startup();
 
     uint64_t GetObjectIdByCustomName(const std::string& custom_name);

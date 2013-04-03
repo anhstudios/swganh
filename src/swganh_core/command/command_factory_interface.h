@@ -38,7 +38,7 @@ namespace command {
     public:
         virtual ~CommandFactoryInterface() {}
 
-        virtual void Initialize(app::SwganhKernel* kernel) = 0;
+        virtual void Initialize(swganh::app::SwganhKernel* kernel) = 0;
 
         /**
          * Adds a creator for a given command type. Only the most recently added creator for

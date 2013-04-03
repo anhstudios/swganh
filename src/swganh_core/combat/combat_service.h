@@ -107,10 +107,7 @@ namespace combat {
 		*/
 		explicit CombatService(swganh::app::SwganhKernel* kernel);
         
-		/**
-		* @return the service description of this service
-		*/
-        swganh::service::ServiceDescription GetServiceDescription();
+        ~CombatService();
 
 		/**
 		* Attacker incapacitates target
@@ -140,9 +137,7 @@ namespace combat {
 		*/
 		void EndCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
         
-		/**
-		* Called on startup.
-		*/
+		void Initialize();
 		void Startup();
 
 		/**

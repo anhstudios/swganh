@@ -502,24 +502,19 @@ SimulationService::SimulationService(SwganhKernel* kernel)
     , kernel_(kernel)
 {
     impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel_->GetDatabaseManager()->getConnection("galaxy"));
-}
 
-SimulationService::~SimulationService()
-{}
-
-ServiceDescription SimulationService::GetServiceDescription()
-{
-    ServiceDescription service_description(
+    SetServiceDescription(ServiceDescription(
         "SimulationService",
         "simulation",
         "0.1",
         "127.0.0.1",
         0,
         0,
-        0);
-
-    return service_description;
+        0));
 }
+
+SimulationService::~SimulationService()
+{}
 
 void SimulationService::StartScene(const std::string& scene_label)
 {
@@ -657,6 +652,9 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> SimulationSe
 {
 	return impl_->FindObjectsInRangeByTag(requester, tag, range);
 }
+
+void SimulationService::Initialize()
+{}
 
 void SimulationService::Startup()
 {

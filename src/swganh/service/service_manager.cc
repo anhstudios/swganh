@@ -58,7 +58,7 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
         return;
     }
 
-    auto service_description = service->GetServiceDescription();
+    auto& service_description = service->GetServiceDescription();
     if (!service_directory_->registerService(service_description)) 
     {
         throw std::runtime_error("Unable to register service " + service_description.name());
@@ -84,11 +84,11 @@ void ServiceManager::Start()
     for (auto& service_entry : services_)
     {
         auto& service = service_entry.second;
-        auto& service_description = service->GetServiceDescription();
 
         service->Startup();
-        service_description.status(Galaxy::ONLINE);
-
+        service->SetStatus(Galaxy::ONLINE);
+        
+        auto service_description = service->GetServiceDescription();
         service_directory_->updateService(service_description);
         LOG(info) << "Started " << service_description.name();
     }
@@ -99,11 +99,11 @@ void ServiceManager::Stop()
     for (auto& service_entry : services_)
     {
         auto& service = service_entry.second;
-        auto& service_description = service->GetServiceDescription();
 
         service->Shutdown();
-        service_description.status(Galaxy::OFFLINE);
-
+        service->SetStatus(Galaxy::OFFLINE);
+        
+        auto service_description = service->GetServiceDescription();
         service_directory_->updateService(service_description);
         LOG(info) << "Stopped " << service_description.name();
     }

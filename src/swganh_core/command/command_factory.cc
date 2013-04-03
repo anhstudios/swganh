@@ -15,9 +15,12 @@ using swganh::app::SwganhKernel;
 
 CommandFactory::CommandFactory() {}
 
+CommandFactory::~CommandFactory() {}
+
 void CommandFactory::Initialize(SwganhKernel* kernel)
 {
-    command_service_ = kernel->GetServiceManager()->GetService<CommandServiceInterface>("CommandService");
+    kernel_ = kernel;
+    command_service_ = kernel_->GetServiceManager()->GetService<CommandServiceInterface>("CommandService");
 }
 
 void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator creator)

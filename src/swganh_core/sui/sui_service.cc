@@ -50,6 +50,22 @@ SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 	, script_directory_(kernel->GetAppConfig().script_directory + "/radials/")
 	, window_id_counter_(0)
 {
+    SetServiceDescription(ServiceDescription(
+		"SuiService",
+		"sui",
+		"0.1",
+		"127.0.0.1",
+		0,
+		0,
+		0));
+}
+
+SUIService::~SUIService()
+{}
+
+void SUIService::Initialize()
+{
+	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
 void SUIService::Startup()
@@ -60,7 +76,6 @@ void SUIService::Startup()
 	connection_service->RegisterMessageHandler(&SUIService::_handleObjectMenuSelection, this);
 	
 	// Register Radial Events
-	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 	simulation_service_->RegisterControllerHandler(&SUIService::_handleObjectMenuRequest, this);
 
 	//Subscribe to player logouts
@@ -200,20 +215,6 @@ void SUIService::_handleObjectMenuSelection(const std::shared_ptr<swganh::connec
 		radial_interface = GetRadialInterfaceForObject(target);
 	}
 	radial_interface->HandleRadial(requester, target, message->radial_choice);
-}
-
-ServiceDescription SUIService::GetServiceDescription()
-{
-	ServiceDescription service_description(
-		"SuiService",
-		"sui",
-		"0.1",
-		"127.0.0.1",
-		0,
-		0,
-		0);
-
-	return service_description;
 }
 
 std::shared_ptr<SUIWindowInterface> SUIService::CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 

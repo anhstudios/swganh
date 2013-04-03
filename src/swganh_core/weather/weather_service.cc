@@ -48,11 +48,38 @@ WeatherService::WeatherService(SwganhKernel* kernel)
 			const auto& player_obj = static_pointer_cast<ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
 			OnPlayerEnter(player_obj);
 		});
+    
+    SetServiceDescription(ServiceDescription(
+        "WeatherService",
+        "weather",
+        "0.1",
+        "127.0.0.1",
+        0,
+        0,
+        0));
 }
 
 WeatherService::~WeatherService()
 {
 	weather_timer_->cancel();
+}
+
+void WeatherService::Initialize()
+{
+	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
+}
+
+void WeatherService::Startup() 
+{
+	weatherScriptTimer=0;
+	RunWeatherSequence();
+}
+
+void WeatherService::Shutdown()
+{
+	sceneLookup_.clear();
+	weather_sequence_.clear();
+	weather_timer_->cancel();	
 }
 
 void WeatherService::OnPlayerEnter(shared_ptr<Object> player_obj)
@@ -66,20 +93,6 @@ void WeatherService::OnPlayerEnter(shared_ptr<Object> player_obj)
 	else
 	{
 	}
-}
-
-ServiceDescription WeatherService::GetServiceDescription()
-{
-    ServiceDescription service_description(
-        "WeatherService",
-        "weather",
-        "0.1",
-        "127.0.0.1",
-        0,
-        0,
-        0);
-
-    return service_description;
 }
 
 Weather WeatherService::GetSceneWeather(uint32_t scene_id)
@@ -196,18 +209,3 @@ void WeatherService::WeatherScript()
         LOG(fatal) << e.what();
 	}
 }
-
-void WeatherService::Startup() 
-{
-	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
-	weatherScriptTimer=0;
-	RunWeatherSequence();
-}
-
-void WeatherService::Shutdown()
-{
-	sceneLookup_.clear();
-	weather_sequence_.clear();
-	weather_timer_->cancel();	
-}
-

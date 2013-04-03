@@ -56,9 +56,8 @@ namespace travel {
 		TravelService(swganh::app::SwganhKernel* kernel);
 		~TravelService();
 
-		void Startup();
-
-		swganh::service::ServiceDescription GetServiceDescription();
+        virtual void Initialize();
+		virtual void Startup();
 
 		virtual void BeginTicketTransaction(std::shared_ptr<swganh::object::Object> object);
 		virtual void PurchaseTicket(std::shared_ptr<swganh::object::Object> object,

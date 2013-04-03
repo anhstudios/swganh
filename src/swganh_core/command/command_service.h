@@ -34,10 +34,7 @@ namespace command {
 		*/
         explicit CommandService(swganh::app::SwganhKernel* kernel);
 
-		/**
-		* @return the service description for this service
-		*/
-        swganh::service::ServiceDescription GetServiceDescription();
+        ~CommandService();
 
 		/**
 		* Adds a new filter that is checked before enqueue

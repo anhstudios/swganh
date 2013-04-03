@@ -64,24 +64,21 @@ CombatService::CombatService(SwganhKernel* kernel)
 , active_(kernel->GetCpuThreadPool())
 , kernel_(kernel)
 , buff_manager_(kernel)
-{
-}
-
-ServiceDescription CombatService::GetServiceDescription()
-{
-    ServiceDescription service_description(
+{    
+    SetServiceDescription(ServiceDescription(
         "CombatService",
         "Combat",
         "0.1",
         "127.0.0.1", 
         0, 
-        0, 
-        0);
-
-    return service_description;
+        0,
+        0));
 }
 
-void CombatService::Startup()
+CombatService::~CombatService()
+{}
+
+void CombatService::Initialize()
 {
 	simulation_service_ = kernel_->GetServiceManager()
         ->GetService<SimulationServiceInterface>("SimulationService");
@@ -92,7 +89,10 @@ void CombatService::Startup()
 	equipment_service_ = simulation_service_->GetEquipmentService();
 
 	static_service_ = kernel_->GetServiceManager()->GetService<swganh::statics::StaticServiceInterface>("StaticService");
-    
+}
+
+void CombatService::Startup()
+{
     command_service_->AddCommandCreator("attack", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/attack.py", "AttackCommand"));
     command_service_->AddCommandCreator("deathblow", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/deathblow.py", "DeathBlowCommand")); 
     command_service_->AddCommandCreator("defaultattack", PythonCommandCreator(kernel_->GetAppConfig().script_directory + "/commands/defaultattack.py", "DefaultAttackCommand"));

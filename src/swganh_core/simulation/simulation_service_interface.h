@@ -51,9 +51,11 @@ namespace object {
 
 namespace simulation {
     
-    class SimulationServiceInterface : public swganh::service::ServiceInterface
+    class SimulationServiceInterface : public swganh::service::BaseService
     {
     public:
+        virtual ~SimulationServiceInterface() {}
+
         virtual void StartScene(const std::string& scene_label) = 0;
         virtual void StopScene(const std::string& scene_label) = 0;
 

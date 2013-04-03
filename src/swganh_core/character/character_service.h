@@ -43,16 +43,10 @@ public:
 	* Creates a new instance
 	*/
 	explicit CharacterService(swganh::app::SwganhKernel* kernel);
-    
-	/**
-	* @return the service description for this service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
+    virtual ~CharacterService();
 
-	/**
-	* Called on startup of the server
-	*/
-    void Startup();
+    virtual void Initialize();
+    virtual void Startup();
 
 private:
 

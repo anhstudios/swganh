@@ -40,25 +40,18 @@ using swganh::simulation::SimulationServiceInterface;
 CommandService::CommandService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-    command_factory_impl_ = kernel_->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
-    command_properties_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandPropertiesManagerInterface>("Command::CommandPropertiesManager");
-    command_queue_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
-    command_validator_impl_ = kernel_->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
-}
-
-ServiceDescription CommandService::GetServiceDescription()
-{
-    ServiceDescription service_description(
+    SetServiceDescription(ServiceDescription(
         "CommandService",
         "command",
         "0.1",
         "127.0.0.1",
         0,
         0,
-        0);
-
-    return service_description;
+        0));
 }
+
+CommandService::~CommandService()
+{}
 
 void CommandService::AddCommandEnqueueFilter(CommandFilter&& filter)
 {
@@ -143,7 +136,14 @@ boost::optional<const CommandProperties&> CommandService::FindPropertiesForComma
 
 void CommandService::Initialize()
 {
+    command_factory_impl_ = kernel_->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
     command_factory_impl_->Initialize(kernel_);
+
+    command_properties_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandPropertiesManagerInterface>("Command::CommandPropertiesManager");
+    command_queue_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
+    command_validator_impl_ = kernel_->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
+    
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
 void CommandService::Startup()
@@ -162,7 +162,6 @@ void CommandService::Startup()
 
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
-    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
     simulation_service_->RegisterControllerHandler(&CommandService::EnqueueCommandRequest, this);
 
     auto event_dispatcher = kernel_->GetEventDispatcher();

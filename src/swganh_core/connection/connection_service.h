@@ -37,11 +37,6 @@ public:
     ~ConnectionService();
 
 	/**
-	* @return the service description for this service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
-    
-	/**
 	* Removes a session (ie. ends)
 	*/
     bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session);
@@ -62,6 +57,7 @@ public:
 	/**
 	* Called on startup
 	*/
+    void Initialize();
     void Startup();
 
 	/**

@@ -5,39 +5,30 @@
 #include <memory>
 #include <string>
 
-#include <boost/python/object.hpp>
+#include <boost/noncopyable.hpp>
+
+#include "swganh/scripting/python_script.h"
+
+#include "command_interface.h"
 
 namespace swganh {
-namespace app {
-    class SwganhKernel;
-}
-
-namespace messages {
-namespace controllers {
-    class CommandQueueEnqueue;
-}}
-
-namespace object {
-    class ObjectController;
-}
-
 namespace command {
 
     class CommandInterface;
-    struct CommandProperties;
 
-    class PythonCommandCreator
+    class PythonCommandCreator : boost::noncopyable
     {
     public:
-        PythonCommandCreator(std::string module_name, std::string class_name);
-
+        PythonCommandCreator(const std::string& script, const std::string& class_name);
+        PythonCommandCreator(PythonCommandCreator&& other);
+        PythonCommandCreator(const swganh::command::PythonCommandCreator &);
         std::shared_ptr<CommandInterface> operator() ();
 
     private:
-        std::string module_name_;
-        std::string class_name_;
-        
-        boost::python::object command_module_;
+        PythonCommandCreator();
+
+        std::string class_name_;        
+        std::shared_ptr<swganh::scripting::PythonScript> script_;
     };
 
 }}

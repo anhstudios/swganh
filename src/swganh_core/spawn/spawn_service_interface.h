@@ -13,9 +13,11 @@ namespace object
 
 namespace spawn
 {
-	class SpawnServiceInterface : public swganh::service::ServiceInterface
+	class SpawnServiceInterface : public swganh::service::BaseService
 	{
 	public:
+        virtual ~SpawnServiceInterface() {}
+
 		virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine) = 0;
 		virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object) = 0;
 	};

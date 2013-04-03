@@ -70,8 +70,10 @@ namespace sui
 	public:
 		
 		SUIService(swganh::app::SwganhKernel* kernel);
-
-		swganh::service::ServiceDescription GetServiceDescription();
+        virtual ~SUIService();
+        
+        virtual void Initialize();
+		virtual void Startup();
 
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
 							std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
@@ -102,9 +104,7 @@ namespace sui
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateInputBox(swganh::sui::InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
 			uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
-
-		void Startup();
-
+        
 	private:
 		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification* message);
 		void _handleObjectMenuSelection(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::RadialMenuSelection* message);

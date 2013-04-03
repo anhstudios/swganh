@@ -43,26 +43,27 @@ const std::string python_init = "AttributeTemplateInit.py";
 AttributesService::AttributesService(SwganhKernel* kernel)
     : kernel_(kernel)	
 {
-}
-
-swganh::service::ServiceDescription AttributesService::GetServiceDescription()
-{
-	swganh::service::ServiceDescription service_description(
+    SetServiceDescription(swganh::service::ServiceDescription(
         "Attributes Service",
         "attributes",
         "0.1",
         "127.0.0.1",
         0,
         0,
-        0);
-
-    return service_description;
+        0));
 }
-void AttributesService::Startup()
+
+AttributesService::~AttributesService()
+{}
+
+void AttributesService::Initialize()
 {
 	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
-	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+}
 
+void AttributesService::Startup()
+{
+	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
     command_service->AddCommandCreator<GetAttributesBatchCommand>("getattributesbatch");	
 
 	LoadAttributeTemplates_();

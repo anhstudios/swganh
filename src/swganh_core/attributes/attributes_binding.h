@@ -40,15 +40,19 @@ namespace attributes {
 		AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object)
 		{
 			ScopedGilLock lock;
+
+            AttributeListMessage message;
+
 			try 
 			{
-				return this->get_override("buildAttributeTemplate")(object);
+				message = this->get_override("buildAttributeTemplate")(object);
 			}
 			catch (bp::error_already_set&)
 			{
 				swganh::scripting::logPythonException();
 			}
-			return AttributeListMessage();
+
+			return message;
 		}
 	private:
 		bp::object self_;
@@ -56,8 +60,13 @@ namespace attributes {
 
 	void exportAttributes()
 	{
-		bp::class_<BaseAttributeTemplate, AttributeTemplateWrap, boost::noncopyable>("BaseAttributeTemplate", bp::init<>())
-			.def("buildAttributeTemplate", &AttributeTemplateWrap::BuildAttributeTemplate)
+        bp::class_<AttributeTemplateInterface, boost::noncopyable>("AttributeTemplateInterface", bp::no_init)
+			.def("buildAttributeTemplate", bp::pure_virtual(&AttributeTemplateInterface::BuildAttributeTemplate))
+			.def("getKernel", bp::pure_virtual(&AttributeTemplateInterface::GetKernel), bp::return_internal_reference<>())
+        ;
+
+		bp::class_<BaseAttributeTemplate, AttributeTemplateWrap, bp::bases<AttributeTemplateInterface>, boost::noncopyable>("BaseAttributeTemplate")
+			.def("buildAttributeTemplate", bp::pure_virtual(&BaseAttributeTemplate::BuildAttributeTemplate))
 			.def("getKernel", &AttributeTemplateWrap::GetKernel, bp::return_internal_reference<>())
 		;
 		bp::class_<AttributeListMessage, boost::noncopyable>("AttributeListMessage", "Message that describes attributes for a given class::`Object`")

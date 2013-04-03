@@ -19,9 +19,11 @@ namespace object {
 namespace swganh {
 namespace social {
     
-    class SocialServiceInterface : public swganh::service::ServiceInterface
+    class SocialServiceInterface : public swganh::service::BaseService
     {
     public:
+
+        virtual ~SocialServiceInterface() {}
         
         virtual bool AddFriend(const std::shared_ptr<swganh::object::Player>& player, const std::string& friend_name) = 0;
         

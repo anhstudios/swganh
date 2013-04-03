@@ -168,7 +168,7 @@ void swganh::command::ExportCommand()
 	;
 
     bp::class_<BaseSwgCommand, BaseSwgCommandWrapper, bp::bases<CommandInterface>, boost::noncopyable>
-        ("BaseSwgCommand", bp::init<>())
+        ("BaseSwgCommand")
         .def("validate", &BaseSwgCommandWrapper::Validate)
 		.def("setup", &BaseSwgCommand::SetCommandProperties)
 		.def("postRun", &BaseSwgCommand::PostRun)

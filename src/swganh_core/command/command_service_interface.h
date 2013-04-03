@@ -41,7 +41,7 @@ namespace command {
      * The command service is responsible for the handling of incoming command
      * requests for game objects.
      */
-    class CommandServiceInterface: public swganh::service::ServiceInterface
+    class CommandServiceInterface: public swganh::service::BaseService
     {
     public:
         virtual ~CommandServiceInterface() {}

@@ -46,6 +46,14 @@ SpawnService::SpawnService(SwganhKernel* kernel)
 	, fsm_manager_(kernel->GetEventDispatcher())
 	, timer_(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(60))
 {
+    SetServiceDescription(ServiceDescription(
+        "SpawnService",
+        "spawn",
+        "0.1",
+        "127.0.0.1",
+        0,
+        0,
+        0));
 }
 
 SpawnService::~SpawnService()
@@ -53,19 +61,8 @@ SpawnService::~SpawnService()
 	timer_.cancel();
 }
 
-ServiceDescription SpawnService::GetServiceDescription()
-{
-    ServiceDescription service_description(
-        "SpawnService",
-        "spawn",
-        "0.1",
-        "127.0.0.1",
-        0,
-        0,
-        0);
-
-    return service_description;
-}
+void SpawnService::Initialize()
+{}
 
 void SpawnService::Startup()
 {
