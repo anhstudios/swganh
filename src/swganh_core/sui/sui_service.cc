@@ -26,8 +26,6 @@
 
 #include "swganh_core/simulation/simulation_service_interface.h"
 
-#include "swganh_core/sui/python_radial_creator.h"
-
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/scripting/utilities.h"
 #include "swganh/service/service_manager.h"
