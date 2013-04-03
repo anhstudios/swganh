@@ -7,7 +7,7 @@
 
 namespace swganh {
 namespace app {
-class KernelInterface;
+class SwganhKernel;
 }}  // namespace swganh::app
 
 namespace swganh {
@@ -18,7 +18,7 @@ namespace character {
 */
 class MysqlCharacterProvider : public swganh::character::CharacterProviderInterface{
 public:
-    explicit MysqlCharacterProvider(swganh::app::KernelInterface* kernel);
+    explicit MysqlCharacterProvider(swganh::app::SwganhKernel* kernel);
     ~MysqlCharacterProvider(){};
 
 	/**
@@ -86,7 +86,7 @@ private:
 
 	PyCharacterCreate py_character_create_;
 	
-    swganh::app::KernelInterface* kernel_;
+    swganh::app::SwganhKernel* kernel_;
 	std::vector<std::string> reserved_names_;
 	std::vector<std::string> developer_names_;
 	std::vector<std::string> profane_names_;
