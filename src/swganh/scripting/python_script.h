@@ -62,7 +62,7 @@ namespace scripting {
             ScopedGilLock lock;
 
             auto py_value = GetGlobal(key);
-            return bp::extract<T>(*py_value);
+            return boost::python::extract<T>(*py_value);
         }
 
         /**
