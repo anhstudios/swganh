@@ -135,9 +135,6 @@ namespace scripting {
     private:
         PythonScript();
 
-        void DumpEnvironment()
-        {}
-
         void PreparePythonEnvironment_();
         void ReadFileContents_();
 
