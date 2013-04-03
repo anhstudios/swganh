@@ -18,11 +18,16 @@
 using namespace swganh::scripting;
 namespace bp = boost::python;
 
-PythonScript::PythonScript(const std::string& filename)
+PythonScript::PythonScript(const std::string& filename, bool delay_execution)
         : filename_(filename)
 {
     ReadFileContents_();    
     PreparePythonEnvironment_();
+
+    if (!delay_execution)
+    {
+        Run();
+    }
 }
 
 void PythonScript::Run()

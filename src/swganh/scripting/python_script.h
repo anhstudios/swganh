@@ -23,7 +23,7 @@ namespace scripting {
         /**
          * @param filename The filename containing the python script.
          */
-        explicit PythonScript(const std::string& filename);
+        explicit PythonScript(const std::string& filename, bool delay_execution = false);
 
         /**
          * Executes the python script.
@@ -73,8 +73,6 @@ namespace scripting {
          */
         std::shared_ptr<boost::python::object> GetGlobal(const std::string& name)
         {
-            Run();
-
             std::shared_ptr<boost::python::object> instance = nullptr;
 
             ScopedGilLock lock;
@@ -107,8 +105,6 @@ namespace scripting {
         template<typename T>
         std::shared_ptr<T> CreateInstance(const std::string& class_name)
         {
-            Run();
-
             std::shared_ptr<T> cpp_instance = nullptr;
 
             ScopedGilLock lock;
