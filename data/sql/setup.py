@@ -15,9 +15,36 @@ from configparser import RawConfigParser
 
 #### CONSTANTS ####
 
-defaults = {'username': 'swganh', 'password': 'swganh', 'host': 'localhost', 'pause': 'on', 'clear': 'on'}
+defaults = {'username': 'swganh', 'password': 'swganh', 'host': 'localhost', 'pause': 'on', 'clear': 'off'}
 
-affirmatives = ['yes', 'on', '1', 'true']
+affirmatives = ['yes', 'on', '1', 'true', 'y']
+
+#### Internationalization (I18N) Strings ####
+I18N = {
+    'PROGRAM_TITLE': ' SWGANH Database Install Script                              ',
+    'PROGRAM_VERSION': '(v0.5.1) ',
+    'INSTALL_ALL_MSG': 'Install All DB',
+    'INSTALL_MSG': 'Install ',
+    'BACKUP_MSG': 'Backup DB',
+    'RESTORE_MSG': 'Restore DB',
+    'RECONFIG_MSG': 'Reconfigure Setup.py',
+    'PATIENCE_MSG': 'Operation started. Please be patient...',
+    'NO_BACKUPS_MSG': 'No backup files found.',
+    'FOUND_ONE_MSG': ('Found only one file (', ') should this file be used? '),
+    'WHICH_BACKUP_MSG': 'Which backup should be installed? ',
+    'INVALID_CHOICE_MSG': 'Invalid choice.',
+    'RESTORE_FAILED_MSG': 'Restore failed.',
+    'CONFIG_MISSING_MSG': 'Config missing or invalid. Is this the first run?',
+    'MAKE_CHOICE_MSG': 'Make a choice or (q)uit: ',
+    'OPERATION_COMPLETE_MSG': 'Operation Complete. Press any key to continue...',
+    'INSTALLING_MSG': 'Installing',
+    'DONE_MSG': '[DONE]',
+    'USERNAME_PROMPT_MSG': 'Mysql Username (default=%(username)s): ' % defaults,
+    'PASSWORD_PROMPT_MSG': 'Mysql Password (default=%(password)s): ' % defaults,
+    'HOST_PROMPT_MSG': 'Mysql Host (default=%(host)s): ' % defaults,
+    'PAUSE_PROMPT_MSG': 'Pause after each operation? (default=%(pause)s): ' % defaults,
+    'CLEAR_PROMPT_MSG': 'Clear screen before printing menu? (default=%(clear)s): ' % defaults,
+}
 
 #### MAIN FUNCTION ####
 
@@ -58,12 +85,68 @@ def backupDB(cfg):
         Parameters:
         cfg - the dictionary of config values
     '''
-    print("Backup started. Please be patient...")
+    print(I18N['PATIENCE_MSG'])
     timestamp = str(datetime.datetime.now()).replace(' ', '_').replace(':', '_')
     os.system(("mysqldump --password="+cfg['password']+" --host="+cfg['host']+" --user="+cfg['username']+" "+
         "--databases "+(" ".join(cfg['databases']))+" --create-options --extended-insert --routines "+
         "--dump-date --triggers --comments > swganh_"+timestamp+".sql"))
 
+def selectFile(files):
+    '''
+        Prompts the user to select a file from the given files list.
+        
+        Parameters:
+        files - a list of files to display to the user. Can be empty.
+        
+        Return:
+        The selected index, or None if a selection cannot be determined.
+    '''
+    selectedBackup = None
+    
+    #Handle the 3 cases separately.
+    if len(files) == 0:
+        print(I18N['NO_BACKUPS_MSG'])
+    elif len(files) == 1:
+        choice = input(I18N['FOUND_ONE_MSG'][0]+files[0]+I18N['FOUND_ONE_MSG'][1])
+        if choice in affirmatives:
+            selectedBackup = 0
+    else:
+        #Print the options for the user.
+        for i in range(len(files)):
+            print('\t'+str(i)+'. '+files[i])
+            
+        #Make sure the user enters a number in the range [0, len(files)).
+        try:
+            selectedBackup = int(input(I18N['WHICH_BACKUP_MSG']))
+            if selectedBackup < 0 or selectedBackup >= len(files):
+                raise ValueError
+        except ValueError:
+            print(I18N['INVALID_CHOICE_MSG'])
+            selectedBackup = None
+    #Return the result
+    return selectedBackup
+        
+def restoreDB(cfg):
+    '''
+        Restores a copy of the db from an .sql dump.
+        
+        Parameters:
+        cfg - the dictionary of config values.
+    '''
+    
+    #Get the list of .sql files in the current directory
+    files = getImmediateSqlFiles(cfg['cwd'])
+    
+    #Determine what file to use
+    index = selectFile(files)
+    
+    #Make sure the index is valid.
+    if index == None:
+        print(I18N['RESTORE_FAILED_MSG'])
+    else:
+        print(I18N['PATIENCE_MSG'])
+        callMysql(cfg, files[index], False)
+    
 #### MENU MANAGEMENT ####
 class Menu(object):
     '''
@@ -82,11 +165,12 @@ class Menu(object):
         self.operations = []
 
         #Add some operations!
-        self.operations.append(('Install All DB', lambda cfg: list(map((lambda db: installDatabase(cfg, db)), cfg['databases']))))
+        self.operations.append((I18N['INSTALL_ALL_MSG'], lambda cfg: list(map((lambda db: installDatabase(cfg, db)), cfg['databases']))))
         for i in range(len(cfg['databases'])):
-            self.operations.append(('Install '+cfg['databases'][i], lambda cfg: installDatabase(cfg, cfg['databases'][i])))
-        self.operations.append(('Backup DB', backupDB)) 
-        self.operations.append(('Rebuild Config', rebuildCfg))
+            self.operations.append((I18N['INSTALL_MSG']+cfg['databases'][i], lambda cfg: installDatabase(cfg, cfg['databases'][i])))
+        self.operations.append((I18N['BACKUP_MSG'], backupDB)) 
+        self.operations.append((I18N['RESTORE_MSG'], restoreDB))
+        self.operations.append((I18N['RECONFIG_MSG'], rebuildCfg))
 
     def printMenu(self):
         '''
@@ -98,7 +182,7 @@ class Menu(object):
             os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
 
         print('----------------------------------------------------------------------')
-        print(' SWGANH Database Install Script                              (v0.5.1) ')
+        print(I18N['PROGRAM_TITLE']+I18N['PROGRAM_VERSION'])
         print('----------------------------------------------------------------------')
 
         for i in range(len(self.operations)):
@@ -115,7 +199,7 @@ class Menu(object):
         '''
         if len(buf) == 0:
             self.printMenu()
-            buf = input('Make a choice or (q)uit: ').split()
+            buf = input(I18N['MAKE_CHOICE_MSG']).split()
         while(True):
             try:
                 #Grab the next step
@@ -135,16 +219,16 @@ class Menu(object):
                         self.operations[step][1](self.cfg)
 
                         if self.cfg['pause'].lower() in affirmatives:
-                            input("Operation complete. Press to continue...")
-                    except e:
-                        print(e)
+                            input(I18N['OPERATION_COMPLETE_MSG'])
+                    except:
+                        print(sys.exc_info()[0])
             except:
-                print('Invalid choice.')
+                print(I18N['INVALID_CHOICE_MSG'])
                 
             #Check if we need more input
             if len(buf) == 0:
                 self.printMenu()            
-                buf = input('Make a choice or (q)uit: ').split()
+                buf = input(I18N['MAKE_CHOICE_MSG']).split()
             
             
 
@@ -166,11 +250,11 @@ def rebuildCfg(oldCfg=None):
     cfg = {}
 
     #Get user inputs
-    cfg['username'] = input('Mysql Username (default=swganh): ')
-    cfg['password'] = input('Mysql Password (default=swganh): ')
-    cfg['host'] = input('Mysql Host (default=localhost): ')
-    cfg['pause'] = input('Pause after each operation? (default=on): ')
-    cfg['clear'] = input('Clear screen before printing menu? (default=on): ')
+    cfg['username'] = input(I18N['USERNAME_PROMPT_MSG'])
+    cfg['password'] = input(I18N['PASSWORD_PROMPT_MSG'])
+    cfg['host'] = input(I18N['HOST_PROMPT_MSG'])
+    cfg['pause'] = input(I18N['PAUSE_PROMPT_MSG'])
+    cfg['clear'] = input(I18N['CLEAR_PROMPT_MSG'])
 
     #Set the default if the user chose to input nothing
     for k,v in defaults.items():
@@ -204,7 +288,7 @@ def getCfg():
             return dict(cfgParse['DEFAULT'])
     except:
         #If we failed we'll rebuild the config.
-        print('Config missing or invalid. Is this the first run?')
+        print(I18N['CONFIG_MISSING_MSG'])
         return rebuildCfg()
 
 #### MYSQL MANAGEMENT ####
@@ -217,7 +301,11 @@ def getImmediateSubdirectories(path):
     return [subdir for subdir in os.listdir(path) 
         if os.path.isdir(os.path.join(path, subdir))]
 
-def callMysql(cfg, filename):
+def getImmediateSqlFiles(path):
+    return [file for file in os.listdir(path) 
+        if os.path.isfile(os.path.join(path, file)) and os.path.splitext(file)[1] == ('.sql')]
+        
+def callMysql(cfg, filename, needsDb=True):
     '''
         Installs the given filename into the proper database.
         
@@ -233,11 +321,11 @@ def callMysql(cfg, filename):
     
         #Add databases unless it's a create.sql script.
         dbs = ''
-        if shortname != 'create.sql':
+        if shortname != 'create.sql' and needsDb:
             dbs = '--database=%(database)s ' % cfg
         
-        print("Installing {} ".format(shortname), end="")
+        print(I18N['INSTALLING_MSG']+" {} ".format(shortname), end="")
         os.system("mysql --password=%(password)s --host=%(host)s --user=%(username)s " % cfg + dbs + "--default-character-set=utf8 < \"%(filename)s\"" % cfg)
-        print("[DONE]")
+        print(I18N['DONE_MSG'])
 
 main(sys.argv)
