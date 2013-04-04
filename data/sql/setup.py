@@ -224,11 +224,20 @@ def callMysql(cfg, filename):
         Parameters:
             cfg - the configuration dictionary
             filename - the file to install.
-    '''
+    '''    
     if os.path.splitext(filename)[1] == '.sql':
         cfg['filename'] = filename
-        print("Installing {} ".format(os.path.split(filename)[1]), end="")
-        os.system("mysql --password=%(password)s --host=%(host)s --user=%(username)s --database=%(database)s --default-character-set=utf8 < \"%(filename)s\"" % cfg)
+        
+        #Find the short name
+        shortname = os.path.split(filename)[1]
+    
+        #Add databases unless it's a create.sql script.
+        dbs = ''
+        if shortname != 'create.sql':
+            dbs = '--database=%(database)s' % cfg
+        
+        print("Installing {} ".format(shortname), end="")
+        os.system("mysql --password=%(password)s --host=%(host)s --user=%(username)s "+dbs+" --default-character-set=utf8 < \"%(filename)s\"" % cfg)
         print("[DONE]")
 
 main(sys.argv)
