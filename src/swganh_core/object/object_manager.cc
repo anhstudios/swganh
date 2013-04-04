@@ -498,7 +498,10 @@ void ObjectManager::PrepareToAccomodate(uint32_t delta)
 void ObjectManager::LoadPythonObjectTemplates()
 {
     LOG(info) << "Loading Template Objects";
-    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/load_objects.py");
+    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/load_objects.py", true);
+    
+    script.SetGlobal("kernel", bp::ptr(kernel_));
+    script.Run();
 
     object_templates_ = script.GetGlobalAs<PythonTemplateMap>("templates");
 }
