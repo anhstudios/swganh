@@ -237,7 +237,7 @@ def callMysql(cfg, filename):
             dbs = '--database=%(database)s ' % cfg
         
         print("Installing {} ".format(shortname), end="")
-        os.system("mysql --password=%(password)s --host=%(host)s --user=%(username)s "+dbs+"--default-character-set=utf8 < \"%(filename)s\"" % cfg)
+        os.system("mysql --password=%(password)s --host=%(host)s --user=%(username)s " % cfg + dbs + "--default-character-set=utf8 < \"%(filename)s\"" % cfg)
         print("[DONE]")
 
 main(sys.argv)
