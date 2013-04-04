@@ -234,10 +234,10 @@ def callMysql(cfg, filename):
         #Add databases unless it's a create.sql script.
         dbs = ''
         if shortname != 'create.sql':
-            dbs = '--database=%(database)s' % cfg
+            dbs = '--database=%(database)s ' % cfg
         
         print("Installing {} ".format(shortname), end="")
-        os.system("mysql --password=%(password)s --host=%(host)s --user=%(username)s "+dbs+" --default-character-set=utf8 < \"%(filename)s\"" % cfg)
+        os.system("mysql --password=%(password)s --host=%(host)s --user=%(username)s "+dbs+"--default-character-set=utf8 < \"%(filename)s\"" % cfg)
         print("[DONE]")
 
 main(sys.argv)
