@@ -568,20 +568,10 @@ void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message)
     });
 }
 
-bool Object::IsDirty()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return !deltas_.empty();
-}
 void Object::ClearBaselines()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     baselines_.clear();
-}
-void Object::ClearDeltas()
-{
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-    deltas_.clear();
 }
 
 BaselinesCacheContainer Object::GetBaselines()
@@ -590,18 +580,9 @@ BaselinesCacheContainer Object::GetBaselines()
     return baselines_;
 }
 
-DeltasCacheContainer Object::GetDeltas(uint64_t viewer_id)
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return deltas_;
-}
-
 void Object::AddDeltasUpdate(DeltasMessage* message)
 {
     NotifyObservers(message);
-
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    deltas_.push_back(*message);
 }
 void Object::AddBaselineToCache(swganh::messages::BaselinesMessage* baseline)
 {
@@ -840,25 +821,29 @@ void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface
     scene_object.byte_flag = 0;
     observer->Notify(&scene_object);
 
-	SendUpdateContainmentMessage(observer);
+	SendUpdateContainmentMessage(observer, false);
 }
 
-void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer)
+void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent)
 {
 	if(observer == nullptr)
 		return;
 
 	uint64_t container_id = 0;
 	if (GetContainer())
+	{
 		container_id = GetContainer()->GetObjectId();
+	}
 
-	//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
-
-	UpdateContainmentMessage containment_message;
-	containment_message.container_id = container_id;
-	containment_message.object_id = GetObjectId();
-	containment_message.containment_type = arrangement_id_;
-	observer->Notify(&containment_message);
+	if(send_on_no_parent || container_id != 0)
+	{
+		//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+		UpdateContainmentMessage containment_message;
+		containment_message.container_id = container_id;
+		containment_message.object_id = GetObjectId();
+		containment_message.containment_type = arrangement_id_;
+		observer->Notify(&containment_message);
+	}
 }
 
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)

@@ -175,16 +175,10 @@ void PlayerMessageBuilder::RegisterEventHandlers()
 
 void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    player->AddBaselineToCache(&BuildBaseline3(player));
-    player->AddBaselineToCache(&BuildBaseline6(player));
-    player->AddBaselineToCache(&BuildBaseline8(player));
-    player->AddBaselineToCache(&BuildBaseline9(player));
-    
-   
-    for (auto& baseline : player->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
+    observer->Notify(&BuildBaseline3(player));
+    observer->Notify(&BuildBaseline6(player));
+    observer->Notify(&BuildBaseline8(player));
+    observer->Notify(&BuildBaseline9(player));
         
     SendEndBaselines(player, observer);
 }

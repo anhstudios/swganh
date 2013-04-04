@@ -86,9 +86,9 @@ void InstallationMessageBuilder::RegisterEventHandlers()
 
 void InstallationMessageBuilder::SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	installation->AddBaselineToCache(&BuildBaseline3(installation));
-    installation->AddBaselineToCache(&BuildBaseline6(installation));
-    installation->AddBaselineToCache(&BuildBaseline7(installation));
+	observer->Notify(&BuildBaseline3(installation));
+    observer->Notify(&BuildBaseline6(installation));
+    observer->Notify(&BuildBaseline7(installation));
     
     for (auto& baseline : installation->GetBaselines())
     {
