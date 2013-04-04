@@ -49,15 +49,15 @@ namespace terrain
 	public:
 
 		TerrainService(swganh::app::SwganhKernel* kernel);
+        ~TerrainService();
+
+        virtual void Initialize();
 
 		virtual float GetWaterHeight(uint32_t scene_id, float x, float z, float raw=false);
 
 		virtual float GetHeight(uint32_t scene_id, float x, float z, bool raw=false);
 
-		virtual bool IsWater(uint32_t scene_id, float x, float z, bool raw=false);
-
-		swganh::service::ServiceDescription GetServiceDescription();
-        
+		virtual bool IsWater(uint32_t scene_id, float x, float z, bool raw=false);        
 
 	private:
 

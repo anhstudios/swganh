@@ -12,7 +12,7 @@ def create(kernel):
 	result.stfName("monster_name","gaping_spider")		
 	
 	#### BEGIN MODIFICATIONS ####
-	result.setStringAttribute("radial_filename", "radials.player_pet")
+	result.setStringAttribute("radial_filename", "radials/player_pet.py")
 	result.options_mask = 0x100
 	result.pvp_status = PVPSTATUS.PvPStatus_Nones
 	####  END MODIFICATIONS  ####

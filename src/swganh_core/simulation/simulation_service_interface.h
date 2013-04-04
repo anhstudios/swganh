@@ -51,9 +51,11 @@ namespace object {
 
 namespace simulation {
     
-    class SimulationServiceInterface : public swganh::service::ServiceInterface
+    class SimulationServiceInterface : public swganh::service::BaseService
     {
     public:
+        virtual ~SimulationServiceInterface() {}
+
         virtual void StartScene(const std::string& scene_label) = 0;
         virtual void StopScene(const std::string& scene_label) = 0;
 
@@ -74,6 +76,8 @@ namespace simulation {
         
         virtual std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id) = 0;
         virtual std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id, uint32_t type) = 0;
+        
+		virtual std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range=-1) = 0;
 
 		virtual std::shared_ptr<swganh::object::Object> GetObjectByCustomName(const std::wstring& custom_name) = 0;
 		virtual std::shared_ptr<swganh::object::Object> GetObjectByCustomName(const std::string& custom_name) = 0;

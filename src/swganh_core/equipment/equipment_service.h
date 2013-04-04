@@ -29,10 +29,9 @@ public:
 	*/
 	EquipmentService(swganh::tre::ResourceManager* resourceManager);
 
-	/**
-	* @return the service description for this service
-	*/
-	swganh::service::ServiceDescription GetServiceDescription();
+    ~EquipmentService();
+
+    virtual void Initialize();
 
 	/**
 	* @return the id of a slot by name

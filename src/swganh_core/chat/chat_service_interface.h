@@ -19,9 +19,11 @@ namespace object {
 namespace swganh {
 namespace chat {
 
-    class ChatServiceInterface: public swganh::service::ServiceInterface
+    class ChatServiceInterface: public swganh::service::BaseService
     {
     public:
+        virtual ~ChatServiceInterface() {}
+
         virtual bool SendPersistentMessage(
             const std::string& recipient,
             const std::string& sender,

@@ -18,17 +18,15 @@ using swganh::object::Creature;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::simulation::SimulationServiceInterface;
 
-BaseSwgCommand::BaseSwgCommand(
-    swganh::app::SwganhKernel* kernel,
+void BaseSwgCommand::Initialize(
+    swganh::app::SwganhKernel* kernel, 
     const CommandProperties& properties)
-    : kernel_(kernel)
-    , properties_(&properties)
-    , actor_(nullptr)
-    , target_(nullptr)
-{}
-
-BaseSwgCommand::~BaseSwgCommand()
-{}
+{
+    kernel_ = kernel;
+    properties_ = &properties;
+    actor_ = nullptr;
+    target_ = nullptr;
+}
 
 const std::shared_ptr<ObserverInterface> BaseSwgCommand::GetController() const
 {

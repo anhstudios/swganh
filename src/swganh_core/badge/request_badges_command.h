@@ -23,10 +23,12 @@ namespace badge {
     {
     public:
 
+        virtual std::string GetCommandName() { return "requestbadges"; }
+
 		/**
 			Creates a new instance
 		*/
-        RequestBadgesCommand(
+        void Initialize(
             swganh::app::SwganhKernel* kernel,
             const swganh::command::CommandProperties& properties);
 
@@ -37,7 +39,6 @@ namespace badge {
 
     private:
         BadgeService* chat_service_;
-		swganh::app::SwganhKernel* kernel_;
 		swganh::equipment::EquipmentService* equipment_service_;
     };
 

@@ -25,14 +25,34 @@ using swganh::scripting::ScopedGilLock;
 struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatCommand>
 {
     BaseCombatCommandWrapper(
-        PyObject* obj,
-        swganh::app::SwganhKernel* kernel,
-        CommandProperties& properties)
-        : BaseCombatCommand(kernel, properties)
-        , self_(bp::handle<>(bp::borrowed(obj)))
+        PyObject* obj)
+        : self_(bp::handle<>(bp::borrowed(obj)))
     {
         ScopedGilLock lock;
         bp::detail::initialize_wrapper(obj, this);
+    }
+    
+
+    std::string GetCommandName()
+    {
+        std::string command;
+        
+        ScopedGilLock lock;
+        try 
+        {
+            auto overrider = this->get_override("getCommandName");
+            if (overrider)
+            {
+                bp::object name = overrider();
+                command = bp::extract<std::string>(name);
+            }
+        }
+		catch (bp::error_already_set&)
+		{
+			swganh::scripting::logPythonException();
+		}
+
+        return command;
     }
 
     boost::optional<std::shared_ptr<CommandCallback>> Run()
@@ -54,7 +74,7 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
                 }
             }
             
-            this->BaseCombatCommand::Run();
+            BaseCombatCommand::Run();
         }
 		catch (bp::error_already_set&)
 		{
@@ -63,27 +83,6 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
 
         return callback;
     }
-	void SetCommandProperties(const CommandProperties& properties)
-	{
-		ScopedGilLock lock;
-        try 
-        {
-			combat_data = std::make_shared<CombatData>(properties);
-            auto setup = this->get_override("setup");
-            if (setup)
-            {
-                setup(combat_data);
-            }
-            else
-            {
-                this->BaseCombatCommand::SetCommandProperties(properties);
-            }
-        }
-		catch (bp::error_already_set&)
-		{
-			swganh::scripting::logPythonException();
-		}    
-	}
 
 private:
     bp::object self_;
@@ -92,7 +91,7 @@ private:
 void swganh::command::ExportBaseCombatCommand()
 {
     bp::class_<BaseCombatCommand, BaseCombatCommandWrapper, bp::bases<BaseSwgCommand>, boost::noncopyable>
-        ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, CommandProperties&>())
+        ("BaseCombatCommand", bp::init<>())
         .def("run", &BaseCombatCommandWrapper::Run)
 		.def("postRun", &BaseCombatCommandWrapper::PostRun)
 		.def_readwrite("properties", &BaseCombatCommandWrapper::combat_data)

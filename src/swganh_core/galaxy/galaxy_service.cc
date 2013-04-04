@@ -23,25 +23,19 @@ using namespace std;
 GalaxyService::GalaxyService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<swganh::galaxy::providers::GalaxyProviderInterface>("Galaxy::GalaxyProvider");
-}
-
-GalaxyService::~GalaxyService()
-{
-    galaxy_timer_.reset();
-}
-
-ServiceDescription GalaxyService::GetServiceDescription()
-{
-	ServiceDescription service_description(        
+    SetServiceDescription(ServiceDescription(        
 		"Galaxy Service",
         "galaxy",
         "0.1",
         "127.0.0.1", 
         0,
         0, 
-        0);
-	return service_description;
+        0));
+}
+
+GalaxyService::~GalaxyService()
+{
+    galaxy_timer_.reset();
 }
 
 uint32_t GalaxyService::GetPopulation()
@@ -53,6 +47,12 @@ uint64_t GalaxyService::GetGalaxyTimeInMilliseconds()
 {
 	return kernel_->GetServiceDirectory()->galaxy().GetGalaxyTimeInMilliseconds();
 }
+
+void GalaxyService::Initialize()
+{
+	galaxy_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::galaxy::providers::GalaxyProviderInterface>("Galaxy::GalaxyProvider");
+}
+
 void GalaxyService::Startup()
 {
     galaxy_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(10));

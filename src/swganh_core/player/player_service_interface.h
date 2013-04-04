@@ -14,9 +14,11 @@ namespace object {
 namespace swganh {
 namespace player {
 
-class PlayerServiceInterface : public swganh::service::ServiceInterface
+class PlayerServiceInterface : public swganh::service::BaseService
 {
 public:
+    virtual ~PlayerServiceInterface() {}
+
 	virtual void OnPlayerEnter(std::shared_ptr<swganh::object::Player> player) = 0;
 
 	virtual void OnPlayerExit(std::shared_ptr<swganh::object::Player> player) = 0;

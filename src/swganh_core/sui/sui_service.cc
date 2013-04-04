@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "swganh/observer/observer_interface.h"
+#include "swganh/scripting/python_instance_creator.h"
 
 #include "swganh_core/messages/sui_create_page_message.h"
 #include "swganh_core/messages/sui_event_notification.h"
@@ -24,8 +25,6 @@
 #include "swganh_core/object/player/player.h"
 
 #include "swganh_core/simulation/simulation_service_interface.h"
-
-#include "swganh_core/sui/python_radial_creator.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/scripting/utilities.h"
@@ -45,11 +44,29 @@ using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::simulation;
 
+using swganh::scripting::PythonInstanceCreator;
+
 SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 	, script_directory_(kernel->GetAppConfig().script_directory + "/radials/")
 	, window_id_counter_(0)
 {
+    SetServiceDescription(ServiceDescription(
+		"SuiService",
+		"sui",
+		"0.1",
+		"127.0.0.1",
+		0,
+		0,
+		0));
+}
+
+SUIService::~SUIService()
+{}
+
+void SUIService::Initialize()
+{
+	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
 void SUIService::Startup()
@@ -60,7 +77,6 @@ void SUIService::Startup()
 	connection_service->RegisterMessageHandler(&SUIService::_handleObjectMenuSelection, this);
 	
 	// Register Radial Events
-	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 	simulation_service_->RegisterControllerHandler(&SUIService::_handleObjectMenuRequest, this);
 
 	//Subscribe to player logouts
@@ -133,10 +149,11 @@ std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::sh
 		std::wstring filenames = target->GetAttribute<std::wstring>("radial_filename");
 
 		radial_filename.insert(radial_filename.end(), filenames.begin(), filenames.end());
+        radial_filename = kernel_->GetAppConfig().script_directory + "/" + radial_filename;
 	}
 	else
 	{
-		radial_filename.insert(0, "radials.default_radial");
+        radial_filename.insert(0, kernel_->GetAppConfig().script_directory + "/radials/default_radial.py");
 	}
 
 	//Find or build the appropriate creator
@@ -144,13 +161,15 @@ std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::sh
 	auto find_itr = radial_menus_.find(radial_filename);
 	if(find_itr == radial_menus_.end())
 	{
-		auto creator = std::make_shared<PythonRadialCreator>(radial_filename, "PyRadialMenu");
-		radial_creator = (*creator)(kernel_);
+		auto creator = std::make_shared<PythonInstanceCreator<RadialInterface>>(radial_filename, "PyRadialMenu");
+		radial_creator = (*creator)();
+        radial_creator->Initialize(kernel_);
 		radial_menus_.insert(std::make_pair(radial_filename, creator));
 	} 
 	else 
 	{
-		radial_creator = (*find_itr->second)(kernel_);
+		radial_creator = (*find_itr->second)();
+        radial_creator->Initialize(kernel_);
 	}
 	return radial_creator;
 }
@@ -200,20 +219,6 @@ void SUIService::_handleObjectMenuSelection(const std::shared_ptr<swganh::connec
 		radial_interface = GetRadialInterfaceForObject(target);
 	}
 	radial_interface->HandleRadial(requester, target, message->radial_choice);
-}
-
-ServiceDescription SUIService::GetServiceDescription()
-{
-	ServiceDescription service_description(
-		"SuiService",
-		"sui",
-		"0.1",
-		"127.0.0.1",
-		0,
-		0,
-		0);
-
-	return service_description;
 }
 
 std::shared_ptr<SUIWindowInterface> SUIService::CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 

@@ -21,16 +21,6 @@ using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;
 using swganh::object::ObjectController;
 
-BaseCombatCommand::BaseCombatCommand(
-    swganh::app::SwganhKernel* kernel,
-    CommandProperties& properties)
-    : BaseSwgCommand(kernel, properties)
-	, combat_data(std::make_shared<CombatData>(properties))
-{}
-
-BaseCombatCommand::~BaseCombatCommand()
-{}
-
 boost::optional<std::shared_ptr<CommandCallback>> BaseCombatCommand::Run()
 {
     auto combat_service = GetKernel()->GetServiceManager()->GetService<CombatServiceInterface>("CombatService");
@@ -38,9 +28,4 @@ boost::optional<std::shared_ptr<CommandCallback>> BaseCombatCommand::Run()
     combat_service->SendCombatAction(this);
 
     return boost::optional<std::shared_ptr<CommandCallback>>();
-}
-
-void BaseCombatCommand::SetCommandProperties(const CommandProperties& properties)
-{
-	
 }

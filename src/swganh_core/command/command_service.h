@@ -34,10 +34,7 @@ namespace command {
 		*/
         explicit CommandService(swganh::app::SwganhKernel* kernel);
 
-		/**
-		* @return the service description for this service
-		*/
-        swganh::service::ServiceDescription GetServiceDescription();
+        ~CommandService();
 
 		/**
 		* Adds a new filter that is checked before enqueue
@@ -56,7 +53,7 @@ namespace command {
 		* @param command the name of the command
 		* @param creator the object that will create the command.
 		*/
-        void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator);
+        void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator creator);
 
 		/**
 		* Removes a command creator by name
@@ -115,6 +112,8 @@ namespace command {
 		*/
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(swganh::HashString command);
 
+        void Initialize();
+
 		/**
 		* Called on startup
 		*/
@@ -153,6 +152,9 @@ namespace command {
 
         void SubscribeObjectRemovedEvent(swganh::EventDispatcher* dispatcher);
                         
+        void LoadPythonCommands();
+        void LoadPythonCommands(const std::string& command_script);
+
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<swganh::command::CommandFactoryInterface> command_factory_impl_;
         std::shared_ptr<swganh::command::CommandPropertiesManagerInterface> command_properties_manager_impl_;
@@ -162,6 +164,7 @@ namespace command {
         std::string script_prefix_;
         swganh::CallbackId obj_ready_id_;
         swganh::CallbackId obj_removed_id_;
+        std::set<std::string> commands_loaded_;
     };
 
 }}  // namespace swganh::command

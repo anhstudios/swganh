@@ -38,11 +38,11 @@ using boost::wsmatch;
 using boost::regex_match;
 #endif
 
-SpatialChatInternalCommand::SpatialChatInternalCommand(
+void SpatialChatInternalCommand::Initialize(
     SwganhKernel* kernel,
     const CommandProperties& properties)
-    : BaseSwgCommand(kernel, properties)
 {
+    BaseSwgCommand::Initialize(kernel, properties);
     chat_service_ = kernel->GetServiceManager()->GetService<ChatService>("ChatService");
 }
 

@@ -32,12 +32,6 @@ using boost::wsmatch;
 using boost::regex_match;
 #endif
 
-PurchaseTicketCommand::PurchaseTicketCommand(SwganhKernel* kernel, const CommandProperties& properties)
-	: BaseSwgCommand(kernel, properties)
-	, kernel_(kernel)
-{
-}
-
 boost::optional<std::shared_ptr<CommandCallback>> PurchaseTicketCommand::Run()
 {
 	travel_ = kernel_->GetServiceManager()->GetService<TravelService>("TravelService");

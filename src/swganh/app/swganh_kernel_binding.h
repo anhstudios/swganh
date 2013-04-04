@@ -39,10 +39,17 @@ using namespace std;
 
 void exportSWGANHKernel()
 {
+    class_<AppConfig, boost::noncopyable>("AppConfig")
+		.add_property("plugin_directory", &AppConfig::plugin_directory, &AppConfig::plugin_directory)
+		.add_property("script_directory", &AppConfig::script_directory, &AppConfig::script_directory)
+		.add_property("galaxy_name", &AppConfig::galaxy_name, &AppConfig::galaxy_name)
+        ;
+
     class_<KernelInterface, boost::noncopyable>("Kernel", no_init)
         ;
+
     class_<SwganhKernel, bases<KernelInterface>, boost::noncopyable>("SWGKernel", "Provides an interface to access the Service Manager and App Configuration", no_init)
-        .def("appConfig", &swganh::app::SwganhKernel::GetAppConfig, return_value_policy<copy_non_const_reference>(), "gets the app configuration")
+        .def("appConfig", &swganh::app::SwganhKernel::GetAppConfig, return_internal_reference<>(), "gets the app configuration")
         .def("serviceManager", &swganh::app::SwganhKernel::GetServiceManager,return_internal_reference<>(), "Gets the application's :class:`.ServiceManager`")
         .def("eventDispatcher", &swganh::app::SwganhKernel::GetEventDispatcher, return_value_policy<reference_existing_object>(), "gets the applications :class:`.EventDispatcher`")
         ;

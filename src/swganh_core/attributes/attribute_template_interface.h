@@ -23,12 +23,23 @@ namespace attributes {
     class AttributeTemplateInterface 
     {
     public:
-		AttributeTemplateInterface(swganh::app::SwganhKernel* kernel)
-			: kernel_(kernel){}
-        virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object) = 0;        		
-		virtual swganh::app::SwganhKernel* GetKernel() { return kernel_; }
-	private:
-		swganh::app::SwganhKernel* kernel_;
+        virtual ~AttributeTemplateInterface() {}
+
+        virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object) = 0;
+        virtual void SetKernel(swganh::app::SwganhKernel* kernel) = 0;
+		virtual swganh::app::SwganhKernel* GetKernel() = 0;
+    };
+
+    class BaseAttributeTemplate : public AttributeTemplateInterface
+    {
+    public:
+        virtual ~BaseAttributeTemplate() {}
+
+        virtual void SetKernel(swganh::app::SwganhKernel* kernel) { kernel_ = kernel; }
+        virtual swganh::app::SwganhKernel* GetKernel() { return kernel_; }
+
+    private:
+        swganh::app::SwganhKernel* kernel_;
     };
 
 }}

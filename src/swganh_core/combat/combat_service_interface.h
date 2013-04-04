@@ -45,9 +45,11 @@ namespace command {
     
 namespace combat {
 
-    class CombatServiceInterface : public swganh::service::ServiceInterface
+    class CombatServiceInterface : public swganh::service::BaseService
     {
     public:
+        virtual ~CombatServiceInterface() {}
+
         virtual void SetIncapacitated(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
         
         virtual void SetDead(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;

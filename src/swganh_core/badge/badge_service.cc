@@ -69,38 +69,35 @@ BadgeService::BadgeService(swganh::app::SwganhKernel* kernel)
 			}
 		});
 	});
-}
-
-BadgeService::~BadgeService(void)
-{
-}
-
-void BadgeService::Startup()
-{
-	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
-	equipment_service_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
-
-    kernel_->GetDatabaseManager()->ExecuteAsync(&BadgeService::LoadBadges_, this, "swganh_static");
-
-	LoadBadgeRegions_();
-	
-	// Subscribe to requestbadges CommandQueueEnqueue.
-	command_service_->AddCommandCreator("requestbadges", [] (swganh::app::SwganhKernel* kernel, const CommandProperties& properties)
-	{
-		return std::make_shared<RequestBadgesCommand>(kernel, properties);
-	});
-}
-
-swganh::service::ServiceDescription BadgeService::GetServiceDescription()
-{
-	return swganh::service::ServiceDescription(
+        
+    SetServiceDescription(swganh::service::ServiceDescription(
 		"BadgeService", // namve
 		"badge", // type
 		"0.1", // version
 		"127.0.0.1", // address
 		0, // tcp port
 		0, // udp port
-		0); // status
+		0));
+}
+
+BadgeService::~BadgeService(void)
+{
+}
+
+void BadgeService::Initialize()
+{
+	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+	equipment_service_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
+}
+
+void BadgeService::Startup()
+{
+    kernel_->GetDatabaseManager()->ExecuteAsync(&BadgeService::LoadBadges_, this, "swganh_static");
+
+	LoadBadgeRegions_();
+	
+	// Subscribe to requestbadges CommandQueueEnqueue.
+	command_service_->AddCommandCreator<RequestBadgesCommand>("requestbadges");
 }
 
 void BadgeService::GiveBadge(std::shared_ptr<Object> object, std::string name)

@@ -72,21 +72,19 @@ using boost::regex_match;
 ChatService::ChatService(SwganhKernel* kernel)
     : kernel_(kernel)
     , db_manager_(kernel->GetDatabaseManager())
-{}
-
-ServiceDescription ChatService::GetServiceDescription()
 {
-    ServiceDescription service_description(
+    SetServiceDescription(ServiceDescription(
         "ChatService",
         "chat",
         "0.1",
         "127.0.0.1", 
         0, 
         0, 
-        0);
-
-    return service_description;
+        0));
 }
+
+ChatService::~ChatService()
+{}
 
 bool ChatService::SendPersistentMessage(
     const std::string& recipient,
@@ -151,10 +149,14 @@ void ChatService::SendSpatialChat(
     actor->NotifyObservers(&spatial_chat);
 }
 
+void ChatService::Initialize()
+{
+	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
+}
+
 void ChatService::Startup()
 {
-	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
-
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
     
     connection_service->RegisterMessageHandler(&ChatService::HandleChatInstantMessageToCharacter, this);
@@ -162,16 +164,7 @@ void ChatService::Startup()
     connection_service->RegisterMessageHandler(&ChatService::HandleChatRequestPersistentMessage, this);
     connection_service->RegisterMessageHandler(&ChatService::HandleChatDeletePersistentMessage, this);
 
-	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
-
-    command_service_->AddCommandCreator("spatialchatinternal",
-        [] (
-        swganh::app::SwganhKernel* kernel,
-        const CommandProperties& properties)
-    {
-        return std::make_shared<SpatialChatInternalCommand>(kernel, properties);
-    });
-
+    command_service_->AddCommandCreator<SpatialChatInternalCommand>("spatialchatinternal");
     
 	kernel_->GetEventDispatcher()->Subscribe(
 		"ObjectReadyEvent",

@@ -1,9 +1,13 @@
 from swgpy.command import BaseSwgCommand
 from swgpy import POSTURE
 
-class StandCommand(BaseSwgCommand):    
+
+class StandCommand(BaseSwgCommand):
     base_run_speed = 5.75
-    
+
+    def getCommandName(self):
+        return 'stand'
+
     def run(self):
         print("test")
         actor = self.getActor()

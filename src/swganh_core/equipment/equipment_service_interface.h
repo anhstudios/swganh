@@ -14,9 +14,10 @@ namespace object
 
 namespace equipment
 {
-	class EquipmentServiceInterface : public swganh::service::ServiceInterface
+	class EquipmentServiceInterface : public swganh::service::BaseService
 	{
 	public:
+        virtual ~EquipmentServiceInterface() {}
 
 		virtual int32_t GetSlotIdByName(std::string slot_name) = 0;
 		virtual std::string GetSlotNameById(int32_t slot_id) = 0;

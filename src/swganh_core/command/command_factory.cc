@@ -3,37 +3,39 @@
 
 #include "command_factory.h"
 
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/service/service_manager.h"
 
-#include "swganh/app/swganh_kernel.h"
-#include "swganh_core/command/command_interface.h"
-#include "swganh_core/command/command_properties.h"
-#include "swganh_core/command/command_service_interface.h"
-#include "swganh_core/messages/controllers/command_queue_enqueue.h"
-#include "swganh/observer/observer_interface.h"
+#include "command_interface.h"
+#include "command_properties.h"
+#include "command_service_interface.h"
 
-using swganh::command::CommandFactory;
+using namespace swganh::command;
 using swganh::app::SwganhKernel;
-using swganh::command::CommandCreator;
-using swganh::command::CommandInterface;
-using swganh::command::CommandProperties;
-using swganh::command::CommandServiceInterface;
-using swganh::messages::controllers::CommandQueueEnqueue;
-using swganh::object::ObjectController;
 
-CommandFactory::CommandFactory(SwganhKernel* kernel)
-    : kernel_(kernel)
-    , command_service_(nullptr)
-{}
+CommandFactory::CommandFactory() {}
 
-void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator)
+CommandFactory::~CommandFactory() {}
+
+void CommandFactory::Initialize(SwganhKernel* kernel)
+{
+    kernel_ = kernel;
+    command_service_ = kernel_->GetServiceManager()->GetService<CommandServiceInterface>("CommandService");
+}
+
+bool CommandFactory::IsRegistered(swganh::HashString command)
+{
+    return command_creators_.find(command) != command_creators_.end();
+}
+
+void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator creator)
 {    
-    auto properties = GetCommandService()->FindPropertiesForCommand(command);
+    auto properties = command_service_->FindPropertiesForCommand(command);
 
     if (properties)
     {
         boost::lock_guard<boost::mutex> lg(creators_mutex_);
-        command_creators_.insert(std::make_pair(command, CreatorData(std::move(creator), *properties)));
+        command_creators_.insert(std::make_pair(command, std::make_shared<CreatorData>(std::move(creator), *properties)));
     }
 }
 
@@ -53,18 +55,9 @@ std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(swganh::HashStri
     if (creators_iter != command_creators_.end())
     {
         auto& creator = creators_iter->second;
-        new_command = creator.creator_func(kernel_, creator.properties);
+        new_command = creator->creator_func();
+        new_command->Initialize(kernel_, creator->properties);
     }
 
     return new_command;
-}
-
-swganh::command::CommandServiceInterface* CommandFactory::GetCommandService()
-{
-    if (!command_service_)
-    {
-        command_service_ = kernel_->GetServiceManager()->GetService<CommandServiceInterface>("CommandService");
-    }
-
-    return command_service_;
 }

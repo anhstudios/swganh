@@ -50,20 +50,22 @@ TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kern
 		boost::lock_guard<boost::mutex> lock(terrain_mutex_);
 		this->scenes_.erase(real_event->scene_id);
 	});
-}
-
-swganh::service::ServiceDescription TerrainService::GetServiceDescription()
-{
-		swganh::service::ServiceDescription service_description(        
+    
+    SetServiceDescription(swganh::service::ServiceDescription(        
 		"Terrain Service",
         "terrain",
         "0.1",
         "127.0.0.1", 
         0,
         0, 
-        0);
-	return service_description;
+        0));
 }
+
+TerrainService::~TerrainService()
+{}
+
+void TerrainService::Initialize()
+{}
 
 bool TerrainService::waterHeightHelper(swganh::tre::ContainerLayer* layer, float x, float z, float& result)
 {

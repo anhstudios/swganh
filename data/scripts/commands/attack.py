@@ -1,7 +1,9 @@
 from swgpy.command import BaseCombatCommand
-from swgpy import ACTION
+
 
 class AttackCommand(BaseCombatCommand):
-	def setup(self, properties):
-		properties.max_range_to_target = 7.5
-		
+    def getCommandName(self):
+        return 'attack'
+
+    def setup(self, properties):
+        properties.max_range_to_target = 7.5

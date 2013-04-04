@@ -41,11 +41,11 @@ namespace command {
      * The command service is responsible for the handling of incoming command
      * requests for game objects.
      */
-    class CommandServiceInterface: public swganh::service::ServiceInterface
+    class CommandServiceInterface: public swganh::service::BaseService
     {
     public:
         virtual ~CommandServiceInterface() {}
-
+        
         /**
          * Adds a filter to use while validating a command prior to enqueuing.
          */
@@ -56,6 +56,12 @@ namespace command {
          */
         virtual void AddCommandProcessFilter(CommandFilter&& filter) = 0;
         
+        template<typename T>
+        void AddCommandCreator(swganh::HashString command)
+        {
+            AddCommandCreator(command, [] () { return std::make_shared<T>(); });
+        }
+
         /**
          * Adds a creator for a given command type. Only the most recently added creator for
          * a type is used.
@@ -63,7 +69,7 @@ namespace command {
          * @param command The name/crc of the command.
          * @param creator The creator associated with the specified command.
          */
-        virtual void AddCommandCreator(swganh::HashString command, CommandCreator&& creator) = 0;
+        virtual void AddCommandCreator(swganh::HashString command, CommandCreator creator) = 0;
         
         /**
          * Removes the creator for a given command type if one is set.

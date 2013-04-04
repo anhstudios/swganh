@@ -51,20 +51,22 @@ using swganh::app::SwganhKernel;
 CharacterService::CharacterService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
-}
-
-service::ServiceDescription CharacterService::GetServiceDescription() {
-    service::ServiceDescription service_description(
+    SetServiceDescription(service::ServiceDescription(
         "Character Service",
         "character",
         "0.1",
         "127.0.0.1",
         0,
         0,
-        0);
+        0));
+}
 
-    return service_description;
+CharacterService::~CharacterService()
+{}
+
+void CharacterService::Initialize()
+{
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
 
 void CharacterService::Startup() {

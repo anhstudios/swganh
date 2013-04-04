@@ -28,14 +28,20 @@ namespace command {
 		/**
 		* Creates a new instance
 		*/
-        explicit CommandFactory(swganh::app::SwganhKernel* kernel);
+        CommandFactory();
+
+        ~CommandFactory();
+
+        virtual void Initialize(swganh::app::SwganhKernel* kernel);
+
+        virtual bool IsRegistered(swganh::HashString command);
 
 		/**
 		* Associates a particular command name with a creator
 		* @param command the name
 		* @param creator the creator
 		*/
-        virtual void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator);
+        virtual void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator creator);
 
 		/**
 		* Disassociates a particular command name with a creator
@@ -63,7 +69,7 @@ namespace command {
             const swganh::command::CommandProperties& properties;
         };
 
-        typedef std::map<swganh::HashString, CreatorData> CreatorMap;
+        typedef std::map<swganh::HashString, std::shared_ptr<CreatorData>> CreatorMap;
 
         swganh::app::SwganhKernel* kernel_;
         swganh::command::CommandServiceInterface* command_service_;

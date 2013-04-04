@@ -28,11 +28,10 @@ using swganh::scripting::ScopedGilLock;
 namespace swganh {
 namespace attributes {
 
-	struct AttributeTemplateWrap : AttributeTemplateInterface, bp::wrapper<AttributeTemplateInterface>
+	struct AttributeTemplateWrap : BaseAttributeTemplate, bp::wrapper<BaseAttributeTemplate>
 	{
-		AttributeTemplateWrap(PyObject* obj, swganh::app::SwganhKernel* kernel)
-			: AttributeTemplateInterface(kernel)
-			, self_(bp::handle<>(bp::borrowed(obj)))
+		AttributeTemplateWrap(PyObject* obj)
+			: self_(bp::handle<>(bp::borrowed(obj)))
 		{
 			ScopedGilLock lock;
 			bp::detail::initialize_wrapper(obj, this);
@@ -41,15 +40,19 @@ namespace attributes {
 		AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object)
 		{
 			ScopedGilLock lock;
+
+            AttributeListMessage message;
+
 			try 
 			{
-				return this->get_override("buildAttributeTemplate")(object);
+				message = this->get_override("buildAttributeTemplate")(object);
 			}
 			catch (bp::error_already_set&)
 			{
 				swganh::scripting::logPythonException();
 			}
-			return AttributeListMessage();
+
+			return message;
 		}
 	private:
 		bp::object self_;
@@ -57,8 +60,13 @@ namespace attributes {
 
 	void exportAttributes()
 	{
-		bp::class_<AttributeTemplateInterface, AttributeTemplateWrap, boost::noncopyable>("BaseAttributeTemplate", bp::init<swganh::app::SwganhKernel*>())
-			.def("buildAttributeTemplate", &AttributeTemplateWrap::BuildAttributeTemplate)
+        bp::class_<AttributeTemplateInterface, boost::noncopyable>("AttributeTemplateInterface", bp::no_init)
+			.def("buildAttributeTemplate", bp::pure_virtual(&AttributeTemplateInterface::BuildAttributeTemplate))
+			.def("getKernel", bp::pure_virtual(&AttributeTemplateInterface::GetKernel), bp::return_internal_reference<>())
+        ;
+
+		bp::class_<BaseAttributeTemplate, AttributeTemplateWrap, bp::bases<AttributeTemplateInterface>, boost::noncopyable>("BaseAttributeTemplate")
+			.def("buildAttributeTemplate", bp::pure_virtual(&BaseAttributeTemplate::BuildAttributeTemplate))
 			.def("getKernel", &AttributeTemplateWrap::GetKernel, bp::return_internal_reference<>())
 		;
 		bp::class_<AttributeListMessage, boost::noncopyable>("AttributeListMessage", "Message that describes attributes for a given class::`Object`")

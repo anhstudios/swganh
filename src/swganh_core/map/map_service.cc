@@ -37,15 +37,7 @@ using swganh::messages::GetMapLocationsResponseMessage;
 MapService::MapService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 {
-}
-
-MapService::~MapService()
-{
-}
-
-ServiceDescription MapService::GetServiceDescription()
-{
-	return ServiceDescription(
+    SetServiceDescription(ServiceDescription(
 		"MapService",
 		"map",
 		"0.1",
@@ -53,13 +45,19 @@ ServiceDescription MapService::GetServiceDescription()
 		0,
 		0,
 		0
-		);
+		));
+}
+
+MapService::~MapService()
+{}
+
+void MapService::Initialize()
+{
+	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 }
 
 void MapService::Startup()
 {
-	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-
 	kernel_->GetEventDispatcher()->Subscribe("ObjectManager::PersistObjectsByTimer", [=](std::shared_ptr<swganh::EventInterface> event) {
 		PersistLocations();
 	});

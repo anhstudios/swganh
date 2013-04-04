@@ -18,10 +18,12 @@ namespace chat {
     {
     public:
 
+        virtual std::string GetCommandName() { return "spatialchatinternal"; }
+
 		/**
 			Creates a new instance
 		*/
-        SpatialChatInternalCommand(
+        virtual void Initialize(
             swganh::app::SwganhKernel* kernel,
             const swganh::command::CommandProperties& properties);
 

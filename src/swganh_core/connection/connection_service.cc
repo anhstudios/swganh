@@ -57,11 +57,15 @@ ConnectionService::ConnectionService(
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , ping_port_(ping_port)
-{
-
-    session_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::connection::providers::SessionProviderInterface>("Login::SessionProvider");
-
-    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
+{    
+    SetServiceDescription(ServiceDescription(
+        "Connection Service",
+        "connection",
+        "0.1",
+        Resolve(listen_address_),
+        0,
+        listen_port_,
+        ping_port_));
 }
 
 ConnectionService::~ConnectionService()
@@ -69,19 +73,16 @@ ConnectionService::~ConnectionService()
     session_timer_->cancel();
 }
 
-ServiceDescription ConnectionService::GetServiceDescription() {
-    auto listen_address = Resolve(listen_address_);
+void ConnectionService::Initialize()
+{
+    session_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::connection::providers::SessionProviderInterface>("Login::SessionProvider");
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 
-    ServiceDescription service_description(
-        "Connection Service",
-        "connection",
-        "0.1",
-        listen_address,
-        0,
-        listen_port(),
-        ping_port_);
+	ping_server_ = make_shared<PingServer>(kernel_->GetIoThreadPool(), ping_port_);
 
-    return service_description;
+    character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
+    login_service_ = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
 void ConnectionService::Startup() {

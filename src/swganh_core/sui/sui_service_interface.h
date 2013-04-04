@@ -35,9 +35,10 @@ namespace sui
 		INPUT_BOX_OKCANCEL
 	};
 
-	class SUIServiceInterface : public swganh::service::ServiceInterface
+	class SUIServiceInterface : public swganh::service::BaseService
 	{
 	public:
+        virtual ~SUIServiceInterface() {}
 
 		//Creates a new SUI page and returns the id of the corresponding window id
 		virtual int32_t OpenSUIWindow(std::shared_ptr<SUIWindowInterface> window) = 0;
