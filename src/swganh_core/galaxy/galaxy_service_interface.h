@@ -20,15 +20,14 @@ class KernelInterface;
 namespace swganh {
 namespace galaxy {
 
-    class GalaxyServiceInterface : public swganh::service::ServiceInterface
+    class GalaxyServiceInterface : public swganh::service::BaseService
     {
-    public:    
+    public:
+        virtual ~GalaxyServiceInterface() {}
 
     	virtual uint32_t GetPopulation() = 0;
 		
 		virtual uint64_t GetGalaxyTimeInMilliseconds() = 0;
-
-    	virtual swganh::service::ServiceDescription GetServiceDescription() = 0;
         
         virtual void Startup() = 0;
 

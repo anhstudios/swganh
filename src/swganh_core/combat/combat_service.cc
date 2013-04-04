@@ -17,7 +17,7 @@
 #include "swganh/event_dispatcher.h"
 #include "swganh/database/database_manager.h"
 #include "swganh/service/service_manager.h"
-
+#include "swganh/scripting/python_instance_creator.h"
 #include "swganh/app/swganh_kernel.h"
 
 #include "swganh_core/object/creature/creature.h"
@@ -29,7 +29,6 @@
 
 #include "swganh_core/command/command_service_interface.h"
 #include "swganh_core/command/base_swg_command.h"
-#include "swganh_core/command/python_command_creator.h"
 #include "swganh_core/command/command_properties.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
 
@@ -57,30 +56,28 @@ using namespace swganh::combat;
 using namespace swganh::command;
 
 using swganh::app::SwganhKernel;
+using swganh::scripting::PythonInstanceCreator;
 
 CombatService::CombatService(SwganhKernel* kernel)
 : generator_(1, 100)
 , active_(kernel->GetCpuThreadPool())
 , kernel_(kernel)
 , buff_manager_(kernel)
-{
-}
-
-ServiceDescription CombatService::GetServiceDescription()
-{
-    ServiceDescription service_description(
+{    
+    SetServiceDescription(ServiceDescription(
         "CombatService",
         "Combat",
         "0.1",
         "127.0.0.1", 
         0, 
-        0, 
-        0);
-
-    return service_description;
+        0,
+        0));
 }
 
-void CombatService::Startup()
+CombatService::~CombatService()
+{}
+
+void CombatService::Initialize()
 {
 	simulation_service_ = kernel_->GetServiceManager()
         ->GetService<SimulationServiceInterface>("SimulationService");
@@ -90,22 +87,11 @@ void CombatService::Startup()
 	
 	equipment_service_ = simulation_service_->GetEquipmentService();
 
-	static_service_ = kernel_->GetServiceManager()
-		->GetService<swganh::statics::StaticServiceInterface>("StaticService");	
-    
-    command_service_->AddCommandCreator("attack", swganh::command::PythonCommandCreator("commands.attack", "AttackCommand"));
-    command_service_->AddCommandCreator("deathblow", swganh::command::PythonCommandCreator("commands.deathblow", "DeathBlowCommand")); 
-    command_service_->AddCommandCreator("defaultattack", swganh::command::PythonCommandCreator("commands.defaultattack", "DefaultAttackCommand"));
-    command_service_->AddCommandCreator("duel", swganh::command::PythonCommandCreator("commands.duel", "DuelCommand"));
-    command_service_->AddCommandCreator("endduel", swganh::command::PythonCommandCreator("commands.endduel", "EndDuelCommand"));
-    command_service_->AddCommandCreator("kneel", swganh::command::PythonCommandCreator("commands.kneel", "KneelCommand"));
-    command_service_->AddCommandCreator("berserk1", swganh::command::PythonCommandCreator("commands.berserk1", "Berserk1Command"));
-    command_service_->AddCommandCreator("overchargeshot1", swganh::command::PythonCommandCreator("commands.overchargeshot1", "OverchargeShot1Command"));
-    command_service_->AddCommandCreator("peace", swganh::command::PythonCommandCreator("commands.peace", "PeaceCommand"));
-    command_service_->AddCommandCreator("prone", swganh::command::PythonCommandCreator("commands.prone", "ProneCommand"));
-    command_service_->AddCommandCreator("sitserver", swganh::command::PythonCommandCreator("commands.sitserver", "SitServerCommand"));
-    command_service_->AddCommandCreator("stand", swganh::command::PythonCommandCreator("commands.stand", "StandCommand"));
+	static_service_ = kernel_->GetServiceManager()->GetService<swganh::statics::StaticServiceInterface>("StaticService");
+}
 
+void CombatService::Startup()
+{
 	buff_manager_.Start();
 }
 

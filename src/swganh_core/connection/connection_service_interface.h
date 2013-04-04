@@ -45,7 +45,7 @@ namespace connection {
     
 class ConnectionClientInterface;
 
-class ConnectionServiceInterface : public swganh::service::ServiceInterface, public swganh::network::BaseSwgServer
+class ConnectionServiceInterface : public swganh::service::BaseService, public swganh::network::BaseSwgServer
 {
 public:
     
@@ -53,6 +53,8 @@ public:
 		: swganh::network::BaseSwgServer(kernel->GetIoThreadPool())
 	{
 	}
+
+    virtual ~ConnectionServiceInterface() {}
 
     virtual bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session) = 0;
 

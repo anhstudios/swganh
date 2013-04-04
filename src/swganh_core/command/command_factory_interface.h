@@ -27,9 +27,7 @@ namespace command {
     struct CommandProperties;
 
     typedef std::function<
-        std::shared_ptr<CommandInterface> (
-            swganh::app::SwganhKernel* kernel,
-            const CommandProperties& properties)
+        std::shared_ptr<CommandInterface> ()
     > CommandCreator;
 
     /**
@@ -40,6 +38,10 @@ namespace command {
     public:
         virtual ~CommandFactoryInterface() {}
 
+        virtual void Initialize(swganh::app::SwganhKernel* kernel) = 0;
+
+        virtual bool IsRegistered(swganh::HashString command) = 0;
+
         /**
          * Adds a creator for a given command type. Only the most recently added creator for
          * a type is used.
@@ -47,7 +49,7 @@ namespace command {
          * @param command The name/crc of the command.
          * @param creator The creator associated with the specified command.
          */
-        virtual void AddCommandCreator(swganh::HashString command, CommandCreator&& creator) = 0;
+        virtual void AddCommandCreator(swganh::HashString command, CommandCreator creator) = 0;
 
         /**
          * Removes the creator for a given command type if one is set.

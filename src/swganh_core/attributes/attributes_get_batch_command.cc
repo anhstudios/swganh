@@ -27,17 +27,15 @@ using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
 
 
-GetAttributesBatchCommand::GetAttributesBatchCommand(
+void GetAttributesBatchCommand::Initialize(
     SwganhKernel* kernel,
     const CommandProperties& properties)
-    : BaseSwgCommand(kernel, properties)
 {
+    BaseSwgCommand::Initialize(kernel, properties);
+
     attributes_service_ = kernel->GetServiceManager()->GetService<AttributesService>("AttributesService");
 	simulation_service_ = kernel->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
-
-GetAttributesBatchCommand::~GetAttributesBatchCommand()
-{}
 
 boost::optional<std::shared_ptr<CommandCallback>> GetAttributesBatchCommand::Run()
 {

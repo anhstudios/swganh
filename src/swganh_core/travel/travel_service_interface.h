@@ -10,9 +10,11 @@ namespace object {
 } // namespace swganh::object
 
 namespace travel {
-	class TravelServiceInterface : public swganh::service::ServiceInterface
+	class TravelServiceInterface : public swganh::service::BaseService
 	{
 	public:
+
+        virtual ~TravelServiceInterface() {}
 
 		/**
 		 * Begins the ticket transaction processes by opening the ticket purchasing window.

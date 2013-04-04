@@ -35,7 +35,8 @@ namespace map {
 		MapService(swganh::app::SwganhKernel* kernel);
 		~MapService();
 
-		void Startup();
+        virtual void Initialize();
+		virtual void Startup();
 
 		virtual void AddLocation(std::string scene, std::wstring name, float x, float z, uint32_t category, uint32_t sub_category);
 		virtual void RemoveLocation(std::string scene, std::wstring name);
@@ -44,8 +45,6 @@ namespace map {
 		virtual void AddLocation(uint32_t scene_id, std::wstring name, float x, float z, uint32_t category, uint32_t sub_category);
 		virtual void RemoveLocation(uint32_t scene_id, std::wstring name);
 		virtual bool LocationExists(uint32_t scene_id, std::wstring name);
-
-		swganh::service::ServiceDescription GetServiceDescription();
 
 	private:
 		void InsertLocation(uint32_t scene_id, swganh::messages::MapLocation& location);

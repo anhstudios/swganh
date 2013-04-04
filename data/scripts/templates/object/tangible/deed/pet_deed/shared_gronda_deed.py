@@ -12,7 +12,7 @@ def create(kernel):
 	result.stfName("pet_deed","gronda")		
 	
 	#### BEGIN MODIFICATIONS ####
-	result.setStringAttribute("radial_filename", "radials.deed_datapad")
+	result.setStringAttribute("radial_filename", "radials/deed_datapad.py")
 	result.setStringAttribute("deed_pcd", "object/intangible/pet/shared_gronda_hue.iff")
 	result.setStringAttribute("deed_mobile", "object/mobile/shared_gronda_hue.iff")
 	####  END MODIFICATIONS  ####

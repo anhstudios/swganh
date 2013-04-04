@@ -46,11 +46,8 @@ namespace attributes {
 		* Creates a new instance
 		*/
         explicit AttributesService(swganh::app::SwganhKernel* kernel);
-        
-		/*!
-		* Returns the service description for this service
-		*/
-		swganh::service::ServiceDescription GetServiceDescription();
+
+        virtual ~AttributesService();
 		
 		/*!
 		* @param template_id the attribute to fetch
@@ -80,6 +77,8 @@ namespace attributes {
 
 		std::shared_ptr<AttributeTemplateInterface> GetPythonAttributeTemplate(std::string filename);
 		
+        void Initialize();
+
 		/*!
 		* Method called on the service at start up.
 		*/

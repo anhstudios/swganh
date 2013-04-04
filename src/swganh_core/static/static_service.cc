@@ -138,7 +138,19 @@ StaticService::StaticService(SwganhKernel* kernel)
             }
         });
 	});
+
+    SetServiceDescription(ServiceDescription(
+        "StaticService",
+        "static",
+        "0.1",
+        "127.0.0.1",
+        0,
+        0,
+        0));
 }
+
+void StaticService::Initialize()
+{}
 
 void StaticService::Startup()
 {
@@ -156,20 +168,6 @@ void StaticService::Startup()
 
 StaticService::~StaticService()
 {
-}
-
-ServiceDescription StaticService::GetServiceDescription()
-{
-	ServiceDescription service_description(
-        "StaticService",
-        "static",
-        "0.1",
-        "127.0.0.1",
-        0,
-        0,
-        0);
-
-    return service_description;
 }
 
 void StaticService::_loadBuildings(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,

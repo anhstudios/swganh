@@ -33,15 +33,11 @@ public:
 	* @return the current time of the galaxy since galaxy birth
 	*/
 	uint64_t GetGalaxyTimeInMilliseconds();
-
-	/**
-	* @return the description of the service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
         
 	/**
 	* Called on server startup
 	*/
+    void Initialize();
     void Startup();
 
 private:

@@ -20,8 +20,6 @@ namespace simulation {
     
         ~SimulationService();
 
-        swganh::service::ServiceDescription GetServiceDescription();
-
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
 		virtual uint32_t SceneIdByName(const std::string& scene_label);
@@ -85,7 +83,8 @@ namespace simulation {
 		virtual void PrepareToAccomodate(uint32_t delta);
 		std::shared_ptr<swganh::object::ObjectManager> GetObjectManager();
 
-		void Startup();
+        virtual void Initialize();
+		virtual void Startup();
 
     private:
 

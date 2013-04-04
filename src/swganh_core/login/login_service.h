@@ -29,11 +29,6 @@ public:
 	~LoginService();
     
 	/**
-	* @return the service description for this service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
-    
-	/**
 	* Removes a session from this service.
 	* @param session the session to remove
 	* @return true if success
@@ -88,6 +83,7 @@ public:
 	/**
 	* Called on startup
 	*/
+    void Initialize();
     void Startup();
 
 	/**

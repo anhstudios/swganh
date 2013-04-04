@@ -24,9 +24,10 @@ class WeatherProviderInterface;
 namespace swganh {
 namespace weather {
     
-    class WeatherServiceInterface : public swganh::service::ServiceInterface
+    class WeatherServiceInterface : public swganh::service::BaseService
     {
     public:
+        virtual ~WeatherServiceInterface() {}
 
         virtual Weather GetSceneWeather(uint32_t scene_id) =0;
 		virtual void SetSceneWeather(uint32_t scene_id, std::vector<WeatherEvent> weather_sequence) =0;

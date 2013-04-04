@@ -15,9 +15,10 @@ namespace badge {
 	/**
 	 * Manages players badges.
 	 */
-	class BadgeServiceInterface : public swganh::service::ServiceInterface
+	class BadgeServiceInterface : public swganh::service::BaseService
 	{
 	public:
+        virtual ~BadgeServiceInterface() {}
 
 		/**
 		 * Awards player with the target badge.

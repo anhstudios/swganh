@@ -82,9 +82,8 @@ namespace badge {
 		BadgeService(swganh::app::SwganhKernel* kernel);
 		~BadgeService();
 
+        void Initialize();
 		void Startup();
-
-		swganh::service::ServiceDescription GetServiceDescription();
 
 		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
 		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);

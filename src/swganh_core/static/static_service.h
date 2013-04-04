@@ -44,9 +44,8 @@ namespace statics
 		StaticService(swganh::app::SwganhKernel* kernel);
 		~StaticService();
 
+        void Initialize();
 		void Startup();
-
-		virtual swganh::service::ServiceDescription GetServiceDescription();
 
 		std::vector<std::shared_ptr<ElevatorData>> GetElevatorDataForObject(uint64_t terminal_id);
 

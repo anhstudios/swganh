@@ -10,9 +10,11 @@ namespace map {
 	/**
 	 * Manages map locations for each scene.
 	 */
-	class MapServiceInterface : public swganh::service::ServiceInterface
+	class MapServiceInterface : public swganh::service::BaseService
 	{
 	public:
+
+        virtual ~MapServiceInterface() {}
 
 		/**
 		 * Adds a location to a scene by its name.

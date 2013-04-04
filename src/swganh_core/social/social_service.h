@@ -23,8 +23,8 @@ namespace social {
         explicit SocialService(swganh::app::SwganhKernel* kernel);
     
         ~SocialService();
-
-        swganh::service::ServiceDescription GetServiceDescription();
+        
+        virtual void Initialize();
 
         virtual bool AddFriend(const std::shared_ptr<swganh::object::Player>& player, const std::string& friend_name);
         virtual bool AddIgnore(const std::shared_ptr<swganh::object::Player>& player, const std::string& player_name);

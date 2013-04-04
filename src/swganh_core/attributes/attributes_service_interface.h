@@ -17,9 +17,11 @@ namespace object {
 namespace swganh {
 namespace attributes {
 
-    class AttributesServiceInterface: public swganh::service::ServiceInterface
+    class AttributesServiceInterface: public swganh::service::BaseService
     {
     public:        
+        virtual ~AttributesServiceInterface() {}
+
         virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(int8_t template_id) = 0;
         virtual void SetAttributeTemplate(const std::shared_ptr<AttributeTemplateInterface> template_, int8_t template_id) = 0;        
 		virtual bool HasAttributeTemplate(int8_t template_id) = 0;

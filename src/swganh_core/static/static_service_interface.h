@@ -25,9 +25,11 @@ namespace statics
 		bool going_down;
 	};
 
-	class StaticServiceInterface : public swganh::service::ServiceInterface
+	class StaticServiceInterface : public swganh::service::BaseService
 	{
 	public:
+
+        virtual ~StaticServiceInterface() {}
 
 		//Returns the elevator data for a particular terminal.
 		virtual std::vector<std::shared_ptr<ElevatorData>> GetElevatorDataForObject(uint64_t terminal_id) = 0;

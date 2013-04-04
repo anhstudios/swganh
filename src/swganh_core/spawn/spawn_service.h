@@ -18,21 +18,20 @@ namespace spawn
 	public:
 		SpawnService(swganh::app::SwganhKernel* kernel);
 		~SpawnService();
-		
-		 swganh::service::ServiceDescription GetServiceDescription();
-	
-		 virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine)
-		 {
-			 fsm_manager_.StartManagingObject(object, machine);
-		 }
+
+		virtual void Initialize();
+        virtual void Startup();
+
+        virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine)
+        {
+            fsm_manager_.StartManagingObject(object, machine);
+        }
 
 		virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object)
 		{
 			fsm_manager_.StopManagingObject(object);
 		}
-
-		 void Startup();
-
+        
 	private:
 		void _timerTick(const boost::system::error_code& e);
 

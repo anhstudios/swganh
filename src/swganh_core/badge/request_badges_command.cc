@@ -32,11 +32,10 @@ uint8_t GetBadgeBitmaskBitById2(uint32_t id)
 	return (id)%32;
 }
 
-RequestBadgesCommand::RequestBadgesCommand(SwganhKernel* kernel, const CommandProperties& properties)
-	: BaseSwgCommand(kernel, properties)
-	, kernel_(kernel)
+void RequestBadgesCommand::Initialize(SwganhKernel* kernel, const CommandProperties& properties)
 {
-	equipment_service_ = kernel_->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
+    BaseSwgCommand::Initialize(kernel, properties);
+	equipment_service_ = kernel->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
 }
 
 boost::optional<std::shared_ptr<CommandCallback>> RequestBadgesCommand::Run()

@@ -1,18 +1,14 @@
-#include <swganh/event_dispatcher.h>
+#include "buff_manager.h"
+
 #include <boost/asio/placeholders.hpp>
 
-#include <swganh/logger.h>
-
-#include "swganh_core/combat/python_buff_creator.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/logger.h"
+#include "swganh/scripting/python_script.h"
 
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/combat/buff_events.h"
-#include "buff_manager.h"
 
-#include <boost/python.hpp>
-#include "swganh/scripting/utilities.h"
-
-using namespace boost::python;
 using namespace swganh::scripting;
 using namespace boost::posix_time;
 using namespace swganh::app;
@@ -27,21 +23,20 @@ BuffManager::BuffManager(swganh::app::SwganhKernel* kernel)
 void BuffManager::Start()
 {
 	//Load Python Buffs
+    PythonScript script(kernel_->GetAppConfig().script_directory + "/buffs/__init__.py");
+    auto buff_names = script.GetGlobalAs<std::vector<std::string>>("buffTemplates");
 
-	ScopedGilLock lock;
-	auto module_filename = "buffs.__init__";
-	auto module = boost::python::import(module_filename);
-	auto new_instance = module.attr("buffTemplates");
-	std::vector<std::string> buffs = boost::python::extract<std::vector<std::string>>(new_instance);		
-	
-	std::for_each(buffs.begin(), buffs.end(), [this] (std::string& filename) {
-		LOG(warning) << "Loading buff script " << filename;
-		if(auto buff = PythonBuffCreator("buffs."+filename, filename)())
+    for (auto& buff_name : buff_names)
+    {
+        PythonScript script(kernel_->GetAppConfig().script_directory + "/buffs/" + buff_name + ".py");
+
+		DLOG(info) << "Loading buff script " << buff_name;
+        if(auto buff = script.CreateInstance<BuffInterface>(buff_name))
 		{
-			buff->filename = filename;
-			buffs_.insert(std::make_pair(filename, buff));
+			buff->filename = buff_name;
+			buffs_.insert(std::make_pair(buff_name, buff));
 		}
-	});
+    }
 
 	//Setup Dispatcher Callback
 	kernel_->GetEventDispatcher()->Subscribe("CombatService::AddBuff", [this] (const shared_ptr<EventInterface>& incoming_event)

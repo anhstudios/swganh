@@ -13,6 +13,7 @@
 
 #include "object_factory.h"
 #include "swganh/event_dispatcher.h"
+#include "swganh/scripting/python_script.h"
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 #include "swganh/tre/visitors/slots/slot_arrangement_visitor.h"
@@ -20,8 +21,6 @@
 #include "swganh_core/object/slot_exclusive.h"
 #include "swganh_core/object/slot_container.h"
 #include "swganh_core/object/template_interface.h"
-
-#include "swganh/scripting/utilities.h"
 
 #include "swganh/database/database_manager.h"
 #include <cppconn/exception.h>
@@ -498,15 +497,11 @@ void ObjectManager::PrepareToAccomodate(uint32_t delta)
 
 void ObjectManager::LoadPythonObjectTemplates()
 {
-	swganh::scripting::ScopedGilLock lock;
-	try {		
-		LOG(info) << "Loading Template Objects";
-		auto module = bp::import("load_objects");
-		auto python_template = module.attr("templates");
-		object_templates_ = bp::extract<PythonTemplateMap>(python_template);
-	}
-	catch (bp::error_already_set&)
-	{
-		swganh::scripting::logPythonException();
-	}
+    LOG(info) << "Loading Template Objects";
+    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/load_objects.py", true);
+    
+    script.SetGlobal("kernel", bp::ptr(kernel_));
+    script.Run();
+
+    object_templates_ = script.GetGlobalAs<PythonTemplateMap>("templates");
 }

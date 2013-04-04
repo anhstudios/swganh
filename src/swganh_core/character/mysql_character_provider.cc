@@ -60,7 +60,7 @@ using boost::regex;
 using boost::regex_search;
 #endif
 
-MysqlCharacterProvider::MysqlCharacterProvider(KernelInterface* kernel)
+MysqlCharacterProvider::MysqlCharacterProvider(SwganhKernel* kernel)
     : CharacterProviderInterface()
     , kernel_(kernel) 
 	, py_character_create_(kernel)

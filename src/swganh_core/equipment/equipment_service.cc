@@ -16,21 +16,23 @@ using namespace swganh::equipment;
 
 EquipmentService::EquipmentService(swganh::tre::ResourceManager* resourceManager)
 {
-	slot_definitions_ = resourceManager->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
-}
+	slot_definitions_ = resourceManager->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");  
 
-swganh::service::ServiceDescription EquipmentService::GetServiceDescription()
-{
-	ServiceDescription service_description(        
+    SetServiceDescription(ServiceDescription(        
 		"Equipment Service",
         "equipment",
         "0.1",
         "127.0.0.1", 
         0,
         0, 
-        0);
-	return service_description;
+        0));
 }
+
+EquipmentService::~EquipmentService()
+{}
+
+void EquipmentService::Initialize()
+{}
 
 int32_t EquipmentService::GetSlotIdByName(std::string slot_name)
 {

@@ -8,9 +8,11 @@ namespace swganh
 {
 namespace terrain
 {
-	class TerrainServiceInterface : public swganh::service::ServiceInterface
+	class TerrainServiceInterface : public swganh::service::BaseService
 	{
 	public:
+
+        virtual ~TerrainServiceInterface() {}
 
 		virtual float GetHeight(uint32_t scene_id, float x, float z, bool raw=false) = 0;
 

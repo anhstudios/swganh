@@ -34,15 +34,10 @@ public:
 	*/
 	PlayerService(swganh::app::SwganhKernel* kernel);
 		
-	/**
-	* Called on startup
-	*/
-	void Startup();
+    ~PlayerService();
 
-	/**
-	* @return the service description for this service
-	*/
-	swganh::service::ServiceDescription GetServiceDescription();
+	void Initialize();
+	void Startup();
 
 	/**
 	* Called when a player enters the game
