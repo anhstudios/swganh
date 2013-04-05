@@ -105,7 +105,7 @@ public:
     * @return A std::future for the return value of the task.
     */
     template<typename T>
-    std::future<typename std::result_of<T()>::type> ExecuteAsync(T&& task, const StorageType& storage_type)
+    auto ExecuteAsync(T task, const StorageType& storage_type) -> std::future<decltype(task(getConnection(storage_type)))>
     {
         return thread_pool_.Schedule(std::bind(task, getConnection(storage_type)));
     }
