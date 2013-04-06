@@ -37,7 +37,7 @@ namespace combat
 		void Start();
 
 	private:
-		void BuffManager::handleTick_(const boost::system::error_code& e);
+		void handleTick_(const boost::system::error_code& e);
 
 		swganh::app::SwganhKernel * kernel_;
 
