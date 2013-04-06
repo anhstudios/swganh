@@ -40,10 +40,10 @@ void ShuttleBundle::HandleCleanup(std::shared_ptr<Object>& object_, boost::posix
 {
 	if(!timed.empty())
 	{
-		boost::posix_time::ptime& time = std::get<0>(timed.top());
+		boost::posix_time::ptime time = std::get<0>(timed.top());
 		while(time <= current_time_)
 		{
-			TimedType& type = timed.top();
+			TimedType type = timed.top();
 
 			//Call the handler
 			Transition& t = std::get<2>(type);
