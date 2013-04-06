@@ -1,3 +1,8 @@
+
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "buff_manager.h"
 
 #include <boost/asio/placeholders.hpp>

@@ -30,14 +30,12 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
 
 void GuildMessageBuilder::SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	observer->Notify(&BuildBaseline3(guild));
-    observer->Notify(&BuildBaseline6(guild));
+    auto baseline3 = BuildBaseline3(guild);
+    auto baseline6 = BuildBaseline6(guild);
+    
+    observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
 
-    for (auto& baseline : guild->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
     SendEndBaselines(guild, observer);
 }
 

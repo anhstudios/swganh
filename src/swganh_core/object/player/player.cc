@@ -610,7 +610,6 @@ void Player::AddFriend(string friend_name, uint64_t id)
 
 void Player::RemoveFriend(string friend_name)
 {
-    uint64_t friend_id = 0;
     {
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
@@ -621,7 +620,7 @@ void Player::RemoveFriend(string friend_name)
         {
             return;
         }
-        friend_id = iter->id;
+        
         friends_.ClearDeltas();
         friends_.Remove(iter);
     }
@@ -667,7 +666,6 @@ void Player::IgnorePlayer(string player_name, uint64_t player_id)
 
 void Player::StopIgnoringPlayer(string player_name)
 {
-    uint64_t remove_id = 0;
     {
         boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
@@ -678,7 +676,7 @@ void Player::StopIgnoringPlayer(string player_name)
         {
             return;
         }
-        remove_id = iter->id;
+        
         ignored_players_.Remove(iter); 
     } 
 	DISPATCH(Player, RemoveIgnoredPlayer);

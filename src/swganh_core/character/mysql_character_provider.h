@@ -84,9 +84,8 @@ private:
 	*/
     std::string getCharacterCreateErrorCode_(uint32_t error_code);
 
-	PyCharacterCreate py_character_create_;
-	
     swganh::app::SwganhKernel* kernel_;
+	PyCharacterCreate py_character_create_;
 	std::vector<std::string> reserved_names_;
 	std::vector<std::string> developer_names_;
 	std::vector<std::string> profane_names_;

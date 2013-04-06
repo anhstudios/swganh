@@ -86,15 +86,14 @@ void InstallationMessageBuilder::RegisterEventHandlers()
 
 void InstallationMessageBuilder::SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	observer->Notify(&BuildBaseline3(installation));
-    observer->Notify(&BuildBaseline6(installation));
-    observer->Notify(&BuildBaseline7(installation));
+    auto baseline3 = BuildBaseline3(installation);
+    auto baseline6 = BuildBaseline6(installation);
+    auto baseline7 = BuildBaseline7(installation);
     
-    for (auto& baseline : installation->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
+    observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
+    observer->Notify(&baseline7);
+    
     SendEndBaselines(installation, observer);
 }
 
