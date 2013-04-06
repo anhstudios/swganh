@@ -1,3 +1,8 @@
+
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "simulation_service.h"
 
 #include "swganh_core/object/building/building.h"
