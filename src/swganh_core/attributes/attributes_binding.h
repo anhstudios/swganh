@@ -41,18 +41,16 @@ namespace attributes {
 		{
 			ScopedGilLock lock;
 
-            AttributeListMessage message;
-
 			try 
 			{
-				message = this->get_override("buildAttributeTemplate")(object);
+				return this->get_override("buildAttributeTemplate")(object);
 			}
 			catch (bp::error_already_set&)
 			{
 				swganh::scripting::logPythonException();
 			}
 
-			return message;
+			return AttributeListMessage();
 		}
 	private:
 		bp::object self_;

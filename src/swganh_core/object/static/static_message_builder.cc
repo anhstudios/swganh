@@ -15,14 +15,12 @@ void StaticMessageBuilder::RegisterEventHandlers()
 
 void StaticMessageBuilder::SendBaselines(const std::shared_ptr<Static>& static_object, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	observer->Notify(&BuildBaseline3(static_object));
-    observer->Notify(&BuildBaseline6(static_object));
+    auto baseline3 = BuildBaseline3(static_object);
+    auto baseline6 = BuildBaseline6(static_object);
+    
+	observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
 
-    for (auto& baseline : static_object->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
     SendEndBaselines(static_object, observer);
 }
 

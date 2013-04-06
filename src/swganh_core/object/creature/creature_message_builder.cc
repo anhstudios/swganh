@@ -219,10 +219,15 @@ void CreatureMessageBuilder::RegisterEventHandlers()
 }
 void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    observer->Notify(&BuildBaseline1(creature));
-    observer->Notify(&BuildBaseline3(creature));
-    observer->Notify(&BuildBaseline4(creature));
-    observer->Notify(&BuildBaseline6(creature));
+    auto baseline1 = BuildBaseline1(creature);
+    auto baseline3 = BuildBaseline3(creature);
+    auto baseline4 = BuildBaseline4(creature);
+    auto baseline6 = BuildBaseline6(creature);
+    
+    observer->Notify(&baseline1);
+    observer->Notify(&baseline3);
+    observer->Notify(&baseline4);
+    observer->Notify(&baseline6);
         
     SendEndBaselines(creature, observer);
 

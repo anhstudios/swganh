@@ -81,8 +81,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     ENDIF()
 
     if(TREAT_WARNINGS_AS_ERRORS)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -pedantic-errors")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic-errors")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -pedantic-errors -Wno-unused-variable -Wno-sign-compare")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic-errors -Wno-unused-variable -Wno-sign-compare")
         message(STATUS "- Treating all warnings as errors")
     endif()
 

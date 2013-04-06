@@ -58,7 +58,7 @@ private:
 	std::string scene_name_;
 	uint32_t scene_id_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
-	quadtree::QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(const swganh::object::AABB& box);
+	quadtree::QueryBox GetQueryBoxViewRange(const swganh::object::AABB& box);
 
 	void CheckCollisions(std::shared_ptr<swganh::object::Object> object);
 };

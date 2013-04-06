@@ -236,8 +236,11 @@ void MissionMessageBuilder::BuildMissionWaypointDelta(const std::shared_ptr<Miss
 
 void MissionMessageBuilder::SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	observer->Notify(&BuildBaseline3(mission));
-    observer->Notify(&BuildBaseline6(mission));
+    auto baseline3 = BuildBaseline3(mission);
+    auto baseline6 = BuildBaseline6(mission);
+    
+	observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
         
     SendEndBaselines(mission, observer);
 }

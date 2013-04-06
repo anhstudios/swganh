@@ -29,16 +29,16 @@ public:
     {}
 
 	NetworkList(std::list<T> orig)
-		: items_(orig.begin(), orig.end())
-		, clear_(false)
+		: items_(orig.begin(), orig.end())		
 		, update_counter_(0)
+                , clear_(false)
 	{
 	}
 
 	NetworkList(std::vector<T> orig)
 		: items_(orig.begin(), orig.end())
-		, clear_(false)
 		, update_counter_(0)
+                , clear_(false)
 	{
 	}
 
@@ -180,10 +180,10 @@ public:
     }
 
 private:
-    uint32_t update_counter_;
     std::list<T> items_;
     std::list<T> added_items_;
     std::list<T> removed_items_;
+    uint32_t update_counter_;
     bool clear_;
 };
 

@@ -1,5 +1,10 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "spawn_service.h"
 
 #include <algorithm>
@@ -40,8 +45,8 @@ using namespace swganh::simulation;
 using namespace swganh::scripting;
 
 SpawnService::SpawnService(SwganhKernel* kernel) 
-	: kernel_(kernel)
-	, fsm_manager_(kernel->GetEventDispatcher())
+	: fsm_manager_(kernel->GetEventDispatcher())
+        , kernel_(kernel)
 	, timer_(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(60))
 {
     SetServiceDescription(ServiceDescription(

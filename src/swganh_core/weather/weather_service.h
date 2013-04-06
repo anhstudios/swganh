@@ -53,17 +53,17 @@ namespace weather {
 		virtual void Shutdown();
 
 		swganh::weather::Weather GetSceneWeather(uint32_t scene_id);
-		void SetSceneWeather(uint32_t scene_id,  std::vector<swganh::weather::WeatherEvent> weather_sequence_);
-		void swganh::weather::WeatherService::RunWeatherSequence();
+		void SetSceneWeather(uint32_t scene_id, std::vector<swganh::weather::WeatherEvent> weather_sequence_);
+		void RunWeatherSequence();
 
     private:
-		void WeatherService::tickPlanetWeather_();
-		void WeatherService::WeatherScript();
-		void WeatherService::RemoveWeatherScene(uint32_t scene_);
+		void tickPlanetWeather_();
+		void WeatherScript();
+		void RemoveWeatherScene(uint32_t scene_);
 		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<swganh::observer::ObserverInterface> obj_controller);
 		void SendServerWeatherMessageAll_(swganh::weather::Weather weather_type, glm::vec3 cloud_vector, uint32_t scene_id);
 		void OnPlayerEnter(std::shared_ptr<swganh::object::Object> player_obj);
-		void swganh::weather::WeatherService::RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
+		void RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
 
 		swganh::app::SwganhKernel* kernel_;
 		swganh::scripting::PythonScript script_;

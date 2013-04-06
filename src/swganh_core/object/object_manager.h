@@ -214,7 +214,7 @@ namespace object {
         std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0)
         {
-            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, objectId);
+            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, type, is_persisted, object_id);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -310,7 +310,7 @@ namespace object {
 		 */
 		void LoadPythonObjectTemplates();
 
-		void ObjectManager::AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
+		void AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
 
         swganh::app::SwganhKernel* kernel_;
 

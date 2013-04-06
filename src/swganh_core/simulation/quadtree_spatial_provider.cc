@@ -256,7 +256,8 @@ void QuadtreeSpatialProvider::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
 	glm::vec3 position;
-	object->__InternalGetAbsolutes(position, glm::quat());
+	glm::quat orientation;
+	object->__InternalGetAbsolutes(position, orientation);
 	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), 
 					quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
 }
@@ -301,9 +302,10 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 			if(object->HasFlag(tag))
 			{
 				glm::vec3 pos1, pos2;
-				requester->GetAbsolutes(pos1, glm::quat());
-				object->GetAbsolutes(pos2, glm::quat());
-				obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(pos1, pos2), object));
+				glm::quat o1, o2;
+				requester->GetAbsolutes(pos1, o1);
+				object->GetAbsolutes(pos2, o2);
+				obj_map.insert(std::make_pair(glm::distance(pos1, pos2), object));
 			}
 		});
 
@@ -325,16 +327,18 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 		if(object->HasFlag(tag))
 		{
 			glm::vec3 pos1, pos2;
-			requester->GetAbsolutes(pos1, glm::quat());
-			object->GetAbsolutes(pos2, glm::quat());
+			glm::quat o1, o2;
+			requester->GetAbsolutes(pos1, o1);
+			object->GetAbsolutes(pos2, o2);
 
 			obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(pos1, pos2),object));
 			object->ViewObjects(object, 0, true, [=, &obj_map](std::shared_ptr<Object> object) {
 				glm::vec3 pos1, pos2;
+				glm::quat o1, o2;
 				if(object->HasFlag(tag))
 				{
-					requester->GetAbsolutes(pos1, glm::quat());
-					object->GetAbsolutes(pos2, glm::quat());
+					requester->GetAbsolutes(pos1, o1);
+					object->GetAbsolutes(pos2, o2);
 					obj_map.insert(std::pair<float, std::shared_ptr<swganh::object::Object>>(glm::distance(pos1, pos2), object));
 				}
 			});

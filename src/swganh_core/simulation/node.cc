@@ -22,8 +22,8 @@ Node::Node(NodeQuadrant quadrant, Region region, uint32_t level, uint32_t max_le
 	, level_(level)
 	, max_level_(max_level)
 	, state_(LEAF)
-	, parent_(parent)
 	, leaf_nodes_()
+	, parent_(parent)
 {
 	// If this is the root node, we need to do an initial split.
 	if(quadrant_ == ROOT)
@@ -318,7 +318,9 @@ void Node::SvgDumpObjects(std::ofstream& file)
 		auto bounding_volume = obj->GetAABB();
 		auto collision_box = obj->GetWorldCollisionBox();
 
-		current_collision_points = std::stringstream();
+                current_collision_points.str("");
+                current_collision_points.clear();
+                
 		boost::geometry::for_each_point(collision_box, GetCollisionBoxPoints<Point>);
 		
 		boost::geometry::box_view<swganh::object::AABB> bounding_volume_view(bounding_volume);
@@ -344,7 +346,9 @@ void Node::SvgDumpObjects(std::ofstream& file)
 			auto bounding_volume = object->GetAABB();
 			auto collision_box = object->GetWorldCollisionBox();
 
-			current_collision_points = std::stringstream();
+                        current_collision_points.str("");
+                        current_collision_points.clear();
+                
 			boost::geometry::for_each_point(collision_box, GetCollisionBoxPoints<Point>);
 		
 			boost::geometry::box_view<swganh::object::AABB> bounding_volume_view(bounding_volume);
@@ -355,7 +359,8 @@ void Node::SvgDumpObjects(std::ofstream& file)
 
 			auto name = object->GetCustomName();
 			auto abs_position = glm::vec3();
-			object->GetAbsolutes(abs_position, object->GetOrientation());
+                        auto abs_orientation = glm::quat();
+			object->GetAbsolutes(abs_position, abs_orientation);
 			file << "<text x=\"" << abs_position.x << "\" y=\"" << abs_position.z * -1.0f << "\" fill=\"black\" style=\"text-anchor: middle;\" font-size=\"8px\">" << std::string(name.begin(), name.end()) << " * <" << '/' << "text>\n";
 			file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
 			file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";

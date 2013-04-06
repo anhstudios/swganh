@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(canFindTrivialPath)
 	{
 	}
 
-	/*
+	
 	BOOST_CHECK_EQUAL(path1.size(), 5);
 	BOOST_CHECK_EQUAL(path2.size(), 5);
 	

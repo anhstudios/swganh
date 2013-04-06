@@ -103,8 +103,11 @@ void ResourceContainerMessageBuilder::BuildVariationNameDelta(const std::shared_
 
 void ResourceContainerMessageBuilder::SendBaselines(const std::shared_ptr<ResourceContainer>& resource_container, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	observer->Notify(&BuildBaseline3(resource_container));
-    observer->Notify(&BuildBaseline6(resource_container));
+    auto baseline3 = BuildBaseline3(resource_container);
+    auto baseline6 = BuildBaseline6(resource_container);
+    
+	observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
         
     SendEndBaselines(resource_container, observer);
 }

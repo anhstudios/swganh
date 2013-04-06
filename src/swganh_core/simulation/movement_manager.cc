@@ -31,8 +31,8 @@ using namespace swganh::simulation;
 using namespace swganh::simulation;
 
 MovementManager::MovementManager(swganh::app::SwganhKernel* kernel, std::string scene_name)
-	: kernel_(kernel)
-	, scene_name_(scene_name)
+	: scene_name_(scene_name)
+        , kernel_(kernel)	 
 {
 	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 

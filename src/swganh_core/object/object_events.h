@@ -33,8 +33,8 @@ struct UpdatePositionEvent : swganh::BaseEvent
 {
 	UpdatePositionEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> parent_, std::shared_ptr<swganh::object::Object> object_, glm::vec3 new_position)
 		: BaseEvent(type)
+        , object(object_)
 		, parent(parent_)
-		, object(object_)
 		, position(new_position)
 	{}
 
