@@ -70,8 +70,8 @@ using boost::regex_match;
 #endif
 
 ChatService::ChatService(SwganhKernel* kernel)
-    : kernel_(kernel)
-    , db_manager_(kernel->GetDatabaseManager())
+    : db_manager_(kernel->GetDatabaseManager())
+    , kernel_(kernel)
 {
     SetServiceDescription(ServiceDescription(
         "ChatService",
