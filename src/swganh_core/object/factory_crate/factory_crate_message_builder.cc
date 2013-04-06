@@ -21,8 +21,11 @@ void FactoryCrateMessageBuilder::RegisterEventHandlers()
 
 void FactoryCrateMessageBuilder::SendBaselines(const shared_ptr<FactoryCrate>& factory_crate, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    observer->Notify(&BuildBaseline3(factory_crate));
-    observer->Notify(&BuildBaseline6(factory_crate));
+    auto baseline3 = BuildBaseline3(factory_crate);
+    auto baseline6 = BuildBaseline6(factory_crate);
+    
+    observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
         
     SendEndBaselines(factory_crate, observer);
 }

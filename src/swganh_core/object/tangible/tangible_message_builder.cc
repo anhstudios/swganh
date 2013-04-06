@@ -73,9 +73,13 @@ void TangibleMessageBuilder::RegisterEventHandlers()
 }
 void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    observer->Notify(&BuildBaseline3(tangible));
-    observer->Notify(&BuildBaseline6(tangible));
-    observer->Notify(&BuildBaseline7(tangible));
+    auto baseline3 = BuildBaseline3(tangible);
+    auto baseline6 = BuildBaseline6(tangible);
+    auto baseline7 = BuildBaseline7(tangible);
+    
+    observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
+    observer->Notify(&baseline7);
         
     SendEndBaselines(tangible, observer);
 }

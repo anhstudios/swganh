@@ -21,8 +21,11 @@ void BuildingMessageBuilder::RegisterEventHandlers()
 
 void BuildingMessageBuilder::SendBaselines(const shared_ptr<Building>& tangible, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-    observer->Notify(&BuildBaseline3(tangible));
-    observer->Notify(&BuildBaseline6(tangible));
+    auto baseline3 = BuildBaseline3(tangible);
+    auto baseline6 = BuildBaseline6(tangible);
+    
+    observer->Notify(&baseline3);
+    observer->Notify(&baseline6);
 
     SendEndBaselines(tangible, observer);
 }
