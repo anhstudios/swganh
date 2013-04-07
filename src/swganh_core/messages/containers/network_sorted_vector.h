@@ -89,14 +89,14 @@ public:
 		items_.erase(iter);
     }
 
-    void Update(iterator iter, T& item)
+    void Update(iterator iter, const T& item)
     {
 		uint16_t index = std::distance<const_iterator>(items_.begin(), iter);
         items_[index] = item;
         items_changed_.push_back(index);
     }
 
-	void Update(uint16_t index, T& item)
+	void Update(uint16_t index, const T& item)
 	{
 		items_[index] = item;
 		items_changed_.push_back(index);

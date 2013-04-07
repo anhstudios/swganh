@@ -91,8 +91,8 @@ void WaypointMessageBuilder::BuildColorDelta(const shared_ptr<Waypoint>& object)
 
 void WaypointMessageBuilder::SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
-	observer->Notify(&BuildBaseline3(waypoint));
-    observer->Notify(&BuildBaseline6(waypoint));
+    BuildBaseline3(waypoint);
+    BuildBaseline6(waypoint);
 
     for (auto& baseline : waypoint->GetBaselines())
     {

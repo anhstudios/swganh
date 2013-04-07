@@ -53,15 +53,15 @@ public:
 
         for(auto& entry : services_)
         {
-            swganh::service::ServiceDescription description = entry.second.second->GetServiceDescription();
+            swganh::service::ServiceDescription description = entry.second->GetServiceDescription();
 
             if (description.type().compare(type_name) == 0) 
 
             {
 #ifdef _DEBUG
-                tmp = dynamic_cast<T>(entry.second.second.get());
+                tmp = dynamic_cast<T>(entry.second.get());
 #else
-                tmp = static_cast<T>(entry.second.second.get());
+                tmp = static_cast<T>(entry.second.get());
 #endif
                 services.push_back(tmp);
             }

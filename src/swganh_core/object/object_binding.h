@@ -48,19 +48,19 @@ void SendSystemMessage2(std::shared_ptr<Object> requester, std::wstring custom_m
 	SystemMessage::Send(requester, custom_message, chatbox_only, send_to_inrange);
 }
 
-BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg2Overloads, SendSystemMessage2, 2, 4);
+BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg2Overloads, SendSystemMessage2, 2, 4)
 
 void SendSystemMessage3(std::shared_ptr<Object> requester, swganh::messages::OutOfBand out_of_band, bool chatbox_only=true, bool send_to_inrange=true)
 {
 	SystemMessage::Send(requester, out_of_band, chatbox_only, send_to_inrange);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg3Overloads, SendSystemMessage3, 2, 4);
+BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg3Overloads, SendSystemMessage3, 2, 4)
 
 void SendSystemMessage4(std::shared_ptr<Object> requester, std::wstring custom_message, swganh::messages::OutOfBand out_of_band, bool chatbox_only=true, bool send_to_inrange=true)
 {
 	SystemMessage::Send(requester, custom_message, out_of_band, chatbox_only, send_to_inrange);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg4Overloads, SendSystemMessage4, 3, 5);
+BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg4Overloads, SendSystemMessage4, 3, 5)
 
 void SendFlyText(std::shared_ptr<Object> requester, std::string fly_text, controllers::FlyTextColor color)
 {
@@ -72,49 +72,49 @@ void SendClientEffect1(std::shared_ptr<swganh::simulation::SimulationServiceInte
 {
 	SystemMessage::ClientEffect(simulation_service, client_effect_file, planet_name, location_coordinates, range, cell_id);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect1Overload, SendClientEffect1, 5, 6);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect1Overload, SendClientEffect1, 5, 6)
 
 void SendClientEffect2(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service,
 		std::string client_effect_file, uint32_t planet_id, glm::vec3 location_coordinates, float range, uint64_t cell_id=0)
 {
 	SystemMessage::ClientEffect(simulation_service, client_effect_file, planet_id, location_coordinates, range, cell_id);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect2Overload, SendClientEffect2, 5, 6);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect2Overload, SendClientEffect2, 5, 6)
 
 void SendClientEffect3(std::shared_ptr<swganh::object::Object> object, std::string client_effect_file, 
 		std::string auxiliary_string="head", bool send_in_range=true)
 {
 	SystemMessage::ClientEffect(object, client_effect_file, auxiliary_string, send_in_range);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect3Overload, SendClientEffect3, 2, 4);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect3Overload, SendClientEffect3, 2, 4)
 
 void SendClientEffect4(std::shared_ptr<swganh::object::Object> object, std::string client_effect_file, 
 		glm::quat orientation, glm::vec3 offset, bool send_in_range=true)
 {
 	SystemMessage::ClientEffect(object, client_effect_file, orientation, offset, send_in_range);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect4Overload, SendClientEffect4, 4, 5);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect4Overload, SendClientEffect4, 4, 5)
 
 void ClientEvent1(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, std::string event_group_string,
     std::string event_string, std::string planet_name_string, glm::vec3 location_coordinates, float range, uint64_t cell_id=0)
 {
 	SystemMessage::ClientEvent(simulation_service, event_group_string, event_string, planet_name_string, location_coordinates, range, cell_id);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent1Overload, ClientEvent1, 6, 7);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent1Overload, ClientEvent1, 6, 7)
 
 void ClientEvent2(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, std::string event_group_string,
     std::string event_string, uint32_t planet_id, glm::vec3 location_coordinates, float range, uint64_t cell_id=0)
 {
 	SystemMessage::ClientEvent(simulation_service, event_group_string, event_string, planet_id, location_coordinates, range, cell_id);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent2Overload, ClientEvent2, 6, 7);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent2Overload, ClientEvent2, 6, 7)
 
 void ClientEvent3(std::shared_ptr<swganh::object::Object> object, std::string event_string,
 	std::string hardpoint_string="head", bool send_in_range=true)
 {
 	SystemMessage::ClientEvent(object, event_string, hardpoint_string, send_in_range);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent3Overload, ClientEvent3, 2, 4);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent3Overload, ClientEvent3, 2, 4)
 
 void PlayMusic1(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, std::string planet_name,
 				glm::vec3 point, float range, std::string music_name, uint32_t channel)
@@ -132,7 +132,7 @@ void PlayMusic3(std::shared_ptr<swganh::object::Object> object, std::string musi
 {
 	SystemMessage::PlayMusic(object, music_name, channel, send_in_range);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
+BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4)
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 4, 5)
@@ -184,11 +184,11 @@ void exportObject()
 
 	class_<ContainerInterface, std::shared_ptr<ContainerInterface>, boost::noncopyable>("ContainerInterface", "Container interface", no_init)
 		.def("add", &ContainerInterface::AddObject, addObjectOverload(args("requester", "newObject", "arrangement_id"), "Adds an object to the current object"))
-		.def("remove", RemoveObject, "Removes an object fomr the current object")
+		.def("remove", RemoveObject, "Removes an object for the current object")
 		.def("transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
-		.def("swapSlots", &Object::SwapSlots, "Change an objects current arrangement")	
-		.def("container", &Object::GetContainer, "Gets the :class:`ContainerInterface` object of the current object")
-		.def("hasContainedObjects", &Object::HasContainedObjects, "Checks to see if container has any objects in it")
+		.def("swapSlots", &ContainerInterface::SwapSlots, "Change an objects current arrangement")	
+		.def("container", &ContainerInterface::GetContainer, "Gets the :class:`ContainerInterface` object of the current object")
+		.def("hasContainedObjects", &ContainerInterface::HasContainedObjects, "Checks to see if container has any objects in it")
 		.def_readonly("id", &ContainerInterface::GetObjectId, "Gets the object id of the container")
 		;
 	

@@ -60,9 +60,9 @@ using swganh::scripting::PythonInstanceCreator;
 
 CombatService::CombatService(SwganhKernel* kernel)
 : generator_(1, 100)
+, buff_manager_(kernel)
 , active_(kernel->GetCpuThreadPool())
 , kernel_(kernel)
-, buff_manager_(kernel)
 {    
     SetServiceDescription(ServiceDescription(
         "CombatService",
@@ -163,6 +163,13 @@ CombatDefender CombatService::DoCombat(
 				combat_spam = CombatData::MISS_spam();
 				combat_data->damage_multiplier = 0.0f;			
 				color = WHITE;
+                                
+			case RICHOCHET:
+                        case REFLECT:
+				combat_spam = CombatData::BLOCK_spam();
+				combat_data->damage_multiplier *= 0.5f;
+				break;
+                                
 		}
 	}
 	else
