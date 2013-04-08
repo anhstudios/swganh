@@ -18,7 +18,7 @@ namespace chat {
     {
     public:
 
-        virtual std::string GetCommandName() { return "spatialchatinternal"; }
+        virtual std::string GetCommandName() const { return "spatialchatinternal"; }
 
 		/**
 			Creates a new instance
