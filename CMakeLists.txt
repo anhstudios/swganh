@@ -119,8 +119,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     endif()
 
     set(AdditionalBoostLibs chrono regex)
-
-    add_definitions("-DBOOST_THREAD_VERSION=4")
 endif()
 
 if(MSVC)
