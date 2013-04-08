@@ -29,8 +29,7 @@ using swganh::object::Tangible;
 
 CommandQueue::CommandQueue(
     swganh::app::SwganhKernel* kernel)
-    : kernel_(kernel)
-    , timer_(kernel->GetCpuThreadPool())
+    : timer_(kernel->GetCpuThreadPool())
     , processing_(false)
     , default_command_(nullptr)
     , active_(kernel->GetCpuThreadPool())

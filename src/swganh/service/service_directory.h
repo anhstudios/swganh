@@ -72,8 +72,6 @@ private:
     ServiceDescription active_service_;
 
     boost::mutex mutex_;
-
-    swganh::EventDispatcher* event_dispatcher_;
 };
 
 }  // namespace service
