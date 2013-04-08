@@ -95,7 +95,7 @@ void ConnectionService::Startup() {
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
     RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
 
-    Server::Startup(listen_port_);
+    StartListening(listen_port_);
 
     session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
@@ -110,7 +110,7 @@ void ConnectionService::Startup() {
 }
 
 void ConnectionService::Shutdown() {
-    BaseSwgServer::Shutdown();
+    StopListening();
 }
 
 const string& ConnectionService::listen_address() {

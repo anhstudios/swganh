@@ -36,12 +36,12 @@ public:
      * 
      * @parama port The port to listen for messages on.
      */
-    void Startup(uint16_t port);
+    void StartListening(uint16_t port);
     
     /**
      * @brief
      */
-    void Shutdown(void);
+    void StopListening(void);
     
     /**
      * @brief Sends a message on the wire to the target endpoint.

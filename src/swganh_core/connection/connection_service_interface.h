@@ -62,9 +62,6 @@ public:
     
     virtual std::shared_ptr<ConnectionClientInterface> FindConnectionByPlayerId(uint64_t player_id) = 0;
     
-    virtual void Startup() = 0;
-    virtual void Shutdown() = 0;
-
     virtual const std::string& listen_address() = 0;
 
     virtual uint16_t listen_port() = 0;
