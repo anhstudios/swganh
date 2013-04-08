@@ -277,7 +277,7 @@ void SwganhApp::Start() {
     }
 
 	for (uint32_t i = 0; i < kernel_->GetAppConfig().cpu_threads; ++i) {
-		std::thread t([this] () {
+        cpu_threads_.emplace_back([this] () {
 			//Continue looping despite errors.
 			//If we successfully leave the run method we return.
 			while(true)
@@ -293,7 +293,6 @@ void SwganhApp::Start() {
 				}
 			}
 		});
-        cpu_threads_.push_back(std::move(t));
     }
     
     kernel_->GetServiceManager()->Start();
