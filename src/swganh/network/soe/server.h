@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 #include <memory>
 
 #include <boost/asio.hpp>
@@ -28,7 +29,7 @@ class Server : public ServerInterface {
 public:
     explicit Server(boost::asio::io_service& io_service);
 
-    ~Server();
+    virtual ~Server();
 
     /**
      * @brief Starts the SOE Frontend Service.
