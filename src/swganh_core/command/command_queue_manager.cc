@@ -39,7 +39,7 @@ void CommandQueueManager::AddQueue(uint64_t queue_owner_id, const std::shared_pt
     auto find_iter = queue_map_.find(queue_owner_id);
     if (find_iter != queue_map_.end())
     {
-        throw std::runtime_error("Queue already exists for user with id: " + queue_owner_id);
+        throw std::runtime_error("Queue already exists for user");
     }
 
     queue_map_.insert(std::make_pair(queue_owner_id, command_queue));

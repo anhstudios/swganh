@@ -37,7 +37,7 @@ namespace messages {
     
             if (opcount != Opcount() && opcode != Opcode())
             {
-                assert(true && "Opcodes don't match, expected: " + Opcode());
+                assert(true && "Opcodes don't match");
                 return;
             }
             
