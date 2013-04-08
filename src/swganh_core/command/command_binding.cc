@@ -34,7 +34,7 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
         bp::detail::initialize_wrapper(obj, this);
     }
 
-    std::string GetCommandName()
+    std::string GetCommandName() const
     {
         std::string command;
         
