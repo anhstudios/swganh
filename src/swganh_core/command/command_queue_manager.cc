@@ -3,6 +3,8 @@
 
 #include "command_queue_manager.h"
 
+#include <boost/thread/lock_guard.hpp>
+
 #include "swganh_core/command/command_interface.h"
 #include "swganh_core/command/command_queue_interface.h"
 
