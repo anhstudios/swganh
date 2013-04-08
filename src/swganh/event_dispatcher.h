@@ -82,7 +82,7 @@ namespace swganh {
         virtual CallbackId Subscribe(EventType type, EventHandlerCallback callback) = 0;
         virtual void Unsubscribe(EventType type, CallbackId identifier) = 0;
 
-        virtual boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
+        virtual boost::future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
 		// Shutdown the event dispatcher and stops dispatching events immediately
 		virtual void Shutdown() = 0;
     };
@@ -96,7 +96,7 @@ namespace swganh {
         CallbackId Subscribe(EventType type, EventHandlerCallback callback);
         void Unsubscribe(EventType type, CallbackId identifier);
 
-        boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
+        boost::future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
 
 		void Shutdown();
 
