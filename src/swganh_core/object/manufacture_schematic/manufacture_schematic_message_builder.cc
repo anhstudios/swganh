@@ -20,11 +20,12 @@ using namespace swganh::object;
 
 void ManufactureSchematicMessageBuilder::RegisterEventHandlers()
 {
-	event_dispatcher->Subscribe("ManufactureSchematic::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("ManufactureSchematic::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
         SendBaselines(static_pointer_cast<ManufactureSchematic>(controller_event->object), controller_event->observer);
     });
+
 	event_dispatcher->Subscribe("ManufactureSchematic::Quantity", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<ManufactureSchematicEvent>(incoming_event);
@@ -91,20 +92,7 @@ void ManufactureSchematicMessageBuilder::RegisterEventHandlers()
         BuildExperimentDelta(value_event->Get());
     });
 }
-void ManufactureSchematicMessageBuilder::SendBaselines(
-    const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, 
-    const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(manufacture_schematic);
-    auto baseline6 = BuildBaseline6(manufacture_schematic);
-    auto baseline7 = BuildBaseline7(manufacture_schematic);
 
-    observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-    observer->Notify(&baseline7);
-        
-    SendEndBaselines(manufacture_schematic, observer);
-}
 void ManufactureSchematicMessageBuilder::BuildSchematicQuantityDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
 {
 	if (manufacture_schematic->HasObservers())
@@ -237,15 +225,17 @@ void ManufactureSchematicMessageBuilder::BuildCustomizationDelta(const std::shar
 
 }
 
-swganh::messages::BaselinesMessage ManufactureSchematicMessageBuilder::BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
+boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
 {
 	return CreateBaselinesMessage(manufacture_schematic, 3, 9);
 }
-swganh::messages::BaselinesMessage ManufactureSchematicMessageBuilder::BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
+
+boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
 {
 	return CreateBaselinesMessage(manufacture_schematic, 6, 6);
 }
-swganh::messages::BaselinesMessage ManufactureSchematicMessageBuilder::BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
+
+boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
 {
 	return CreateBaselinesMessage(manufacture_schematic, 7, 21);
 }
