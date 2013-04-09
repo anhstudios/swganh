@@ -75,7 +75,7 @@ private:
 	swganh::app::SwganhKernel* kernel_;
 	swganh::equipment::EquipmentService* equipment_service_;
 	swganh::simulation::SimulationServiceInterface* simulation_service_;
-	swganh::CallbackId player_selected_callback_;
+	//swganh::CallbackId player_selected_callback_;
 	swganh::CallbackId player_removed_;
 };
 
