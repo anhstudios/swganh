@@ -37,6 +37,8 @@ namespace simulation {
 class SceneInterface : boost::noncopyable
 {
 public:
+    
+    virtual ~SceneInterface() {}
         
 	virtual uint32_t GetSceneId() const = 0;
         
