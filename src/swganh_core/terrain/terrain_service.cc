@@ -266,7 +266,6 @@ float TerrainService::calculateFeathering(float value, int featheringType) {
 		result = result * result * (3 - 2 * result);
 		break;
 	case 0:
-		result = result;
 		break;
 	default:
 		result = 0;
