@@ -5,8 +5,6 @@
 #include "swganh_core/spawn/fsm_controller.h"
 #include "swganh_core/object/object.h"
 
-#include <boost/thread.hpp>
-
 
 using namespace boost;
 using namespace swganh::spawn;
@@ -20,7 +18,7 @@ FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, uint32
 {
 	while(threads_required > 0)
 	{
-		threads_.push_back(std::move(thread([this] () {
+		threads_.emplace_back([this] () {
 			while(!shutdown_)
 			{
 				std::set<std::shared_ptr<FsmController>> to_process_;
@@ -38,9 +36,9 @@ FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, uint32
 					}
 				}
 
-				this_thread::yield();
+				std::this_thread::yield();
 			}
-		})));
+		});
 
 		
 		--threads_required;
@@ -50,7 +48,7 @@ FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, uint32
 FiniteStateMachine::~FiniteStateMachine()
 {
 	shutdown_ = true;
-	for_each(threads_.begin(), threads_.end(), std::mem_fn(&boost::thread::join));
+	for_each(threads_.begin(), threads_.end(), std::mem_fn(&std::thread::join));
 }
 
 void FiniteStateMachine::StartManagingObject(std::shared_ptr<swganh::object::Object> object)
