@@ -32,7 +32,6 @@ namespace spawn
 
 	private:
 		boost::shared_mutex mutex_;
-		EventDispatcher* dispatch_;
 		
 		std::map<std::wstring, std::shared_ptr<FiniteStateMachineInterface>> machines_;
 	};

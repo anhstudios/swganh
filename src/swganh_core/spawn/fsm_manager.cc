@@ -11,9 +11,7 @@ using namespace swganh;
 using namespace swganh::spawn;
 
 FsmManager::FsmManager(EventDispatcher* event_dispatch)
-	: dispatch_(event_dispatch)
-{
-}
+{}
 	
 void FsmManager::RegisterAutomaton(const std::wstring& name, std::shared_ptr<FiniteStateMachineInterface> automaton)
 {

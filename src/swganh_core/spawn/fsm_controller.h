@@ -32,7 +32,6 @@ public:
 	virtual bool IsDirty();
 
 private:
-	FiniteStateMachine* parent_machine_;
 	std::shared_ptr<FsmBundleInterface> bundle_;
 	std::shared_ptr<swganh::object::Object> object_;
 };
