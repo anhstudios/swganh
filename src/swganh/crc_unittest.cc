@@ -11,15 +11,15 @@ using swganh::memcrc;
 BOOST_AUTO_TEST_SUITE(ANHCRC)
 /// This test shows how to find the 32bit checksum of a c-style string.
 BOOST_AUTO_TEST_CASE(CanCrcCstyleStrings) {
-    BOOST_CHECK_EQUAL(0x338BCFAC, memcrc("test"));
-    BOOST_CHECK_EQUAL(0x2643D57C, memcrc("anothertest"));
-    BOOST_CHECK_EQUAL(0x19522193, memcrc("aThirdTest"));
+    BOOST_CHECK_EQUAL(uint32_t(0x338BCFAC), memcrc("test"));
+    BOOST_CHECK_EQUAL(uint32_t(0x2643D57C), memcrc("anothertest"));
+    BOOST_CHECK_EQUAL(uint32_t(0x19522193), memcrc("aThirdTest"));
 }
 
 /// This test shows how to find the 32bit checksum of a std::string.
 BOOST_AUTO_TEST_CASE(CanCrcStdStrings) {
-    BOOST_CHECK_EQUAL(0x338BCFAC, memcrc(std::string("test")));
-    BOOST_CHECK_EQUAL(0x2643D57C, memcrc(std::string("anothertest")));
-    BOOST_CHECK_EQUAL(0x19522193, memcrc(std::string("aThirdTest")));
+    BOOST_CHECK_EQUAL(uint32_t(0x338BCFAC), memcrc(std::string("test")));
+    BOOST_CHECK_EQUAL(uint32_t(0x2643D57C), memcrc(std::string("anothertest")));
+    BOOST_CHECK_EQUAL(uint32_t(0x19522193), memcrc(std::string("aThirdTest")));
 }
 BOOST_AUTO_TEST_SUITE_END()
