@@ -78,9 +78,6 @@ public:
     
     virtual int login_error_timeout_secs() const = 0;
     virtual void login_error_timeout_secs(int new_timeout) = 0;
-    
-    virtual void Startup() = 0;
-    virtual void Shutdown() = 0;
 };
 
 }} // namespace swganh::login

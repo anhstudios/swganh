@@ -37,7 +37,7 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
     }
     
 
-    std::string GetCommandName()
+    std::string GetCommandName() const
     {
         std::string command;
         

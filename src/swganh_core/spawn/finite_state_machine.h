@@ -7,6 +7,7 @@
 #include <atomic>
 #include <map>
 #include <set>
+#include <thread>
 #include <boost/thread/mutex.hpp>
 #include <swganh/event_dispatcher.h>
 
@@ -54,7 +55,7 @@ namespace spawn
 
 	private:
 		std::atomic<bool> shutdown_;
-		std::vector<boost::thread> threads_;
+		std::vector<std::thread> threads_;
 		boost::mutex mutex_;
 
 		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;

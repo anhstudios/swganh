@@ -26,7 +26,7 @@ Server::~Server(void)
 {	
 }
 
-void Server::Startup(uint16_t port)
+void Server::StartListening(uint16_t port)
 {
     socket_.open(udp::v4());
     socket_.bind(udp::endpoint(udp::v4(), port));
@@ -34,7 +34,7 @@ void Server::Startup(uint16_t port)
     AsyncReceive();
 }
 
-void Server::Shutdown(void) {
+void Server::StopListening(void) {
 	socket_.close();
 }
     

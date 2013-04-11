@@ -91,7 +91,6 @@ namespace command {
             CommandComparator<std::shared_ptr<swganh::command::BaseSwgCommand>>
         > ProcessQueue;
 
-        swganh::app::SwganhKernel* kernel_;
         swganh::command::CommandServiceInterface* command_service_;
 
         boost::asio::deadline_timer	timer_;

@@ -36,6 +36,8 @@ namespace simulation {
     class MovementManagerInterface
     {
     public:
+        virtual ~MovementManagerInterface() {}
+        
 		virtual void HandleDataTransform(
             const std::shared_ptr<swganh::object::Object>& controller, 
             swganh::messages::controllers::DataTransform message) = 0;

@@ -23,7 +23,7 @@ namespace badge {
     {
     public:
 
-        virtual std::string GetCommandName() { return "requestbadges"; }
+        virtual std::string GetCommandName() const { return "requestbadges"; }
 
 		/**
 			Creates a new instance
@@ -38,7 +38,6 @@ namespace badge {
         virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
 
     private:
-        BadgeService* chat_service_;
 		swganh::equipment::EquipmentService* equipment_service_;
     };
 

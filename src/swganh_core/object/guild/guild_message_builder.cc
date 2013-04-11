@@ -28,28 +28,17 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
         guild->GetGuildList().ClearDeltas();
 }
 
-void GuildMessageBuilder::SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(guild);
-    auto baseline6 = BuildBaseline6(guild);
-    
-    observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-
-    SendEndBaselines(guild, observer);
-}
-
-BaselinesMessage GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild)
 {
     auto message = CreateBaselinesMessage(guild, Object::VIEW_3, 5);
-    message.data.append(ObjectMessageBuilder::BuildBaseline3(guild).data);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline3(guild)).data);
     guild->GetGuildList().Serialize(message);
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage GuildMessageBuilder::BuildBaseline6(const shared_ptr<Guild>& guild)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline6(const shared_ptr<Guild>& guild)
 {
     auto message = CreateBaselinesMessage(guild, Object::VIEW_6, 5);
-    message.data.append(ObjectMessageBuilder::BuildBaseline6(guild).data);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline6(guild)).data);
     return BaselinesMessage(std::move(message));
 }

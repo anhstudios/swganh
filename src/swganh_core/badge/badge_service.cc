@@ -141,7 +141,7 @@ void BadgeService::RemoveBadge(std::shared_ptr<Object> object, uint32_t id)
 	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(object, "ghost"));
 	auto badge = FindBadge(id);
 
-	if(!object->HasController() || badge == nullptr && player->HasBadge(id))
+	if(!object->HasController() || badge == nullptr || !player->HasBadge(id))
 		return;
 
 	player->RemoveBadge(id);

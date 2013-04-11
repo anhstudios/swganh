@@ -44,8 +44,6 @@ namespace command {
         
         swganh::app::SwganhKernel* GetKernel() const;
 
-        std::string GetCommandName() const;
-
         uint32_t GetActionCounter() const;
 
         uint32_t GetPriority() const;

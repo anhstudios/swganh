@@ -3,6 +3,8 @@
 
 #include "boundary_circle.h"
 
+#include <cmath>
+
 using namespace swganh::tre;
 
 void BoundaryCircle::Deserialize(swganh::ByteBuffer& buffer)
@@ -17,8 +19,8 @@ void BoundaryCircle::Deserialize(swganh::ByteBuffer& buffer)
 
 bool BoundaryCircle::IsContained(float px, float pz)
 {
-	float dist = pow(px-x,2) + pow(pz-z,2);
-	float r2 = pow(rad,2);
+	float dist =  std::pow(px-x,2) + std::pow(pz-z,2);
+	float r2 = std::pow(rad,2);
 
 	//std::cout << "BCIR(" << this << ")::ISCONTAINED("<< px << "," << pz << "=" << (dist < r2) <<")" << std::endl;
 
@@ -31,12 +33,12 @@ bool BoundaryCircle::IsContained(float px, float pz)
 float BoundaryCircle::Process(float px, float pz)
 {
 	float result;
-	float dist = pow(px-x,2) + pow(pz-z,2);
-	float r2 = pow(rad,2);
+	float dist = std::pow(px-x,2) + std::pow(pz-z,2);
+	float r2 = std::pow(rad,2);
 
 	if (dist <= r2)
 	{
-		float fCircle = (float) pow((1.0 - feather_amount) * rad,2);
+		float fCircle = (float) std::pow((1.0 - feather_amount) * rad,2);
 
 		if (dist > fCircle)
 			result = 1.0f - (dist - fCircle) / (r2 - fCircle);

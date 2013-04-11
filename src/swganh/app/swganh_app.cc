@@ -169,8 +169,8 @@ SwganhApp::~SwganhApp()
 	cpu_work_.reset();
 	
 	// join the threadpool threads until each one has exited.
-	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
-	for_each(cpu_threads_.begin(), cpu_threads_.end(), std::mem_fn(&boost::thread::join));
+	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&std::thread::join));
+	for_each(cpu_threads_.begin(), cpu_threads_.end(), std::mem_fn(&std::thread::join));
 
 	kernel_.reset();
 }
@@ -255,8 +255,10 @@ void SwganhApp::Start() {
     running_ = true;
 
 	//Create a number of threads to pull packets off the wire.
-	for (uint32_t i = 0; i < kernel_->GetAppConfig().io_threads; ++i) {
-		boost::thread t([this] () {
+	for (uint32_t i = 0; i < kernel_->GetAppConfig().io_threads; ++i) 
+    {
+        io_threads_.emplace_back([this] () 
+        {
 			//Continue looping despite errors.
 			//If we successfully leave the run method we return.
 			while(true)
@@ -271,12 +273,11 @@ void SwganhApp::Start() {
 					LOG(severity_level::error) << "A near fatal exception has occurred.";
 				}
 			}
-		});  
-        io_threads_.push_back(move(t));
+		});
     }
 
 	for (uint32_t i = 0; i < kernel_->GetAppConfig().cpu_threads; ++i) {
-		boost::thread t([this] () {
+        cpu_threads_.emplace_back([this] () {
 			//Continue looping despite errors.
 			//If we successfully leave the run method we return.
 			while(true)
@@ -292,7 +293,6 @@ void SwganhApp::Start() {
 				}
 			}
 		});
-        cpu_threads_.push_back(move(t));
     }
     
     kernel_->GetServiceManager()->Start();

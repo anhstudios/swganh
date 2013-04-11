@@ -16,7 +16,8 @@ namespace simulation {
     class SceneManager : public swganh::simulation::SceneManagerInterface
     {
     public:
-
+        virtual ~SceneManager() {}
+        
         void LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection);
         
         std::shared_ptr<swganh::simulation::SceneInterface> GetScene(const std::string& scene_label) const;

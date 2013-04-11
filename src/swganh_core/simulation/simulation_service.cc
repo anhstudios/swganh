@@ -491,7 +491,7 @@ private:
     shared_ptr<MovementManagerInterface> movement_manager_;
 	shared_ptr<swganh::equipment::EquipmentServiceInterface> equipment_service_;
     SwganhKernel* kernel_;
-	ServerInterface* server_;
+	//ServerInterface* server_;
 	
     ObjControllerHandlerMap controller_handlers_;
 

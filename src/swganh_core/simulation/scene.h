@@ -36,6 +36,8 @@ namespace simulation {
             std::string description,
             std::string terrain,
 			swganh::app::SwganhKernel* kernel);
+        
+        virtual ~Scene() {}
 
         uint32_t GetSceneId() const;
         const std::string& GetName() const;

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <boost/thread/lock_guard.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include <zlib.h>

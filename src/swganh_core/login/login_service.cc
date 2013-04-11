@@ -134,7 +134,7 @@ void LoginService::Startup()
         UpdateGalaxyStatus_();
     });
 
-    Server::Startup(listen_port_);
+    StartListening(listen_port_);
 
     UpdateGalaxyStatus_();
 
@@ -154,7 +154,7 @@ void LoginService::Shutdown()
 {
     // Remove all the sessions
     account_provider_->EndSessions();
-    Server::Shutdown();
+    StopListening();
 }
 
 int LoginService::galaxy_status_check_duration_secs() const
