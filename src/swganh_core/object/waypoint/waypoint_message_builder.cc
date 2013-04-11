@@ -23,6 +23,7 @@ void WaypointMessageBuilder::RegisterEventHandlers()
         auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
         SendBaselines(static_pointer_cast<Waypoint>(controller_event->object), controller_event->observer);
     });
+
     event_dispatcher->Subscribe("Waypoint::Activated", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<WaypointEvent>(incoming_event);
@@ -89,23 +90,10 @@ void WaypointMessageBuilder::BuildColorDelta(const shared_ptr<Waypoint>& object)
     }
 }
 
-void WaypointMessageBuilder::SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    BuildBaseline3(waypoint);
-    BuildBaseline6(waypoint);
-
-    for (auto& baseline : waypoint->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
-    SendEndBaselines(waypoint, observer);
-}
-
-BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object)
+boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 12);
-	message.data.append(IntangibleMessageBuilder::BuildBaseline3(object).data);
+	message.data.append((*IntangibleMessageBuilder::BuildBaseline3(object)).data);
     auto coords = object->GetCoordinates();
     message.data.write(coords.x);
     message.data.write(coords.z);
@@ -119,9 +107,9 @@ BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoin
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage WaypointMessageBuilder::BuildBaseline6(const std::shared_ptr<Waypoint>& object)
+boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline6(const std::shared_ptr<Waypoint>& object)
 {
 	auto message = CreateBaselinesMessage(object, Object::VIEW_6, 5);
-	message.data.append(IntangibleMessageBuilder::BuildBaseline6(object).data);
+	message.data.append((*IntangibleMessageBuilder::BuildBaseline6(object)).data);
 	return message;
 }

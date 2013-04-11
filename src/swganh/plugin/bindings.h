@@ -9,6 +9,7 @@
 
 #include <boost/program_options/options_description.hpp>
 
+#include "version.h"
 #include "swganh/app/kernel_interface.h"
 
 namespace swganh {

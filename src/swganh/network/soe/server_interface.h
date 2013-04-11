@@ -29,9 +29,9 @@ class ServerInterface {
 public:
     virtual ~ServerInterface() {}
     
-    virtual void Startup(uint16_t port) = 0;
+    virtual void StartListening(uint16_t port) = 0;
     
-    virtual void Shutdown(void) = 0;
+    virtual void StopListening(void) = 0;
 
     virtual void SendTo(const boost::asio::ip::udp::endpoint& endpoint, swganh::ByteBuffer buffer) = 0;
 

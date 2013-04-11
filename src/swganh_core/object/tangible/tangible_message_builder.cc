@@ -25,6 +25,7 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
         SendBaselines(static_pointer_cast<Tangible>(controller_event->object), controller_event->observer);
     });
+
     event_dispatcher->Subscribe("Tangible::Customization", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<TangibleEvent>(incoming_event);
@@ -71,18 +72,7 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         BuildDefendersDelta(value_event->Get());
     });
 }
-void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(tangible);
-    auto baseline6 = BuildBaseline6(tangible);
-    auto baseline7 = BuildBaseline7(tangible);
-    
-    observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-    observer->Notify(&baseline7);
-        
-    SendEndBaselines(tangible, observer);
-}
+
 void TangibleMessageBuilder::BuildCustomizationDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
@@ -159,10 +149,10 @@ void TangibleMessageBuilder::BuildDefendersDelta(const shared_ptr<Tangible>& tan
 }
 
 // baselines
-BaselinesMessage TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangible>& tangible)
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangible>& tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_3, 11);
-    message.data.append(ObjectMessageBuilder::BuildBaseline3(tangible).data);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline3(tangible)).data);
     message.data.write<std::string>(tangible->GetCustomization());
     tangible->SerializeComponentCustomization(&message);
     message.data.write<uint32_t>(tangible->GetOptionsMask());
@@ -172,14 +162,16 @@ BaselinesMessage TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangibl
     message.data.write<uint8_t>(tangible->IsStatic() ? 1 : 0);
     return BaselinesMessage(std::move(message));
 }
-BaselinesMessage TangibleMessageBuilder::BuildBaseline6(const shared_ptr<Tangible>& tangible)
+
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(const shared_ptr<Tangible>& tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_6, 2);
-    message.data.append(ObjectMessageBuilder::BuildBaseline6(tangible).data);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline6(tangible)).data);
     tangible->SerializeDefenders(&message);
     return BaselinesMessage(std::move(message));
 }
-BaselinesMessage TangibleMessageBuilder::BuildBaseline7(const shared_ptr<Tangible>& tangible)
+
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(const shared_ptr<Tangible>& tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_7, 2);
     message.data.write<uint64_t>(0);

@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(CanSplitDataChannelMessages) {
     list<ByteBuffer> split_message = SplitDataChannelMessage(large_message, 200);
 
     // The original message size is 302 so this should result in 2 fragments.
-    BOOST_CHECK_EQUAL(2, split_message.size());
+    BOOST_CHECK_EQUAL(size_t(2), split_message.size());
 }
 
 
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(SplittingDataChannelMessagePrefixesTotalSizeToFirstMessage)
     list<ByteBuffer> split_message = SplitDataChannelMessage(large_message, 200);
 
     // The original message size is 302 so this should result in 2 fragments.
-    BOOST_CHECK_EQUAL(302, split_message.front().read<uint32_t>(true));
+    BOOST_CHECK_EQUAL(uint32_t(302), split_message.front().read<uint32_t>(true));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

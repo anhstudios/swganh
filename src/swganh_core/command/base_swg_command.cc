@@ -47,11 +47,6 @@ swganh::app::SwganhKernel* BaseSwgCommand::GetKernel() const
 {
     return kernel_;
 }
-        
-std::string BaseSwgCommand::GetCommandName() const
-{
-    return properties_->command_name.ident_string();
-}
 
 uint32_t BaseSwgCommand::GetActionCounter() const
 {

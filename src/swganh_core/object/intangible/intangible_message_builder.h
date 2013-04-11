@@ -26,12 +26,13 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void RegisterEventHandlers();
 
-		virtual void SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
+		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Intangible>& intangible);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Intangible>& intangible);
 
-		static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Intangible>& intangible);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Intangible>& intangible);
+    private:
+
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

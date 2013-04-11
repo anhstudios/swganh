@@ -255,7 +255,7 @@ void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 	}
 	catch (std::exception& ex)
 	{
-		LOG(error) << "error persisting attributes for object " << object->GetObjectId() + " " << ex.what();
+		LOG(error) << "error persisting attributes for object " << object->GetObjectId() << " " << ex.what();
 	}
 }
 

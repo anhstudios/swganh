@@ -5,11 +5,12 @@
 
 #include <cstdint>
 
-#include "swganh_core/object/object.h"
 #include "swganh_core/messages/baselines_message.h"
 #include "swganh_core/messages/deltas_message.h"
 #include "swganh_core/messages/scene_end_baselines.h"
 #include "swganh_core/messages/update_containment_message.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/object_events.h"
 
 using namespace swganh;
 using namespace std;
@@ -18,6 +19,11 @@ using namespace swganh::object;
 
 void ObjectMessageBuilder::RegisterEventHandlers()
 {
+    event_dispatcher->Subscribe("Object::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto observer_event = static_pointer_cast<ObserverEvent>(incoming_event);
+        SendBaselines(observer_event->object, observer_event->observer);
+    });
     event_dispatcher->Subscribe("Object::CustomName", [this] (const shared_ptr<EventInterface>& incoming_event)
     {
         auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
@@ -102,7 +108,7 @@ void ObjectMessageBuilder::BuildServerIDDelta(const shared_ptr<Object>& object)
     }
 }
 
-BaselinesMessage ObjectMessageBuilder::BuildBaseline3(const shared_ptr<Object>& object)
+boost::optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(const shared_ptr<Object>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3);
     message.data.write(object->GetComplexity());
@@ -114,7 +120,7 @@ BaselinesMessage ObjectMessageBuilder::BuildBaseline3(const shared_ptr<Object>& 
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage ObjectMessageBuilder::BuildBaseline6(const shared_ptr<Object>& object)
+boost::optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline6(const shared_ptr<Object>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6);
 	message.data.write(object->GetSceneId());

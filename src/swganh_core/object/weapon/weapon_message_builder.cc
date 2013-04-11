@@ -19,29 +19,17 @@ void WeaponMessageBuilder::RegisterEventHandlers()
 {
 }
 
-void WeaponMessageBuilder::SendBaselines(const shared_ptr<Weapon>& weapon, const shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(weapon);
-    auto baseline6 = BuildBaseline6(weapon);
-    
-    observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-        
-    SendEndBaselines(weapon, observer);
-}
-
-// baselines
-BaselinesMessage WeaponMessageBuilder::BuildBaseline3(const shared_ptr<Weapon>& weapon)
+boost::optional<BaselinesMessage> WeaponMessageBuilder::BuildBaseline3(const shared_ptr<Weapon>& weapon)
 {
     auto message = CreateBaselinesMessage(weapon, Object::VIEW_3, 11);
-    message.data.append(TangibleMessageBuilder::BuildBaseline3(weapon).data);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(weapon)).data);
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage WeaponMessageBuilder::BuildBaseline6(const shared_ptr<Weapon>& weapon)
+boost::optional<BaselinesMessage> WeaponMessageBuilder::BuildBaseline6(const shared_ptr<Weapon>& weapon)
 {
     auto message = CreateBaselinesMessage(weapon, Object::VIEW_6, 2);
-    message.data.append(TangibleMessageBuilder::BuildBaseline6(weapon).data);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(weapon)).data);
  
     return BaselinesMessage(std::move(message));
 }

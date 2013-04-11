@@ -29,7 +29,8 @@ string Sha512Encoder::EncodePassword(string raw, string salt) {
     }
     else
         LOG(warning) << "Sha512Encoder::EncodePassword failed to encode password" << endl;
-	while(statement->getMoreResults());
+	while(statement->getMoreResults())
+        ;
     return result;
 }
 

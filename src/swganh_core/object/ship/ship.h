@@ -31,6 +31,7 @@ public:
     const static uint32_t type = 0x6FB799E0; 
 
 private:
+    /*
     std::vector<ShipList<float>> energy_drain_;                     // update 1
     std::vector<ShipList<float>> mass_;                             // update 1
     std::vector<ShipList<std::wstring>> custom_component_names_;    // update 1
@@ -69,8 +70,7 @@ private:
     uint32_t unkow6;                                                // update 1
     uint32_t unkow7;                                                // update 1
     uint32_t unkow8;                                                // update 1
-
-
+    */
 };
     
 }}  // namespace swganh::object

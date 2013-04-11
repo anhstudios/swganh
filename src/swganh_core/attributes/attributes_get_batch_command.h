@@ -24,7 +24,7 @@ namespace attributes {
     {
     public:
 
-        virtual std::string GetCommandName() { return "getattributesbatch"; }
+        virtual std::string GetCommandName() const { return "getattributesbatch"; }
 
 		/*!
 		* Creates a new instance using the kernel

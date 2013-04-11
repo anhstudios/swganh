@@ -17,6 +17,8 @@ namespace tre
 	class ContainerLayer : public Layer
 	{
 	public:
+        
+        virtual ~ContainerLayer() {}
 
 		virtual void Deserialize(swganh::ByteBuffer& buffer)
 		{

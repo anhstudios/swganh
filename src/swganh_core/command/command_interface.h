@@ -59,7 +59,7 @@ namespace command {
     public:
         virtual ~CommandInterface() {}
 
-        virtual std::string GetCommandName() = 0;
+        virtual std::string GetCommandName() const = 0;
         
         /**
          * Serves as the constructor for the CommandInterface and is called by the service that

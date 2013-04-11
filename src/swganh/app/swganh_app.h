@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-
+#include <thread>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/noncopyable.hpp>
@@ -80,7 +80,7 @@ private:
     
     boost::asio::io_service io_pool_, cpu_pool_;
     std::unique_ptr<boost::asio::io_service::work> io_work_, cpu_work_;
-    std::vector<boost::thread> io_threads_, cpu_threads_;
+    std::vector<std::thread> io_threads_, cpu_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
     std::atomic<bool> running_;
     bool initialized_;

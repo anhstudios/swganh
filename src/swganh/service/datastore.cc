@@ -188,7 +188,8 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyById(uint32_t id) const {
 
         // if the statement fails to service return a nullptr
         if (!result->next()) {
-			while(statement->getMoreResults());
+			while(statement->getMoreResults())
+                ;
             return nullptr;
         }
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include <map>
-
+#include <boost/thread/lock_guard.hpp>
 #include "swganh/tre/tre_archive.h"
 #include "visitors/visitor_interface.h"
 

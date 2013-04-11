@@ -19,8 +19,8 @@ class Session;
   
 MOCK_BASE_CLASS(MockServer, ServerInterface )
 {
-    MOCK_METHOD(Startup, 1);
-    MOCK_METHOD(Shutdown, 0);
+    MOCK_METHOD(StartListening, 1);
+    MOCK_METHOD(StopListening, 0);
     MOCK_METHOD(SendTo, 2);
     MOCK_METHOD(HandleMessage, 2);    
 

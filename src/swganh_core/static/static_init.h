@@ -3,39 +3,11 @@
 
 #pragma once
 
-#include "swganh/logger.h"
-
-#include "swganh/plugin/bindings.h"
-#include "swganh/plugin/plugin_manager.h"
-
-#include "swganh/app/swganh_kernel.h"
-
-#include "static_service.h"
-#include "version.h"
+namespace swganh { namespace app { class SwganhKernel; }}
 
 namespace swganh {
 namespace statics {
 
-inline void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
-    swganh::plugin::ObjectRegistration registration;
-    registration.version.major = VERSION_MAJOR;
-    registration.version.minor = VERSION_MINOR;
-    
-    // Register Static Service
-	{ // Static::StaticService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-            return new StaticService(kernel);;
-        };
+	void Initialize(swganh::app::SwganhKernel* kernel);
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
-                delete static_cast<StaticService*>(object);
-            }
-        };
-
-        kernel->GetPluginManager()->RegisterObject("Static::StaticService", &registration);
-	}
-}
-
-}}  // namespace swganh::static
+}}

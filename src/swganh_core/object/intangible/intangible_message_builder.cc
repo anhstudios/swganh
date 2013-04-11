@@ -17,28 +17,17 @@ void IntangibleMessageBuilder::RegisterEventHandlers()
     // TODO: Register Event Handlers for Intangible
 }
 
-void IntangibleMessageBuilder::SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(intangible);
-    auto baseline6 = BuildBaseline6(intangible);
-    
-	observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-
-    SendEndBaselines(intangible, observer);
-}
-
-BaselinesMessage IntangibleMessageBuilder::BuildBaseline3(const std::shared_ptr<Intangible>& intangible)
+boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline3(const std::shared_ptr<Intangible>& intangible)
 {
 	auto message = CreateBaselinesMessage(intangible, intangible->Object::VIEW_3, 5);
-	message.data.append(ObjectMessageBuilder::BuildBaseline3(intangible).data);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline3(intangible)).data);
 	message.data.write(intangible->GetGenericInt()); 
 	return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& intangible)
+boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& intangible)
 {
 	auto message = CreateBaselinesMessage(intangible, intangible->Object::VIEW_6, 1);
-	message.data.append(ObjectMessageBuilder::BuildBaseline6(intangible).data);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline6(intangible)).data);
     return BaselinesMessage(std::move(message));
 }

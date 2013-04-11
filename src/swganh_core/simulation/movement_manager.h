@@ -38,6 +38,8 @@ public:
 	*/
 	explicit MovementManager(swganh::app::SwganhKernel* kernel, std::string scene_name);
 
+    virtual ~MovementManager() {}
+    
 	/*
 	* Handles the normal data transform (used while outside).
 	*/

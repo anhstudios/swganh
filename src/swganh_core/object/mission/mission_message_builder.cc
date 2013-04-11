@@ -20,11 +20,6 @@ using namespace swganh::messages;
 
 void MissionMessageBuilder::RegisterEventHandlers()
 {
-	event_dispatcher->Subscribe("Mission::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
-    {
-        auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
-        SendBaselines(static_pointer_cast<Mission>(controller_event->object), controller_event->observer);
-    });
 	event_dispatcher->Subscribe("Mission::DifficultyLevel", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
@@ -234,18 +229,7 @@ void MissionMessageBuilder::BuildMissionWaypointDelta(const std::shared_ptr<Miss
 	}
 }
 
-void MissionMessageBuilder::SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(mission);
-    auto baseline6 = BuildBaseline6(mission);
-    
-	observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-        
-    SendEndBaselines(mission, observer);
-}
-
-BaselinesMessage MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mission>& mission)
+boost::optional<BaselinesMessage> MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mission>& mission)
 {
 	auto message = CreateBaselinesMessage(mission, Object::VIEW_3, 17);
 	auto waypoint = mission->GetMissionWaypoint();
@@ -253,7 +237,7 @@ BaselinesMessage MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mis
 	auto end_location = mission->GetDestinationPosition();
 	auto waypoint_location = waypoint->GetCoordinates();
 	
-	message.data.append(IntangibleMessageBuilder::BuildBaseline3(mission).data);
+	message.data.append((*IntangibleMessageBuilder::BuildBaseline3(mission)).data);
 	message.data.write(mission->GetDifficultyLevel());
 	message.data.write(start_location.x);
 	message.data.write(start_location.y);
@@ -290,9 +274,9 @@ BaselinesMessage MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mis
 	return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage MissionMessageBuilder::BuildBaseline6(const std::shared_ptr<Mission>& mission)
+boost::optional<BaselinesMessage> MissionMessageBuilder::BuildBaseline6(const std::shared_ptr<Mission>& mission)
 {
 	auto message = CreateBaselinesMessage(mission, Object::VIEW_6, 1);
-    message.data.append(IntangibleMessageBuilder::BuildBaseline6(mission).data);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline6(mission)).data);
     return BaselinesMessage(move(message));
 }

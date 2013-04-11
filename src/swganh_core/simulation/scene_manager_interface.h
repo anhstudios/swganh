@@ -25,6 +25,7 @@ namespace simulation {
     class SceneManagerInterface
     {
     public:
+        virtual ~SceneManagerInterface() {}
 
         virtual void LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection) = 0;
         

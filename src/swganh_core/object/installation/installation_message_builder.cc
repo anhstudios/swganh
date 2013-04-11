@@ -17,7 +17,7 @@ using namespace swganh::messages;
 
 void InstallationMessageBuilder::RegisterEventHandlers()
 {
-	event_dispatcher->Subscribe("Installation::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Installation::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
         SendBaselines(static_pointer_cast<Installation>(controller_event->object), controller_event->observer);
@@ -82,19 +82,6 @@ void InstallationMessageBuilder::RegisterEventHandlers()
         auto value_event = static_pointer_cast<InstallationEvent>(incoming_event);
 		BuildConditionPercentDelta(value_event->Get());
     });
-}
-
-void InstallationMessageBuilder::SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(installation);
-    auto baseline6 = BuildBaseline6(installation);
-    auto baseline7 = BuildBaseline7(installation);
-    
-    observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-    observer->Notify(&baseline7);
-    
-    SendEndBaselines(installation, observer);
 }
 
 void InstallationMessageBuilder::BuildActiveDelta(const std::shared_ptr<Installation>& installation)
@@ -247,24 +234,24 @@ void InstallationMessageBuilder::BuildConditionPercentDelta(const std::shared_pt
     }
 }
 
-BaselinesMessage InstallationMessageBuilder::BuildBaseline3(const std::shared_ptr<Installation>& installation)
+boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline3(const std::shared_ptr<Installation>& installation)
 {
 	auto message = CreateBaselinesMessage(installation, Object::VIEW_3, 14);
-    message.data.append(TangibleMessageBuilder::BuildBaseline3(installation).data);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(installation)).data);
 	message.data.write<uint8_t>((installation->IsActive()) ? 1 : 0);
 	message.data.write(installation->GetPowerReserve());
 	message.data.write(installation->GetPowerCost());
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage InstallationMessageBuilder::BuildBaseline6(const std::shared_ptr<Installation>& installation)
+boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline6(const std::shared_ptr<Installation>& installation)
 {
 	auto message = CreateBaselinesMessage(installation, Object::VIEW_6, 2);
-    message.data.append(TangibleMessageBuilder::BuildBaseline6(installation).data);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(installation)).data);
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage InstallationMessageBuilder::BuildBaseline7(const std::shared_ptr<Installation>& installation)
+boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline7(const std::shared_ptr<Installation>& installation)
 {
 	auto message = CreateBaselinesMessage(installation, Object::VIEW_7, 11);
 	message.data.write<uint8_t>((installation->IsUpdating()) ? 1 : 0);

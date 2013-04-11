@@ -190,8 +190,6 @@ private:
     uint16_t							current_client_sequence_;
     std::atomic<uint16_t>				server_sequence_;
 
-    uint32_t							next_frag_size_;
-
     // Net Stats
     NetStatsServer						server_net_stats_;
 

@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(DataChannelMessagesAreStoredForResending) {
     auto sent_messages = session->GetUnacknowledgedMessages();
 
     // Expect the vector of sent messages to contain 3 elements
-    BOOST_CHECK_EQUAL(3, sent_messages.size());
+    BOOST_CHECK_EQUAL(size_t(3), sent_messages.size());
 }
 BOOST_AUTO_TEST_SUITE_END()
 

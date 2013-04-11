@@ -20,6 +20,7 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         auto observer_event = static_pointer_cast<ObserverEvent>(incoming_event);
         SendBaselines(static_pointer_cast<Creature>(observer_event->object), observer_event->observer);
     });
+
     event_dispatcher->Subscribe("Creature::Bank", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);
@@ -217,22 +218,7 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         BuildUpdatePvpStatusMessage(value_event->Get());
     });
 }
-void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline1 = BuildBaseline1(creature);
-    auto baseline3 = BuildBaseline3(creature);
-    auto baseline4 = BuildBaseline4(creature);
-    auto baseline6 = BuildBaseline6(creature);
-    
-    observer->Notify(&baseline1);
-    observer->Notify(&baseline3);
-    observer->Notify(&baseline4);
-    observer->Notify(&baseline6);
-        
-    SendEndBaselines(creature, observer);
 
-    BuildUpdatePvpStatusMessage(creature);
-}
 void CreatureMessageBuilder::BuildBankCreditsDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
@@ -657,7 +643,7 @@ void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(const shared_ptr<Creatu
     }
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creature>& creature)
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_1, 4);
     message.data.write<uint32_t>(creature->GetBankCredits());                  // Bank Credits
@@ -668,10 +654,10 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creatur
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creature>& creature)
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_3, 18);
-    message.data.append(TangibleMessageBuilder::BuildBaseline3(creature).data);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(creature)).data);
     message.data.write<uint8_t>(creature->GetPosture());                        // Posture
     message.data.write<uint8_t>(creature->GetFactionRank());                   // Faction Rank
     message.data.write<uint64_t>(creature->GetOwnerId());                      // Owner Id
@@ -683,7 +669,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creatur
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creature>& creature)
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_4, 20);
     message.data.write<float>(creature->GetAccelerationMultiplierBase());         // Acceleration Multiplier Base
@@ -704,10 +690,10 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creatur
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline6(const shared_ptr<Creature>& creature)
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline6(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_6, 23);
-    message.data.append(TangibleMessageBuilder::BuildBaseline6(creature).data);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(creature)).data);
     message.data.write<uint16_t>(creature->GetCombatLevel());                      // Combat Level
     message.data.write<std::string>(creature->GetAnimation());                      // Current Animation
     message.data.write<std::string>(creature->GetMoodAnimation());                 // Mood Animation

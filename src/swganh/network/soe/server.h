@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 #include <memory>
 
 #include <boost/asio.hpp>
@@ -28,19 +29,19 @@ class Server : public ServerInterface {
 public:
     explicit Server(boost::asio::io_service& io_service);
 
-    ~Server();
+    virtual ~Server();
 
     /**
      * @brief Starts the SOE Frontend Service.
      * 
      * @parama port The port to listen for messages on.
      */
-    void Startup(uint16_t port);
+    void StartListening(uint16_t port);
     
     /**
      * @brief
      */
-    void Shutdown(void);
+    void StopListening(void);
     
     /**
      * @brief Sends a message on the wire to the target endpoint.

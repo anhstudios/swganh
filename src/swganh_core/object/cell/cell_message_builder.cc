@@ -20,27 +20,16 @@ void CellMessageBuilder::RegisterEventHandlers()
     // TODO: Register Handlers for Cells
 }
 
-void CellMessageBuilder::SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    auto baseline3 = BuildBaseline3(cell);
-    auto baseline6 = BuildBaseline6(cell);
-    
-    observer->Notify(&baseline3);
-    observer->Notify(&baseline6);
-    
-    SendEndBaselines(cell, observer);
-}
-
-BaselinesMessage CellMessageBuilder::BuildBaseline3(const shared_ptr<Cell>& cell)
+boost::optional<BaselinesMessage> CellMessageBuilder::BuildBaseline3(const shared_ptr<Cell>& cell)
 {
     auto message = CreateBaselinesMessage(cell, Object::VIEW_3, 5);
-    message.data.append(IntangibleMessageBuilder::BuildBaseline3(cell).data);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline3(cell)).data);
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage CellMessageBuilder::BuildBaseline6(const shared_ptr<Cell>& cell)
+boost::optional<BaselinesMessage> CellMessageBuilder::BuildBaseline6(const shared_ptr<Cell>& cell)
 {
     auto message = CreateBaselinesMessage(cell, Object::VIEW_6, 5);
-    message.data.append(IntangibleMessageBuilder::BuildBaseline6(cell).data);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline6(cell)).data);
     return BaselinesMessage(std::move(message));
 }
