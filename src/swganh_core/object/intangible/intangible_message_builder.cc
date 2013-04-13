@@ -5,6 +5,7 @@
 
 #include <cstdint>
 
+#include "swganh_core/object/object_events.h"
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/intangible/intangible.h"
 
@@ -14,7 +15,11 @@ using namespace swganh::object;
 
 void IntangibleMessageBuilder::RegisterEventHandlers()
 {
-    // TODO: Register Event Handlers for Intangible
+    event_dispatcher->Subscribe("Intangible::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto observer_event = static_pointer_cast<ObserverEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Intangible>(observer_event->object), observer_event->observer);
+    });
 }
 
 boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline3(const std::shared_ptr<Intangible>& intangible)

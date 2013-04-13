@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "intangible.h"
+#include "swganh_core/object/object_events.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -42,4 +43,13 @@ void Intangible::Clone(std::shared_ptr<Intangible> other)
 
 	//Call the method in the super class
 	Object::Clone(other);
+}
+
+void Intangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
+{
+	if (event_dispatcher_)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+			("Intangible::Baselines", shared_from_this(), observer));
+	}
 }
