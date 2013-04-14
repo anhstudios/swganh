@@ -84,58 +84,45 @@ vector<ByteBuffer> Session::GetUnacknowledgedMessages() const {
     return unacknowledged_messages;
 }
 
-void Session::Update() {
-    // Exit as quickly as possible if there is no work currently.
-    if (outgoing_data_messages_.empty()) {
-        return;
-    }
-
-    // Build up a list of data messages to process
-    uint32_t message_count = outgoing_data_messages_.unsafe_size();
-    list<ByteBuffer> process_list;
-	SequencedCallbacks callbacks;
-    OutgoingMessage tmp;
-
-    for (uint32_t i = 0; i < message_count; ++i) {
-        if (outgoing_data_messages_.try_pop(tmp)) {
-			process_list.push_back(tmp.first);
-			if(tmp.second.is_initialized())
-				callbacks.push_back(tmp.second.get());
-        }
-    }
-
-    // Pack the message list into a single data channel payload and send it.
-    ByteBuffer data_channel_payload = PackDataChannelMessages(std::move(process_list));
-
-    // Split up the message if it's too big
-    // \note: in determining the max size 3 is the size of the soe header + the compression flag.
+void Session::SendFragmentedPacket_(ByteBuffer message, SequencedCallbacks callbacks)
+{
     uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 3;
 
-    if (data_channel_payload.size() > max_data_channel_size) {
-        list<ByteBuffer> fragmented_message = SplitDataChannelMessage(
-            data_channel_payload,
+    list<ByteBuffer> fragmented_message = SplitDataChannelMessage(
+            message,
             max_data_channel_size);
 
-		uint16_t frag_list_size = fragmented_message.size();
-        for_each(fragmented_message.begin(), fragmented_message.end(), [this, &callbacks, &frag_list_size] (ByteBuffer& fragment) {
- 
-			if(frag_list_size > 1) {
-				SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), SequencedCallbacks());
-			}
-			else
-			{
-				SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), callbacks);
-			}
-			frag_list_size--;
-        });
-    } else {
-        SendSequencedMessage_(&BuildDataChannelHeader, move(data_channel_payload), callbacks);
+    auto list_size = fragmented_message.size();
+    for (auto& fragment : fragmented_message)
+    {
+        if (list_size == 1)
+        {
+            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), callbacks);            
+        }
+        else
+        {
+            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), SequencedCallbacks());
+        }
+
+        --list_size;
     }
 }
 
 void Session::SendTo(ByteBuffer message, boost::optional<SequencedCallback> callback)
-{
-    outgoing_data_messages_.push(OutgoingMessage(move(message), callback));
+{    
+    uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 3;
+
+    SequencedCallbacks callbacks;
+    if (callback)
+    {
+        callbacks.push_back(*callback);
+    }
+
+    if (message.size() > max_data_channel_size) {
+        SendFragmentedPacket_(message, std::move(callbacks));
+    } else {
+        SendSequencedMessage_(&BuildDataChannelHeader, move(message), std::move(callbacks));
+    }
 }
 
 void Session::Close(void)

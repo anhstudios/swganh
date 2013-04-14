@@ -56,7 +56,6 @@ BOOST_AUTO_TEST_CASE(SendingDataChannelMessageIncreasesServerSequence) {
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
         session->SendTo(buildSimpleMessage());
-		session->Update();
         BOOST_CHECK_EQUAL(i, session->server_sequence());
     }
 }
@@ -70,7 +69,6 @@ BOOST_AUTO_TEST_CASE(DataChannelMessagesAreStoredForResending) {
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
         session->SendTo(buildSimpleMessage());
-		session->Update();
     }
 
     auto sent_messages = session->GetUnacknowledgedMessages();
