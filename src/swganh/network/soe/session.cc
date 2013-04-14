@@ -384,7 +384,7 @@ void Session::handleOutOfOrderA_(OutOfOrderA packet)
         end(sent_messages_),
         [=](const SequencedMessageMap::value_type& item)
     {
-        SendSoePacket_(item.second);
+        server_->SendTo(remote_endpoint(), item.second);
     });
 }
 
@@ -417,11 +417,11 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
         return true;
     }
 	// are we more than 50 packets out of sequence?
-	else if(sequence > (next_client_sequence_ + 50) )
+	else if(sequence > (next_client_sequence_ + 50) && next_client_sequence_ > 50)
 	{
 		Close();
 	}
-    else if (next_client_sequence_ < sequence)
+    else if (next_client_sequence_ < sequence && ((std::numeric_limits<uint16_t>::max() - sequence) > (sequence - next_client_sequence_)))
     {
 		// Tell the client we have received an Out of Order sequence.
 		OutOfOrderA	out_of_order(sequence);
@@ -431,6 +431,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
 		SendSoePacket_(move(buffer));        
     }
 	
+    DLOG(warning) << "Invalid sequence: [" << sequence << "] Current sequence [" << next_client_sequence_ << "]";
 	return false;
 }
 
