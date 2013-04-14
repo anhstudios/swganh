@@ -2,9 +2,9 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh_core/object/slot_interface.h"
+#include <vector>
 
-#include <set>
+#include "swganh_core/object/slot_interface.h"
 
 namespace swganh {
 namespace object {
@@ -21,7 +21,7 @@ namespace object {
 		virtual void view_objects_if(std::function<bool(std::shared_ptr<swganh::object::Object>)> walkerFunction);
 
 	private:
-		std::set<std::shared_ptr<swganh::object::Object>> held_objects_;
+		std::vector<std::shared_ptr<swganh::object::Object>> held_objects_;
 	};
 
 }
