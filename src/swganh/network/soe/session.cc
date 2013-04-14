@@ -240,13 +240,10 @@ void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer mes
     data_channel_message.append(move(message));
 
     // Send it over the wire
-    SendSoePacket_(data_channel_message);
+    SendSoePacket_(data_channel_message, message_sequence);
 
 	if(callbacks.get().size() > 0)
 		QueueSequencedCallback(message_sequence, callbacks.get());
-
-    // Store it for resending later if necessary
-    sent_messages_.push_back(make_pair(message_sequence, move(data_channel_message)));
 }
 
 void Session::handleSessionRequest_(SessionRequest packet)
@@ -391,12 +388,12 @@ void Session::handleOutOfOrderA_(OutOfOrderA packet)
     });
 }
 
-void Session::SendSoePacket_(swganh::ByteBuffer message)
+void Session::SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence)
 {
-    strand_.post(bind(&Session::SendSoePacketInternal, shared_from_this(), std::move(message)));
+    strand_.post(bind(&Session::SendSoePacketInternal, shared_from_this(), std::move(message), sequence));
 }
 
-void Session::SendSoePacketInternal(swganh::ByteBuffer message)
+void Session::SendSoePacketInternal(swganh::ByteBuffer message, boost::optional<uint16_t> sequence)
 {
 	LOG_NET << "Server -> Client: \n" << message;
 
@@ -404,9 +401,13 @@ void Session::SendSoePacketInternal(swganh::ByteBuffer message)
     encryption_filter_(this, &message);
     crc_output_filter_(this, &message);
 	
-    server_->SendTo(remote_endpoint(), move(message));
+    // Store it for resending later if necessary
+    if (sequence)
+    {
+        sent_messages_.push_back(make_pair(*sequence, message));
+    } 
 
-	
+    server_->SendTo(remote_endpoint(), move(message));	
 }
 
 bool Session::SequenceIsValid_(const uint16_t& sequence)
