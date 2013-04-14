@@ -137,17 +137,6 @@ void LoginService::Startup()
     StartListening(listen_port_);
 
     UpdateGalaxyStatus_();
-
-    session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-        for_each(
-            begin(session_map_),
-            end(session_map_),
-            [=] (SessionMap::value_type& type)
-        {
-            type.second->Update();
-        });
-    });
 }
 
 void LoginService::Shutdown()
