@@ -75,6 +75,10 @@ namespace object {
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
         
+        void LoadContainedObjects(const std::shared_ptr<Object>& object, const std::unique_ptr<sql::ResultSet>& result);
+
+        void LoadContainedObjects(const std::shared_ptr<Object>& object);
+        
         ObjectManager* object_manager_;
 		boost::mutex persisted_objects_mutex_;
 		swganh::app::SwganhKernel* kernel_;         
