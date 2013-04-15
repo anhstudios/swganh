@@ -117,17 +117,12 @@ public:
         ByteBuffer message_buffer;
         message.Serialize(message_buffer);
 
-        outgoing_data_messages_.push(OutgoingMessage(std::move(message_buffer), callback));
+        SendTo(message_buffer, callback);
     }
 
     void HandleMessage(swganh::ByteBuffer message);
 
     void HandleProtocolMessage(swganh::ByteBuffer message);
-
-    /**
-     * Clears each message pump.
-     */
-    void Update();
 
     /**
      * Closes the Session.
@@ -160,8 +155,9 @@ private:
     void handleDataFragA_(DataFragA packet);
     void handleAckA_(AckA packet);
     void handleOutOfOrderA_(OutOfOrderA packet);
-    void SendSoePacket_(swganh::ByteBuffer message);
-    void SendSoePacketInternal(swganh::ByteBuffer message);
+    void SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
+    void SendSoePacketInternal(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
+    void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);
     void HandleMessageInternal(swganh::ByteBuffer message);
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 
