@@ -288,32 +288,45 @@ void ObjectFactory::LoadContainedObjects(
     // Check for contained objects        
     if (statement->getMoreResults())
     {
-        unique_ptr<ResultSet> result(statement->getResultSet());
-
-        uint64_t contained_id;
-        uint32_t contained_type;
-
-        while (result->next())
-        {
-            contained_id = result->getUInt64("id");
-            contained_type = result->getUInt("type_id");
-
-            auto contained_object = object_manager_->CreateObjectFromStorage(contained_id, contained_type);
-
-			if(contained_object->GetArrangementId() == -2)
-			{
-				//This object has never been loaded before and needs to be put into the default slot.
-				object->AddObject(nullptr, contained_object);
-			}
-			else 
-			{
-				//Put it back where it was persisted
-				object->AddObject(nullptr, contained_object, contained_object->GetArrangementId());
-			}
-
-        }
+        unique_ptr<ResultSet> result(statement->getResultSet());        
+        LoadContainedObjects(object, result);
     }
 }
+
+void ObjectFactory::LoadContainedObjects(
+    const shared_ptr<Object>& object,
+    const unique_ptr<ResultSet>& result)
+{
+    while (result->next())
+    {
+        uint64_t contained_id = result->getUInt64("id");
+        uint32_t contained_type = result->getUInt("type_id");
+    
+        auto contained_object = object_manager_->CreateObjectFromStorage(contained_id, contained_type);
+        
+        object->AddObject(nullptr, contained_object, contained_object->GetArrangementId());
+    }
+}
+
+void ObjectFactory::LoadContainedObjects(const std::shared_ptr<Object>& object)
+{    
+    try
+    {	
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(
+            conn->prepareStatement("CALL sp_GetContainedObjects(?);"));
+
+        statement->setUInt64(1, object->GetObjectId());    
+
+        LoadContainedObjects(object, unique_ptr<ResultSet>(statement->executeQuery()));
+    }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
+    }
+}
+
 void ObjectFactory::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)
 {
 	try {
