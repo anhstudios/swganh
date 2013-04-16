@@ -53,14 +53,11 @@ MapService::~MapService()
 void MapService::Initialize()
 {
 	simulation_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+    database_manager_ = kernel_->GetDatabaseManager();
 }
 
 void MapService::Startup()
 {
-	kernel_->GetEventDispatcher()->Subscribe("ObjectManager::PersistObjectsByTimer", [=](std::shared_ptr<swganh::EventInterface> event) {
-		PersistLocations();
-	});
-
 	LoadStaticLocations();
 	LoadDynamicLocations();
 	LoadHighestLocationId();
@@ -68,7 +65,6 @@ void MapService::Startup()
 	// Register message handler.
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 	connection_service->RegisterMessageHandler(&MapService::HandleRequestMapLocationsMessage, this);
-
 }
 
 void MapService::AddLocation(std::string scene, std::wstring name, float x, float z, uint32_t category, uint32_t sub_category)
@@ -101,10 +97,7 @@ void MapService::AddLocation(uint32_t scene_id, std::wstring name, float x, floa
 	new_loc.type_displayAsSubcategory = sub_category;
 	i->second.push_back(new_loc);
 
-	// Add to list to sync to mysql
-	// or just sync it now?
-	SyncAddLocation(scene_id, new_loc);
-	
+    database_manager_->ExecuteAsync(std::bind(&MapService::AddLocationToStorage, this, std::placeholders::_1, scene_id, new_loc), "galaxy");
 }
 
 void MapService::RemoveLocation(uint32_t scene_id, std::wstring name)
@@ -116,7 +109,7 @@ void MapService::RemoveLocation(uint32_t scene_id, std::wstring name)
 	for(auto iter = i->second.begin(); iter != i->second.end(); iter++)
 	{
 		if(iter->name == name) {
-			SyncRemoveLocation(scene_id, (*iter));
+            database_manager_->ExecuteAsync(std::bind(&MapService::RemoveLocationFromStorage, this, std::placeholders::_1, scene_id, *iter), "galaxy");
 			iter = i->second.erase(iter);
 		}
 	}
@@ -135,20 +128,6 @@ bool MapService::LocationExists(uint32_t scene_id, std::wstring name)
 	}
 
 	return false;
-}
-
-void MapService::SyncAddLocation(uint32_t scene_id, MapLocation& location)
-{
-	changed_locations_.push(
-		std::tuple<uint32_t, uint32_t, MapLocation>(scene_id, 1, location)
-		);
-}
-
-void MapService::SyncRemoveLocation(uint32_t scene_id, MapLocation& location)
-{
-	changed_locations_.push(
-		std::tuple<uint32_t, uint32_t, MapLocation>(scene_id, 2, location)
-		);
 }
 
 void MapService::InsertLocation(uint32_t scene_id, MapLocation& location)
@@ -237,50 +216,30 @@ void MapService::LoadHighestLocationId()
 	}
 }
 
-void MapService::PersistLocations()
+void MapService::AddLocationToStorage(const std::shared_ptr<sql::Connection>& connection, uint32_t scene_id, swganh::messages::MapLocation location)
 {
-	try
-	{
-		while(changed_locations_.size())
-		{
-			std::tuple<uint32_t, uint32_t, MapLocation> location = changed_locations_.front();
+    auto statement = connection->prepareStatement("CALL sp_UpdateLocation(?, ?, ?, ?, ?, ?, ?);");
 
-			switch((uint32_t)std::get<1>(location))
-			{
-			case 1: // Add
-				{
-					auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
-					auto statement = conn->prepareStatement("CALL sp_UpdateLocation(?, ?, ?, ?, ?, ?, ?);");
-					statement->setUInt(1, (uint32_t)std::get<2>(location).id);
-					statement->setString(2, std::string(std::get<2>(location).name.begin(), std::get<2>(location).name.end()));
-					statement->setUInt(3, std::get<0>(location) - 1);
-					statement->setUInt(4, std::get<2>(location).type_displayAsCategory);
-					statement->setUInt(5, std::get<2>(location).type_displayAsSubcategory);
-					statement->setDouble(6, std::get<2>(location).x);
-					statement->setDouble(7, std::get<2>(location).y);
-					auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-					break;
-				}
+    statement->setUInt64(1, location.id);
+    statement->setString(2, std::string(location.name.begin(), location.name.end()));
+    statement->setUInt(3, scene_id - 1);
+    statement->setUInt(4, location.type_displayAsCategory);
+    statement->setUInt(5, location.type_displayAsSubcategory);
+    statement->setDouble(6, location.x);
+    statement->setDouble(7, location.y);
 
-			case 2: // Remove
-				{
-					auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
-					auto statement = conn->prepareStatement("CALL sp_RemoveLocation(?, ?, ?);");
-					statement->setUInt(1, (uint32_t)std::get<2>(location).id);
-					statement->setUInt(2, std::get<0>(location) - 1);
-					statement->setString(3, std::string(std::get<2>(location).name.begin(), std::get<2>(location).name.end()));
-					auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-					break;
-				}
-			}
+    statement->execute();
+}
 
-			changed_locations_.pop();
-		}
-	}
-	catch(sql::SQLException &e) {
-		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-	}
+void MapService::RemoveLocationFromStorage(const std::shared_ptr<sql::Connection>& connection, uint32_t scene_id, swganh::messages::MapLocation location)
+{
+    auto statement = connection->prepareStatement("CALL sp_RemoveLocation(?, ?, ?);");
+	
+    statement->setUInt64(1, location.id);
+    statement->setUInt(2, scene_id - 1);
+    statement->setString(3, std::string(location.name.begin(), location.name.end()));
+
+    statement->execute();
 }
 
 void MapService::HandleRequestMapLocationsMessage(
