@@ -139,7 +139,9 @@ void TangibleFactory::CreateTangibleFromStorage(shared_ptr<Tangible> tangible)
         ss << "CALL sp_GetTangible(" << tangible->GetObjectId() << ");";   
 
         statement->execute(ss.str());
-        CreateTangible(tangible, statement);  
+        CreateTangible(tangible, statement);
+
+        LoadContainedObjects(tangible);
     }
     catch(sql::SQLException &e)
     {
