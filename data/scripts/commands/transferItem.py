@@ -3,7 +3,7 @@ from swgpy.command import BaseSwgCommand
 from swgpy.utility import *
 
 
-class TransferItem(BaseSwgCommand):
+class TransferItemCommand(BaseSwgCommand):
     def getCommandName(self):
         return 'transferitem'
 

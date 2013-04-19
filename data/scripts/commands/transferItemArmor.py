@@ -3,7 +3,7 @@ from swgpy.command import BaseSwgCommand
 from swgpy.utility import *
 
 
-class TransferItemArmor(BaseSwgCommand):
+class TransferItemArmorCommand(BaseSwgCommand):
     def getCommandName(self):
         return 'transferitemarmor'
 
