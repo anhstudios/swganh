@@ -411,7 +411,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
     else if (next_client_sequence_ < sequence && ((std::numeric_limits<uint16_t>::max() - sequence) > (sequence - next_client_sequence_)))
     {
 		// Tell the client we have received an Out of Order sequence.
-		OutOfOrderA	out_of_order(sequence);
+		OutOfOrderA	out_of_order(next_client_sequence_ - 1);
 		ByteBuffer buffer;
 		out_of_order.serialize(buffer);
 		encryption_filter_(this, &buffer);
