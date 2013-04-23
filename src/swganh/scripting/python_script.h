@@ -1,5 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+
 #pragma once
 
 #ifndef WIN32
@@ -16,6 +17,11 @@
 
 namespace swganh {
 namespace scripting {
+
+    struct PythonObjectDeleter
+    {
+        void operator() (boost::python::object* obj) { ScopedGilLock lock; delete obj; }
+    };
 
     class PythonScript : boost::noncopyable
     {
@@ -41,13 +47,13 @@ namespace scripting {
         {
             ScopedGilLock lock;
 
-	        try{
-				globals_[name.c_str()] = value;
-            } 
-            catch (boost::python::error_already_set &) 
+            try{
+                (*globals_)[name.c_str()] = value;
+            }
+            catch (boost::python::error_already_set &)
             {
                 swganh::scripting::logPythonException();
-            }   
+            }
         }
 
         /**
@@ -92,10 +98,10 @@ namespace scripting {
             std::shared_ptr<T> cpp_instance = nullptr;
 
             ScopedGilLock lock;
-            
-	        try
+
+            try
             {
-                auto creator = globals_[class_name.c_str()];
+                auto creator = (*globals_)[class_name.c_str()];
                 auto instance = creator();
 
                 std::shared_ptr<boost::python::object> py_instance = std::shared_ptr<boost::python::object>(
@@ -108,10 +114,10 @@ namespace scripting {
                     cpp_instance.reset(cpp_pointer, [py_instance] (T*) {});
                 }
             }
-            catch(boost::python::error_already_set&) 
+            catch(boost::python::error_already_set&)
             {
                 swganh::scripting::logPythonException();
-            }   
+            }
 
             return cpp_instance;
         }
@@ -124,9 +130,9 @@ namespace scripting {
 
         std::string filename_;
         std::string filecontents_;
-        boost::python::object file_object_;
-        boost::python::object globals_;
-        boost::python::object main_;
+        std::unique_ptr<boost::python::object, PythonObjectDeleter> file_object_;
+        std::unique_ptr<boost::python::object, PythonObjectDeleter> globals_;
+        std::unique_ptr<boost::python::object, PythonObjectDeleter> main_;
     };
 
 }}  // namespace swganh::scripting
