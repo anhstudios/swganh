@@ -20,9 +20,8 @@ namespace bp = boost::python;
 
 PythonScript::PythonScript(const std::string& filename, bool delay_execution)
         : filename_(filename)
-        , globals_(bp::dict())
 {
-    ReadFileContents_();    
+    ReadFileContents_();
     PreparePythonEnvironment_();
 
     if (!delay_execution)
@@ -33,46 +32,48 @@ PythonScript::PythonScript(const std::string& filename, bool delay_execution)
 
 void PythonScript::Run()
 {
-	ScopedGilLock lock;
+    ScopedGilLock lock;
 
-	try
+    try
     {
 #ifdef _DEBUG
         ReadFileContents_();
 #endif
 
-        file_object_ = bp::exec(filecontents_.c_str(), globals_, globals_);
+        file_object_.reset(
+            new bp::object(bp::exec(filecontents_.c_str(), *globals_, *globals_)));
     }
     catch (bp::error_already_set&)
     {
-		logPythonException();
+        logPythonException();
     }
 }
 
 
 std::shared_ptr<boost::python::object> PythonScript::GetGlobal(const std::string& name)
 {
-    std::shared_ptr<boost::python::object> instance = nullptr;
+    std::shared_ptr<bp::object> instance = nullptr;
 
     ScopedGilLock lock;
 
     try
     {
-        instance = std::shared_ptr<boost::python::object>(
-            new boost::python::object(globals_[name.c_str()]),
-            [] (boost::python::object* obj) { ScopedGilLock lock; delete obj; });            
-    } 
-    catch(boost::python::error_already_set&) 
+        instance = std::shared_ptr<bp::object>(
+            new bp::object((*globals_)[name.c_str()]),
+            PythonObjectDeleter());
+    }
+    catch(bp::error_already_set&)
     {
-        swganh::scripting::logPythonException();
-    }   
+        logPythonException();
+    }
 
     return instance;
 }
 
-boost::python::dict PythonScript::GetGlobals()
+bp::dict PythonScript::GetGlobals()
 {
-    return bp::extract<bp::dict>(globals_);
+    ScopedGilLock lock;
+    return bp::extract<bp::dict>(*globals_);
 }
 
 void PythonScript::PreparePythonEnvironment_()
@@ -81,16 +82,20 @@ void PythonScript::PreparePythonEnvironment_()
 
     try
     {
-        main_ = boost::python::object (boost::python::handle<>(boost::python::borrowed(
-            PyImport_AddModule("__main__")
-        )));
+        main_.reset(
+            new bp::object(bp::handle<>(bp::borrowed(
+            PyImport_AddModule("__main__")))));
 
-        globals_ = main_.attr("__dict__");
-        //globals_["__builtins__"] = tmp["__builtins__"];
+        globals_.reset(new bp::object(main_->attr("__dict__")));
+
+        bp::dict tmp;
+        tmp["__builtins__"] = (*globals_)["__builtins__"];
+
+        *globals_ = tmp;
     }
     catch (bp::error_already_set&)
     {
-		logPythonException();
+        logPythonException();
     }
 }
 
