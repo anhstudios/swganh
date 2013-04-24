@@ -19,7 +19,6 @@ namespace travel {
 		virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
 
 	private:
-		swganh::app::SwganhKernel* kernel_;
 		TravelService* travel_;
 	};
 

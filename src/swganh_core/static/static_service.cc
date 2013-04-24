@@ -375,7 +375,7 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 		auto travel_point = result->getString(14).asStdString();
 		object->SetAttribute("travel_point", std::wstring(travel_point.begin(), travel_point.end()));
 		object->SetFlag("ticket_collector");
-		object->SetAttribute("radial_filename", L"radials.ticket_collector");
+		object->SetAttribute("radial_filename", L"radials/ticket_collector.py");
 	}
 }
 

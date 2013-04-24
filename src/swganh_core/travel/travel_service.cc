@@ -251,7 +251,7 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 	ticket->SetAttribute("travel_departure_point", std::wstring(source_location_tp.descriptor.begin(), source_location_tp.descriptor.end()));
 	ticket->SetAttribute("travel_arrival_planet", std::wstring(target_planet.begin(), target_planet.end()));
 	ticket->SetAttribute("travel_arrival_point", std::wstring(target_location_tp.descriptor.begin(), target_location_tp.descriptor.end()));
-	ticket->SetAttribute("radial_filename", L"radials.ticket");
+	ticket->SetAttribute("radial_filename", L"radials/ticket.py");
 	inventory->AddObject(object, ticket);
 
 	if(round_trip)
@@ -261,7 +261,7 @@ void TravelService::PurchaseTicket(std::shared_ptr<swganh::object::Object> objec
 		ticket->SetAttribute("travel_departure_point", std::wstring(target_location_tp.descriptor.begin(), target_location_tp.descriptor.end()));
 		ticket->SetAttribute("travel_arrival_planet", std::wstring(source_planet.begin(), source_planet.end()));
 		ticket->SetAttribute("travel_arrival_point", std::wstring(source_location_tp.descriptor.begin(), source_location_tp.descriptor.end()));
-		ticket->SetAttribute("radial_filename", L"radials.ticket");
+		ticket->SetAttribute("radial_filename", L"radials/ticket.py");
 		inventory->AddObject(object, ticket);
 	}
 
