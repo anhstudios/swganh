@@ -34,7 +34,7 @@ using boost::regex_match;
 
 boost::optional<std::shared_ptr<CommandCallback>> PurchaseTicketCommand::Run()
 {
-	travel_ = kernel_->GetServiceManager()->GetService<TravelService>("TravelService");
+	travel_ = GetKernel()->GetServiceManager()->GetService<TravelService>("TravelService");
 
 	const wregex p(L"(.*) (.*) (.*) (.*) (\\d+)");
 	wsmatch m;
