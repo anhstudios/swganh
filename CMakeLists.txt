@@ -100,6 +100,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(AdditionalBoostLibs chrono regex)
     add_definitions(-DBOOST_ASIO_DISABLE_MOVE)
     find_library(PTHREAD_LIBRARY NAMES pthread)
+    find_library(DL_LIBRARY NAMES dl)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
