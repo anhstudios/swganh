@@ -255,7 +255,7 @@ echo BUILDING: zlib %ZLIB_VERSION% - http://www.zlib.net/
 
 set ZLIB_VERSION_ALT=!ZLIB_VERSION:.=!
 set ZLIB_FILE=zlib%ZLIB_VERSION_ALT%.zip
-set ZLIB_URL=http://zlib.net/%ZLIB_FILE%
+set ZLIB_URL=http://downloads.sourceforge.net/project/libpng/zlib/%ZLIB_VERSION%/%ZLIB_FILE%
 set ZLIB_DIR=zlib-%ZLIB_VERSION%
 
 if not exist %ZLIB_FILE% (
