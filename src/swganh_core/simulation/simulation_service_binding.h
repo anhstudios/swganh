@@ -45,7 +45,7 @@ void exportSimulationService()
 		;
 
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
-        .def("persist", &SimulationServiceInterface::PersistObject, "persists the specified object and it's containing objects")
+        .def("persist", &SimulationServiceInterface::PersistRelatedObjects, "persists the specified object and it's containing objects")
         .def("findObjectById", GetObjectByIdBinding(&SimulationServiceInterface::GetObjectById), "Finds an object by its id")
 		.def("transfer", TransferObjectToSceneBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene")
 		.def("transfer", TransferObjectToSceneObjectBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene")
@@ -58,5 +58,7 @@ void exportSimulationService()
 		.def("createObject", &SimulationServiceInterface::CreateObjectFromTemplate, CreateOverload(args("template_name", "permission_type", "is_persisted", "object_id"), "Creates an object of the given template"))
 		.def("removeObject", &SimulationServiceInterface::RemoveObject, "Removes an object from the simulation (delete).")
 		.def("removeObjectById", &SimulationServiceInterface::RemoveObjectById, "Removes an object from the simulation by id (delete).")
+        .def("getSceneNameById", &SimulationServiceInterface::SceneNameById, "Returns a scenes name given its id")
+        .def("getSceneIdByName", &SimulationServiceInterface::SceneIdByName, "Returns a scenes id given its name")
 		;
 }
