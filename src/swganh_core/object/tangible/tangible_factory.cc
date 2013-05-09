@@ -23,13 +23,40 @@ using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
- TangibleFactory::TangibleFactory(swganh::app::SwganhKernel* kernel)
+TangibleFactory::TangibleFactory(swganh::app::SwganhKernel* kernel)
     : ObjectFactory(kernel)
 {	
 }
 
- void TangibleFactory::RegisterEventHandlers()
- {
+void TangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    ObjectFactory::LoadFromStorage(connection, object);
+
+    auto tangible = std::dynamic_pointer_cast<Tangible>(object);
+    if(!tangible)
+    {
+        throw InvalidObject("Object requested for loading is not Intangible");
+    }
+
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetTangible(?);"));
+    
+    statement->setUInt64(1, tangible->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {        
+        tangible->SetCustomization(result->getString("customization"));
+        tangible->SetOptionsMask(result->getUInt("options_bitmask"));
+        tangible->SetCounter(result->getUInt("incap_timer"));
+        tangible->SetConditionDamage(result->getUInt("condition_damage"));
+        tangible->SetMaxCondition(result->getUInt("max_condition"));
+        tangible->SetStatic(result->getBoolean("is_static"));
+    }
+}
+
+void TangibleFactory::RegisterEventHandlers()
+{
 	GetEventDispatcher()->Subscribe("Tangible::Customization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::ComponentCustomization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::OptionsMask", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
@@ -39,7 +66,7 @@ using namespace swganh::simulation;
 	GetEventDispatcher()->Subscribe("Tangible::MaxCondition", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::Static", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
 	GetEventDispatcher()->Subscribe("Tangible::Defenders", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
- }
+}
 
  
 void TangibleFactory::PersistChangedObjects()

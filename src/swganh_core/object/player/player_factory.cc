@@ -29,7 +29,57 @@ using namespace swganh::simulation;
 
 PlayerFactory::PlayerFactory(swganh::app::SwganhKernel* kernel)
     : IntangibleFactory(kernel)
-{    
+{}
+
+
+void PlayerFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    IntangibleFactory::LoadFromStorage(connection, object);
+
+    auto player = std::dynamic_pointer_cast<Player>(object);
+    if(!player)
+    {
+        throw InvalidObject("Object requested for loading is not Intangible");
+    }
+
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetPlayer(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+  
+    auto result = std::unique_ptr<sql::ResultSet>(statement->getResultSet());
+    while (result->next())
+    {
+        // Player specific start
+        player->SetProfessionTag(result->getString("profession_tag"));
+        player->SetBornDate(result->getUInt("born_date"));
+        player->SetTotalPlayTime(result->getUInt("total_playtime"));
+        player->SetAdminTag(result->getUInt("csr_tag"));
+        player->SetCurrentForcePower(result->getUInt("current_force"));
+        player->SetMaxForcePower(result->getUInt("max_force"));
+        player->SetExperimentationFlag(result->getUInt("experimentation_enabled"));
+        player->SetCraftingStage(result->getUInt("crafting_stage"));
+        player->SetNearestCraftingStation(result->getUInt64("nearest_crafting_station"));
+        player->AddExperimentationPoints(result->getUInt("experimentation_points"));
+        player->ResetAccomplishmentCounter(result->getUInt("accomplishment_counter"));
+        player->SetLanguage(result->getUInt("current_language"));
+        player->ResetCurrentStomach(result->getUInt("current_stomach"));
+        player->ResetMaxStomach(result->getUInt("max_stomach"));
+        player->ResetCurrentDrink(result->getUInt("current_drink"));
+        player->ResetMaxDrink(result->getUInt("max_drink"));
+        player->SetJediState(result->getUInt("jedi_state"));
+    }
+    
+    //LoadStatusFlags_(connection, player);
+    //LoadProfileFlags_(connection, player);
+    //LoadBadges_(connection, player);
+    //LoadDraftSchematics_(connection, player);
+    //LoadFriends_(connection, player);
+    //LoadForceSensitiveQuests_(connection, player);
+    //LoadIgnoredList_(connection, player);
+    //LoadQuestJournal_(connection, player);
+    //LoadWaypoints_(connection, player);
+    //LoadXP_(connection, player);
 }
 
 void PlayerFactory::RegisterEventHandlers()
@@ -624,5 +674,163 @@ void PlayerFactory::RemoveFromIgnoredList_(const shared_ptr<Player>& player, uin
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
+void PlayerFactory::LoadStatusFlags_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetPlayerStatusFlags(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        player->AddStatusFlag(static_cast<StatusFlags>(result->getUInt("flag")));
+    }
+}
+
+void PlayerFactory::LoadProfileFlags_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetPlayerProfileFlags(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        player->AddProfileFlag(static_cast<ProfileFlags>(result->getUInt("flag")));
+    }
+}
+
+void PlayerFactory::LoadBadges_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetPlayerBadges(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        player->AddBadge(result->getUInt("badge"));
+    }
+}
+
+void PlayerFactory::LoadDraftSchematics_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetPlayerDraftSchematics(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        DraftSchematicData data;
+        data.schematic_id = result->getUInt("id");
+        data.schematic_crc = result->getUInt("schematic_id");
+        // didn't move here because you can't get faster than copying 2 ints
+        player->AddDraftSchematic(data);
+    }
+}
+
+void PlayerFactory::LoadFriends_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetFriends(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        player->AddFriend(result->getString("custom_name"), result->getUInt64("id"));
+    }
+}
+
+void PlayerFactory::LoadForceSensitiveQuests_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetFSQuestList(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        if (result->getUInt("completed") == 1)
+        {
+            player->AddCompletedForceSensitiveQuest(result->getUInt("quest_mask"));
+        }
+        else
+        {
+            player->AddCurrentForceSensitiveQuest(result->getUInt("quest_mask"));
+        }
+    }
+}
+
+void PlayerFactory::LoadIgnoredList_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetIgnoredList(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        player->IgnorePlayer(result->getString("custom_name"), result->getUInt64("id"));
+    }
+}
+
+void PlayerFactory::LoadQuestJournal_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetQuestJournal(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        QuestJournalData data;
+        data.owner_id = result->getUInt64("quest_owner_id");
+        data.quest_crc = result->getUInt("quest_crc");
+        data.active_step_bitmask = result->getUInt("active_step_bitmask");
+        data.completed_step_bitmask = result->getUInt("completed_step_bitmask");
+        data.completed_flag = result->getUInt("completed") == 1;
+        player->AddQuest(std::move(data));
+    }
+}
+
+void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        //auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
+        //GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>("LoadWaypoints", player, result));
+    }
+}
+
+void PlayerFactory::LoadXP_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetExperienceList(?);"));
+    
+    statement->setUInt64(1, player->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        player->AddExperience(XpData(result->getString("name"), result->getUInt("value")));
     }
 }

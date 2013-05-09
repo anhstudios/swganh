@@ -36,7 +36,77 @@ using namespace swganh::tre;
 
 ObjectFactory::ObjectFactory(SwganhKernel* kernel)
 	: kernel_(kernel)
+{}
+        
+std::future<std::shared_ptr<Object>> ObjectFactory::LoadFromStorage(uint64_t object_id)
 {
+    return GetDatabaseManager()->ExecuteAsync(std::bind(&ObjectFactory::LoadDataFromStorage, this, std::placeholders::_1, object_id), "galaxy");
+}
+
+std::shared_ptr<Object> ObjectFactory::LoadDataFromStorage(const std::shared_ptr<sql::Connection>& connection, uint64_t object_id)
+{    
+    auto object = CreateObject();
+    object->SetObjectId(object_id);
+
+    LoadFromStorage(connection, object);
+
+    return object;
+}
+
+void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    auto statement = shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetObject(?);"));
+
+    statement->setUInt64(1, object->GetObjectId());
+    
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());        
+    while (result->next())
+    {
+        object->SetEventDispatcher(GetEventDispatcher());
+
+        object->SetSceneId(result->getUInt("scene_id"));
+        object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
+        object->UpdateWorldCollisionBox();
+        object->UpdateAABB();
+    
+        object->SetOrientation(glm::quat(
+            static_cast<float>(result->getDouble("w_orientation")),
+        	static_cast<float>(result->getDouble("x_orientation")),
+            static_cast<float>(result->getDouble("y_orientation")),
+            static_cast<float>(result->getDouble("z_orientation"))));
+        
+        object->SetComplexity(static_cast<float>(result->getDouble("complexity")));
+        object->SetStfName(result->getString("stf_name_file"),
+                           result->getString("stf_name_string"));
+        string custom_string = result->getString("custom_name");
+        object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
+        object->SetVolume(result->getUInt("volume"));
+        object->SetTemplate(result->getString("iff_template"));
+        object->SetArrangementId(result->getInt("arrangement_id"));
+        object->SetAttributeTemplateId(result->getInt("attribute_template_id"));
+    
+        auto permissions_objects_ = object_manager_->GetPermissionsMap();
+        auto permissions_itr = permissions_objects_.find(result->getInt("permission_type"));
+        if(permissions_itr != permissions_objects_.end())
+        {
+        	object->SetPermissions(permissions_itr->second);
+        }
+        else
+        {
+        	DLOG(error) << "FAILED TO FIND PERMISSION TYPE " << result->getInt("perission_type");
+        	object->SetPermissions(permissions_objects_.find(DEFAULT_PERMISSION)->second);
+        }
+    
+        auto parent = object_manager_->GetObjectById(result->getUInt64("parent_id"));
+        if(parent != nullptr)
+        {
+        	parent->AddObject(nullptr, object);
+        }
+
+		LoadAttributes(connection, object);
+		GetClientData(object);
+    }
 }
 
 void ObjectFactory::RegisterEventHandlers()
@@ -197,34 +267,8 @@ void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
 {
 	 try {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetAttributes(?,?);");
-		statement->setString(1, object->GetTemplate());
-        statement->setUInt64(2, object->GetObjectId());
-        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
-        while (result->next())
-        {
-			string attr_name = result->getString("name");
-			string unparsed_value = result->getString("attribute_value");
-			try {				
-				if (std::string::npos != unparsed_value.find("."))
-				{
-					object->SetAttribute(attr_name, boost::lexical_cast<float>(unparsed_value));
-				}
-				else if (unparsed_value.find_first_of("0123456789") == 0)
-				{
-					object->SetAttribute(attr_name, boost::lexical_cast<int64_t>(unparsed_value));
-				}
-				else
-				{
-					object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
-				}
-			}
-			catch (std::exception& e)
-			{
-				LOG(error) << "Error parsing attribute " << attr_name <<" for object_id:" << object->GetObjectId() << " error message:" << e.what();
-				object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
-			}
-        }          
+
+        LoadAttributes(conn, object);
     }
     catch(sql::SQLException &e)
     {
@@ -232,6 +276,41 @@ void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
     }
 }
+
+void ObjectFactory::LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    auto statement = connection->prepareStatement("CALL sp_GetAttributes(?,?);");
+
+    statement->setString(1, object->GetTemplate());
+    statement->setUInt64(2, object->GetObjectId());
+
+    auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
+    while (result->next())
+    {
+        string attr_name = result->getString("name");
+        string unparsed_value = result->getString("attribute_value");
+        try {				
+            if (std::string::npos != unparsed_value.find("."))
+            {
+                object->SetAttribute(attr_name, boost::lexical_cast<float>(unparsed_value));
+            }
+            else if (unparsed_value.find_first_of("0123456789") == 0)
+            {
+                object->SetAttribute(attr_name, boost::lexical_cast<int64_t>(unparsed_value));
+            }
+            else
+            {
+                object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
+            }
+        }
+        catch (std::exception& e)
+        {
+            LOG(error) << "Error parsing attribute " << attr_name <<" for object_id:" << object->GetObjectId() << " error message:" << e.what();
+            object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
+        }
+    }
+}
+
 void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 {
 	try 
@@ -342,6 +421,7 @@ void ObjectFactory::DeleteObjectFromStorage(const std::shared_ptr<Object>& objec
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
     }
 }
+
 void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
 {
 	try {

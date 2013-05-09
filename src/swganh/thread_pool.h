@@ -22,9 +22,9 @@ namespace swganh {
         ~ThreadPool();
 
         template<typename T>
-        std::future<typename std::result_of<T()>::type> Schedule(T&& task)
+        auto Schedule(T&& task) -> std::future<decltype(task())>
         {
-            auto wrapped_task = std::make_shared<std::packaged_task<typename std::result_of<T()>::type()>>(std::move(task));
+            auto wrapped_task = std::make_shared<std::packaged_task<decltype(task())()>>(std::move(task));
 
             auto result_future = wrapped_task->get_future();
 

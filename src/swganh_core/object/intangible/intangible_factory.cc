@@ -29,6 +29,28 @@ IntangibleFactory::IntangibleFactory(swganh::app::SwganhKernel* kernel)
 {
 }
 
+void IntangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    ObjectFactory::LoadFromStorage(connection, object);
+
+    auto intangible = std::dynamic_pointer_cast<Intangible>(object);
+    if(!intangible)
+    {
+        throw InvalidObject("Object requested for loading is not Intangible");
+    }
+
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetIntangible(?);"));
+    
+    statement->setUInt64(1, intangible->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    while (result->next())
+    {
+        intangible->SetGenericInt(result->getInt("generic_int"));
+    }
+}
+
 uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	// Persist Intangible
@@ -66,13 +88,15 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     intangible->SetObjectId(object_id);
     try {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?)"));
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
         
-		statement->setUInt64(1, object_id);
+        stringstream ss;
+        ss << "CALL sp_GetIntangible(" << object_id << ");";
+        
+        statement->execute(ss.str());
+        auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
 
-        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-
-		CreateBaseObjectFromStorage(intangible, std::move(result));
+		CreateBaseObjectFromStorage(intangible, result);
         if (statement->getMoreResults())
         {
             result = unique_ptr<sql::ResultSet>(statement->getResultSet());
@@ -82,14 +106,6 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
                 intangible->SetGenericInt(result->getInt("generic_int"));
             }
         }
-                
-        LoadContainedObjects(intangible);
-
-		//Clear us from the db persist update queue.
-		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
-		auto find_itr = persisted_objects_.find(intangible);
-		if(find_itr != persisted_objects_.end())
-			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {
@@ -98,7 +114,12 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
 			LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
 			LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
 		}
+
+        return nullptr;
     }
+                
+    LoadContainedObjects(intangible);
+
     return intangible;
 }
 

@@ -4,14 +4,14 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-DROP PROCEDURE IF EXISTS `sp_GetPlayer`;
+DROP PROCEDURE IF EXISTS `sp_GetPlayerBadges`;
 
 DELIMITER //
-CREATE PROCEDURE `sp_GetPlayer`(IN `object_id` BIGINT)
+CREATE PROCEDURE `sp_GetPlayerBadges`(IN `object_id` BIGINT)
 BEGIN
-    SELECT *
-    FROM player
-    WHERE player.id = object_id ;
+    SELECT badge_id as badge
+    FROM player_badges
+    WHERE player_id = object_id;
 END//
 DELIMITER ;
 

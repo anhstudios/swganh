@@ -46,6 +46,12 @@ namespace object {
 
         void SetObjectManager(ObjectManager* object_manager) { object_manager_ = object_manager; }
 
+        virtual std::future<std::shared_ptr<Object>> LoadFromStorage(uint64_t object_id);
+
+        virtual std::shared_ptr<Object> LoadDataFromStorage(const std::shared_ptr<sql::Connection>& connection, uint64_t object_id);
+
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
+
         /**
          * Loads in base values from a result set
          *
@@ -59,15 +65,18 @@ namespace object {
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
 		virtual std::shared_ptr<Object> CreateObject() { return nullptr; }
         uint32_t LookupType(uint64_t object_id);
+        void LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
 		void LoadAttributes(std::shared_ptr<Object> object);
 		void PersistAttributes(std::shared_ptr<Object> object);
 
 		virtual void PersistChangedObjects();
 		void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
         virtual void RegisterEventHandlers();
-        void SetTreArchive(swganh::tre::TreArchive* tre_archive);
+
 		// Fiils in missing data for the object from the client file...
 		void GetClientData(const std::shared_ptr<Object>& object);
+        
+        void LoadContainedObjects(const std::shared_ptr<Object>& object);
 
 		swganh::database::DatabaseManager* GetDatabaseManager() { return kernel_->GetDatabaseManager(); }
 		swganh::EventDispatcher* GetEventDispatcher() { return kernel_->GetEventDispatcher(); }
@@ -76,9 +85,7 @@ namespace object {
             const std::shared_ptr<sql::Statement>& statement);
         
         void LoadContainedObjects(const std::shared_ptr<Object>& object, const std::unique_ptr<sql::ResultSet>& result);
-
-        void LoadContainedObjects(const std::shared_ptr<Object>& object);
-        
+                
         ObjectManager* object_manager_;
 		boost::mutex persisted_objects_mutex_;
 		swganh::app::SwganhKernel* kernel_;         
