@@ -32,15 +32,12 @@ namespace object {
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, bool persist_inherited = false);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
+
 		virtual void PersistChangedObjects();
-        std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
-		void CreateTangibleFromStorage(std::shared_ptr<swganh::object::Tangible> tangible);
-        void CreateTangible(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement);
 
         std::shared_ptr<swganh::object::Object> CreateObject();
         
         virtual void RegisterEventHandlers();
-    private:
     };
 
 }}  // namespace swganh::object

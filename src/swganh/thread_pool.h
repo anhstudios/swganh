@@ -13,6 +13,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "swganh/logger.h"
+
 namespace swganh {
 
     class ThreadPool : private boost::noncopyable
@@ -32,7 +34,13 @@ namespace swganh {
                 std::unique_lock<std::mutex> lock(queue_mutex_);
 
                 tasks_.emplace_back([wrapped_task] () {
-                    (*wrapped_task)();
+                    try {
+                        (*wrapped_task)();
+                    } 
+                    catch(std::exception& e)
+                    {
+                        LOG(error) << e.what();
+                    }
                 });
             }
 

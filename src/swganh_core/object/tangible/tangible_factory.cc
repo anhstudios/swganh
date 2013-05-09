@@ -43,16 +43,19 @@ void TangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     
     statement->setUInt64(1, tangible->GetObjectId());
 
-    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
-    while (result->next())
-    {        
-        tangible->SetCustomization(result->getString("customization"));
-        tangible->SetOptionsMask(result->getUInt("options_bitmask"));
-        tangible->SetCounter(result->getUInt("incap_timer"));
-        tangible->SetConditionDamage(result->getUInt("condition_damage"));
-        tangible->SetMaxCondition(result->getUInt("max_condition"));
-        tangible->SetStatic(result->getBoolean("is_static"));
-    }
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {
+        while (result->next())
+        {        
+            tangible->SetCustomization(result->getString("customization"));
+            tangible->SetOptionsMask(result->getUInt("options_bitmask"));
+            tangible->SetCounter(result->getUInt("incap_timer"));
+            tangible->SetConditionDamage(result->getUInt("condition_damage"));
+            tangible->SetMaxCondition(result->getUInt("max_condition"));
+            tangible->SetStatic(result->getBoolean("is_static"));
+        }
+    } while(statement->getMoreResults());
 }
 
 void TangibleFactory::RegisterEventHandlers()
@@ -116,65 +119,6 @@ uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, bool p
 void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
-{
-    try {
-        auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-        CreateBaseObjectFromStorage(tangible, result);
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-            while (result->next())
-            {
-                tangible->SetCustomization(result->getString("customization"));
-                tangible->SetOptionsMask(result->getUInt("options_bitmask"));
-                tangible->SetCounter(result->getUInt("incap_timer"));
-                tangible->SetConditionDamage(result->getUInt("condition_damage"));
-                tangible->SetMaxCondition(result->getUInt("max_condition"));
-                tangible->SetStatic(result->getBoolean("is_static"));
-            }
-        }
-
-		//Clear us from the db persist update queue.
-		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
-		auto find_itr = persisted_objects_.find(tangible);
-		if(find_itr != persisted_objects_.end())
-			persisted_objects_.erase(find_itr);
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-   auto tangible = make_shared<Tangible>();
-   tangible->SetObjectId(object_id);
-   CreateTangibleFromStorage(tangible);
-   return tangible;
-}
-
-void TangibleFactory::CreateTangibleFromStorage(shared_ptr<Tangible> tangible)
-{
-	try {
-        auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        
-        stringstream ss;
-        ss << "CALL sp_GetTangible(" << tangible->GetObjectId() << ");";   
-
-        statement->execute(ss.str());
-        CreateTangible(tangible, statement);
-
-        LoadContainedObjects(tangible);
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
 }
 
 shared_ptr<Object> TangibleFactory::CreateObject()

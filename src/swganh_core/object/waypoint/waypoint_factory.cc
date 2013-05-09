@@ -32,10 +32,38 @@ WaypointFactory::WaypointFactory(swganh::app::SwganhKernel* kernel)
 {
     RegisterEventHandlers();
 }
+
+void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    IntangibleFactory::LoadFromStorage(connection, object);
+
+    auto waypoint = std::dynamic_pointer_cast<Waypoint>(object);
+    if(!waypoint)
+    {
+        throw InvalidObject("Object requested for loading is not Intangible");
+    }
+
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
+    
+    statement->setUInt64(1, waypoint->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {
+        while (result->next())
+        {
+            result->getUInt("active") == 0 ? waypoint->DeActivate() : waypoint->Activate();
+            waypoint->SetColor(result->getString("color"));
+        }
+    } while(statement->getMoreResults());
+}
+
 void WaypointFactory::RegisterEventHandlers()
 {
 	GetEventDispatcher()->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
 }
+
 void WaypointFactory::PersistChangedObjects()
 {
 	std::set<shared_ptr<Object>> persisted;
@@ -116,42 +144,6 @@ uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, bool p
 void WaypointFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    auto waypoint = make_shared<Waypoint>();
-    waypoint->SetObjectId(object_id);
-    try{
-        auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        stringstream ss;
-        ss << "CALL sp_GetWaypoint(" << object_id << ");";
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
-        CreateBaseObjectFromStorage(waypoint, result);
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-            while (result->next())
-            {
-			    uint16_t activated = result->getUInt("active");
-                activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
-                waypoint->SetColor(result->getString("color"));
-            }
-        }
-
-		//Clear us from the db persist update queue.
-		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
-		auto find_itr = persisted_objects_.find(waypoint);
-		if(find_itr != persisted_objects_.end())
-			persisted_objects_.erase(find_itr);
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-    return waypoint;
 }
 
 shared_ptr<Object> WaypointFactory::CreateObject()

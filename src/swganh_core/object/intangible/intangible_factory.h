@@ -26,7 +26,6 @@ namespace object {
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 		virtual void PersistChangedObjects(){}
-        std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObject();
 

@@ -32,6 +32,7 @@ void exportSimulationService()
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneObjectBinding)(shared_ptr<swganh::object::Object>, const std::string&);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneAndPositionBinding)(uint64_t, const std::string&, float, float, float);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneObjectAndPositionBinding)(shared_ptr<swganh::object::Object>, const std::string&, float, float, float);
+    typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*LoadObjectByIdBinding)(uint64_t object_id);
 
 	enum_<PermissionType>("ContainerPermission")
 		.value("DEFAULT", DEFAULT_PERMISSION)
@@ -46,7 +47,7 @@ void exportSimulationService()
 
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
         .def("persist", &SimulationServiceInterface::PersistRelatedObjects, "persists the specified object and it's containing objects")
-        .def("findObjectById", GetObjectByIdBinding(&SimulationServiceInterface::GetObjectById), "Finds an object by its id")
+        .def("findObjectById", GetObjectByIdBinding(&SimulationServiceInterface::LoadObjectById), "Finds an object by its id")
 		.def("transfer", TransferObjectToSceneBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene")
 		.def("transfer", TransferObjectToSceneObjectBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene")
 		.def("transfer", TransferObjectToSceneAndPositionBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene and changes the position")

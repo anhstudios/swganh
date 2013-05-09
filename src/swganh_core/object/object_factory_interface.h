@@ -37,14 +37,6 @@ namespace object {
         /**
          * Creates an instance of a stored object with the specified id.
          *
-         * @return the created object instance.
-         * @throws InvalidObject when no object exists for the specified id.
-         */
-        virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id) = 0;
-        
-        /**
-         * Creates an instance of a stored object with the specified id.
-         *
          * Intended to be passed to DatabaseManager::ExecuteAsync
          *
          * @return a future to the created object instance.

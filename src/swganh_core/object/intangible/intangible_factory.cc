@@ -44,11 +44,15 @@ void IntangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& 
     
     statement->setUInt64(1, intangible->GetObjectId());
 
-    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
-    while (result->next())
-    {
-        intangible->SetGenericInt(result->getInt("generic_int"));
-    }
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+    do
+    { 
+        while (result->next())
+        {
+            intangible->SetGenericInt(result->getInt("generic_int"));
+        }
+    } while(statement->getMoreResults());
 }
 
 uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
@@ -80,47 +84,6 @@ uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object, bool
 void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    auto intangible = make_shared<Intangible>();
-    intangible->SetObjectId(object_id);
-    try {
-        auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        
-        stringstream ss;
-        ss << "CALL sp_GetIntangible(" << object_id << ");";
-        
-        statement->execute(ss.str());
-        auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-
-		CreateBaseObjectFromStorage(intangible, result);
-        if (statement->getMoreResults())
-        {
-            result = unique_ptr<sql::ResultSet>(statement->getResultSet());
-            while (result->next())
-            {
-				intangible->SetStfName(result->getString("stf_detail_file"), result->getString("stf_detail_string"));
-                intangible->SetGenericInt(result->getInt("generic_int"));
-            }
-        }
-    }
-    catch(sql::SQLException &e)
-    {
-		if(e.getErrorCode() != 0)
-		{
-			LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-			LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-		}
-
-        return nullptr;
-    }
-                
-    LoadContainedObjects(intangible);
-
-    return intangible;
 }
 
 shared_ptr<Object> IntangibleFactory::CreateObject()

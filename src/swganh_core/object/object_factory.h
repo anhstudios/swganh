@@ -52,21 +52,13 @@ namespace object {
 
         virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
 
-        /**
-         * Loads in base values from a result set
-         *
-         * @param the object which to load values into
-         * @param the result set from which to load the values from
-         */
-        void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
         virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false);
         
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
-        virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
+
 		virtual std::shared_ptr<Object> CreateObject() { return nullptr; }
         uint32_t LookupType(uint64_t object_id);
         void LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
-		void LoadAttributes(std::shared_ptr<Object> object);
 		void PersistAttributes(std::shared_ptr<Object> object);
 
 		virtual void PersistChangedObjects();
