@@ -74,7 +74,7 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 	//Load slot definitions
 	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 
-	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::minutes(5));
+	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(30));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 
 	// Load the highest object_id from the db
@@ -139,7 +139,7 @@ void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)
 		{
 			factory.second->PersistChangedObjects();
 		}
-		persist_timer_->expires_from_now(boost::posix_time::minutes(5));
+		persist_timer_->expires_from_now(boost::posix_time::seconds(30));
 		persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 	}
 	else
