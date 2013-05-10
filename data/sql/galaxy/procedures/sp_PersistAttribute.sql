@@ -11,7 +11,7 @@ DECLARE id_exists BIGINT;
 select id from swganh_static.attributes sa where sa.name = in_attribute_name limit 1 into in_attribute_id ;
 select object_id from object_attributes where object_id = in_object_id and attribute_id = in_attribute_id limit 1 into id_exists;
 if id_exists <> 0 then
-	update object_attributes set object_id = in_object_id, attribute_id = in_attribute_id, attribute_value = in_attribute_value;
+	update object_attributes set attribute_value = in_attribute_value where object_id = in_object_id and attribute_id = in_attribute_id;
 else
 	insert into object_attributes (object_id, attribute_id, attribute_value) values (in_object_id, in_attribute_id, in_attribute_value);
 end if;
