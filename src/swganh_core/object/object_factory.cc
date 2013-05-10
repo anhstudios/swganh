@@ -203,10 +203,9 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, bool per
 
 void ObjectFactory::LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
-    auto statement = connection->prepareStatement("CALL sp_GetAttributes(?,?);");
+    auto statement = connection->prepareStatement("CALL sp_GetAttributes(?);");
 
-    statement->setString(1, object->GetTemplate());
-    statement->setUInt64(2, object->GetObjectId());
+    statement->setUInt64(1, object->GetObjectId());
 
     auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());         
     do
@@ -251,6 +250,7 @@ void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 			statement->setString(2, name);
 			std::wstring attr = object->GetAttributeRecursiveAsString(name);
 			statement->setString(3, std::string(attr.begin(), attr.end()));
+                        
 			statement->executeUpdate();    
 		}		
 	}
@@ -270,7 +270,7 @@ uint32_t ObjectFactory::LookupType(uint64_t object_id)
     uint32_t type = 0;
     try {
 		auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetType(?);");
+        auto statement = conn->prepareStatement("CALL sp_GetObjectType(?);");
         statement->setUInt64(1, object_id);
         auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
         while (result->next())

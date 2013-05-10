@@ -811,7 +811,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	//DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+	DLOG(info) << "SEND [" << GetObjectId() << "] (" << GetTemplate() <<") TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -821,7 +821,7 @@ void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface
     scene_object.byte_flag = 0;
     observer->Notify(&scene_object);
 
-	SendUpdateContainmentMessage(observer, false);
+	SendUpdateContainmentMessage(observer);
 }
 
 void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent)
@@ -1059,7 +1059,7 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 				ss << boost::get<int64_t>(val);
 				break;
 			case 2:
-				ss << boost::get<wstring>(val);
+				return boost::get<wstring>(val);
 				break;
 			case 3:
 				ss << L"";
@@ -1115,8 +1115,7 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 				int_val = boost::get<int64_t>(val);
 				return AddAttributeRecursive<int64_t>(int_val, name);			
 			case 2:
-				attr_val = boost::get<wstring>(val);
-				return AddAttributeRecursive<wstring>(attr_val, name);			
+				return boost::get<wstring>(val);		
 			case 3:
 				return boost::blank();				
 		}	
