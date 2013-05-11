@@ -30,81 +30,83 @@ Group::~Group()
 {
 }
 
-void Group::AddGroupMember(uint64_t member, std::string name)
+void Group::AddGroupMember(uint64_t member, std::string name) { AddGroupMember(member, name, AcquireLock());}
+void Group::AddGroupMember(uint64_t member, std::string name, boost::unique_lock<boost::mutex>& lock)
 {
-	{
-		auto lock = AcquireLock();
-		member_list_.Add(Member(member, name));
-	}
+	member_list_.Add(Member(member, name));
     DISPATCH(Group, Member);
 }
 
-void Group::RemoveGroupMember(uint64_t member)
+void Group::RemoveGroupMember(uint64_t member) { RemoveGroupMember(member, AcquireLock());}
+void Group::RemoveGroupMember(uint64_t member, boost::unique_lock<boost::mutex>& lock)
 {
-	{
-		auto lock = AcquireLock();
-		auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
-			return member == x.object_id;
-		});
+	auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
+		return member == x.object_id;
+	});
 
-		if(iter == end(member_list_))
-		{
-			return;
-		}
-        
-		member_list_.Remove(iter);
+	if(iter == end(member_list_))
+	{
+		return;
 	}
+        
+	member_list_.Remove(iter);
     DISPATCH(Group, Member);
 }
     
-swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMembers()
+swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMembers() { return GetGroupMembers(AcquireLock());}
+swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMembers(boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     return member_list_;
 }
 
-void Group::SetLootMode(LootMode loot_mode)
+void Group::SetLootMode(LootMode loot_mode) { SetLootMode(loot_mode, AcquireLock());}
+void Group::SetLootMode(LootMode loot_mode, boost::unique_lock<boost::mutex>& lock)
 {
     loot_mode_ = loot_mode;
 	DISPATCH(Group, LootMode);
 }
 
-LootMode Group::GetLootMode(void)
+LootMode Group::GetLootMode() { return GetLootMode(AcquireLock());}
+LootMode Group::GetLootMode(boost::unique_lock<boost::mutex>& lock)
 {
     uint32_t loot_mode = loot_mode_;
     return (LootMode)loot_mode;
 }
 
-void Group::SetDifficulty(uint16_t difficulty)
+void Group::SetDifficulty(uint16_t difficulty) { SetDifficulty(difficulty, AcquireLock());}
+void Group::SetDifficulty(uint16_t difficulty, boost::unique_lock<boost::mutex>& lock)
 {
     difficulty_ = difficulty;
 	DISPATCH(Group, Difficulty);
 }
 
-uint16_t Group::GetDifficulty(void)
+uint16_t Group::GetDifficulty() { return GetDifficulty(AcquireLock());}
+uint16_t Group::GetDifficulty(boost::unique_lock<boost::mutex>& lock)
 {
     return difficulty_;
 }
 
-void Group::SetLootMaster(uint64_t loot_master)
+void Group::SetLootMaster(uint64_t loot_master) { SetLootMaster(loot_master, AcquireLock());}
+void Group::SetLootMaster(uint64_t loot_master, boost::unique_lock<boost::mutex>& lock)
 {
     loot_master_ = loot_master;
 	DISPATCH(Group, LootMaster);
 }
 
-uint64_t Group::GetLootMaster(void)
+uint64_t Group::GetLootMaster() { return GetLootMaster(AcquireLock());}
+uint64_t Group::GetLootMaster(boost::unique_lock<boost::mutex>& lock)
 {
     return loot_master_;
 }
 
-uint16_t Group::GetCapacity(void)
+uint16_t Group::GetCapacity() { return GetCapacity(AcquireLock());}
+uint16_t Group::GetCapacity(boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     return member_list_.Capacity();
 }
 
-uint16_t Group::GetSize(void)
+uint16_t Group::GetSize() { return GetSize(AcquireLock());}
+uint16_t Group::GetSize(boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     return member_list_.Size();
 }

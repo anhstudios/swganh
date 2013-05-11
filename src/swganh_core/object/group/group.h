@@ -74,23 +74,40 @@ public:
 
     // Group Members
     void AddGroupMember(uint64_t member, std::string name);
+	void AddGroupMember(uint64_t member, std::string name, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveGroupMember(uint64_t member);
+	void RemoveGroupMember(uint64_t member, boost::unique_lock<boost::mutex>& lock);
+
     swganh::messages::containers::NetworkSortedVector<Member>& GetGroupMembers();
+	swganh::messages::containers::NetworkSortedVector<Member>& GetGroupMembers(boost::unique_lock<boost::mutex>& lock);
     
     // Loot Mode
     void SetLootMode(LootMode loot_mode);
-    LootMode GetLootMode(void);
+	void SetLootMode(LootMode loot_mode, boost::unique_lock<boost::mutex>& lock);
+
+    LootMode GetLootMode();
+	LootMode GetLootMode(boost::unique_lock<boost::mutex>& lock);
 
     // Difficulty
     void SetDifficulty(uint16_t group_level);
-    uint16_t GetDifficulty(void);
+	void SetDifficulty(uint16_t group_level, boost::unique_lock<boost::mutex>& lock);
+
+    uint16_t GetDifficulty();
+	uint16_t GetDifficulty(boost::unique_lock<boost::mutex>& lock);
 
     // Loot Master
     void SetLootMaster(uint64_t loot_master);
-    uint64_t GetLootMaster(void);
+	void SetLootMaster(uint64_t loot_master, boost::unique_lock<boost::mutex>& lock);
+
+    uint64_t GetLootMaster();
+	uint64_t GetLootMaster(boost::unique_lock<boost::mutex>& lock);
 
     uint16_t GetSize();
+	uint16_t GetSize(boost::unique_lock<boost::mutex>& lock);
+
     uint16_t GetCapacity();
+	uint16_t GetCapacity(boost::unique_lock<boost::mutex>& lock);
 
     uint32_t GetType() const { return type; }
     const static uint32_t type = 0x47525550;
@@ -98,9 +115,9 @@ public:
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;									 // update 6 variable 1
-    std::atomic<uint16_t> difficulty_;                                                                       // update 6 variable 4
-    std::atomic<uint64_t> loot_master_;                                                                      // update 6 variable 6
-    std::atomic<uint32_t> loot_mode_;                                                                        // update 6 variable 7 
+    uint16_t difficulty_;                                                                       // update 6 variable 4
+    uint64_t loot_master_;                                                                      // update 6 variable 6
+    uint32_t loot_mode_;                                                                        // update 6 variable 7 
 };
 
 }} // namespace swganh::object
