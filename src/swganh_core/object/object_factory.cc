@@ -214,23 +214,17 @@ void ObjectFactory::LoadAttributes(const std::shared_ptr<sql::Connection>& conne
         {
             string attr_name = result->getString("name");
             string unparsed_value = result->getString("attribute_value");
-            try {				
-                if (std::string::npos != unparsed_value.find("."))
-                {
-                    object->SetAttribute(attr_name, boost::lexical_cast<float>(unparsed_value));
-                }
-                else if (unparsed_value.find_first_of("0123456789") == 0)
-                {
-                    object->SetAttribute(attr_name, boost::lexical_cast<int64_t>(unparsed_value));
-                }
-                else
-                {
-                    object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
-                }
-            }
-            catch (std::exception& e)
+
+            if(auto& int_value = IsInteger(unparsed_value))
             {
-                LOG(error) << "Error parsing attribute " << attr_name <<" for object_id:" << object->GetObjectId() << " error message:" << e.what();
+                object->SetAttribute(attr_name, *int_value);
+            }
+            else if(auto& float_value = IsFloat(unparsed_value))
+            {
+                object->SetAttribute(attr_name, *float_value);
+            }
+            else
+            {
                 object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
             }
         }
@@ -363,4 +357,24 @@ void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
 	} catch (std::exception& /*ex*/) {
 		//LOG(warning) << "Client data not found for object: " << object->GetObjectId() << " with error:" << ex.what();
 	}
+}
+
+boost::optional<float> ObjectFactory::IsFloat(const std::string& value) const
+{
+    boost::optional<float> float_value;
+    try {
+        float_value = boost::lexical_cast<float>(value);
+    } catch(std::exception&) {}
+
+    return float_value;
+}
+
+boost::optional<int64_t> ObjectFactory::IsInteger(const std::string& value) const
+{
+    boost::optional<int64_t> int_value;
+    try {
+        int_value = boost::lexical_cast<int64_t>(value);
+    } catch(std::exception&) {}
+
+    return int_value;
 }

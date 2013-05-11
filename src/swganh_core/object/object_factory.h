@@ -9,6 +9,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include <set>
+#include <boost/optional.hpp>
 #include <boost/thread/mutex.hpp>
 
 namespace swganh {
@@ -77,7 +78,10 @@ namespace object {
             const std::shared_ptr<sql::Statement>& statement);
         
         void LoadContainedObjects(const std::shared_ptr<Object>& object, const std::unique_ptr<sql::ResultSet>& result);
-                
+
+        boost::optional<float> IsFloat(const std::string& value) const;
+        boost::optional<int64_t> IsInteger(const std::string& value) const;
+
         ObjectManager* object_manager_;
 		boost::mutex persisted_objects_mutex_;
 		swganh::app::SwganhKernel* kernel_;         
