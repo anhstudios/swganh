@@ -199,7 +199,7 @@ void Mission::SetMissionType(std::string mission_type, boost::unique_lock<boost:
 	DISPATCH(Mission, MissionType);
 }
 
-std::string Mission::GetTargetName() const
+std::string Mission::GetTargetName() const { return GetTargetName(AcquireLock()); }
 std::string Mission::GetTargetName(boost::unique_lock<boost::mutex>& lock) const
 {
     return target_name_;
