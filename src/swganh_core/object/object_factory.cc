@@ -36,7 +36,80 @@ using namespace swganh::tre;
 
 ObjectFactory::ObjectFactory(SwganhKernel* kernel)
 	: kernel_(kernel)
+{}
+        
+std::future<std::shared_ptr<Object>> ObjectFactory::LoadFromStorage(uint64_t object_id)
 {
+    return GetDatabaseManager()->ExecuteAsync(std::bind(&ObjectFactory::LoadDataFromStorage, this, std::placeholders::_1, object_id), "galaxy");
+}
+
+std::shared_ptr<Object> ObjectFactory::LoadDataFromStorage(const std::shared_ptr<sql::Connection>& connection, uint64_t object_id)
+{    
+    auto object = CreateObject();
+    object->SetObjectId(object_id);
+
+    LoadFromStorage(connection, object);
+
+    return object;
+}
+
+void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("CALL sp_GetObject(?);"));
+
+    statement->setUInt64(1, object->GetObjectId());
+    
+    std::unique_ptr<sql::ResultSet> result(statement->executeQuery());        
+    
+    do
+    {
+        while (result->next())
+        {
+            object->SetEventDispatcher(GetEventDispatcher());
+
+            object->SetSceneId(result->getUInt("scene_id"));
+            object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
+            object->UpdateWorldCollisionBox();
+            object->UpdateAABB();
+        
+            object->SetOrientation(glm::quat(
+                static_cast<float>(result->getDouble("w_orientation")),
+            	static_cast<float>(result->getDouble("x_orientation")),
+                static_cast<float>(result->getDouble("y_orientation")),
+                static_cast<float>(result->getDouble("z_orientation"))));
+            
+            object->SetComplexity(static_cast<float>(result->getDouble("complexity")));
+            object->SetStfName(result->getString("stf_name_file"),
+                               result->getString("stf_name_string"));
+            string custom_string = result->getString("custom_name");
+            object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
+            object->SetVolume(result->getUInt("volume"));
+            object->SetTemplate(result->getString("iff_template"));
+            object->SetArrangementId(result->getInt("arrangement_id"));
+            object->SetAttributeTemplateId(result->getInt("attribute_template_id"));
+        
+            auto permissions_objects_ = object_manager_->GetPermissionsMap();
+            auto permissions_itr = permissions_objects_.find(result->getInt("permission_type"));
+            if(permissions_itr != permissions_objects_.end())
+            {
+            	object->SetPermissions(permissions_itr->second);
+            }
+            else
+            {
+            	DLOG(error) << "FAILED TO FIND PERMISSION TYPE " << result->getInt("perission_type");
+            	object->SetPermissions(permissions_objects_.find(DEFAULT_PERMISSION)->second);
+            }
+        
+            auto parent = object_manager_->GetObjectById(result->getUInt64("parent_id"));
+            if(parent != nullptr)
+            {
+            	parent->AddObject(nullptr, object);
+            }
+        }
+    } while(statement->getMoreResults());
+
+	LoadAttributes(connection, object);
+	GetClientData(object);
 }
 
 void ObjectFactory::RegisterEventHandlers()
@@ -66,6 +139,7 @@ void ObjectFactory::PersistChangedObjects()
 			PersistObject(object);
 	}
 }
+
 void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& incoming_event)
 {
 	auto object = static_pointer_cast<ObjectEvent>(incoming_event)->Get();
@@ -75,6 +149,7 @@ void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& inc
 		persisted_objects_.insert(object);
 	}
 }
+
 uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
@@ -126,112 +201,36 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, bool per
 	return counter;
 }
 
-void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object, const shared_ptr<sql::ResultSet>& result)
+void ObjectFactory::LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
-    try {
-        result->next();
-        // Set Event Dispatcher
-        object->SetEventDispatcher(GetEventDispatcher());
-        object->SetSceneId(result->getUInt("scene_id"));
-        object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
+    auto statement = connection->prepareStatement("CALL sp_GetAttributes(?);");
 
-        object->SetOrientation(glm::quat(
-            static_cast<float>(result->getDouble("w_orientation")),
-			static_cast<float>(result->getDouble("x_orientation")),
-            static_cast<float>(result->getDouble("y_orientation")),
-            static_cast<float>(result->getDouble("z_orientation"))));
+    statement->setUInt64(1, object->GetObjectId());
 
-        object->SetComplexity(static_cast<float>(result->getDouble("complexity")));
-        object->SetStfName(result->getString("stf_name_file"),
-                           result->getString("stf_name_string"));
-        string custom_string = result->getString("custom_name");
-        object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-        object->SetVolume(result->getUInt("volume"));
-        object->SetTemplate(result->getString("iff_template"));
-		object->SetArrangementId(result->getInt("arrangement_id"));
-
-		auto permissions_objects_ = object_manager_->GetPermissionsMap();
-		auto permissions_itr = permissions_objects_.find(result->getInt("permission_type"));
-		if(permissions_itr != permissions_objects_.end())
-		{
-			object->SetPermissions(permissions_itr->second);
-		}
-		else
-		{
-			DLOG(error) << "FAILED TO FIND PERMISSION TYPE " << result->getInt("perission_type");
-			object->SetPermissions(permissions_objects_.find(DEFAULT_PERMISSION)->second);
-		}
-		object_manager_->LoadSlotsForObject(object);
-		object_manager_->LoadCollisionInfoForObject(object);
-
-		auto parent = object_manager_->GetObjectById(result->getUInt64("parent_id"));
-		if(parent != nullptr)
-		{
-			parent->AddObject(nullptr, object);
-		}
-		// Attribute Template ID
-		int attribute_template_id = result->getInt("attribute_template_id");
-		object->SetAttributeTemplateId(attribute_template_id);
-
-		LoadAttributes(object);
-
-		GetClientData(object);
-
-		//Clear us from the db persist update queue.
-		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
-		auto find_itr = persisted_objects_.find(object);
-		if(find_itr != persisted_objects_.end())
-			persisted_objects_.erase(find_itr);
-
-    }
-    catch(sql::SQLException &e)
+    auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());         
+    do
     {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-
-void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
-{
-	 try {
-        auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetAttributes(?,?);");
-		statement->setString(1, object->GetTemplate());
-        statement->setUInt64(2, object->GetObjectId());
-        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
         while (result->next())
         {
-			string attr_name = result->getString("name");
-			string unparsed_value = result->getString("attribute_value");
-			try {				
-				if (std::string::npos != unparsed_value.find("."))
-				{
-					object->SetAttribute(attr_name, boost::lexical_cast<float>(unparsed_value));
-				}
-				else if (unparsed_value.find_first_of("0123456789") == 0)
-				{
-					object->SetAttribute(attr_name, boost::lexical_cast<int64_t>(unparsed_value));
-				}
-				else
-				{
-					object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
-				}
-			}
-			catch (std::exception& e)
-			{
-				LOG(error) << "Error parsing attribute " << attr_name <<" for object_id:" << object->GetObjectId() << " error message:" << e.what();
-				object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
-			}
-        }          
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
-    }
+            string attr_name = result->getString("name");
+            string unparsed_value = result->getString("attribute_value");
+
+            if(auto& int_value = IsInteger(unparsed_value))
+            {
+                object->SetAttribute(attr_name, *int_value);
+            }
+            else if(auto& float_value = IsFloat(unparsed_value))
+            {
+                object->SetAttribute(attr_name, *float_value);
+            }
+            else
+            {
+                object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
+            }
+        }
+    } while(statement->getMoreResults());
 }
+
 void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 {
 	try 
@@ -245,6 +244,7 @@ void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 			statement->setString(2, name);
 			std::wstring attr = object->GetAttributeRecursiveAsString(name);
 			statement->setString(3, std::string(attr.begin(), attr.end()));
+                        
 			statement->executeUpdate();    
 		}		
 	}
@@ -264,7 +264,7 @@ uint32_t ObjectFactory::LookupType(uint64_t object_id)
     uint32_t type = 0;
     try {
 		auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetType(?);");
+        auto statement = conn->prepareStatement("CALL sp_GetObjectType(?);");
         statement->setUInt64(1, object_id);
         auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
         while (result->next())
@@ -342,6 +342,7 @@ void ObjectFactory::DeleteObjectFromStorage(const std::shared_ptr<Object>& objec
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
     }
 }
+
 void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
 {
 	try {
@@ -356,4 +357,24 @@ void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
 	} catch (std::exception& /*ex*/) {
 		//LOG(warning) << "Client data not found for object: " << object->GetObjectId() << " with error:" << ex.what();
 	}
+}
+
+boost::optional<float> ObjectFactory::IsFloat(const std::string& value) const
+{
+    boost::optional<float> float_value;
+    try {
+        float_value = boost::lexical_cast<float>(value);
+    } catch(std::exception&) {}
+
+    return float_value;
+}
+
+boost::optional<int64_t> ObjectFactory::IsInteger(const std::string& value) const
+{
+    boost::optional<int64_t> int_value;
+    try {
+        int_value = boost::lexical_cast<int64_t>(value);
+    } catch(std::exception&) {}
+
+    return int_value;
 }

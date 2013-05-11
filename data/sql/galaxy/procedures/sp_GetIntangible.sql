@@ -9,7 +9,6 @@ DROP PROCEDURE IF EXISTS `sp_GetIntangible`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetIntangible`(IN `object_id` BIGINT)
 BEGIN
-    call sp_GetObject(object_id);
     select i.stf_detail_file, i.stf_detail_string, i.generic_int from intangible i where i.id = object_id;
 END//
 DELIMITER ;

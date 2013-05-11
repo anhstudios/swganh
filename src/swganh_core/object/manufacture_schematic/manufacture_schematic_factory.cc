@@ -14,6 +14,11 @@ ManufactureSchematicFactory::ManufactureSchematicFactory(swganh::app::SwganhKern
 {
 }
 
+void ManufactureSchematicFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    IntangibleFactory::LoadFromStorage(connection, object);
+}
+
 uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	return 0;
@@ -22,11 +27,6 @@ uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& ob
 void ManufactureSchematicFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> ManufactureSchematicFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    return make_shared<ManufactureSchematic>();
 }
 
 shared_ptr<Object> ManufactureSchematicFactory::CreateObject()

@@ -13,14 +13,13 @@
 -- Dumping structure for table galaxy.object_attributes
 DROP TABLE IF EXISTS `object_attributes`;
 CREATE TABLE IF NOT EXISTS `object_attributes` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `object_id` bigint(20) DEFAULT NULL,
   `attribute_id` int(11) unsigned DEFAULT NULL,
   `attribute_value` varchar(255) DEFAULT '',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`object_id`, `attribute_id`),
   KEY `FK_object_attributes_swganh_static.attributes` (`attribute_id`),
   CONSTRAINT `FK_object_attributes_swganh_static.attributes` FOREIGN KEY (`attribute_id`) REFERENCES `swganh_static`.`attributes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=32814 DEFAULT CHARSET=utf8 COMMENT='stores attributes for objects';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='stores attributes for objects';
 
 DELETE FROM `object_attributes`;
 

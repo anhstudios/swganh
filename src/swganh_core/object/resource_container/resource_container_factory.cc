@@ -10,7 +10,11 @@ using namespace swganh::object;
 
 ResourceContainerFactory::ResourceContainerFactory(swganh::app::SwganhKernel* kernel)
 	: TangibleFactory(kernel)
+{}
+
+void ResourceContainerFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
+    TangibleFactory::LoadFromStorage(connection, object);
 }
 
 uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
@@ -22,11 +26,6 @@ uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& objec
 void ResourceContainerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> ResourceContainerFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    return make_shared<ResourceContainer>();
 }
 
 shared_ptr<Object> ResourceContainerFactory::CreateObject()

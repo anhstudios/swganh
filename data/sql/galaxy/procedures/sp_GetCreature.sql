@@ -9,26 +9,14 @@ DROP PROCEDURE IF EXISTS `sp_GetCreature`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetCreature`(IN `object_id` BIGINT)
 BEGIN
-    call sp_GetTangible(object_id);
-
-    SELECT 
-        creature.*, 
-        mood.name as mood_animation, 
+    SELECT
+        creature.*,
+        mood.name as mood_animation,
         swganh_static.iff_templates.iff_template as disguise_template
-    FROM creature 
+    FROM creature
     LEFT JOIN swganh_static.iff_templates ON (creature.disguise_template_id = swganh_static.iff_templates.id)
     LEFT JOIN mood ON (creature.mood_id = mood.id)
     WHERE creature.id = object_id;
-
-	-- Get the buffs, and clear them out for next time
-	SELECT b.name, b.duration FROM buffs b
-	WHERE b.id = object_id;
-	DELETE FROM buffs WHERE id = object_id;
-	
-    call sp_GetCreatureSkills(object_id);
-    call sp_GetCreatureSkillMods(object_id);
-	call sp_GetCreatureSkillCommands(object_id);
-    call sp_GetContainedObjects(object_id);
 END//
 DELIMITER ;
 
