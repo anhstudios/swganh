@@ -811,7 +811,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	DLOG(info) << "SEND [" << GetObjectId() << "] (" << GetTemplate() <<") TO " << observer->GetId();
+	//DLOG(info) << "SEND [" << GetObjectId() << "] (" << GetTemplate() <<") TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
