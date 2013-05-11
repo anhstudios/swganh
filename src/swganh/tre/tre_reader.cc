@@ -3,6 +3,7 @@
 
 #include "tre_reader.h"
 #include "swganh/byte_buffer.h"
+#include "swganh/logger.h"
 
 #include <array>
 #include <algorithm>
@@ -33,10 +34,18 @@ TreReader::TreReader(const string& filename, ResourceLookup& lookup_, uint32_t i
 : filename_(filename)
 {
     input_stream_.exceptions(ifstream::failbit | ifstream::badbit);
-    input_stream_.open(filename_.c_str(), ios_base::binary);
 
-    ReadHeader();
-    ReadIndex(lookup_, index);
+	try
+	{
+		input_stream_.open(filename_.c_str(), ios_base::binary);
+		ReadHeader();
+		ReadIndex(lookup_, index);
+	} 
+	catch(std::ifstream::failure e) 
+	{
+		LOG(fatal) << "Failure opening/reading file:" << filename;
+		throw e;
+	}
 }
 
 TreReader::~TreReader()
