@@ -214,12 +214,17 @@ void PlayerService::StoreAllCalledMounts(std::shared_ptr<swganh::object::Creatur
 	if(datapad)
 	{
 		std::list<std::shared_ptr<Object>> objects = datapad->GetObjects(nullptr, 1, true);
-		for(auto& object : objects) {
+		for(auto& object : objects) 
+        {
 			if(object->HasAttribute("is_mount") && !object->HasContainedObjects())
 			{
-				auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id"));
-				if(mobile)
+				if(auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id")))
 				{
+                    if (owner->GetContainer()->GetObjectId() == mobile->GetObjectId())
+                    {
+                        mobile->TransferObject(owner, owner, mobile->GetContainer(), mobile->GetPosition());
+                    }
+
 					mobile->GetContainer()->TransferObject(owner, mobile, object, glm::vec3(0, 0, 0));
 				}
 			}
@@ -234,12 +239,17 @@ void PlayerService::StoreAllCalledObjects(std::shared_ptr<swganh::object::Creatu
 	auto datapad = equipment->GetEquippedObject(owner, "datapad");
 	if(datapad)
 	{
-		datapad->ViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
+		datapad->ViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object)
+        {
 			if(object->HasAttribute("mobile_id") && !object->HasContainedObjects())
 			{
-				auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id"));
-				if(mobile)
+				if(auto mobile = simulation->GetObjectById((uint64_t)object->GetAttribute<int64_t>("mobile_id")))
 				{
+                    if (owner->GetContainer()->GetObjectId() == mobile->GetObjectId())
+                    {
+                        mobile->TransferObject(owner, owner, mobile->GetContainer(), mobile->GetPosition());
+                    }
+
 					mobile->GetContainer()->TransferObject(owner, mobile, object, glm::vec3(0, 0, 0));
 				}
 			}
@@ -261,8 +271,6 @@ void PlayerService::RemoveClientTimerHandler_(
             auto object = controller->GetObject();
             DLOG(info) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
 
-            simulation_service_->RemoveObject(object);
-
 			//Persist buffs
 			auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
 			auto object_id = object->GetObjectId();
@@ -281,6 +289,8 @@ void PlayerService::RemoveClientTimerHandler_(
 
             StoreAllCalledMounts(creature);
 			creature->CleanUpBuffs();
+            
+            simulation_service_->RemoveObject(object);
 
             kernel_->GetEventDispatcher()->Dispatch(
                 make_shared<ValueEvent<shared_ptr<swganh::object::Object>>>("ObjectRemovedEvent", object));
