@@ -21,9 +21,9 @@ Guild::~Guild()
 {
 }
 
-void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
+void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag) { AddGuildTag(guild_id, AcquireLock()); }
+void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag, boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
         return guild_id == tag.id;
     });
@@ -37,9 +37,9 @@ void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
     DISPATCH(Guild, Tag);
 }
 
-void Guild::RemoveGuildTag(uint32_t guild_id)
+void Guild::RemoveGuildTag(uint32_t guild_id) { RemoveGuildTag(guild_id, AcquireLock()); }
+void Guild::RemoveGuildTag(uint32_t guild_id, boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
         return guild_id == tag.id;
     });
@@ -53,8 +53,8 @@ void Guild::RemoveGuildTag(uint32_t guild_id)
     DISPATCH(Guild, Tag);
 }
     
-swganh::messages::containers::NetworkList<GuildTag>& Guild::GetGuildList()
+swganh::messages::containers::NetworkList<GuildTag>& Guild::GetGuildList() { return GetGuildList(AcquireLock()); }
+swganh::messages::containers::NetworkList<GuildTag>& Guild::GetGuildList(boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     return guild_list_;
 }
