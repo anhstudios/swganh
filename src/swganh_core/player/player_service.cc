@@ -279,6 +279,7 @@ void PlayerService::RemoveClientTimerHandler_(
 				statement->execute();
 			});
 
+            StoreAllCalledMounts(creature);
 			creature->CleanUpBuffs();
 
             kernel_->GetEventDispatcher()->Dispatch(
