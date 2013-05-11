@@ -596,39 +596,25 @@ public:
 	void UpdateWorldCollisionBox();
 	void __InternalUpdateWorldCollisionBox();
 
-	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
-	void AddCollidedObject(std::shared_ptr<Object> obj)
-	{
-		bool found = false;
+	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const;
 
-		std::for_each(collided_objects_.begin(), collided_objects_.end(), [=, &found](std::shared_ptr<Object> other) {
-			if(other->GetObjectId() == obj->GetObjectId())
-				found = true;
-		});
+	void AddCollidedObject(std::shared_ptr<Object> obj);
 
-		if(found == false)
-			collided_objects_.insert(obj);
-	}
+	void RemoveCollidedObject(std::shared_ptr<Object> obj);
 
-	void RemoveCollidedObject(std::shared_ptr<Object> obj)
-	{
-		auto i = collided_objects_.find(obj);
-		if(i != collided_objects_.end())
-			collided_objects_.erase(i);
-	}
+	const CollisionBox& GetLocalCollisionBox(void) const;
 
-	const CollisionBox& GetLocalCollisionBox(void) const { return local_collision_box_; }
-	const CollisionBox& GetWorldCollisionBox(void) const { return world_collision_box_; }
-	const AABB& GetAABB(void) const { return aabb_; }
+	const CollisionBox& GetWorldCollisionBox(void) const;
 
-	void SetCollisionBoxSize(float length, float height)
-	{
-		collision_length_ = length;
-		collision_height_ = height;
-	}
+	const AABB& GetAABB(void) const;
 
-	void SetCollidable(bool collidable) { collidable_ = collidable; }
-	bool IsCollidable(void) const { return collidable_; }
+	void SetCollisionBoxSize(float length, float height);
+
+	void SetCollidable(bool collidable);
+
+	bool IsCollidable(void) const;
+
+	boost::unique_lock<boost::mutex> AcquireLock() const;
 
 protected:
 	std::atomic<uint64_t> object_id_;                // create
@@ -644,8 +630,9 @@ protected:
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
 	std::atomic<int8_t> attributes_template_id;	 // Used to determine which attribute template to use
-	mutable boost::mutex object_mutex_;
 	
+	mutable boost::mutex object_mutex_;
+
 	//
 	// Spatial
 	//

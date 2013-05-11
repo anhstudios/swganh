@@ -1185,3 +1185,64 @@ void Object::UpdateAABB()
 { 
 	boost::geometry::envelope(world_collision_box_, aabb_);
 }
+
+const std::set<std::shared_ptr<Object>>& Object::GetCollidedObjects(void) const 
+{ 
+	return collided_objects_; 
+}
+
+void Object::AddCollidedObject(std::shared_ptr<Object> obj)
+{
+	bool found = false;
+
+	std::for_each(collided_objects_.begin(), collided_objects_.end(), [=, &found](std::shared_ptr<Object> other) {
+		if(other->GetObjectId() == obj->GetObjectId())
+			found = true;
+	});
+
+	if(found == false)
+		collided_objects_.insert(obj);
+}
+
+void Object::RemoveCollidedObject(std::shared_ptr<Object> obj)
+{
+	auto i = collided_objects_.find(obj);
+	if(i != collided_objects_.end())
+		collided_objects_.erase(i);
+}
+
+const CollisionBox& Object::GetLocalCollisionBox(void) const 
+{ 
+	return local_collision_box_; 
+}
+
+const CollisionBox& Object::GetWorldCollisionBox(void) const 
+{ 
+	return world_collision_box_; 
+}
+
+const AABB& Object::GetAABB(void) const 
+{ 
+	return aabb_; 
+}
+
+void Object::SetCollisionBoxSize(float length, float height)
+{
+	collision_length_ = length;
+	collision_height_ = height;
+}
+
+void Object::SetCollidable(bool collidable) 
+{ 
+	collidable_ = collidable; 
+}
+
+bool Object::IsCollidable(void) const 
+{ 
+	return collidable_; 
+}
+
+boost::unique_lock<boost::mutex> Object::AcquireLock() const
+{
+	return std::move(boost::unique_lock<boost::mutex>(object_mutex_));
+}
