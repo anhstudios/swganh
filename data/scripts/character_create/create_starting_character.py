@@ -22,6 +22,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	# Create appropriate creature object...
 	species = GetSpecies(base_model)
 	creature = simulation.createObject(base_model.replace('player/', 'player/shared_'), ContainerPermission.CREATURE)
+	creature.scene_id = simulation.getSceneIdByName(startLoc.name)
 	creature.custom_name = full_name
 	creature.position = vector3(startLoc.x, startLoc.y, startLoc.z)
 	if customization:
@@ -44,7 +45,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	# Create mission
 	mission = simulation.createObject('object/tangible/mission_bag/shared_mission_bag.iff', ContainerPermission.CREATURE_CONTAINER)
 	# Create hair
-	hair = simulation.createObject(hair_model.replace('/hair_','/shared_hair_'))	
+	hair = simulation.createObject(hair_model.replace('/hair_','/shared_hair_'))
 	# Create Starting Items
 	startingItems = GetStartingItems(species, profession, gender)
 	# Add all sub objects to creature (parent)
@@ -54,7 +55,7 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 	creature.add(creature, mission)
 	if (hair):
 		hair.setCustomizationFromInts(hair_customization)
-		creature.add(creature, hair)		
+		creature.add(creature, hair)
 	creature.add(creature, player)
 	# Now add the objects to the inventory
 	# Wearables get equipped
@@ -64,10 +65,9 @@ def CreateStartingCharacter(kernel, scale, base_model, customization, full_name,
 			creature.add(creature, item_obj)
 		else:
 			inventory.add(creature, item_obj)
-	
-	simulation.addObjectToScene(creature, startLoc.name)
+
 	return creature
-	
+
 def GetSpecies(base_model):
 	match = re.search('player/(.*)_', base_model)
 	return match.group(1)
@@ -94,9 +94,9 @@ def SetStartingStats(creature, s):
 	creature.setStatCurrent(STATS.MIND, s.mind[0])
 	creature.setStatCurrent(STATS.FOCUS, s.mind[1])
 	creature.setStatCurrent(STATS.WILLPOWER, s.mind[2])
-	
+
 def SetStartingSkills(creature, species, profession):
 	creature.addSkill(profession + '_novice')
 	for skill in baseSpeciesSkills[species]:
 		creature.addSkill(skill)
-		
+

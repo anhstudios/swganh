@@ -392,8 +392,6 @@ public:
             throw std::runtime_error("Invalid scene selected for object");
         }
 
-		object->SetCollidable(false);
-
 		// CmdStartScene
         CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
@@ -405,36 +403,14 @@ public:
         start_scene.galaxy_time = 0;
 
 		client->SendTo(start_scene, boost::optional<Session::SequencedCallback>(
-			[=](uint16_t sequence){
-				LOG(warning) << "here.";
+			[=](uint16_t sequence)
+        {
+				StartControllingObject(object, client);
+
 				if(object->GetContainer() == nullptr)
 				{
 					scene->AddObject(object);
 				}
-
-				//Attach the controller
-				StartControllingObject(object, client);
-
-				//Make sure the controller gets his awareness creates
-				//regardless of the current state of awareness.
-				auto controller = object->GetController();
-				scene->ViewObjects(object, 0, true, [&] (std::shared_ptr<swganh::object::Object> aware) {
-					if(aware->__HasAwareObject(object) && !aware->IsInSnapshot())
-					{
-						//Send create manually
-						aware->Subscribe(controller);
-						aware->SendCreateByCrc(controller);
-						aware->CreateBaselines(controller);
-					}
-					else
-					{
-						aware->AddAwareObject(object);
-						object->AddAwareObject(aware);
-					}
-				});
-				
-
-				object->SetCollidable(true);
 		}));
     }
 
