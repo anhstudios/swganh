@@ -12,7 +12,11 @@ using namespace swganh::object;
 
 HarvesterInstallationFactory::HarvesterInstallationFactory(swganh::app::SwganhKernel* kernel)
 	: InstallationFactory(kernel)
+{}
+
+void HarvesterInstallationFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
+    InstallationFactory::LoadFromStorage(connection, object);
 }
 
 std::shared_ptr<Object> HarvesterInstallationFactory::CreateObject()

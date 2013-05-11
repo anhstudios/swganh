@@ -19,6 +19,8 @@ namespace object {
 		typedef FactoryCrate ObjectType;
 
         FactoryCrateFactory(swganh::app::SwganhKernel* kernel);
+        
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
 
 		virtual void PersistChangedObjects(){}
 

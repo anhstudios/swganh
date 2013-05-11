@@ -74,7 +74,7 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 	//Load slot definitions
 	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 
-	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::minutes(5));
+	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(30));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 
 	// Load the highest object_id from the db
@@ -139,7 +139,7 @@ void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)
 		{
 			factory.second->PersistChangedObjects();
 		}
-		persist_timer_->expires_from_now(boost::posix_time::minutes(5));
+		persist_timer_->expires_from_now(boost::posix_time::seconds(30));
 		persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 	}
 	else
@@ -247,42 +247,40 @@ shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_na
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
 {
-    shared_ptr<Object> object;
+    uint32_t object_type = 0;
     
-    if (factories_.size() == 0)
-        return object;
-    
-    // lookup the type
-	std::shared_ptr<ObjectFactoryInterface> factory;
 	{
 		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
-		uint32_t object_type = factories_[0]->LookupType(object_id);
-		auto find_iter = factories_.find(object_type);
-		if (find_iter == factories_.end())
-		{
-			throw InvalidObjectType("Cannot create object for an unregistered type.");
-		}
-		factory = find_iter->second;
+		object_type = factories_[0]->LookupType(object_id);
 	}
-    object = factory->CreateObjectFromStorage(object_id);
-	
-	return object;
+
+	return CreateObjectFromStorage(object_id, object_type);
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, uint32_t object_type)
 {
 	std::shared_ptr<ObjectFactoryInterface> factory;
+
 	{
 		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
-		auto find_iter = factories_.find(object_type);
+		
+        auto find_iter = factories_.find(object_type);
 		if (find_iter == factories_.end())
 		{
 			throw InvalidObjectType("Cannot create object for an unregistered type.");
 		}
+
 		factory = find_iter->second;
 	}
 
-    return factory->CreateObjectFromStorage(object_id);
+    auto object = factory->LoadFromStorage(object_id).get();
+
+    LoadSlotsForObject(object);
+    LoadCollisionInfoForObject(object);
+
+    factory->LoadContainedObjects(object);
+
+    return object;
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& template_name, 

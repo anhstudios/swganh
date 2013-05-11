@@ -3,8 +3,11 @@
 #pragma once
 
 #include <cstdint>
+#include <future>
 #include <memory>
 #include <string>
+
+#include <cppconn/connection.h>
 
 namespace swganh {
 namespace object {
@@ -34,10 +37,14 @@ namespace object {
         /**
          * Creates an instance of a stored object with the specified id.
          *
-         * @return the created object instance.
+         * Intended to be passed to DatabaseManager::ExecuteAsync
+         *
+         * @return a future to the created object instance.
          * @throws InvalidObject when no object exists for the specified id.
          */
-        virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id) = 0;
+        virtual std::future<std::shared_ptr<Object>> LoadFromStorage(uint64_t object_id) = 0;
+        
+        virtual void LoadContainedObjects(const std::shared_ptr<Object>& object) = 0;
                 
         /**
          * Creates an instance of an object from the specified template.

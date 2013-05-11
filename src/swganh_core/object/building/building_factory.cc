@@ -20,7 +20,11 @@ using namespace swganh::object;
 
 BuildingFactory::BuildingFactory(swganh::app::SwganhKernel* kernel)
 	: TangibleFactory(kernel)
+{}
+
+void BuildingFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
+    TangibleFactory::LoadFromStorage(connection, object);
 }
 
 std::shared_ptr<swganh::object::Object> BuildingFactory::CreateObject()

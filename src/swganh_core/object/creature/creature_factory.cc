@@ -27,8 +27,112 @@ using namespace swganh::simulation;
 
 CreatureFactory::CreatureFactory(swganh::app::SwganhKernel* kernel)
     : TangibleFactory(kernel)
+{}
+
+void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
+    TangibleFactory::LoadFromStorage(connection, object);
+
+    auto creature = std::dynamic_pointer_cast<Creature>(object);
+    if(!creature)
+    {
+        throw InvalidObject("Object requested for loading is not Intangible");
+    }
+
+    auto statement = std::unique_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetCreature(?);"));
+    
+    statement->setUInt64(1, creature->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {
+        while (result->next())
+        {
+            creature->SetOwnerId(result->getUInt64("owner_id"));
+            creature->SetListenToId(result->getUInt64("musician_id"));
+            creature->SetBankCredits(result->getUInt("bank_credits"));
+            creature->SetCashCredits(result->getUInt("cash_credits"));
+            creature->SetPosture((Posture)result->getUInt("posture"));
+            creature->SetFactionRank(result->getUInt("faction_rank"));
+            creature->SetScale(static_cast<float>(result->getDouble("scale")));
+            creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
+            creature->SetStateBitmask(result->getUInt("state"));
+            creature->SetAccelerationMultiplierBase(static_cast<float>(result->getDouble("acceleration_base")));
+            creature->SetAccelerationMultiplierModifier(static_cast<float>(result->getDouble("acceleration_modifier")));
+            creature->SetSpeedMultiplierBase(static_cast<float>(result->getDouble("speed_base")));
+            creature->SetSpeedMultiplierModifier(static_cast<float>(result->getDouble("speed_modifier")));
+            creature->SetRunSpeed(static_cast<float>(result->getDouble("run_speed")));
+            creature->SetSlopeModifierAngle(static_cast<float>(result->getDouble("slope_modifier_angle")));
+            creature->SetSlopeModifierPercent(static_cast<float>(result->getDouble("slope_modifier_percent")));
+            creature->SetWalkingSpeed(static_cast<float>(result->getDouble("walking_speed")));
+            creature->SetTurnRadius(static_cast<float>(result->getDouble("turn_radius")));
+            creature->SetWaterModifierPercent(static_cast<float>(result->getDouble("water_modifier_percent")));
+            creature->SetCombatLevel(result->getUInt("combat_level"));
+            creature->SetAnimation(result->getString("animation"));
+            creature->SetMoodAnimation(result->getString("mood_animation"));
+            
+            /// @TODO: Find a better place for this.
+            if (creature->GetMoodAnimation().compare("none") == 0)
+            {
+                creature->SetMoodAnimation("neutral");
+            }
+
+            creature->SetGroupId(result->getUInt64("group_id"));
+            creature->SetGuildId(result->getUInt("guild_id"));
+            creature->SetWeaponId(result->getUInt64("weapon_id"));
+            creature->SetMoodId(result->getUInt("mood_id"));
+            creature->SetPerformanceId(result->getUInt("performance_id"));
+            creature->SetDisguise(result->getString("disguise_template"));
+            
+            creature->SetStatCurrent(HEALTH, result->getUInt("current_health"));
+            creature->SetStatCurrent(STRENGTH, result->getUInt("current_strength"));
+            creature->SetStatCurrent(CONSTITUTION, result->getUInt("current_constitution"));
+            creature->SetStatCurrent(ACTION, result->getUInt("current_action"));
+            creature->SetStatCurrent(QUICKNESS, result->getUInt("current_quickness"));
+            creature->SetStatCurrent(STAMINA, result->getUInt("current_stamina"));
+            creature->SetStatCurrent(MIND, result->getUInt("current_mind"));
+            creature->SetStatCurrent(FOCUS, result->getUInt("current_focus"));
+            creature->SetStatCurrent(WILLPOWER, result->getUInt("current_willpower"));
+            
+            creature->SetStatMax(HEALTH, result->getUInt("max_health"));
+            creature->SetStatMax(STRENGTH, result->getUInt("max_strength"));
+            creature->SetStatMax(CONSTITUTION, result->getUInt("max_constitution"));
+            creature->SetStatMax(ACTION, result->getUInt("max_action"));
+            creature->SetStatMax(QUICKNESS, result->getUInt("max_quickness"));
+            creature->SetStatMax(STAMINA, result->getUInt("max_stamina"));
+            creature->SetStatMax(MIND, result->getUInt("max_mind"));
+            creature->SetStatMax(FOCUS, result->getUInt("max_focus"));
+            creature->SetStatMax(WILLPOWER, result->getUInt("max_willpower"));
+            
+            creature->SetStatWound(HEALTH, result->getUInt("health_wounds"));
+            creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"));
+            creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"));
+            creature->SetStatWound(ACTION, result->getUInt("action_wounds"));
+            creature->SetStatWound(QUICKNESS, result->getUInt("quickness_wounds"));
+            creature->SetStatWound(STAMINA, result->getUInt("stamina_wounds"));
+            creature->SetStatWound(MIND, result->getUInt("mind_wounds"));
+            creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"));
+            creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"));
+            
+            creature->SetStatBase(HEALTH, result->getUInt("health_wounds"));
+            creature->SetStatBase(STRENGTH, result->getUInt("strength_wounds"));
+            creature->SetStatBase(CONSTITUTION, result->getUInt("constitution_wounds"));
+            creature->SetStatBase(ACTION, result->getUInt("action_wounds"));
+            creature->SetStatBase(QUICKNESS, result->getUInt("quickness_wounds"));
+            creature->SetStatBase(STAMINA, result->getUInt("stamina_wounds"));
+            creature->SetStatBase(MIND, result->getUInt("mind_wounds"));
+            creature->SetStatBase(FOCUS, result->getUInt("focus_wounds"));
+            creature->SetStatBase(WILLPOWER, result->getUInt("willpower_wounds"));
+        }
+    } while(statement->getMoreResults());
+
+    LoadBuffs_(connection, creature);
+    LoadSkills_(connection, creature);
+    LoadSkillMods_(connection, creature);
+    LoadSkillCommands_(connection, creature);
 }
+
 void CreatureFactory::RegisterEventHandlers()
 {
 	GetEventDispatcher()->Subscribe("Creature::Bank", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
@@ -87,8 +191,9 @@ void CreatureFactory::PersistChangedObjects()
 uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
     uint32_t counter = 1;
-	if (persist_inherited)
-		TangibleFactory::PersistObject(object, persist_inherited);
+
+	TangibleFactory::PersistObject(object, persist_inherited);
+
 	// Now for the biggy
     try
     {	
@@ -184,198 +289,75 @@ void CreatureFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 	ObjectFactory::DeleteObjectFromStorage(object);
 }
 
-shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    auto creature = make_shared<Creature>();
-    creature->SetObjectId(object_id);
-    try {
-        auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        unique_ptr<sql::ResultSet> result;
-        stringstream ss;
-        ss << "CALL sp_GetCreature(" << object_id << ");" ;
-        statement->execute(ss.str());
-        CreateTangible(creature, statement);
-        
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-            while (result->next())
-            {
-                creature->SetOwnerId(result->getUInt64("owner_id"));
-                creature->SetListenToId(result->getUInt64("musician_id"));
-                creature->SetBankCredits(result->getUInt("bank_credits"));
-                creature->SetCashCredits(result->getUInt("cash_credits"));
-                creature->SetPosture((Posture)result->getUInt("posture"));
-                creature->SetFactionRank(result->getUInt("faction_rank"));
-                creature->SetScale(static_cast<float>(result->getDouble("scale")));
-                creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
-                creature->SetStateBitmask(result->getUInt("state"));
-                creature->SetAccelerationMultiplierBase(static_cast<float>(result->getDouble("acceleration_base")));
-                creature->SetAccelerationMultiplierModifier(static_cast<float>(result->getDouble("acceleration_modifier")));
-                creature->SetSpeedMultiplierBase(static_cast<float>(result->getDouble("speed_base")));
-                creature->SetSpeedMultiplierModifier(static_cast<float>(result->getDouble("speed_modifier")));
-                creature->SetRunSpeed(static_cast<float>(result->getDouble("run_speed")));
-                creature->SetSlopeModifierAngle(static_cast<float>(result->getDouble("slope_modifier_angle")));
-                creature->SetSlopeModifierPercent(static_cast<float>(result->getDouble("slope_modifier_percent")));
-                creature->SetWalkingSpeed(static_cast<float>(result->getDouble("walking_speed")));
-                creature->SetTurnRadius(static_cast<float>(result->getDouble("turn_radius")));
-                creature->SetWaterModifierPercent(static_cast<float>(result->getDouble("water_modifier_percent")));
-                creature->SetCombatLevel(result->getUInt("combat_level"));
-                creature->SetAnimation(result->getString("animation"));
-                creature->SetMoodAnimation(result->getString("mood_animation"));
-
-                /// @TODO: Find a better place for this.
-                if (creature->GetMoodAnimation().compare("none") == 0)
-                {
-                    creature->SetMoodAnimation("neutral");
-                }
-
-                creature->SetGroupId(result->getUInt64("group_id"));
-                creature->SetGuildId(result->getUInt("guild_id"));
-                creature->SetWeaponId(result->getUInt64("weapon_id"));
-                creature->SetMoodId(result->getUInt("mood_id"));
-                creature->SetPerformanceId(result->getUInt("performance_id"));
-                creature->SetDisguise(result->getString("disguise_template"));
-
-                creature->SetStatCurrent(HEALTH, result->getUInt("current_health"));
-                creature->SetStatCurrent(STRENGTH, result->getUInt("current_strength"));
-                creature->SetStatCurrent(CONSTITUTION, result->getUInt("current_constitution"));
-                creature->SetStatCurrent(ACTION, result->getUInt("current_action"));
-                creature->SetStatCurrent(QUICKNESS, result->getUInt("current_quickness"));
-                creature->SetStatCurrent(STAMINA, result->getUInt("current_stamina"));
-                creature->SetStatCurrent(MIND, result->getUInt("current_mind"));
-                creature->SetStatCurrent(FOCUS, result->getUInt("current_focus"));
-                creature->SetStatCurrent(WILLPOWER, result->getUInt("current_willpower"));
-
-                creature->SetStatMax(HEALTH, result->getUInt("max_health"));
-                creature->SetStatMax(STRENGTH, result->getUInt("max_strength"));
-                creature->SetStatMax(CONSTITUTION, result->getUInt("max_constitution"));
-                creature->SetStatMax(ACTION, result->getUInt("max_action"));
-                creature->SetStatMax(QUICKNESS, result->getUInt("max_quickness"));
-                creature->SetStatMax(STAMINA, result->getUInt("max_stamina"));
-                creature->SetStatMax(MIND, result->getUInt("max_mind"));
-                creature->SetStatMax(FOCUS, result->getUInt("max_focus"));
-                creature->SetStatMax(WILLPOWER, result->getUInt("max_willpower"));
-
-                creature->SetStatWound(HEALTH, result->getUInt("health_wounds"));
-                creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"));
-                creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"));
-                creature->SetStatWound(ACTION, result->getUInt("action_wounds"));
-                creature->SetStatWound(QUICKNESS, result->getUInt("quickness_wounds"));
-                creature->SetStatWound(STAMINA, result->getUInt("stamina_wounds"));
-                creature->SetStatWound(MIND, result->getUInt("mind_wounds"));
-                creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"));
-                creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"));
-
-                creature->SetStatBase(HEALTH, result->getUInt("health_wounds"));
-                creature->SetStatBase(STRENGTH, result->getUInt("strength_wounds"));
-                creature->SetStatBase(CONSTITUTION, result->getUInt("constitution_wounds"));
-                creature->SetStatBase(ACTION, result->getUInt("action_wounds"));
-                creature->SetStatBase(QUICKNESS, result->getUInt("quickness_wounds"));
-                creature->SetStatBase(STAMINA, result->getUInt("stamina_wounds"));
-                creature->SetStatBase(MIND, result->getUInt("mind_wounds"));
-                creature->SetStatBase(FOCUS, result->getUInt("focus_wounds"));
-                creature->SetStatBase(WILLPOWER, result->getUInt("willpower_wounds"));
-            }
-        }
-        
-		LoadBuffs_(creature, statement);
-        LoadSkills_(creature, statement);
-        LoadSkillMods_(creature, statement);
-        LoadSkillCommands_(creature, statement);
-
-		LoadContainedObjects(creature, statement);
-
-		//Clear us from the db persist update queue.
-		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
-		auto find_itr = persisted_objects_.find(creature);
-		if(find_itr != persisted_objects_.end())
-			persisted_objects_.erase(find_itr);
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-    return creature;
-}
-
 shared_ptr<Object> CreatureFactory::CreateObject()
 {
 	return make_shared<Creature>();
 }
 
-void CreatureFactory::LoadBuffs_(
-	const shared_ptr<Creature>& creature,
-	const shared_ptr<sql::Statement>& statement)
+void CreatureFactory::LoadSkills_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature)
 {
-	if(statement->getMoreResults())
-	{
-		unique_ptr<sql::ResultSet> result(statement->getResultSet());
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetCreatureSkills(?);"));
+    
+    statement->setUInt64(1, creature->GetObjectId());
 
-		while(result->next())
-		{
-			creature->AddBuff(result->getString("name"), result->getUInt("duration"));
-		}
-	}
-}
-
-void CreatureFactory::LoadSkills_(
-    const shared_ptr<Creature>& creature, 
-    const shared_ptr<sql::Statement>& statement)
-{
-    // Check for contained objects        
-    if (statement->getMoreResults())
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    do
     {
-        unique_ptr<sql::ResultSet> result(statement->getResultSet());
-
-        string skill_name;
-
         while (result->next())
         {
-            skill_name = result->getString("name");
-
-            creature->AddSkill(skill_name);
+            creature->AddSkill(result->getString("name"));
         }
-    }
+    } while(statement->getMoreResults());
 }
 
-void CreatureFactory::LoadSkillMods_(
-    const shared_ptr<Creature>& creature, 
-    const shared_ptr<sql::Statement>& statement)
+void CreatureFactory::LoadSkillMods_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature)
 {
-    // Check for contained objects        
-    if (statement->getMoreResults())
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetCreatureSkillMods(?);"));
+    
+    statement->setUInt64(1, creature->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    do
     {
-        unique_ptr<sql::ResultSet> result(statement->getResultSet());
-
-        string skill_mod_name;
-        uint32_t skill_mod_value;
-
         while (result->next())
         {
-            skill_mod_name = result->getString("name");
-            skill_mod_value = result->getUInt("value");
-
-            creature->AddSkillMod( 
-                SkillMod(skill_mod_name, skill_mod_value, 0)
-				);			
+            creature->AddSkillMod(SkillMod(result->getString("name"), result->getUInt("value"), 0));	
         }
-    }
+    } while(statement->getMoreResults());
 }
 
-void CreatureFactory::LoadSkillCommands_(
-    const shared_ptr<Creature>& creature, 
-    const shared_ptr<sql::Statement>& statement)
+void CreatureFactory::LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature)
 {
-     // Check for contained objects        
-    if (statement->getMoreResults())
-    {
-        unique_ptr<sql::ResultSet> result(statement->getResultSet());
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetCreatureSkillCommands(?);"));
+    
+    statement->setUInt64(1, creature->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {  
         while (result->next())
         {
-           creature->AddSkillCommand(make_pair(result->getInt("id"), result->getString("name")));
+            creature->AddSkillCommand(std::make_pair(result->getInt("id"), result->getString("name")));
         }
-    }
+    } while(statement->getMoreResults());
+}
+
+void CreatureFactory::LoadBuffs_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<swganh::object::Creature>& creature)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetCreatureBuffs(?);"));
+    
+    statement->setUInt64(1, creature->GetObjectId());
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {
+        while (result->next())
+        {
+            creature->AddBuff(result->getString("name"), result->getUInt("duration"));
+        }
+    } while(statement->getMoreResults());
 }

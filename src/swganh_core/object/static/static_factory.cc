@@ -10,7 +10,11 @@ using namespace swganh::object;
 
 StaticFactory::StaticFactory(swganh::app::SwganhKernel* kernel)
 	: ObjectFactory(kernel)
+{}
+
+void StaticFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
+    ObjectFactory::LoadFromStorage(connection, object);
 }
 
 uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
@@ -23,11 +27,6 @@ uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object, bool per
 void StaticFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> StaticFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    return make_shared<Static>();
 }
 
 shared_ptr<Object> StaticFactory::CreateObject()

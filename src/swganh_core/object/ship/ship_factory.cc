@@ -8,6 +8,11 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object;
 
+void ShipFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+{
+    ObjectFactory::LoadFromStorage(connection, object);
+}
+
 uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
@@ -18,11 +23,6 @@ uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object, bool persi
 void ShipFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> ShipFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    return make_shared<Ship>();
 }
 
 shared_ptr<Object> ShipFactory::CreateObject()

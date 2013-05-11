@@ -26,6 +26,8 @@ namespace object {
 
         CreatureFactory(swganh::app::SwganhKernel* kernel);
 
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
+
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, bool persist_inherited = false);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
@@ -36,8 +38,12 @@ namespace object {
         std::shared_ptr<swganh::object::Object> CreateObject();
         
     private:
-		void LoadBuffs_(const std::shared_ptr<swganh::object::Creature>& creature,
-			const std::shared_ptr<sql::Statement>& statement);
+        
+
+        void LoadSkills_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature);
+        void LoadSkillMods_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature);
+        void LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature);
+		void LoadBuffs_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<swganh::object::Creature>& creature);
 
         void LoadSkills_(const std::shared_ptr<Creature>& creature, 
             const std::shared_ptr<sql::Statement>& statement);
@@ -47,6 +53,9 @@ namespace object {
 
         void LoadSkillCommands_(const std::shared_ptr<Creature>& creature, 
             const std::shared_ptr<sql::Statement>& statement);
+
+		void LoadBuffs_(const std::shared_ptr<swganh::object::Creature>& creature,
+			const std::shared_ptr<sql::Statement>& statement);
     };
 
 }}  // namespace swganh::object

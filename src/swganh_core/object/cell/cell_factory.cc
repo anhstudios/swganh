@@ -18,8 +18,12 @@ using namespace std;
 using namespace swganh::object;
 
 CellFactory::CellFactory(swganh::app::SwganhKernel* kernel)
-			: IntangibleFactory(kernel)
+    : IntangibleFactory(kernel)
+{}
+
+void CellFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
 {
+    IntangibleFactory::LoadFromStorage(connection, object);
 }
 
 void CellFactory::RegisterEventHandlers()
@@ -46,8 +50,9 @@ uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, bool persi
 {
 	// Persist Intangible and Base Object First
     uint32_t counter = 1;
-	if (persist_inherited)
-		IntangibleFactory::PersistObject(object, persist_inherited);
+	
+    IntangibleFactory::PersistObject(object, persist_inherited);
+
 	try 
     {
 		auto conn = GetDatabaseManager()->getConnection("galaxy");
@@ -69,12 +74,6 @@ uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, bool persi
 void CellFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> CellFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-	//TODO: Use the db to fetch me
-    return make_shared<Cell>();
 }
 
 shared_ptr<Object> CellFactory::CreateObject()

@@ -14,6 +14,8 @@ namespace object {
 		typedef HarvesterInstallation ObjectType;
 		virtual void PersistChangedObjects(){}
         HarvesterInstallationFactory(swganh::app::SwganhKernel* kernel);
+        
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
 
 		std::shared_ptr<swganh::object::Object> CreateObject();
     };

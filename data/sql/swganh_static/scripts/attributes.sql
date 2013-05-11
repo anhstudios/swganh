@@ -1378,7 +1378,12 @@ INSERT INTO `attributes` (`id`, `name`, `internal`, `attribute_internal_descript
 	(2083, 'cat_armor_encumbrance.armor_action_encumbrance', 0, 'Action:', 11, 0),
 	(2084, 'cat_armor_encumbrance.armor_mind_encumbrance', 0, 'Mind:', 11, 0),
 	(2085, 'needs_setup', 1, 'schem_tool use only', 0, 0),
-	(2086, 'radial_filename', 0, 'Script filename for this object.', 0, 0);
+	(2086, 'radial_filename', 0, 'Script filename for this object.', 0, 0),
+	(2087, 'pcd_id', 0, 'Id of the player control device for a vehicle', 0, 0),
+	(2088, 'deed_mobile', 0, 'Deed for a mobile object.', 0, 0),
+	(2089, 'is_mount', 0, 'If an object has this attribute it is a mount.', 0, 0),
+	(2090, 'mobile_id', 0, 'The id of the mobile object associated with this object', 0, 0),
+	(2091, 'deed_pcd', 0, 'Deed for the pcd object', 0, 0);
 /*!40000 ALTER TABLE `attributes` ENABLE KEYS */;
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
