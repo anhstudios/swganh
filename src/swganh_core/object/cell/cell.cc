@@ -10,7 +10,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 
 void Cell::SetCell(uint32_t cell_number) { SetCell(cell_number, AcquireLock()); }
-void Cell::SetCell(uint32_t cell_number, boost::unique_lock<boost::mutext>& lock) 
+void Cell::SetCell(uint32_t cell_number, boost::unique_lock<boost::mutex>& lock) 
 {
 	generic_int_ = cell_number;
 	DISPATCH(Cell, Cell);

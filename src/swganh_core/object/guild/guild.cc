@@ -21,7 +21,7 @@ Guild::~Guild()
 {
 }
 
-void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag) { AddGuildTag(guild_id, AcquireLock()); }
+void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag) { AddGuildTag(guild_id, guild_tag, AcquireLock()); }
 void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag, boost::unique_lock<boost::mutex>& lock)
 {
     auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {

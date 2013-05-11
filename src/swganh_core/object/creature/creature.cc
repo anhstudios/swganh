@@ -318,7 +318,6 @@ void Creature::SetScale(float scale, boost::unique_lock<boost::mutex>& lock)
 float Creature::GetScale() { return GetScale(AcquireLock());}
 float Creature::GetScale(boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     return scale_;
 }
 
@@ -1110,7 +1109,7 @@ bool Creature::CheckPvpState(PvpStatus state, boost::unique_lock<boost::mutex>& 
 
 bool Creature::CanAttack(Creature* creature)
 {
-    if (creature->CheckPvpState(PvPStatus_Attackable, lock) || creature->CheckPvpState(PvPStatus_Enemy))
+    if (creature->CheckPvpState(PvPStatus_Attackable) || creature->CheckPvpState(PvPStatus_Enemy))
     {
        return true;
     }
@@ -1147,7 +1146,6 @@ void Creature::AddToDuelList(uint64_t id, boost::unique_lock<boost::mutex>& lock
 void Creature::RemoveFromDuelList(uint64_t id) { RemoveFromDuelList(id, AcquireLock()); }
 void Creature::RemoveFromDuelList(uint64_t id, boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     auto found = find_if(begin(duel_list_), end(duel_list_), [=] (uint64_t dueler) {
         return id == dueler;
     });
@@ -1318,7 +1316,6 @@ void Creature::CleanUpBuffs()
 void Creature::SerializeBaseStats(swganh::messages::BaseSwgMessage* message) { SerializeBaseStats(message, AcquireLock()); }
 void Creature::SerializeBaseStats(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	auto lock = AcquireLock();
 	stat_base_list_.Serialize(message);
 }
 

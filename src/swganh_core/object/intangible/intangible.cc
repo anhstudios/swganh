@@ -14,19 +14,16 @@ Intangible::Intangible()
 {
 }
 
-uint32_t Intangible::GetGenericInt()
+uint32_t Intangible::GetGenericInt() { return GetGenericInt(AcquireLock()); }
+uint32_t Intangible::GetGenericInt(boost::unique_lock<boost::mutex>& lock)
 {
-	auto lock = AcquireLock();
 	return generic_int_;
 }
 
-void Intangible::SetGenericInt(uint32_t generic_int)
+void Intangible::SetGenericInt(uint32_t generic_int) { SetGenericInt(generic_int, AcquireLock()); }
+void Intangible::SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::mutex>& lock)
 {
-	{
-		auto lock = AcquireLock();
-		generic_int_ = generic_int;
-	}
-
+	generic_int_ = generic_int;
 }
 
 void Intangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
