@@ -107,7 +107,7 @@ std::string Mission::GetTargetObjectTemplate(boost::unique_lock<boost::mutex>& l
     return target_object_template_;
 }
 
-uint32_t Mission::GetTargetObjectTemplateCrc() const { return GetTargetObjectTempalteCrc(AcquireLock()); }
+uint32_t Mission::GetTargetObjectTemplateCrc() const { return GetTargetObjectTemplateCrc(AcquireLock()); }
 uint32_t Mission::GetTargetObjectTemplateCrc(boost::unique_lock<boost::mutex>& lock) const
 {
     return swganh::memcrc(target_object_template_);

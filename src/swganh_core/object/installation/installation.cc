@@ -337,7 +337,7 @@ void Installation::RemoveHopperItem(uint64_t global_id, boost::unique_lock<boost
 	}
 }
 
-void Installation::UpdateHopperItem(uint64_t global_id, float quantity) { UpdateHopperItem(global_id, quanitity, AcquireLock()); }
+void Installation::UpdateHopperItem(uint64_t global_id, float quantity) { UpdateHopperItem(global_id, quantity, AcquireLock()); }
 void Installation::UpdateHopperItem(uint64_t global_id, float quantity, boost::unique_lock<boost::mutex>& lock)
 {
     bool send_update = false;

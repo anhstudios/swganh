@@ -613,9 +613,9 @@ public:
 	boost::unique_lock<boost::mutex> AcquireLock() const;
 
 protected:
-	std::atomic<uint64_t> object_id_;                // create
-	std::atomic<uint32_t> scene_id_;				 // create
-    std::atomic<uint32_t> instance_id_;
+	uint64_t object_id_;                // create
+	uint32_t scene_id_;				 // create
+    uint32_t instance_id_;
 	std::string template_string_;                    // create
     glm::vec3 position_;                             // create
     glm::quat orientation_;                          // create
@@ -623,9 +623,9 @@ protected:
     std::string stf_name_file_;                      // update 3
     std::string stf_name_string_;                    // update 3
     std::wstring custom_name_;                       // update 3
-    std::atomic<uint32_t> volume_;                   // update 3
-    std::atomic<int32_t> arrangement_id_;
-	std::atomic<int8_t> attributes_template_id;	 // Used to determine which attribute template to use
+    uint32_t volume_;                   // update 3
+    int32_t arrangement_id_;
+	int8_t attributes_template_id;	 // Used to determine which attribute template to use
 
 	//
 	// Spatial

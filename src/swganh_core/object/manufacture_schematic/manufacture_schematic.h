@@ -354,7 +354,7 @@ public:
         uint32_t type,
         uint64_t ingredient,
         uint32_t ingredient_quantity,
-        uint32_t clean, boost::unique_lock<boost::mutex>& lock);
+        uint32_t clean);
 
 	void UpdateSlot(
         uint16_t index,
@@ -413,7 +413,7 @@ public:
         float value,
         float offset,
         float size,
-        float max_value, boost::unique_lock<boost::mutex>& lock);
+        float max_value);
 
 	uint16_t AddExperiment(
         std::string experiment_stf_file, 
@@ -444,7 +444,7 @@ public:
         float value,
         float offset,
         float size,
-        float max_value, boost::unique_lock<boost::mutex>& lock);
+        float max_value);
 
 	void UpdateExperiment(
         uint16_t index,

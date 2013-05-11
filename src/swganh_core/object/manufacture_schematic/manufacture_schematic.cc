@@ -561,7 +561,6 @@ void ManufactureSchematic::ResetCustomizations(std::vector<Customization> custom
 void ManufactureSchematic::ClearAllCustomizations() { ClearAllCustomizations(AcquireLock()); }
 void ManufactureSchematic::ClearAllCustomizations(boost::unique_lock<boost::mutex>& lock)
 {
-	auto lock = AcquireLock();
     customizations_.Clear();
 }
 

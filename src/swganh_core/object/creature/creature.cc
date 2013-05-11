@@ -417,7 +417,7 @@ std::vector<Stat> Creature::GetStatWounds(boost::unique_lock<boost::mutex>& lock
     return std::move(stat_wound_list_.Get());
 }
 
-int32_t Creature::GetStatWound(StatIndex stat_index) { GetStatWound(stat_index, AcquireLock());}
+int32_t Creature::GetStatWound(StatIndex stat_index) { return GetStatWound(stat_index, AcquireLock());}
 int32_t Creature::GetStatWound(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock)
 {
     return stat_wound_list_.At(stat_index).value;
@@ -738,7 +738,7 @@ void Creature::SetCombatLevel(uint16_t combat_level, boost::unique_lock<boost::m
 }
 
 uint16_t Creature::GetCombatLevel() { return GetCombatLevel(AcquireLock()); }
-uint16_t Creature::GetCombatLevel()
+uint16_t Creature::GetCombatLevel(boost::unique_lock<boost::mutex>& lock)
 {
     return combat_level_;
 }
@@ -814,7 +814,7 @@ void Creature::SetInviteCounter(uint64_t invite_counter, boost::unique_lock<boos
     invite_counter_ = invite_counter;
 }
 
-uint64_t Creature::IncrementInviteCounter() { IncrementInviteCounter(AcquireLock()); }
+uint64_t Creature::IncrementInviteCounter() { return IncrementInviteCounter(AcquireLock()); }
 uint64_t Creature::IncrementInviteCounter(boost::unique_lock<boost::mutex>& lock)
 {
     return invite_counter_++;
@@ -839,7 +839,7 @@ uint32_t Creature::GetGuildId(boost::unique_lock<boost::mutex>& lock)
     return guild_id_;
 }
 
-void Creature::SetTargetId(uint64_t target_id) { SetTargetId(AcquireLock()); }
+void Creature::SetTargetId(uint64_t target_id) { SetTargetId(target_id, AcquireLock()); }
 void Creature::SetTargetId(uint64_t target_id, boost::unique_lock<boost::mutex>& lock)
 {
     target_id_ = target_id;
@@ -884,7 +884,7 @@ void Creature::SetPerformanceCounter(uint32_t performance_counter, boost::unique
     performance_counter_ = performance_counter;
 }
 
-uint32_t Creature::IncrementPerformanceCounter() { IncrementPerformanceCounter(AcquireLock()); }
+uint32_t Creature::IncrementPerformanceCounter() { return IncrementPerformanceCounter(AcquireLock()); }
 uint32_t Creature::IncrementPerformanceCounter(boost::unique_lock<boost::mutex>& lock)
 {
     return performance_counter_++;
