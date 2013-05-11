@@ -1210,5 +1210,5 @@ bool Object::IsCollidable(void) const
 
 boost::unique_lock<boost::mutex> Object::AcquireLock() const
 {
-	return std::move(boost::unique_lock<boost::mutex>(object_mutex_));
+	return boost::unique_lock<boost::mutex>(object_mutex_);
 }

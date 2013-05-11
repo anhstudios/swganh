@@ -375,249 +375,505 @@ public:
 
     // Bank Credits
     void SetBankCredits(uint32_t bank_credits);
+	void SetBankCredits(uint32_t bank_credits, boost::unique_lock<boost::mutex>& lock);
+
     uint32_t GetBankCredits(void);
+	uint32_t GetBankCredits(boost::unique_lock<boost::mutex>& lock);
 
     // Cash Credits
     void SetCashCredits(uint32_t cash_credits);
+	void SetCashCredits(uint32_t cash_credits, boost::unique_lock<boost::mutex>& lock);
+
     uint32_t GetCashCredits(void);
+	uint32_t GetCashCredits(boost::unique_lock<boost::mutex>& lock);
 
 	// Helper to set all stats to a given value
 	void SetAllStats(int32_t value);
+	void SetAllStats(int32_t value, boost::unique_lock<boost::mutex>& lock);
 
     // Stat Base
     void SetStatBase(StatIndex stat_index, int32_t value);
+	void SetStatBase(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void AddStatBase(StatIndex stat_index, int32_t value);
+	void AddStatBase(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void DeductStatBase(StatIndex stat_index, int32_t value);
+	void DeductStatBase(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
 	std::vector<Stat> GetBaseStats();
+	std::vector<Stat> GetBaseStats(boost::unique_lock<boost::mutex>& lock);
+
     int32_t GetStatBase(StatIndex stat_index);
+	int32_t GetStatBase(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeBaseStats(swganh::messages::BaseSwgMessage* message);
+	void SerializeBaseStats(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Skills
     void AddSkill(std::string skill);
+	void AddSkill(std::string skill, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveSkill(std::string skill);
+	void RemoveSkill(std::string skill, boost::unique_lock<boost::mutex>& lock);
+
     std::list<Skill> GetSkills();
+	std::list<Skill> GetSkills(boost::unique_lock<boost::mutex>& lock);
+
     bool HasSkill(std::string skill);
+	bool HasSkill(std::string skill, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeSkills(swganh::messages::BaseSwgMessage* message);
+	void SerializeSkills(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Skill Commands
     std::map<uint32_t, std::string> GetSkillCommands();
+	std::map<uint32_t, std::string> GetSkillCommands(boost::unique_lock<boost::mutex>& lock);
+
     bool HasSkillCommand(std::string skill);
+	bool HasSkillCommand(std::string skill, boost::unique_lock<boost::mutex>& lock);
+
     void AddSkillCommand(std::pair<uint32_t, std::string> skill_command);
+	void AddSkillCommand(std::pair<uint32_t, std::string> skill_command, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveSkillCommand(std::string skill_command);
+	void RemoveSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock);
 
     // Posture
     void SetPosture(Posture posture);
+	void SetPosture(Posture posture, boost::unique_lock<boost::mutex>& lock);
+
     Posture GetPosture(void);
+	Posture GetPosture(boost::unique_lock<boost::mutex>& lock);
 
     // IsDead
     bool IsDead();
+	bool IsDead(boost::unique_lock<boost::mutex>& lock);
+
     // IsIncapacitated
     bool IsIncapacitated();
+	bool IsIncapacitated(boost::unique_lock<boost::mutex>& lock);
+
     // Faction Rank
     void SetFactionRank(uint8_t faction_rank);
+	void SetFactionRank(uint8_t faction_rank, boost::unique_lock<boost::mutex>& lock);
+
     uint8_t GetFactionRank(void);
+	uint8_t GetFactionRank(boost::unique_lock<boost::mutex>& lock);
 
     // Owner Id
     void SetOwnerId(uint64_t owner_id);
+	void SetOwnerId(uint64_t owner_id, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetOwnerId(void);
+	uint64_t GetOwnerId(boost::unique_lock<boost::mutex>& lock);
 
     // Scale
     void SetScale(float scale);
+	void SetScale(float scale, boost::unique_lock<boost::mutex>& lock);
+
     float GetScale(void);
+	float GetScale(boost::unique_lock<boost::mutex>& lock);
 
     // Battle Fatigue
     void AddBattleFatigue(uint32_t battle_fatigue);
+	void AddBattleFatigue(uint32_t battle_fatigue, boost::unique_lock<boost::mutex>& lock);
+
     void SetBattleFatigue(uint32_t battle_fatigue);
+	void SetBattleFatigue(uint32_t battle_fatigue, boost::unique_lock<boost::mutex>& lock);
+
     uint32_t GetBattleFatigue(void);
+	uint32_t GetBattleFatigue(boost::unique_lock<boost::mutex>& lock);
 
     // State Bitmask
     void SetStateBitmask(uint64_t state_bitmask);
+	void SetStateBitmask(uint64_t state_bitmask, boost::unique_lock<boost::mutex>& lock);
+
     void ToggleStateBitmask(uint64_t state_bitmask);
+	void ToggleStateBitmask(uint64_t state_bitmask, boost::unique_lock<boost::mutex>& lock);
+
     void ToggleStateOn(uint64_t state);
+	void ToggleStateOn(uint64_t state, boost::unique_lock<boost::mutex>& lock);
+
     void ToggleStateOff(uint64_t state);
+	void ToggleStateOff(uint64_t state, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetStateBitmask(void);
+	uint64_t GetStateBitmask(boost::unique_lock<boost::mutex>& lock);
+
     bool HasState(uint64_t state);
+	bool HasState(uint64_t state, boost::unique_lock<boost::mutex>& lock);
 
     // Wounds
     void DeductStatWound(StatIndex stat_index, int32_t value);
+	void DeductStatWound(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void AddStatWound(StatIndex stat_index, int32_t value);
+	void AddStatWound(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void SetStatWound(StatIndex stat_index, int32_t value);
+	void SetStatWound(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
 	std::vector<Stat> GetStatWounds(void);
+	std::vector<Stat> GetStatWounds(boost::unique_lock<boost::mutex>& lock);
+
     int32_t GetStatWound(StatIndex stat_index);
+	int32_t GetStatWound(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeStatWounds(swganh::messages::BaseSwgMessage* message);
+	void SerializeStatWounds(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Acceleration Multiplier Base
     void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
+	void SetAccelerationMultiplierBase(float acceleration_multiplier_base, boost::unique_lock<boost::mutex>& lock);
+
     float GetAccelerationMultiplierBase(void);
+	float GetAccelerationMultiplierBase(boost::unique_lock<boost::mutex>& lock);
 
     // Acceleration Multiplier Modifier
     void SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier);
+	void SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier, boost::unique_lock<boost::mutex>& lock);
+
     float GetAccelerationMultiplierModifier(void);
+	float GetAccelerationMultiplierModifier(boost::unique_lock<boost::mutex>& lock);
 
     // Stat Encumberance
     void AddStatEncumberance(StatIndex stat_index, int32_t value);
+	void AddStatEncumberance(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void DeductStatEncumberance(StatIndex stat_index, int32_t value);
+	void DeductStatEncumberance(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void SetStatEncumberance(StatIndex stat_index, int32_t value);
+	void SetStatEncumberance(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
 	std::vector<Stat> GetStatEncumberances(void);
+	std::vector<Stat> GetStatEncumberances(void, boost::unique_lock<boost::mutex>& lock);
+
     int32_t GetStatEncumberance(StatIndex stat_index);
+	int32_t GetStatEncumberance(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeStatEncumberances(swganh::messages::BaseSwgMessage* message);
+	void SerializeStatEncumberances(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Skill Mods
     void AddSkillMod(SkillMod mod);
+	void AddSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveSkillMod(std::string identifier);
+	void RemoveSkillMod(std::string identifier, boost::unique_lock<boost::mutex>& lock);
+
     void SetSkillMod(SkillMod mod);
+	void SetSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock);
+
     void ClearSkillMods(void);
+	void ClearSkillMods(boost::unique_lock<boost::mutex>& lock);
+
 	std::map<std::string, SkillMod> GetSkillMods(void);
+	std::map<std::string, SkillMod> GetSkillMods(boost::unique_lock<boost::mutex>& lock);
+
     SkillMod GetSkillMod(std::string identifier);
+	SkillMod GetSkillMod(std::string identifier, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeSkillMods(swganh::messages::BaseSwgMessage* message);
+	void SerializeSkillMods(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Speed Multiplier Base
     void SetSpeedMultiplierBase(float speed_multiplier_base);
+	void SetSpeedMultiplierBase(float speed_multiplier_base, boost::unique_lock<boost::mutex>& lock);
+
     float GetSpeedMultiplierBase(void);
+	float GetSpeedMultiplierBase(boost::unique_lock<boost::mutex>& lock);
 
     // Speed Multiplier Modifier
     void SetSpeedMultiplierModifier(float speed_multiplier_modifier);
+	void SetSpeedMultiplierModifier(float speed_multiplier_modifier, boost::unique_lock<boost::mutex>& lock);
+
     float GetSpeedMultiplierModifier(void);
+	float GetSpeedMultiplierModifier(boost::unique_lock<boost::mutex>& lock);
 
     // Listen To Id
     void SetListenToId(uint64_t listen_to_id);
+	void SetListenToId(uint64_t listen_to_id, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetListenToId(void);
+	uint64_t GetListenToId(boost::unique_lock<boost::mutex>& lock);
 
     // Run Speed
     void SetRunSpeed(float run_speed);
+	void SetRunSpeed(float run_speed, boost::unique_lock<boost::mutex>& lock);
+
     float GetRunSpeed(void);
+	float GetRunSpeed(boost::unique_lock<boost::mutex>& lock);
 
     // Slop Modifier Angle
     void SetSlopeModifierAngle(float slope_modifier_angle);
+	void SetSlopeModifierAngle(float slope_modifier_angle, boost::unique_lock<boost::mutex>& lock);
+
     float GetSlopeModifierAngle(void);
+	float GetSlopeModifierAngle(boost::unique_lock<boost::mutex>& lock);
 
     // Slope Modifier Percent
     void SetSlopeModifierPercent(float slope_modifier_percent);
+	void SetSlopeModifierPercent(float slope_modifier_percent, boost::unique_lock<boost::mutex>& lock);
+
     float GetSlopeModifierPercent(void);
+	float GetSlopeModifierPercent(boost::unique_lock<boost::mutex>& lock);
 
     // Turn Radius
     void SetTurnRadius(float turn_radius);
+	void SetTurnRadius(float turn_radius, boost::unique_lock<boost::mutex>& lock);
+
     float GetTurnRadius(void);
+	float GetTurnRadius(boost::unique_lock<boost::mutex>& lock);
 
     // Walking Speed
     void SetWalkingSpeed(float walking_speed);
+	void SetWalkingSpeed(float walking_speed, boost::unique_lock<boost::mutex>& lock);
+
     float GetWalkingSpeed(void);
+	float GetWalkingSpeed(boost::unique_lock<boost::mutex>& lock);
 
     // Water Modifier Percent
     void SetWaterModifierPercent(float water_modifier_percent);
+	void SetWaterModifierPercent(float water_modifier_percent, boost::unique_lock<boost::mutex>& lock);
+
     float GetWaterModifierPercent(void);
+	float GetWaterModifierPercent(boost::unique_lock<boost::mutex>& lock);
 
     // Mission Critical Objects
     void AddMissionCriticalObject(MissionCriticalObject& object);
+	void AddMissionCriticalObject(MissionCriticalObject& object, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id);
+    void RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id, boost::unique_lock<boost::mutex>& lock);
+
     MissionCriticalObject GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner);
+	MissionCriticalObject GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner, boost::unique_lock<boost::mutex>& lock);
+
     std::list<MissionCriticalObject> GetMissionCriticalObjects(void);
+	std::list<MissionCriticalObject> GetMissionCriticalObjects(boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeMissionCriticalObjects(swganh::messages::BaseSwgMessage* message);
+	void SerializeMissionCriticalObjects(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Combat Level
     void SetCombatLevel(uint16_t);
+	void SetCombatLevel(uint16_t, boost::unique_lock<boost::mutex>& lock);
+
     uint16_t GetCombatLevel(void);
+	uint16_t GetCombatLevel(boost::unique_lock<boost::mutex>& lock);
 
     // Animation
     void SetAnimation(std::string animation);
+	void SetAnimation(std::string animation, boost::unique_lock<boost::mutex>& lock);
+
     std::string GetAnimation(void);
+	std::string GetAnimation(boost::unique_lock<boost::mutex>& lock);
 
     // Mood Animation
     void SetMoodAnimation(std::string mood_animation);
+	void SetMoodAnimation(std::string mood_animation, boost::unique_lock<boost::mutex>& lock);
+
     std::string GetMoodAnimation(void);
+	std::string GetMoodAnimation(boost::unique_lock<boost::mutex>& lock);
 
     // Weapon Id
     void SetWeaponId(uint64_t weapon_id);
+	void SetWeaponId(uint64_t weapon_id, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetWeaponId(void);
+	uint64_t GetWeaponId(boost::unique_lock<boost::mutex>& lock);
 
     // Group Id
     void SetGroupId(uint64_t group_id);
+	void SetGroupId(uint64_t group_id, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetGroupId(void);
+	uint64_t GetGroupId(boost::unique_lock<boost::mutex>& lock);
 
     // Invite Sender Id
     void SetInviteSenderId(uint64_t invite_sender_id);
+	void SetInviteSenderId(uint64_t invite_sender_id, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetInviteSenderId(void);
+	uint64_t GetInviteSenderId(boost::unique_lock<boost::mutex>& lock);
 
     // Invite Counter
     void SetInviteCounter(uint64_t invite_counter);
+	void SetInviteCounter(uint64_t invite_counter, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t IncrementInviteCounter();
+	uint64_t IncrementInviteCounter(boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetInviteCounter(void) const;
+	uint64_t GetInviteCounter(boost::unique_lock<boost::mutex>& lock) const;
 
     // Guild Id
     void SetGuildId(uint32_t guild_id);
+	void SetGuildId(uint32_t guild_id, boost::unique_lock<boost::mutex>& lock);
+
     uint32_t GetGuildId(void);
+	uint32_t GetGuildId(boost::unique_lock<boost::mutex>& lock);
 
     // Target Id
     void SetTargetId(uint64_t target_id);
+	void SetTargetId(uint64_t target_id, boost::unique_lock<boost::mutex>& lock);
+
     uint64_t GetTargetId(void);
+	uint64_t GetTargetId(boost::unique_lock<boost::mutex>& lock);
 
     // Mood Id
     void SetMoodId(uint8_t mood_id);
+	void SetMoodId(uint8_t mood_id, boost::unique_lock<boost::mutex>& lock);
+
     uint8_t GetMoodId(void) ;
+	uint8_t GetMoodId(boost::unique_lock<boost::mutex>& lock) ;
 
     // Performance Id
     void SetPerformanceId(uint32_t performance_id);
+	void SetPerformanceId(uint32_t performance_id, boost::unique_lock<boost::mutex>& lock);
+
     uint32_t GetPerformanceId(void);
+	uint32_t GetPerformanceId(boost::unique_lock<boost::mutex>& lock);
 
     // Performance Counter
     void SetPerformanceCounter(uint32_t performance_counter);
+	void SetPerformanceCounter(uint32_t performance_counter, boost::unique_lock<boost::mutex>& lock);
+
     uint32_t IncrementPerformanceCounter();
+	uint32_t IncrementPerformanceCounter(boost::unique_lock<boost::mutex>& lock);
+
     uint32_t GetPerformanceCounter(void) const;
+	uint32_t GetPerformanceCounter(boost::unique_lock<boost::mutex>& lock) const;
 
     // Current Stats
     void SetStatCurrent(StatIndex stat_index, int32_t value);
+	void SetStatCurrent(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void AddStatCurrent(StatIndex stat_index, int32_t value);
+	void AddStatCurrent(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void DeductStatCurrent(StatIndex stat_index, int32_t value);
+	void DeductStatCurrent(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
 	std::vector<Stat> GetCurrentStats(void);
+	std::vector<Stat> GetCurrentStats(boost::unique_lock<boost::mutex>& lock);
+
     int32_t GetStatCurrent(StatIndex stat_index);
+	int32_t GetStatCurrent(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeCurrentStats(swganh::messages::BaseSwgMessage* message);
+	void SerializeCurrentStats(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Max Stats
     void SetStatMax(StatIndex stat_index, int32_t value);
+	void SetStatMax(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void AddStatMax(StatIndex stat_index, int32_t value);
+	void AddStatMax(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
     void DeductStatMax(StatIndex stat_index, int32_t value);
+	void DeductStatMax(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+
 	std::vector<Stat> GetMaxStats(void);
+	std::vector<Stat> GetMaxStats(boost::unique_lock<boost::mutex>& lock);
+
 	int32_t GetStatMax(StatIndex stat_index);
+	int32_t GetStatMax(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeMaxStats(swganh::messages::BaseSwgMessage* message);
+	void SerializeMaxStats(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Equipment List
     void AddEquipmentItem(EquipmentItem& item);
+	void AddEquipmentItem(EquipmentItem& item, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveEquipmentItem(uint64_t object_id);
+	void RemoveEquipmentItem(uint64_t object_id, boost::unique_lock<boost::mutex>& lock);
+
     void UpdateEquipmentItem(EquipmentItem& item);
+	void UpdateEquipmentItem(EquipmentItem& item, boost::unique_lock<boost::mutex>& lock);
+
     std::list<EquipmentItem> GetEquipment();
+	std::list<EquipmentItem> GetEquipment(boost::unique_lock<boost::mutex>& lock);
+
     EquipmentItem GetEquipmentItem(uint64_t object_id);
+	EquipmentItem GetEquipmentItem(uint64_t object_id, boost::unique_lock<boost::mutex>& lock);
+
 	void SerializeEquipment(swganh::messages::BaseSwgMessage* message);
+	void SerializeEquipment(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Disguise
     void SetDisguise(std::string disguise);
-    std::string GetDisguise(void);
+	void SetDisguise(std::string disguise, boost::unique_lock<boost::mutex>& lock);
+    
+	std::string GetDisguise(void);
+	std::string GetDisguise(boost::unique_lock<boost::mutex>& lock);
 
     // Stationary
     void SetStationary(bool stationary);
+	void SetStationary(bool stationary, boost::unique_lock<boost::mutex>& lock);
+
     bool IsStationary(void);
+	bool IsStationary(boost::unique_lock<boost::mutex>& lock);
 
     PvpStatus GetPvpStatus() const;
+	PvpStatus GetPvpStatus(boost::unique_lock<boost::mutex>& lock) const;
+
     void SetPvPStatus(PvpStatus status);
+	void SetPvPStatus(PvpStatus status, boost::unique_lock<boost::mutex>& lock);
+
     void TogglePvpStateOn(PvpStatus state);
+	void TogglePvpStateOn(PvpStatus state, boost::unique_lock<boost::mutex>& lock);
+
     void TogglePvpStateOff(PvpStatus state);
+	void TogglePvpStateOff(PvpStatus state, boost::unique_lock<boost::mutex>& lock);
+
     void TogglePvpState(PvpStatus state);
+	void TogglePvpState(PvpStatus state, boost::unique_lock<boost::mutex>& lock);
+	
     bool CheckPvpState(PvpStatus state) const;
+	bool CheckPvpState(PvpStatus state, boost::unique_lock<boost::mutex>& lock) const;
+
     bool CanAttack(Creature* creature);
+	bool CanAttack(Creature* creature, boost::unique_lock<boost::mutex>& lock);
 
     void AddToDuelList(uint64_t id);
+	void AddToDuelList(uint64_t id, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveFromDuelList(uint64_t id);
-    bool InDuelList(uint64_t id);
-    std::vector<uint64_t> GetDuelList();
+	void RemoveFromDuelList(uint64_t id, boost::unique_lock<boost::mutex>& lock);
+
+	bool InDuelList(uint64_t id);
+    bool InDuelList(uint64_t id, boost::unique_lock<boost::mutex>& lock);
+    
+	std::vector<uint64_t> GetDuelList();
+	std::vector<uint64_t> GetDuelList(boost::unique_lock<boost::mutex>& lock);
 
 	//Buffs
 	bool HasBuff(std::string buff_name);
+	bool HasBuff(std::string buff_name, boost::unique_lock<boost::mutex>& lock);
+
 	void AddBuff(std::string buff_name, uint32_t duration=0);
+	void AddBuff(std::string buff_name, boost::unique_lock<boost::mutex>& lock,  uint32_t duration=0);
+
 	void __AddBuffInternal(boost::posix_time::ptime time, std::shared_ptr<swganh::combat::BuffInterface> buff, uint32_t duration);
+
 	void RemoveBuff(std::string name);
+	void RemoveBuff(std::string name, boost::unique_lock<boost::mutex>& lock);
+
 	void ClearBuffs();
+	void ClearBuffs(boost::unique_lock<boost::mutex>& lock);
+
 	void ClearBuffs(boost::posix_time::ptime current_time);
+	void ClearBuffs(boost::posix_time::ptime current_time, boost::unique_lock<boost::mutex>& lock);
+
 	void CleanUpBuffs();
+	void CleanUpBuffs(boost::unique_lock<boost::mutex>& lock);
+
 	void ViewBuffs(BuffIterator functor);
+	void ViewBuffs(BuffIterator functor, boost::unique_lock<boost::mutex>& lock);
 
     // Baselines
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
