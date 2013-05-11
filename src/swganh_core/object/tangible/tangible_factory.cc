@@ -89,8 +89,9 @@ void TangibleFactory::PersistChangedObjects()
 uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
-	if (persist_inherited)
-		ObjectFactory::PersistObject(object, persist_inherited);
+
+	ObjectFactory::PersistObject(object, persist_inherited);
+
     try 
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
@@ -105,8 +106,7 @@ uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, bool p
         statement->setInt(counter++, tangible->GetCondition());
         statement->setInt(counter++, tangible->GetMaxCondition());
         statement->setBoolean(counter++, tangible->IsStatic());
-        statement->executeUpdate();
-		
+        statement->executeUpdate();		
     }
     catch(sql::SQLException &e)
     {

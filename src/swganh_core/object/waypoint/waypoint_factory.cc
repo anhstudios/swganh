@@ -103,8 +103,9 @@ void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shar
 uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
-	if (persist_inherited)
-		IntangibleFactory::PersistObject(object, persist_inherited);
+	
+    IntangibleFactory::PersistObject(object, persist_inherited);
+
     if (object)
     {
         try 

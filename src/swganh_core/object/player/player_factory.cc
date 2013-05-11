@@ -136,8 +136,9 @@ void PlayerFactory::PersistChangedObjects()
 uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
 {
 	uint32_t counter = 1;
-	if (persist_inherited)
-		IntangibleFactory::PersistObject(object, persist_inherited);
+	
+    IntangibleFactory::PersistObject(object, persist_inherited);
+
     try 
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");

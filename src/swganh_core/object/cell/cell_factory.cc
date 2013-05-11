@@ -50,8 +50,9 @@ uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, bool persi
 {
 	// Persist Intangible and Base Object First
     uint32_t counter = 1;
-	if (persist_inherited)
-		IntangibleFactory::PersistObject(object, persist_inherited);
+	
+    IntangibleFactory::PersistObject(object, persist_inherited);
+
 	try 
     {
 		auto conn = GetDatabaseManager()->getConnection("galaxy");
