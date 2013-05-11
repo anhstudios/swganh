@@ -16,33 +16,17 @@ Intangible::Intangible()
 
 uint32_t Intangible::GetGenericInt()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return generic_int_;
 }
 
 void Intangible::SetGenericInt(uint32_t generic_int)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		generic_int_ = generic_int;
 	}
 
-}
-
-std::shared_ptr<Object> Intangible::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Intangible>();
-	Clone(other);
-	return other;
-}
-
-void Intangible::Clone(std::shared_ptr<Intangible> other)
-{
-	other->generic_int_.store(generic_int_);
-
-	//Call the method in the super class
-	Object::Clone(other);
 }
 
 void Intangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)

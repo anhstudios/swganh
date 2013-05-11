@@ -31,9 +31,6 @@ public:
 	uint32_t GetGenericInt();
 	void SetGenericInt(uint32_t generic_int);
 
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Intangible> other);
-
     void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
     
 protected:

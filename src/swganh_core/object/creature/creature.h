@@ -624,9 +624,6 @@ public:
 	
     typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Creature> other);
-
 private:
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
     std::atomic<uint32_t>    cash_credits_;                                                             // update 1 variable 1

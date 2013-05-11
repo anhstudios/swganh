@@ -1,8 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_OBJECT_BASE_OBJECT_H_
-#define SWGANH_OBJECT_BASE_OBJECT_H_
+#pragma once
 
 #include <cstdint>
 #include <atomic>
@@ -207,7 +206,7 @@ public:
             return;
         }
 
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
 
         NotifyObservers<T>(message);
     }
@@ -309,7 +308,7 @@ public:
     template<typename T>
     std::shared_ptr<T> GetContainer()
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(container_);
 #else
@@ -524,7 +523,7 @@ public:
 	template<typename T>
 	void SetAttribute(const std::string& name, T attribute)
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		attributes_map_[name] = attribute;
 
 		if (event_dispatcher_)
@@ -579,9 +578,6 @@ public:
 	int8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(int8_t attribute_template_id);
 
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Object> other);
-
 	//
 	// Spatial/Collision
 	//
@@ -630,8 +626,6 @@ protected:
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
 	std::atomic<int8_t> attributes_template_id;	 // Used to determine which attribute template to use
-	
-	mutable boost::mutex object_mutex_;
 
 	//
 	// Spatial
@@ -672,6 +666,8 @@ private:
     typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 
+	mutable boost::mutex object_mutex_;
+
 	AttributesMap attributes_map_;
 
     ObjectSlots slot_descriptor_;
@@ -693,5 +689,3 @@ private:
 };
 
 }}  // namespace
-
-#endif  // SWGANH_OBJECT_BASE_OBJECT_H_

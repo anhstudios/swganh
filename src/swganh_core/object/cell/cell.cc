@@ -18,17 +18,3 @@ uint32_t Cell::GetCell()
 {
 	return generic_int_;
 }
-
-
-std::shared_ptr<Object> Cell::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Cell>();
-	Clone(other);
-	return other;
-}
-
-void Cell::Clone(std::shared_ptr<Cell> other)
-{
-	Intangible::Clone(other);
-}

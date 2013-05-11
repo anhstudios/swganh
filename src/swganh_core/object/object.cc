@@ -57,20 +57,20 @@ Object::~Object()
 
 bool Object::HasController()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return controller_ != nullptr;
 }
 
 shared_ptr<ObserverInterface> Object::GetController()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return controller_;
 }
 
 void Object::SetController(const shared_ptr<ObserverInterface>& controller)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         controller_ = controller;
     }
 
@@ -82,7 +82,7 @@ void Object::ClearController()
     shared_ptr<ObserverInterface> controller;
 
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         controller = controller_;
         controller_.reset();
     }
@@ -471,20 +471,20 @@ void Object::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& rot)
 		rot = glm::quat();
 	}
 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	pos = (rot * position_) + pos;
 	rot = rot * orientation_;
 }
 
 string Object::GetTemplate()
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
 	return template_string_;
 }
 void Object::SetTemplate(const string& template_string)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
 	    template_string_ = template_string;
     }
 	DISPATCH(Object, Template);
@@ -500,14 +500,14 @@ uint64_t Object::GetObjectId()
 
 wstring Object::GetCustomName()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return custom_name_;
 }
 
 void Object::SetCustomName(wstring custom_name)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         custom_name_ = custom_name;
     }
     DISPATCH(Object, CustomName);
@@ -515,27 +515,27 @@ void Object::SetCustomName(wstring custom_name)
 
 std::wstring Object::GetFirstName() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     std::size_t pos = custom_name_.find(L" ");
     return custom_name_.substr(0, pos);
 }
 
 std::wstring Object::GetSirName() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     std::size_t pos = custom_name_.find(L" ");
     return custom_name_.substr(pos, std::string::npos);
 }
 
 bool Object::HasObservers()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return !observers_.empty();
 }
 
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     auto find_iter = observers_.find(observer);
 
     if (find_iter == observers_.end())
@@ -546,7 +546,7 @@ void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     auto find_iter = observers_.find(observer);
 
     if (find_iter != observers_.end())
@@ -557,7 +557,7 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 
 void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 
     std::for_each(
         observers_.begin(),
@@ -570,13 +570,13 @@ void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message)
 
 void Object::ClearBaselines()
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
     baselines_.clear();
 }
 
 BaselinesCacheContainer Object::GetBaselines()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return baselines_;
 }
 
@@ -586,14 +586,14 @@ void Object::AddDeltasUpdate(DeltasMessage* message)
 }
 void Object::AddBaselineToCache(swganh::messages::BaselinesMessage* baseline)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
     baselines_.push_back(*baseline);
 }
 
 void Object::SetPosition(glm::vec3 position)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         position_ = position;
 	}
 	DISPATCH(Object, Position);
@@ -610,7 +610,7 @@ void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& orie
 
 glm::vec3 Object::GetPosition()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return position_;
 }
 bool Object::InRange(glm::vec3 target, float range)
@@ -628,14 +628,14 @@ float Object::RangeTo(glm::vec3 target)
 void Object::SetOrientation(glm::quat orientation)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         orientation_ = orientation;
     }
 	DISPATCH(Object, Orientation);
 }
 glm::quat Object::GetOrientation()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return orientation_;
 }
 void Object::FaceObject(const std::shared_ptr<Object>& object)
@@ -649,7 +649,7 @@ void Object::FacePosition(const glm::vec3& position)
 {
 	
     // Create a mirror direction vector for the direction we want to face.
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     glm::vec3 direction_vector = glm::normalize(position - position_);
     direction_vector.x = -direction_vector.x;
 
@@ -669,7 +669,7 @@ uint8_t Object::GetHeading()
 {
     glm::quat tmp;
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         tmp = orientation_;
     }
 
@@ -698,7 +698,7 @@ uint8_t Object::GetHeading()
 void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         container_ = container;		
     }
 	DISPATCH(Object, Container);
@@ -706,14 +706,14 @@ void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
 
 shared_ptr<ContainerInterface> Object::GetContainer()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return container_;
 }
 
 void Object::SetComplexity(float complexity)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         complexity_ = complexity;
     }
 	DISPATCH(Object, Complexity);
@@ -721,14 +721,14 @@ void Object::SetComplexity(float complexity)
 
 float Object::GetComplexity()
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
 	return complexity_;
 }
 
 void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         stf_name_file_ = stf_file_name;
         stf_name_string_ = stf_string;
     }
@@ -737,13 +737,13 @@ void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 
 string Object::GetStfNameFile()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return stf_name_file_;
 }
 
 string Object::GetStfNameString()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return stf_name_string_;
 }
 
@@ -979,25 +979,25 @@ bool Object::IsInSnapshot()
 
 void Object::SetDatabasePersisted(bool value)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	database_persisted_ = value;
 }
 
 void Object::SetInSnapshot(bool value)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	in_snapshot_ = value;
 }
 
 AttributesMap Object::GetAttributeMap()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return attributes_map_;
 }
 
 AttributeVariant Object::GetAttribute(const std::string& name)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
 	{
 		return key_value.first == name;
@@ -1101,7 +1101,7 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 {
 	auto val = GetAttribute(name);
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		float float_val;
 		int64_t int_val;
 		wstring attr_val;
@@ -1128,40 +1128,6 @@ AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 bool Object::HasAttribute(const std::string& name)
 {
 	return attributes_map_.find(name) != attributes_map_.end();
-}
-
-std::shared_ptr<Object> Object::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Object>();
-	Clone(other);
-	return other;
-}
-
-void Object::Clone(std::shared_ptr<Object> other)
-{
-	other->object_id_.store(object_id_);
-	other->scene_id_.store(scene_id_);
-    other->instance_id_.store(instance_id_);
-	other->template_string_ = template_string_;
-    other->position_ = position_;
-    other->orientation_ = orientation_;
-    other->complexity_ = complexity_;
-    other->stf_name_file_ = stf_name_file_;
-    other->stf_name_string_ = stf_name_string_;
-    other->custom_name_ = custom_name_;
-    other->volume_.store(volume_);
-    other->arrangement_id_.store(arrangement_id_);
-	other->attributes_template_id.store(attributes_template_id);
-	other->attributes_map_ = attributes_map_;
-	other->database_persisted_ = database_persisted_;
-	other->in_snapshot_ = in_snapshot_;
-    other->flags_ = flags_;
-	other->slot_arrangements_ = slot_arrangements_;
-
-	__InternalViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
-		other->AddObject(nullptr, object->Clone());
-	});
 }
 
 void Object::BuildSpatialProfile()

@@ -46,7 +46,7 @@ Tangible::Tangible(const std::string& customization, std::vector<uint32_t> compo
 void Tangible::AddCustomization(const std::string& customization)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         customization_.append(customization);
     }
 	DISPATCH(Tangible, Customization);
@@ -54,14 +54,14 @@ void Tangible::AddCustomization(const std::string& customization)
 
 std::string Tangible::GetCustomization(void)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
     return customization_;
 }
 
 void Tangible::SetCustomization(const std::string& customization)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         customization_ = customization;
     }
     DISPATCH(Tangible, Customization);
@@ -69,7 +69,7 @@ void Tangible::SetCustomization(const std::string& customization)
 void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		customization_ = std::string(customization_ints.begin(), customization_ints.end());
 	}
 	DISPATCH(Tangible, Customization);
@@ -77,7 +77,7 @@ void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints)
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
             return component.component_customization_crc = customization;
         });
@@ -94,7 +94,7 @@ void Tangible::RemoveComponentCustomization(uint32_t customization)
 void Tangible::AddComponentCustomization(uint32_t customization)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         component_customization_list_.Add(ComponentCustomization(customization));
     }
     DISPATCH(Tangible, ComponentCustomization);
@@ -102,14 +102,14 @@ void Tangible::AddComponentCustomization(uint32_t customization)
 
 std::list<ComponentCustomization> Tangible::GetComponentCustomization(void)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
     return std::move(component_customization_list_.Get());
 }
 
 void Tangible::ClearComponentCustomization()
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         component_customization_list_.Clear();
     }
     DISPATCH(Tangible, ComponentCustomization);
@@ -180,7 +180,7 @@ bool Tangible::IsStatic(void)
 
 bool Tangible::IsDefending(uint64_t defender)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
     auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
         return (x.object_id == defender);
     });
@@ -193,7 +193,7 @@ bool Tangible::IsDefending(uint64_t defender)
 void Tangible::AddDefender(uint64_t defender)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         defender_list_.Add(Defender(defender));
     }
 	DISPATCH(Tangible, Defenders);
@@ -201,7 +201,7 @@ void Tangible::AddDefender(uint64_t defender)
 void Tangible::RemoveDefender(uint64_t defender)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
             return (x.object_id == defender);
         });
@@ -218,7 +218,7 @@ void Tangible::RemoveDefender(uint64_t defender)
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         defender_list_.Clear();
         std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
             defender_list_.Insert(Defender(x));
@@ -230,14 +230,14 @@ void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 
 std::vector<Defender> Tangible::GetDefenders()
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
     return std::move(defender_list_.Get());
 }
 
 void Tangible::ClearDefenders()
 {
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
+        auto lock = AcquireLock();
         defender_list_.Clear();
     }   
     DISPATCH(Tangible, Defenders);
@@ -264,36 +264,14 @@ void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
 	}
 }
 
-std::shared_ptr<Object> Tangible::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Tangible>();
-	Clone(other);
-	return other;
-}
-
-void Tangible::Clone(std::shared_ptr<Tangible> other)
-{
-	other->customization_ =  customization_;
-	other->component_customization_list_ = component_customization_list_;
-	other->options_bitmask_.store(options_bitmask_);
-    other->counter_.store(counter_);
-	other->condition_damage_.store(condition_damage_);
-    other->max_condition_.store(max_condition_);
-    other->is_static_.store(is_static_);
-
-	//Call the method in the super class
-	Object::Clone(other);
-}
-
 void Tangible::SerializeComponentCustomization(swganh::messages::BaseSwgMessage* message)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	component_customization_list_.Serialize(message);
 }
 
 void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	defender_list_.Serialize(message);
 }

@@ -41,10 +41,6 @@ public:
     std::wstring GetResourceName();
     void SetResourceName(const std::wstring& name);
 
-	
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<ResourceContainer> other);
-
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
 

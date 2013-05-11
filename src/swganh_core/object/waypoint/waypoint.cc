@@ -29,12 +29,12 @@ Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, c
 
 glm::vec3 Waypoint::GetCoordinates()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return coordinates_;
 }
 void Waypoint::SetCoordinates(const glm::vec3& coords)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
+    auto lock = AcquireLock();
 	coordinates_ = move(coords);
 	DISPATCH(Waypoint, Coordinates);
 }
@@ -62,7 +62,7 @@ void Waypoint::SetLocationNetworkId(uint64_t location_network_id)
 void Waypoint::SetPlanet(const string& planet_name)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         planet_name_ = planet_name;
     }
 	DISPATCH(Waypoint, Planet);
@@ -70,7 +70,7 @@ void Waypoint::SetPlanet(const string& planet_name)
 
 uint8_t Waypoint::GetColorByte()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 
     if (color_.compare("blue") != 0)
         return 1;
@@ -94,7 +94,7 @@ uint8_t Waypoint::GetColorByte()
 void Waypoint::SetColor(const string& color)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+	    auto lock = AcquireLock();
         color_ = color;
     }
 	DISPATCH(Waypoint, Color);
@@ -131,7 +131,7 @@ void Waypoint::SetColorByte(uint8_t color_byte)
 void Waypoint::SetName(const std::wstring& name)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		name_ = name;
 	}
 	DISPATCH(Waypoint, Name);
@@ -139,56 +139,36 @@ void Waypoint::SetName(const std::wstring& name)
 
 bool Waypoint::Active() const 
 { 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return activated_flag_ == 1; 
 }
 
 uint8_t Waypoint::GetActiveFlag() 
 { 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return activated_flag_; 
 }
 
 const std::string& Waypoint::GetPlanet() 
 { 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return planet_name_; 
 }
 
 const std::wstring& Waypoint::GetName() 
 { 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return name_; 
 }
 
 std::string Waypoint::GetNameStandard() 
 { 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return std::string(std::begin(name_), std::end(name_)); 
 }
 
 const std::string& Waypoint::GetColor() 
 { 
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return color_; 
-}
-
-std::shared_ptr<Object> Waypoint::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = std::make_shared<Waypoint>();
-	Clone(other);
-	return other;
-}
-
-void Waypoint::Clone(std::shared_ptr<Waypoint> other)
-{
-	other->coordinates_ = coordinates_;
-    other->activated_flag_.store(activated_flag_);
-	other->location_network_id_.store(location_network_id_);
-    other->planet_name_ = planet_name_;
-    other->name_ = name_;
-    other->color_ = color_;
-
-	Intangible::Clone(other);
 }

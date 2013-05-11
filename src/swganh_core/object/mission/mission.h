@@ -239,10 +239,6 @@ public:
 
 	void SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypoint);
 
-	
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Mission> other);
-
 protected:
 	typedef swganh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
 

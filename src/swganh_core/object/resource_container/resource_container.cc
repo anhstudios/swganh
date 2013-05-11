@@ -30,38 +30,38 @@ ResourceContainer::ResourceContainer(const std::string& customization, std::vect
 
 uint32_t ResourceContainer::GetCurrentQuantity()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return current_quantity_;
 }
 
 uint64_t ResourceContainer::GetGlobalResource()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return global_resource_id_;
 }
 
 uint32_t ResourceContainer::GetMaxQuantity()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return max_quantity_;
 }
 
 std::string ResourceContainer::GetResourceType()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return resource_type_;
 }
 
 std::wstring ResourceContainer::GetResourceName()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return variation_name_;
 }
 
 void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		current_quantity_ = current_quantity;
 	}
 	DISPATCH(ResourceContainer, CurrentQuantity);
@@ -70,7 +70,7 @@ void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
 void ResourceContainer::SetGlobalResource(uint64_t global_resource)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		global_resource_id_ = global_resource;
 	}
 	DISPATCH(ResourceContainer, GlobalResourceId);
@@ -79,7 +79,7 @@ void ResourceContainer::SetGlobalResource(uint64_t global_resource)
 void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		max_quantity_ = max_quantity;
 	}
 	DISPATCH(ResourceContainer, MaxQuantity);
@@ -87,7 +87,7 @@ void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
 void ResourceContainer::SetResourceType(const string& resource_type)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		resource_type_ = resource_type;
 	}
 	DISPATCH(ResourceContainer, ResourceType);
@@ -95,28 +95,8 @@ void ResourceContainer::SetResourceType(const string& resource_type)
 void ResourceContainer::SetResourceName(const wstring& name)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		variation_name_ = name;
 	}
 	DISPATCH(ResourceContainer, ResourceName);
-}
-
-
-std::shared_ptr<Object> ResourceContainer::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<ResourceContainer>();
-	Clone(other);
-	return other;
-}
-
-void ResourceContainer::Clone(std::shared_ptr<ResourceContainer> other)
-{
-	other->current_quantity_ = current_quantity_;
-	other->global_resource_id_ = global_resource_id_;
-	other->max_quantity_ = max_quantity_;
-	other->resource_type_ = resource_type_;
-	other->variation_name_ = variation_name_;
-
-	Tangible::Clone(other);
 }

@@ -18,9 +18,6 @@ public:
     // FCYT
     uint32_t GetType() const;
     const static uint32_t type = 0x46435954;
-
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<FactoryCrate> other);
 };
 
 }} // swganh::object

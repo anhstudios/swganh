@@ -42,7 +42,7 @@ uint32_t ManufactureSchematic::GetSchematicQuantity() const
 void ManufactureSchematic::SetSchematicQuantity(uint32_t quantity)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		generic_int_ = (quantity > 1000) ? 1000 : quantity;
 	}
 	DISPATCH(ManufactureSchematic, Quantity);
@@ -51,7 +51,7 @@ void ManufactureSchematic::SetSchematicQuantity(uint32_t quantity)
 void ManufactureSchematic::IncrementSchematicQuantity(int32_t increment_by)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		uint32_t tmp = generic_int_ + increment_by;
 		generic_int_ = (tmp > 1000) ? 1000 : tmp;
 	}
@@ -69,7 +69,7 @@ void ManufactureSchematic::AddProperty(
     float value)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		//properties_.Add(property_stf_file + ":" + property_stf_name, value);
 	}
 	DISPATCH(ManufactureSchematic, Property);
@@ -98,7 +98,7 @@ void ManufactureSchematic::UpdateProperty(
     float value)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		/*std::string stf = property_stf_file + ":" + property_stf_name;
 		if (properties_.Contains(stf))
 			properties_.Update(stf, value);
@@ -110,14 +110,14 @@ void ManufactureSchematic::UpdateProperty(
 
 std::wstring ManufactureSchematic::GetCreatorName() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return creator_;
 }
 
 void ManufactureSchematic::SetCreatorName(std::wstring creator)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		creator_ = move(creator);
 	}
 	DISPATCH(ManufactureSchematic, CreatorName);
@@ -131,7 +131,7 @@ uint32_t ManufactureSchematic::GetSchematicComplexity() const
 void ManufactureSchematic::SetSchematicComplexity(uint32_t complexity)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		complexity_ = complexity;
 	}
 	DISPATCH(ManufactureSchematic, Complexity);
@@ -139,14 +139,14 @@ void ManufactureSchematic::SetSchematicComplexity(uint32_t complexity)
 
 float ManufactureSchematic::GetSchematicDataSize() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return schematic_data_size_;
 }
 
 void ManufactureSchematic::SetSchematicDataSize(float schematic_data_size)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		schematic_data_size_ = schematic_data_size;
 	}
 	DISPATCH(ManufactureSchematic, DataSize);
@@ -154,14 +154,14 @@ void ManufactureSchematic::SetSchematicDataSize(float schematic_data_size)
 
 std::string ManufactureSchematic::GetCustomizationString() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return customization_;
 }
 
 void ManufactureSchematic::SetCustomizationString(const std::string& customization_string)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		customization_.append(customization_string);
 	}
 	DISPATCH(ManufactureSchematic, CustomizationString);
@@ -169,14 +169,14 @@ void ManufactureSchematic::SetCustomizationString(const std::string& customizati
 
 std::string ManufactureSchematic::GetCustomizationModel() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return customization_model_;
 }
 
 void ManufactureSchematic::SetCustomizationModel(std::string customization_model)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		customization_model_ = customization_model;
 	}
 	DISPATCH(ManufactureSchematic, CustomizationModel);
@@ -184,7 +184,7 @@ void ManufactureSchematic::SetCustomizationModel(std::string customization_model
 
 std::string ManufactureSchematic::GetPrototypeModel() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return prototype_model_;
 }
 
@@ -196,7 +196,7 @@ uint32_t ManufactureSchematic::GetPrototypeCrc() const
 void ManufactureSchematic::SetPrototypeModel(std::string prototype_model)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		prototype_model_ = move(prototype_model);
 	}
 	DISPATCH(ManufactureSchematic, PrototypeModel);
@@ -258,14 +258,14 @@ void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
 
 std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return std::move(slots_.Get());
 }
 
 void ManufactureSchematic::RemoveSlot(uint16_t index)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto found = slots_.At(index);
 		auto iter = slots_.Find(found);
 		slots_.Remove(iter);
@@ -286,7 +286,7 @@ uint16_t ManufactureSchematic::AddSlot(
 {
 	int16_t index;
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		Slot slot;    
 		slot.index = slots_.Size() + 1;
 		index = slot.index;
@@ -313,7 +313,7 @@ void ManufactureSchematic::UpdateSlot(
     uint32_t clean)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto find_iter = find_if(
 			slots_.begin(),
 			slots_.end(),
@@ -341,7 +341,7 @@ void ManufactureSchematic::UpdateSlot(
 void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> slots)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		slots_.Clear();
 		for(auto& s : slots)
 		{
@@ -355,7 +355,7 @@ void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> sl
 void ManufactureSchematic::ClearAllSlots()
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		slots_.Clear();
 	}
 	DISPATCH(ManufactureSchematic, Slot);
@@ -363,14 +363,14 @@ void ManufactureSchematic::ClearAllSlots()
 
 std::vector<ManufactureSchematic::Experiment> ManufactureSchematic::GetExperiments() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return std::move(experiments_.Get());
 }
 
 void ManufactureSchematic::RemoveExperiment(uint16_t index)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto find_iter = find_if(
 			experiments_.begin(),
 			experiments_.end(),
@@ -403,7 +403,7 @@ uint16_t ManufactureSchematic::AddExperiment(
 {
 	int32_t index = 0;
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto find_iter = find_if(
 			experiments_.begin(),
 			experiments_.end(),
@@ -445,7 +445,7 @@ void ManufactureSchematic::UpdateExperiment(
     float max_value)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto find_iter = find_if(
 			experiments_.begin(),
 			experiments_.end(),
@@ -473,7 +473,7 @@ void ManufactureSchematic::UpdateExperiment(
 void ManufactureSchematic::ResetExperiments(std::vector<ManufactureSchematic::Experiment> experiments)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		experiments_.Clear();
 		for (auto& e : experiments)
 		{
@@ -487,7 +487,7 @@ void ManufactureSchematic::ResetExperiments(std::vector<ManufactureSchematic::Ex
 void ManufactureSchematic::ClearAllExperiments()
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		experiments_.Clear();
 	}
 	DISPATCH(ManufactureSchematic, Experiment);
@@ -495,14 +495,14 @@ void ManufactureSchematic::ClearAllExperiments()
 
 std::vector<ManufactureSchematic::Customization> ManufactureSchematic::GetCustomizations() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return std::move(customizations_.Get());
 }
 
 void ManufactureSchematic::RemoveCustomization(uint16_t index)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto find_iter = find_if(
 			customizations_.begin(),
 			customizations_.end(),
@@ -533,7 +533,7 @@ uint16_t ManufactureSchematic::AddCustomization(
 {
 	int32_t index;
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto find_iter = find_if(
 			customizations_.begin(),
 			customizations_.end(),
@@ -570,7 +570,7 @@ void ManufactureSchematic::UpdateCustomization(
     uint32_t pallet_end_index)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		auto find_iter = find_if(
 			customizations_.begin(),
 			customizations_.end(),
@@ -596,7 +596,7 @@ void ManufactureSchematic::UpdateCustomization(
 void ManufactureSchematic::ResetCustomizations(std::vector<Customization> customizations)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		customizations_.Clear();
 		for (auto& c : customizations)
 		{
@@ -609,7 +609,7 @@ void ManufactureSchematic::ResetCustomizations(std::vector<Customization> custom
 
 void ManufactureSchematic::ClearAllCustomizations()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     customizations_.Clear();
 }
 
@@ -621,30 +621,4 @@ bool ManufactureSchematic::IsReady() const
 void ManufactureSchematic::ToggleReady()
 {
     is_ready_ = !is_ready_;
-}
-
-std::shared_ptr<Object> ManufactureSchematic::Clone()	
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<ManufactureSchematic>();
-	Clone(other);
-	return other;
-}
-
-void ManufactureSchematic::Clone(std::shared_ptr<ManufactureSchematic> other)
-{
-	other->properties_ = properties_;
-    other->creator_ = creator_;
-	other->complexity_.store(complexity_);
-	other->schematic_data_size_ = schematic_data_size_;
-	other->customization_ = customization_;
-	other->customization_model_ = customization_model_;
-	other->prototype_model_ = prototype_model_;
-	other->is_active_ =is_active_;
-	other->slot_count_.store(slot_count_);
-	other->slots_ = slots_;
-    other->experiments_ = experiments_;
-    other->customizations_ = customizations_;
-    other->risk_factor_ = risk_factor_;
-    other->is_ready_.store(is_ready_);
 }

@@ -50,14 +50,14 @@ void Installation::ToggleActive()
 
 float Installation::GetPowerReserve() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return power_reserve_;
 }
 
 void Installation::SetPowerReserve(float power_reserve)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		power_reserve_ = power_reserve;
 	}
 	DISPATCH(Installation, PowerReserve);
@@ -65,14 +65,14 @@ void Installation::SetPowerReserve(float power_reserve)
 
 float Installation::GetPowerCost() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return power_cost_;
 }
 
 void Installation::SetPowerCost(float power_cost)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		power_cost_ = power_cost;
 	}
 	DISPATCH(Installation, PowerCost);
@@ -80,7 +80,7 @@ void Installation::SetPowerCost(float power_cost)
 
 std::vector<Installation::Resource> Installation::GetAvailableResources()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 
 	std::vector<Installation::Resource> available_resources;
 	uint16_t size = resource_pool_ids_.Size();
@@ -101,7 +101,7 @@ void Installation::AddAvailableResource(uint64_t global_id, std::string name, st
 	bool send_update = true;
 
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		uint16_t size = resource_pool_ids_.Size();
 		for(uint16_t i = 0; i < size; ++i)
 		{
@@ -129,7 +129,7 @@ void Installation::RemoveAvailableResourceById(uint64_t global_id)
 	bool send_update = false;
 
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		uint16_t size = resource_pool_ids_.Size();
 		uint16_t index;
 		for(index = 0; index < size; ++index)
@@ -156,7 +156,7 @@ void Installation::UpdateResource(uint64_t global_id, std::string name, std::str
 	bool send_update = false;
 
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		uint16_t size = resource_pool_ids_.Size();
 		uint16_t index;
 		for(index = 0; index < size; ++index)
@@ -181,7 +181,7 @@ void Installation::UpdateResource(uint64_t global_id, std::string name, std::str
 void Installation::ResetAvailableResources(std::vector<Installation::Resource> available_resource_pool)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		//Clean out the lists
 		resource_pool_ids_.Clear();
 		resource_names_.Clear();
@@ -210,7 +210,7 @@ void Installation::ResetAvailableResources(std::vector<Installation::Resource> a
 void Installation::ClearAllAvailableResources()
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		resource_pool_ids_.Clear();
 		resource_names_.Clear();
 		resource_types_.Clear();
@@ -231,14 +231,14 @@ uint32_t Installation::GetDisplayedMaxExtractionRate() const
 
 float Installation::GetMaxExtractionRate() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return max_extraction_rate_;
 }
 
 void Installation::SetMaxExtractionRate(float extraction_rate)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		max_extraction_rate_ = extraction_rate;
 	}
 	DISPATCH(Installation, MaxExtraction);
@@ -246,14 +246,14 @@ void Installation::SetMaxExtractionRate(float extraction_rate)
 
 float Installation::GetCurrentExtractionRate() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return current_extraction_rate_;
 }
 
 void Installation::SetCurrentExtractionRate(float extraction_rate)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		current_extraction_rate_ = extraction_rate;
 	}
 	DISPATCH(Installation, CurrentExtraction);
@@ -261,14 +261,14 @@ void Installation::SetCurrentExtractionRate(float extraction_rate)
 
 float Installation::GetCurrentHopperSize() const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return current_hopper_size_;
 }
 
 void Installation::SetCurrentHopperSize(float hopper_size)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		current_hopper_size_ = hopper_size;
 	}
 	DISPATCH(Installation, CurrentHopperSize);
@@ -314,14 +314,14 @@ void Installation::ToggleUpdating()
 
 NetworkSortedVector<Installation::HopperItem>& Installation::GetHopperContents()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
     return hopper_;
 }
 
 void Installation::AddToHopper(uint64_t global_id, float quantity)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		HopperItem item;
 		item.global_id = global_id;
 		item.quantity = quantity;
@@ -334,7 +334,7 @@ void Installation::RemoveHopperItem(uint64_t global_id)
 {
 	bool send_update = false;
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		for(uint16_t i=0; i < hopper_.Size(); ++i)
 		{
 			if(hopper_[i].global_id == global_id)
@@ -356,7 +356,7 @@ void Installation::UpdateHopperItem(uint64_t global_id, float quantity)
 {
     bool send_update = false;
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		for(uint16_t i=0; i < hopper_.Size(); ++i)
 		{
 			if(hopper_[i].global_id == global_id)
@@ -381,7 +381,7 @@ void Installation::UpdateHopperItem(uint64_t global_id, float quantity)
 void Installation::ResetContents(std::vector<Installation::HopperItem> hopper)
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		hopper_.Clear();
 
 		for(auto& item : hopper)
@@ -398,7 +398,7 @@ void Installation::ResetContents(std::vector<Installation::HopperItem> hopper)
 void Installation::ClearAllHopperContents()
 {
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lock = AcquireLock();
 		hopper_.Clear();
 	}
 	DISPATCH(Installation, Hopper);
@@ -418,19 +418,19 @@ void Installation::SetConditionPercentage(uint8_t condition)
 
 NetworkSortedVector<ResourceId>& Installation::GetResourceIds_()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return resource_pool_ids_;
 }
 
 NetworkSortedVector<ResourceString>& Installation::GetResourceNames_()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return resource_names_;
 }
 
 NetworkSortedVector<ResourceString>& Installation::GetResourceTypes_()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto lock = AcquireLock();
 	return resource_types_;
 }
 
@@ -443,31 +443,4 @@ void Installation::SetSelectedResourceId(uint64_t new_id)
 {
 	selected_resource_ = new_id;
 	DISPATCH(Installation, SelectedResource);
-}
-
-std::shared_ptr<Object> Installation::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Installation>();
-	Clone(other);
-	return other;
-}
-
-void Installation::Clone(std::shared_ptr<Installation> other)
-{
-	other->is_active_.store(is_active_);
-	other->power_reserve_ = power_reserve_;
-	other->power_cost_ = power_cost_;
-	other->resource_pool_ids_ = resource_pool_ids_;
-	other->resource_names_ = resource_names_;
-	other->resource_types_ = resource_types_;
-	other->selected_resource_.store(selected_resource_);
-	other->displayed_max_extraction_rate_.store(displayed_max_extraction_rate_);
-	other->max_extraction_rate_ = max_extraction_rate_;
-	other->current_extraction_rate_ = current_extraction_rate_;
-	other->current_hopper_size_ = current_hopper_size_;
-	other->max_hopper_size_.store(max_hopper_size_);
-	other->is_updating_.store(is_updating_);
-	other->hopper_ = hopper_;
-	other->condition_percent_.store(condition_percent_);
 }

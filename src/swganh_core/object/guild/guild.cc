@@ -23,7 +23,7 @@ Guild::~Guild()
 
 void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
 {
-    boost::lock_guard<boost::mutex> lk(object_mutex_);
+    auto lock = AcquireLock();
     auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
         return guild_id == tag.id;
     });
@@ -39,7 +39,7 @@ void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
 
 void Guild::RemoveGuildTag(uint32_t guild_id)
 {
-    boost::lock_guard<boost::mutex> lk(object_mutex_);
+    auto lock = AcquireLock();
     auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
         return guild_id == tag.id;
     });
@@ -55,6 +55,6 @@ void Guild::RemoveGuildTag(uint32_t guild_id)
     
 swganh::messages::containers::NetworkList<GuildTag>& Guild::GetGuildList()
 {
-    boost::lock_guard<boost::mutex> lk(object_mutex_);
+    auto lock = AcquireLock();
     return guild_list_;
 }
