@@ -20,17 +20,17 @@ void FactoryCrateMessageBuilder::RegisterEventHandlers()
 }
 
 // baselines
-boost::optional<BaselinesMessage> FactoryCrateMessageBuilder::BuildBaseline3(const shared_ptr<FactoryCrate>& factory_crate)
+boost::optional<BaselinesMessage> FactoryCrateMessageBuilder::BuildBaseline3(const shared_ptr<FactoryCrate>& factory_crate, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(factory_crate, Object::VIEW_3, 11);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline3(factory_crate)).data);
+    auto message = CreateBaselinesMessage(factory_crate, lock, Object::VIEW_3, 11);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(factory_crate, lock)).data);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> FactoryCrateMessageBuilder::BuildBaseline6(const shared_ptr<FactoryCrate>& factory_crate)
+boost::optional<BaselinesMessage> FactoryCrateMessageBuilder::BuildBaseline6(const shared_ptr<FactoryCrate>& factory_crate, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(factory_crate, Object::VIEW_6, 2);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline6(factory_crate)).data);
+    auto message = CreateBaselinesMessage(factory_crate, lock, Object::VIEW_6, 2);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(factory_crate, lock)).data);
  
     return BaselinesMessage(std::move(message));
 }

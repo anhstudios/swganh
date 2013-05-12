@@ -37,9 +37,9 @@ namespace object {
 		static void BuildCustomizationDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);		
 
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);		
-		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock);		
+		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock);
 
     private:
         void RegisterEventHandlers();

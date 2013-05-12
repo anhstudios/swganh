@@ -225,17 +225,17 @@ void ManufactureSchematicMessageBuilder::BuildCustomizationDelta(const std::shar
 
 }
 
-boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
+boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock)
 {
-	return CreateBaselinesMessage(manufacture_schematic, 3, 9);
+	return CreateBaselinesMessage(manufacture_schematic, lock, 3, 9);
 }
 
-boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
+boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock)
 {
-	return CreateBaselinesMessage(manufacture_schematic, 6, 6);
+	return CreateBaselinesMessage(manufacture_schematic, lock, 6, 6);
 }
 
-boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
+boost::optional<swganh::messages::BaselinesMessage> ManufactureSchematicMessageBuilder::BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock)
 {
-	return CreateBaselinesMessage(manufacture_schematic, 7, 21);
+	return CreateBaselinesMessage(manufacture_schematic, lock, 7, 21);
 }
