@@ -263,8 +263,6 @@ public:
 
 		//Update the object's position.
 		obj->SetPosition(position);
-		obj->UpdateWorldCollisionBox();
-		obj->UpdateAABB();
 
 		// CmdStartScene
 		if(controller != nullptr)

@@ -238,8 +238,6 @@ int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object
 	//Update position now to make sure the object ends up where it needs to be.
 	object->SetContainer(shared_from_this());
 	object->SetPosition(new_position);
-	object->__InternalUpdateWorldCollisionBox();
-	object->UpdateAABB();
 	root_node_.InsertObject(object);
 	object->SetSceneId(scene_id_);
 	return -1;

@@ -69,8 +69,6 @@ void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
 
             object->SetSceneId(result->getUInt("scene_id"));
             object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
-            object->UpdateWorldCollisionBox();
-            object->UpdateAABB();
         
             object->SetOrientation(glm::quat(
                 static_cast<float>(result->getDouble("w_orientation")),

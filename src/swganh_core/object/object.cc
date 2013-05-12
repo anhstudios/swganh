@@ -295,8 +295,6 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_p
 
 	//Time to update the position to the new coordinates/update AABB
 	object->SetPosition(new_position);
-	object->__InternalUpdateWorldCollisionBox();
-	object->UpdateAABB();
 
 	//Because we may have calculated it internally, send the arrangement_id used back
 	//To the caller so it can send the appropriate update.
@@ -596,6 +594,9 @@ void Object::SetPosition(glm::vec3 position)
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         position_ = position;
 	}
+    
+    BuildSpatialProfile();
+
 	DISPATCH(Object, Position);
 }
 
