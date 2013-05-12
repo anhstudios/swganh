@@ -34,7 +34,6 @@ public:
 		
     {
 		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
-		tmp->SetThis(tmp);
 		tmp->SetSceneName(description.name);
 		tmp->SetSceneId(description.id);
 		spatial_index_ = tmp;
