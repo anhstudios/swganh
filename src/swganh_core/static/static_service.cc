@@ -129,8 +129,6 @@ StaticService::StaticService(SwganhKernel* kernel)
             		creature_dummy->SetPvPStatus(PvPStatus_Attackable);
             		creature_dummy->SetAllStats(50000);
             		creature_dummy->SetPosition(glm::vec3(-146.0f, 28.0f, -4702.0f));
-					creature_dummy->UpdateWorldCollisionBox();
-					creature_dummy->UpdateAABB();
             		creature_dummy->SetOrientation(glm::quat(0.0f, 1.0f, 0.0f, -0.0016f));
             		creature_dummy->SetScale(3);
             		simulation_service->AddObjectToScene(combat_dummy, "corellia");
@@ -194,8 +192,6 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 			static_cast<float>(result->getDouble(4))));
 
 		object->SetPosition(glm::vec3(result->getDouble(6), result->getDouble(7), result->getDouble(8)));
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
 		object->SetStfName(result->getString(12), result->getString(13));
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(true);
@@ -260,8 +256,6 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 			static_cast<float>(result->getDouble(5))));
 
 		object->SetPosition(glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9)));
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
 
 		object->SetStfName(result->getString(13), result->getString(12)); 
 
@@ -351,8 +345,6 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 			static_cast<float>(result->getDouble(6))));
 
 		object->SetPosition(glm::vec3(result->getDouble(8),result->getDouble(9),result->getDouble(10)));
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
 
 		object->SetStfName(result->getString(13), result->getString(12));
 
@@ -413,8 +405,6 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, Sp
 			static_cast<float>(result->getDouble(10))));
 
 		object->SetPosition(glm::vec3(result->getDouble(12),result->getDouble(13),result->getDouble(14)));
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
 
 		object->SetMoodId(result->getUInt(19));
 		object->SetScale(static_cast<float>(result->getDouble(21)));
@@ -479,8 +469,6 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 			static_cast<float>(result->getDouble(7))));
 
 		object->SetPosition(glm::vec3(result->getDouble(9),result->getDouble(10),result->getDouble(11)));
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
 
 		object->SetStfName(result->getString(14), result->getString(13));
 

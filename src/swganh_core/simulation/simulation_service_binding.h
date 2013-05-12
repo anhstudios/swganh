@@ -59,6 +59,7 @@ void exportSimulationService()
 		.def("createObject", &SimulationServiceInterface::CreateObjectFromTemplate, CreateOverload(args("template_name", "permission_type", "is_persisted", "object_id"), "Creates an object of the given template"))
 		.def("removeObject", &SimulationServiceInterface::RemoveObject, "Removes an object from the simulation (delete).")
 		.def("removeObjectById", &SimulationServiceInterface::RemoveObjectById, "Removes an object from the simulation by id (delete).")
+		.def("destroyObject", &SimulationServiceInterface::DestroyObject, "Destroy's an object from the simulation and persistent storage.")
         .def("getSceneNameById", &SimulationServiceInterface::SceneNameById, "Returns a scenes name given its id")
         .def("getSceneIdByName", &SimulationServiceInterface::SceneIdByName, "Returns a scenes id given its name")
 		;
