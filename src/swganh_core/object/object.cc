@@ -1176,3 +1176,16 @@ boost::unique_lock<boost::mutex> Object::AcquireLock(boost::adopt_lock_t t) cons
 {
 	return boost::unique_lock<boost::mutex>(object_mutex_, t);
 }
+
+std::tuple<boost::unique_lock<boost::mutex>, boost::unique_lock<boost::mutex>> LockSimultaneously(std::shared_ptr<Object>& obj1, std::shared_ptr<Object>& obj2)
+{
+	//Make the two unlocked unique_locks
+	boost::unique_lock<boost::mutex> a = obj1->AcquireLock(boost::defer_lock);
+	boost::unique_lock<boost::mutex> b = obj2->AcquireLock(boost::defer_lock);
+
+	//Lock them deadlock safely
+	boost::lock(a.mutex(), b.mutex());
+
+	//Return them
+	return std::make_tuple(std::move(a), std::move(b));
+}

@@ -67,6 +67,8 @@ class ObjectFactory;
 class ObjectMessageBuilder;
 class ContainerPermissionsInterface;
 
+std::tuple<boost::unique_lock<boost::mutex>, boost::unique_lock<boost::mutex>> LockSimultaneously(std::shared_ptr<Object>& obj1, std::shared_ptr<Object>& obj2);
+
 class Object : 
 	public swganh::observer::ObservableInterface, 
 	public swganh::object::ContainerInterface, 
