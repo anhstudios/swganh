@@ -58,15 +58,15 @@ std::array<FlagBitmask, 4> Player::GetStatusFlags(boost::unique_lock<boost::mute
     return status_flags_;
 }
 
-void Player::AddStatusFlag(StatusFlags flag, StatusIndex index) { AddStatusFlag(flag, index, AcquireLock()); }
-void Player::AddStatusFlag(StatusFlags flag, StatusIndex index, boost::unique_lock<boost::mutex>& lock)
+void Player::AddStatusFlag(StatusFlags flag, StatusIndex index) { AddStatusFlag(flag, AcquireLock(), index); }
+void Player::AddStatusFlag(StatusFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
     status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
 	DISPATCH(Player, StatusBitmask);
 }
 
-void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index) { RemoveStatusFlag(flag, index, AcquireLock()); }
-void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index, boost::unique_lock<boost::mutex>& lock)
+void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index) { RemoveStatusFlag(flag, AcquireLock(), index); }
+void Player::RemoveStatusFlag(StatusFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
 	status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
     DISPATCH(Player, StatusBitmask);
@@ -87,15 +87,15 @@ std::array<FlagBitmask, 4> Player::GetProfileFlags(boost::unique_lock<boost::mut
     return profile_flags_;
 }
 
-void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index) { AddProfileFlag(flag, index, AcquireLock()); }
-void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index, boost::unique_lock<boost::mutex>& lock)
+void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index) { AddProfileFlag(flag, AcquireLock(), index); }
+void Player::AddProfileFlag(ProfileFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
 	profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
 	DISPATCH(Player, ProfileFlag);
 }
 
-void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index) { RemoveProfileFlag(flag, index, AcquireLock()); }
-void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index, boost::unique_lock<boost::mutex>& lock)
+void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index) { RemoveProfileFlag(flag, AcquireLock(), index); }
+void Player::RemoveProfileFlag(ProfileFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
 	profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
 	DISPATCH(Player, ProfileFlag);
@@ -217,7 +217,7 @@ void Player::ResetXp(std::map<std::string, XpData>& experience, boost::unique_lo
 	DISPATCH(Player, Experience);
 }
 
-void Player::ClearAllXp() P ClearAllXp(AcquireLock()); }
+void Player::ClearAllXp() { ClearAllXp(AcquireLock()); }
 void Player::ClearAllXp(boost::unique_lock<boost::mutex>& lock)
 {
 	experience_.Clear();
@@ -293,7 +293,7 @@ void Player::IncrementForcePower(int32_t force_power, boost::unique_lock<boost::
     DISPATCH(Player, ForcePower);
 }
 
-int32_t Player::GetMaxForcePower() { return MaxForcePower(AcquireLock()); }
+int32_t Player::GetMaxForcePower() { return GetMaxForcePower(AcquireLock()); }
 int32_t Player::GetMaxForcePower(boost::unique_lock<boost::mutex>& lock) 
 {
     return max_force_power_;
@@ -312,7 +312,7 @@ uint32_t Player::GetCurrentForceSensitiveQuests(boost::unique_lock<boost::mutex>
     return current_force_sensitive_quests_;
 }
 
-void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask) { AddCurrentForceSensitiveQuests(quest_mask, AcquireLock()); }
+void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask) { AddCurrentForceSensitiveQuest(quest_mask, AcquireLock()); }
 void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask, boost::unique_lock<boost::mutex>& lock)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ | quest_mask;
@@ -333,7 +333,7 @@ void Player::ClearCurrentForceSensitiveQuests(boost::unique_lock<boost::mutex>& 
 	DISPATCH(Player, ForceSensitiveQuests);
 }
 
-uint32_t Player::GetCompletedForceSensitiveQuests() { return GetCompleteForceSensitiveQuests(AcquireLock()); }
+uint32_t Player::GetCompletedForceSensitiveQuests() { return GetCompletedForceSensitiveQuests(AcquireLock()); }
 uint32_t Player::GetCompletedForceSensitiveQuests(boost::unique_lock<boost::mutex>& lock)
 {
     return completed_force_sensitive_quests_;
@@ -474,7 +474,7 @@ void Player::SetNearestCraftingStation(uint64_t crafting_station_id, boost::uniq
 	DISPATCH(Player, NearestCraftingStation);
 }
 
-std::vector<DraftSchematicData> Player::GetDraftSchematics() { return GEtDraftSchematics(AcquireLock()); }
+std::vector<DraftSchematicData> Player::GetDraftSchematics() { return GetDraftSchematics(AcquireLock()); }
 std::vector<DraftSchematicData> Player::GetDraftSchematics(boost::unique_lock<boost::mutex>& lock) 
 {
 	std::vector<DraftSchematicData> schematics;
@@ -547,7 +547,7 @@ uint32_t Player::GetAccomplishmentCounter(boost::unique_lock<boost::mutex>& lock
     return accomplishment_counter_;
 }
 
-void Player::ResetAccomplishmentCounter(uint32_t counter) { SetAccomplishmentCounter(counter, AcquireLock()); }
+void Player::ResetAccomplishmentCounter(uint32_t counter) { ResetAccomplishmentCounter(counter, AcquireLock()); }
 void Player::ResetAccomplishmentCounter(uint32_t counter, boost::unique_lock<boost::mutex>& lock)
 {
     accomplishment_counter_ = counter;
@@ -656,7 +656,6 @@ void Player::StopIgnoringPlayer(string player_name, boost::unique_lock<boost::mu
 void Player::ClearIgnored() { ClearIgnored(AcquireLock()); }
 void Player::ClearIgnored(boost::unique_lock<boost::mutex>& lock)
 {
-    auto lock = AcquireLock();
     ignored_players_.Clear();
     DISPATCH(Player, IgnorePlayer);
 }
@@ -853,9 +852,9 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
 
 void Player::CreateBaselines(shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    if (event_dispatcher_)
+    if (auto dispatch = GetEventDispatcher())
 	{
-		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+		dispatch->Dispatch(make_shared<ObserverEvent>
 			("Player::Baselines", shared_from_this(), observer));
 	}
 }

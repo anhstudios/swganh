@@ -47,7 +47,7 @@ void Waypoint::Activate(boost::unique_lock<boost::mutex>& lock)
 	DISPATCH(Waypoint, Activated);
 }
 
-void Waypoint::DeActivate() { Deactivate(AcquireLock()); }
+void Waypoint::DeActivate() { DeActivate(AcquireLock()); }
 void Waypoint::DeActivate(boost::unique_lock<boost::mutex>& lock)
 {
     activated_flag_ = DEACTIVATED;

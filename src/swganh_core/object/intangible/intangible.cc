@@ -28,9 +28,9 @@ void Intangible::SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::m
 
 void Intangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	if (event_dispatcher_)
+	if (auto dispatch = GetEventDispatcher())
 	{
-		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+		dispatch->Dispatch(make_shared<ObserverEvent>
 			("Intangible::Baselines", shared_from_this(), observer));
 	}
 }

@@ -1173,7 +1173,7 @@ std::vector<uint64_t> Creature::GetDuelList(boost::unique_lock<boost::mutex>& lo
 
 void Creature::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	if (event_dispatcher_)
+	if (GetEventDispatcher())
 	{
 		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
 			("Creature::Baselines", shared_from_this(), observer));
@@ -1195,9 +1195,10 @@ bool Creature::HasBuff(std::string buff_name)
 
 void Creature::AddBuff(std::string buff_name, uint32_t duration)
 {
-	if(event_dispatcher_ && !HasBuff(buff_name))
+	auto dispatch = GetEventDispatcher();
+	if(dispatch && !HasBuff(buff_name))
 	{
-		event_dispatcher_->Dispatch(std::make_shared<swganh::combat::BuffEvent>
+		dispatch->Dispatch(std::make_shared<swganh::combat::BuffEvent>
 			("CombatService::AddBuff", std::static_pointer_cast<Creature>(shared_from_this()), buff_name, duration));
 	}
 }
@@ -1257,13 +1258,14 @@ void Creature::ClearBuffs()
 	std::set<std::shared_ptr<swganh::combat::BuffInterface>> removed_buffs_;
 	{
 		auto lock = AcquireLock();
+		auto controller = GetController(lock);
 
 		std::for_each(buffs_.begin(), buffs_.end(), [&] (BuffMap::value_type& entry) {
-			if(controller_)
+			if(controller)
 			{
 				RemoveBuffMessage msg;
 				msg.buff = entry.second->GetName();
-				controller_->Notify(&msg);
+				controller->Notify(&msg);
 
 				removed_buffs_.insert(entry.second);
 			}

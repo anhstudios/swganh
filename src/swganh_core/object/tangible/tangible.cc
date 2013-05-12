@@ -123,7 +123,7 @@ void Tangible::ToggleOption(uint32_t option, boost::unique_lock<boost::mutex>& l
 	DISPATCH(Tangible, OptionsMask);
 }
 
-uint32_t Tangible::GetOptionsMask() { GetOptionsMask(AcquireLock()); }
+uint32_t Tangible::GetOptionsMask() { return GetOptionsMask(AcquireLock()); }
 uint32_t Tangible::GetOptionsMask(boost::unique_lock<boost::mutex>& lock)
 {
     return options_bitmask_;
@@ -136,7 +136,7 @@ void Tangible::SetCounter(uint32_t counter, boost::unique_lock<boost::mutex>& lo
     DISPATCH(Tangible, Counter);
 }
 
-uint32_t Tangible::GetCounter() { return GetCount(AcquireLock()); }
+uint32_t Tangible::GetCounter() { return GetCounter(AcquireLock()); }
 uint32_t Tangible::GetCounter(boost::unique_lock<boost::mutex>& lock)
 {
     return counter_;
@@ -156,7 +156,7 @@ uint32_t Tangible::GetCondition(boost::unique_lock<boost::mutex>& lock)
     return condition_damage_;
 }
 
-void Tangible::SetMaxCondition(uint32_t max_condition) { SetMaxCondition(AcquireLock()); }
+void Tangible::SetMaxCondition(uint32_t max_condition) { SetMaxCondition(max_condition, AcquireLock()); }
 void Tangible::SetMaxCondition(uint32_t max_condition, boost::unique_lock<boost::mutex>& lock)
 {
     max_condition_ = max_condition;
@@ -247,7 +247,7 @@ void Tangible::ClearDefenders(boost::unique_lock<boost::mutex>& lock)
     DISPATCH(Tangible, Defenders);
 }
 
-void Tangible::ActivateAutoAttack() { ActiviateAutoAttack(AcquireLock()); }
+void Tangible::ActivateAutoAttack() { ActivateAutoAttack(AcquireLock()); }
 void Tangible::ActivateAutoAttack(boost::unique_lock<boost::mutex>& lock)
 {
     auto_attack_ = true;
@@ -267,9 +267,9 @@ bool Tangible::IsAutoAttacking(boost::unique_lock<boost::mutex>& lock)
 
 void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    if (event_dispatcher_)
+    if (auto dispatch = GetEventDispatcher())
 	{
-		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+		dispatch->Dispatch(make_shared<ObserverEvent>
 			("Tangible::Baselines", shared_from_this(), observer));
 	}
 }
@@ -280,7 +280,7 @@ void Tangible::SerializeComponentCustomization(swganh::messages::BaseSwgMessage*
 	component_customization_list_.Serialize(message);
 }
 
-void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message) { SerializeDefenders(message, AcqureLock()); }
+void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message) { SerializeDefenders(message, AcquireLock()); }
 void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
 	defender_list_.Serialize(message);

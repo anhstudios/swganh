@@ -242,7 +242,7 @@ std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots(boost::un
     return std::move(slots_.Get());
 }
 
-void ManufactureSchematic::RemoveSlot(uint16_t index) { RemoveSlot(index); }
+void ManufactureSchematic::RemoveSlot(uint16_t index) { RemoveSlot(index, AcquireLock()); }
 void ManufactureSchematic::RemoveSlot(uint16_t index, boost::unique_lock<boost::mutex>& lock)
 {
 	auto found = slots_.At(index);
@@ -256,7 +256,7 @@ void ManufactureSchematic::RemoveSlot(uint16_t index, boost::unique_lock<boost::
  */
 uint16_t ManufactureSchematic::AddSlot( std::string slot_stf_file, std::string slot_stf_name,
     uint32_t type, uint64_t ingredient, uint32_t ingredient_quantity, uint32_t clean) 
-{ AddSlot(slot_stf_file, slot_stf_name, type, ingredient, ingredient_quantity, clean, AcquireLock()); } 
+{ return AddSlot(slot_stf_file, slot_stf_name, type, ingredient, ingredient_quantity, clean, AcquireLock()); } 
 
 uint16_t ManufactureSchematic::AddSlot( std::string slot_stf_file, std::string slot_stf_name,
     uint32_t type, uint64_t ingredient, uint32_t ingredient_quantity, uint32_t clean, boost::unique_lock<boost::mutex>& lock)
@@ -358,7 +358,7 @@ void ManufactureSchematic::RemoveExperiment(uint16_t index, boost::unique_lock<b
  */
 uint16_t ManufactureSchematic::AddExperiment(std::string experiment_stf_file,  std::string experiment_stf_name,
     float value, float offset, float size, float max_value) 
-{ AddExperiment(experiment_stf_file, experiment_stf_name, value, offset, size, max_value, AcquireLock()); }
+{ return AddExperiment(experiment_stf_file, experiment_stf_name, value, offset, size, max_value, AcquireLock()); }
 
 uint16_t ManufactureSchematic::AddExperiment(std::string experiment_stf_file,  std::string experiment_stf_name,
     float value, float offset, float size, float max_value, boost::unique_lock<boost::mutex>& lock)
@@ -482,7 +482,7 @@ void ManufactureSchematic::RemoveCustomization(uint16_t index, boost::unique_loc
  */
 uint16_t ManufactureSchematic::AddCustomization( std::string name, 
 	uint32_t pallet_selection, uint32_t pallet_start_index, uint32_t pallet_end_index) 
-{ AddCustomization(name, pallet_selection, pallet_start_index, pallet_end_index, AcquireLock()); }
+{ return AddCustomization(name, pallet_selection, pallet_start_index, pallet_end_index, AcquireLock()); }
 
 uint16_t ManufactureSchematic::AddCustomization( std::string name, 
 	uint32_t pallet_selection, uint32_t pallet_start_index, uint32_t pallet_end_index, boost::unique_lock<boost::mutex>& lock)

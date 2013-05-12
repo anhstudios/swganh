@@ -134,7 +134,7 @@ SkillModsMap SkillManager::GetSkillMods(const std::shared_ptr<Creature>& creatur
 	creature->ViewObjects(creature, 1, true, [&] (std::shared_ptr<Object> child) {
 		for(auto& mod : result)
 		{
-			auto modifier = child->GetAttributeRecursive(mod.first);
+			auto modifier = child->GetAttribute(mod.first); //@TODO : EquipmentList this
 			if(modifier.which() == 1)
 			{
 				mod.second.second += boost::get<int32_t>(modifier);
