@@ -25,9 +25,7 @@ QuadtreeSpatialProvider::QuadtreeSpatialProvider()
 }
 
 QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
-{
-	__this.reset();
-}
+{}
 
 void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> requester, shared_ptr<Object> object, int32_t arrangement_id)
 {
@@ -35,7 +33,7 @@ void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> 
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 		root_node_.InsertObject(object);
-		object->SetContainer(__this);
+		object->SetContainer(shared_from_this());
 		object->SetArrangementId(arrangement_id);
 		object->SetSceneId(scene_id_);
 	}
@@ -238,10 +236,8 @@ void QuadtreeSpatialProvider::__InternalViewAwareObjects(std::function<void(std:
 int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_position, int32_t arrangement_id)
 {
 	//Update position now to make sure the object ends up where it needs to be.
-	object->SetContainer(__this);
+	object->SetContainer(shared_from_this());
 	object->SetPosition(new_position);
-	object->__InternalUpdateWorldCollisionBox();
-	object->UpdateAABB();
 	root_node_.InsertObject(object);
 	object->SetSceneId(scene_id_);
 	return -1;
@@ -255,11 +251,7 @@ void QuadtreeSpatialProvider::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& 
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
-	glm::vec3 position;
-	glm::quat orientation;
-	object->__InternalGetAbsolutes(position, orientation);
-	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), 
-					quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
+	return GetQueryBoxViewRange(object->GetAABB());	
 }
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(const swganh::object::AABB& box)
@@ -292,10 +284,10 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 {
 	std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> obj_map;
 
-	if(requester->GetContainer() != __this)
+	if(requester->GetContainer() != shared_from_this())
 	{
 		auto root_obj = requester->GetContainer();
-		while(root_obj->GetContainer() != __this && root_obj->GetContainer() != nullptr)
+		while(root_obj->GetContainer() != shared_from_this() && root_obj->GetContainer() != nullptr)
 			root_obj = root_obj->GetContainer();
 
 		root_obj->ViewObjects(requester, 0, true, [=, &obj_map](std::shared_ptr<swganh::object::Object> object) {

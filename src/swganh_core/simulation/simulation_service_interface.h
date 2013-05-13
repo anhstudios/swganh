@@ -117,7 +117,9 @@ namespace simulation {
          */
         virtual void RemoveObjectById(uint64_t object_id) = 0;
         virtual void RemoveObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
-        
+
+        virtual void DestroyObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
+
         virtual std::shared_ptr<swganh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client) = 0;

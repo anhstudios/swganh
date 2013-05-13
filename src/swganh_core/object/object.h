@@ -590,11 +590,6 @@ public:
 	virtual void OnCollisionLeave(std::shared_ptr<Object> collider) { }
 
 	void BuildSpatialProfile();
-	void BuildBoundingVolume();
-	void BuildCollisionBox();
-	void UpdateAABB();
-	void UpdateWorldCollisionBox();
-	void __InternalUpdateWorldCollisionBox();
 
 	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
 	void AddCollidedObject(std::shared_ptr<Object> obj)
@@ -684,6 +679,12 @@ private:
     
     typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
+    
+	void BuildBoundingVolume();
+	void BuildCollisionBox();
+	void UpdateAABB();
+	void UpdateWorldCollisionBox();
+	void __InternalUpdateWorldCollisionBox();
 
 	AttributesMap attributes_map_;
 

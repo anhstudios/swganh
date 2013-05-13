@@ -209,6 +209,12 @@ public:
         object_manager_->RemoveObject(object);*/
 		
     }
+    
+    void DestroyObject(const std::shared_ptr<swganh::object::Object>& object)
+    {
+        RemoveObject(object);
+        object_manager_->DeleteObjectFromStorage(object);
+    }
 
 	std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range=-1)
 	{
@@ -257,8 +263,6 @@ public:
 
 		//Update the object's position.
 		obj->SetPosition(position);
-		obj->UpdateWorldCollisionBox();
-		obj->UpdateAABB();
 
 		// CmdStartScene
 		if(controller != nullptr)
@@ -546,6 +550,11 @@ void SimulationService::RemoveObjectById(uint64_t object_id)
 void SimulationService::RemoveObject(const shared_ptr<Object>& object)
 {
     impl_->RemoveObject(object);
+}
+
+void SimulationService::DestroyObject(const std::shared_ptr<swganh::object::Object>& object)
+{
+    impl_->DestroyObject(object);
 }
 
 shared_ptr<Object> SimulationService::GetObjectByCustomName(const string& custom_name)

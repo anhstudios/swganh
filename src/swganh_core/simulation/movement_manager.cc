@@ -59,11 +59,8 @@ void MovementManager::HandleDataTransformServer(
 		{
 			AABB old_parent_bounding_volume = old_container->GetAABB();
 			old_container->SetPosition(new_position);
-			old_container->UpdateWorldCollisionBox();
-			old_container->UpdateAABB();
 
-			object->UpdateWorldCollisionBox();
-			object->UpdateAABB();
+            object->BuildSpatialProfile();
 			
 			spatial_provider_->UpdateObject(old_container, old_parent_bounding_volume, old_container->GetAABB());
 			SendDataTransformMessage(old_container);
@@ -72,8 +69,7 @@ void MovementManager::HandleDataTransformServer(
 	else
 	{
 		object->SetPosition(new_position);
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
+
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 		SendDataTransformMessage(object);
 	}
@@ -95,8 +91,6 @@ void MovementManager::HandleDataTransformWithParentServer(
 		else
 		{
 			object->SetPosition(new_position);
-			object->UpdateWorldCollisionBox();
-			object->UpdateAABB();
 		}
 		
 		//Send the update transform
@@ -136,11 +130,8 @@ void MovementManager::HandleDataTransform(
 			AABB old_parent_bounding_volume = old_container->GetAABB();
 			old_container->SetOrientation(message.orientation);
 			old_container->SetPosition(message.position);
-			old_container->UpdateWorldCollisionBox();
-			old_container->UpdateAABB();
 			
-			object->UpdateWorldCollisionBox();
-			object->UpdateAABB();
+			object->BuildSpatialProfile();
 
 			spatial_provider_->UpdateObject(old_container, old_parent_bounding_volume, old_container->GetAABB());
 			SendUpdateDataTransformMessage(old_container);
@@ -150,8 +141,6 @@ void MovementManager::HandleDataTransform(
 	{
 		object->SetPosition(message.position);
 		object->SetOrientation(message.orientation);
-		object->UpdateWorldCollisionBox();
-		object->UpdateAABB();
 		spatial_provider_->UpdateObject(object, old_bounding_volume, object->GetAABB());
 		SendUpdateDataTransformMessage(object);
 	}
@@ -184,8 +173,6 @@ void MovementManager::HandleDataTransformWithParent(
 		else
 		{
 			object->SetPosition(message.position);
-			object->UpdateWorldCollisionBox();
-			object->UpdateAABB();
 		}
 
 		//Send the update transform
