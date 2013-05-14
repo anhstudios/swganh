@@ -900,3 +900,15 @@ void Player::SerializeIgnoredPlayers(swganh::messages::BaseSwgMessage* message, 
 {
 	ignored_players_.Serialize(message);
 }
+
+std::list<uint32_t> Player::GetBadges() { return GetBadges(AcquireLock()); }
+std::list<uint32_t> Player::GetBadges(boost::unique_lock<boost::mutex>& lock)
+{
+	return badges_;
+}
+
+std::queue<std::pair<uint8_t, uint32_t>> Player::GetBadgesSyncQueue() { return GetBadgesSyncQueue(AcquireLock()); }
+std::queue<std::pair<uint8_t, uint32_t>> Player::GetBadgesSyncQueue(boost::unique_lock<boost::mutex>& lock)
+{
+	return badges_sync_queue_;
+}

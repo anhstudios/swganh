@@ -242,7 +242,7 @@ void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 			statement->setUInt64(1, object->GetObjectId());
 			std::string name = attribute.first.ident_string();
 			statement->setString(2, name);
-			std::wstring attr = object->GetAttributeRecursiveAsString(name);
+			std::wstring attr = object->GetAttributeAsString(name);
 			statement->setString(3, std::string(attr.begin(), attr.end()));
                         
 			statement->executeUpdate();    
