@@ -24,9 +24,9 @@ InstallationFactory::InstallationFactory(swganh::app::SwganhKernel* kernel)
 	: TangibleFactory(kernel)
 {}
 
-void InstallationFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void InstallationFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {    
-    TangibleFactory::LoadFromStorage(connection, object);
+    TangibleFactory::LoadFromStorage(connection, object, lock);
 
     auto installation = std::dynamic_pointer_cast<Installation>(object);
     if(!installation)

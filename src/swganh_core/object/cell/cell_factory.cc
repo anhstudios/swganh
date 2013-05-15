@@ -21,9 +21,9 @@ CellFactory::CellFactory(swganh::app::SwganhKernel* kernel)
     : IntangibleFactory(kernel)
 {}
 
-void CellFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void CellFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    IntangibleFactory::LoadFromStorage(connection, object);
+    IntangibleFactory::LoadFromStorage(connection, object, lock);
 }
 
 void CellFactory::RegisterEventHandlers()

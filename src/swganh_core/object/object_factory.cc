@@ -46,14 +46,16 @@ std::future<std::shared_ptr<Object>> ObjectFactory::LoadFromStorage(uint64_t obj
 std::shared_ptr<Object> ObjectFactory::LoadDataFromStorage(const std::shared_ptr<sql::Connection>& connection, uint64_t object_id)
 {    
     auto object = CreateObject();
-    object->SetObjectId(object_id);
+    
+	auto lock = object->AcquireLock();
+	object->SetObjectId(object_id, lock);
 
-    LoadFromStorage(connection, object);
+    LoadFromStorage(connection, object, lock);
 
     return object;
 }
 
-void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
     std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("CALL sp_GetObject(?);"));
 

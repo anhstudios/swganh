@@ -51,7 +51,7 @@ namespace object {
 
         virtual std::shared_ptr<Object> LoadDataFromStorage(const std::shared_ptr<sql::Connection>& connection, uint64_t object_id);
 
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
         virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false);
         

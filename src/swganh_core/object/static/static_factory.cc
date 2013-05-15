@@ -12,9 +12,9 @@ StaticFactory::StaticFactory(swganh::app::SwganhKernel* kernel)
 	: ObjectFactory(kernel)
 {}
 
-void StaticFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void StaticFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    ObjectFactory::LoadFromStorage(connection, object);
+    ObjectFactory::LoadFromStorage(connection, object, lock);
 }
 
 uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)

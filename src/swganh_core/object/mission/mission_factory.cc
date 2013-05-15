@@ -13,9 +13,9 @@ MissionFactory::MissionFactory(swganh::app::SwganhKernel* kernel)
 	: IntangibleFactory(kernel)
 {}
 
-void MissionFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void MissionFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    IntangibleFactory::LoadFromStorage(connection, object);
+    IntangibleFactory::LoadFromStorage(connection, object, lock);
 }
 
 uint32_t MissionFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)

@@ -29,9 +29,9 @@ CreatureFactory::CreatureFactory(swganh::app::SwganhKernel* kernel)
     : TangibleFactory(kernel)
 {}
 
-void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    TangibleFactory::LoadFromStorage(connection, object);
+    TangibleFactory::LoadFromStorage(connection, object, lock);
 
     auto creature = std::dynamic_pointer_cast<Creature>(object);
     if(!creature)

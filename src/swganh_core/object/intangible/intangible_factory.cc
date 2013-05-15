@@ -29,9 +29,9 @@ IntangibleFactory::IntangibleFactory(swganh::app::SwganhKernel* kernel)
 {
 }
 
-void IntangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void IntangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    ObjectFactory::LoadFromStorage(connection, object);
+    ObjectFactory::LoadFromStorage(connection, object, lock);
 
     auto intangible = std::dynamic_pointer_cast<Intangible>(object);
     if(!intangible)

@@ -25,7 +25,7 @@ namespace object {
 
 		StaticFactory(swganh::app::SwganhKernel* kernel);
 
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
         
 		virtual void PersistChangedObjects(){}
         

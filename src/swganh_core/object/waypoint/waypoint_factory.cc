@@ -33,9 +33,9 @@ WaypointFactory::WaypointFactory(swganh::app::SwganhKernel* kernel)
     RegisterEventHandlers();
 }
 
-void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    IntangibleFactory::LoadFromStorage(connection, object);
+    IntangibleFactory::LoadFromStorage(connection, object, lock);
 
     auto waypoint = std::dynamic_pointer_cast<Waypoint>(object);
     if(!waypoint)

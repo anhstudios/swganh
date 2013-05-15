@@ -22,9 +22,9 @@ GuildFactory::GuildFactory(swganh::app::SwganhKernel* kernel)
     : ObjectFactory(kernel)
 {}
 
-void GuildFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void GuildFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    ObjectFactory::LoadFromStorage(connection, object);
+    ObjectFactory::LoadFromStorage(connection, object, lock);
 }
 
 uint32_t GuildFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
