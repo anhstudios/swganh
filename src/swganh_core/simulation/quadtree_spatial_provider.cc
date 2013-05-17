@@ -341,71 +341,33 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 
 void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)
 {
-	if(object->IsCollidable() == false)
-		return;
+    if(!object->IsCollidable()) return;
 
-	auto objects = root_node_.Query(object->GetAABB());
-	auto collided_objects = object->GetCollidedObjects();
-	std::for_each(collided_objects.begin(), collided_objects.end(), [=, &objects](std::shared_ptr<swganh::object::Object> other) {
-		auto iter = std::find(objects.begin(), objects.end(), other);
-		
-		if(iter == objects.end())
-		{
-			//std::cout << "Object::OnCollisionLeave " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-			object->RemoveCollidedObject(other);
-			other->RemoveCollidedObject(object);
+    auto new_objects = root_node_.Query(object->GetAABB());
+    auto old_objects = object->GetCollidedObjects();
 
-			object->OnCollisionLeave(other);
-			other->OnCollisionLeave(object);
-			
-			objects.erase(iter);
-		}
-		else
-		{
-			// Make sure we still are intersecting.
-			if(boost::geometry::intersects(object->GetWorldCollisionBox(), other->GetWorldCollisionBox()) == false) {
-				//std::cout << "Object::OnCollisionLeave " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-				
-				object->RemoveCollidedObject(other);
-				other->RemoveCollidedObject(object);
-				
-				object->OnCollisionLeave(other);
-				other->OnCollisionLeave(object);
-				
-				objects.erase(iter);
-				return;
-			}
-			//std::cout << "Object::OnCollisionStay " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-			object->OnCollisionStay(other);
-			other->OnCollisionStay(object);
-		}
-	});
+    for(auto& new_object : new_objects)
+    {
+        auto find_iter = std::find(old_objects.begin(), old_objects.end(), new_object);
+        if(find_iter != old_objects.end())
+        {
+            object->OnCollisionStay(new_object);
+            new_object->OnCollisionStay(object);
+            old_objects.erase(find_iter);
+        }
+        else
+        {
+            object->AddCollidedObject(new_object);
+            new_object->AddCollidedObject(object);
 
-	std::for_each(objects.begin(), objects.end(), [=](const std::shared_ptr<swganh::object::Object> other) {
-		if(other->GetObjectId() == object->GetObjectId() || other->IsCollidable() == false)
-			return;
+            object->OnCollisionEnter(new_object);
+            new_object->OnCollisionEnter(object);
+        }
+    }
 
-		if(boost::geometry::intersects(object->GetWorldCollisionBox(), other->GetWorldCollisionBox()))
-		{
-			bool found = false;
-			auto collided_objects = object->GetCollidedObjects();
-			std::for_each(collided_objects.begin(), collided_objects.end(), [=, &found](std::shared_ptr<Object> collided_object){
-				if(collided_object->GetObjectId() == other->GetObjectId())
-				{
-					found = true;
-				}
-			});
-
-			if(!found)
-			{
-				//std::cout << "Object::OnCollisionEnter " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-				
-				object->AddCollidedObject(other);
-				other->AddCollidedObject(object);
-
-				object->OnCollisionEnter(other);
-				other->OnCollisionEnter(object);
-			}
-		}
-	});
+    for(auto& old_object : old_objects)
+    {
+        object->RemoveCollidedObject(old_object);
+        old_object->RemoveCollidedObject(object);
+    }
 }
