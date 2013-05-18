@@ -341,33 +341,47 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 
 void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)
 {
-    if(!object->IsCollidable()) return;
-
+    // Prep work
     auto new_objects = root_node_.Query(object->GetAABB());
     auto old_objects = object->GetCollidedObjects();
-
-    for(auto& new_object : new_objects)
+    
+    auto new_itr = new_objects.begin();
+    auto new_end = new_objects.end();
+    bool new_done = new_itr == new_end;
+    
+    auto old_itr = old_objects.begin();
+    auto old_end = old_objects.end();
+    bool old_done = old_itr == old_end;
+    
+    while(!new_done || !old_done)
     {
-        auto find_iter = std::find(old_objects.begin(), old_objects.end(), new_object);
-        if(find_iter != old_objects.end())
+        if(old_done || *new_itr < *old_itr)
         {
-            object->OnCollisionStay(new_object);
-            new_object->OnCollisionStay(object);
-            old_objects.erase(find_iter);
+            //It's a new object!
+            object->AddCollidedObject(*new_itr);
+            (*new_itr)->AddCollidedObject(object);
+
+            ++new_itr;
+        }
+        else if(new_done || *old_itr < *new_itr)
+        {
+            //It's an old object!
+            object->RemoveCollidedObject(*old_itr);
+            (*old_itr)->RemoveCollidedObject(object);
+
+            ++old_itr;
         }
         else
         {
-            object->AddCollidedObject(new_object);
-            new_object->AddCollidedObject(object);
+            //Otherwise both are equal
+            object->OnCollisionStay(*new_itr);
+            (*new_itr)->OnCollisionStay(object);
 
-            object->OnCollisionEnter(new_object);
-            new_object->OnCollisionEnter(object);
+            ++new_itr;
+            ++old_itr;
         }
-    }
 
-    for(auto& old_object : old_objects)
-    {
-        object->RemoveCollidedObject(old_object);
-        old_object->RemoveCollidedObject(object);
+        new_done = new_itr == new_end;
+        old_done = old_itr == old_end;
     }
 }
