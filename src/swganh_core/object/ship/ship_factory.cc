@@ -13,7 +13,7 @@ void ShipFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connec
     ObjectFactory::LoadFromStorage(connection, object, lock);
 }
 
-uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 

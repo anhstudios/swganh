@@ -17,7 +17,7 @@ void ResourceContainerFactory::LoadFromStorage(const std::shared_ptr<sql::Connec
     TangibleFactory::LoadFromStorage(connection, object, lock);
 }
 
-uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 	return counter;

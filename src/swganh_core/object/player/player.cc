@@ -409,13 +409,16 @@ std::vector<Ability> Player::GetAbilityList(boost::unique_lock<boost::mutex>& lo
 {
     //@TODO: Lock both Creature and Player simultaneous
 	
-	auto creature = GetContainer<Creature>();
+	auto creature = GetContainer<Creature>(lock);
+
+	lock.unlock();
 	auto skill_commands = creature->GetSkillCommands();
-	
+
 	std::vector<Ability> abilities;
     for_each(begin(skill_commands), end(skill_commands),[&abilities](pair<uint32_t, string> skill_command){
         abilities.push_back(Ability(skill_command.second));
     });
+	lock.lock();
     return abilities;
 }
 
@@ -880,7 +883,7 @@ void Player::SerializeQuests(swganh::messages::BaseSwgMessage* message, boost::u
 void Player::SerializeAbilities(swganh::messages::BaseSwgMessage* message) { SerializeAbilities(message, AcquireLock()); }
 void Player::SerializeAbilities(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	NetworkList<Ability>(GetAbilityList()).Serialize(message);
+	NetworkList<Ability>(GetAbilityList(lock)).Serialize(message);
 }
 
 void Player::SerializeDraftSchematics(swganh::messages::BaseSwgMessage* message) { SerializeDraftSchematics(message, AcquireLock()); }

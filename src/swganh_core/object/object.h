@@ -494,6 +494,7 @@ public:
 	 * @brief sends the update containment message for the given observer of this object
 	 */
 	virtual void SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent=true);
+	void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock, bool send_on_no_parent);
 	
 	/**
 	 * @brief sends the destroy message for the given observer of this object
@@ -593,6 +594,7 @@ public:
 	 * @brief Gets an attribute value and then converts it to a wstring for printing
 	 */
 	std::wstring GetAttributeAsString(const std::string& name);
+	std::wstring GetAttributeAsString(const std::string& name, boost::unique_lock<boost::mutex>& lock);
 
 	AttributeVariant GetAttribute(const std::string& name);
 	AttributeVariant GetAttribute(const std::string& name, boost::unique_lock<boost::mutex>& lock);

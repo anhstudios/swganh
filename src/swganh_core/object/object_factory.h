@@ -53,21 +53,21 @@ namespace object {
 
         virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false);
+        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
         
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
 
 		virtual std::shared_ptr<Object> CreateObject() { return nullptr; }
         uint32_t LookupType(uint64_t object_id);
-        void LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object);
-		void PersistAttributes(std::shared_ptr<Object> object);
+        void LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+		void PersistAttributes(std::shared_ptr<Object> object, boost::unique_lock<boost::mutex>& lock);
 
 		virtual void PersistChangedObjects();
 		void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
         virtual void RegisterEventHandlers();
 
 		// Fiils in missing data for the object from the client file...
-		void GetClientData(const std::shared_ptr<Object>& object);
+		void GetClientData(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
         
         void LoadContainedObjects(const std::shared_ptr<Object>& object);
 

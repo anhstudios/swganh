@@ -66,10 +66,7 @@ void Tangible::SetCustomization(const std::string& customization, boost::unique_
 void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints) { SetCustomizationFromInts(customization_ints, AcquireLock()); }
 void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints, boost::unique_lock<boost::mutex>& lock)
 {
-	{
-		auto lock = AcquireLock();
-		customization_ = std::string(customization_ints.begin(), customization_ints.end());
-	}
+	customization_ = std::string(customization_ints.begin(), customization_ints.end());
 	DISPATCH(Tangible, Customization);
 }
 

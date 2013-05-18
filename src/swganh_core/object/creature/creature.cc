@@ -308,10 +308,7 @@ uint64_t Creature::GetOwnerId(boost::unique_lock<boost::mutex>& lock)
 void Creature::SetScale(float scale) { SetScale(scale, AcquireLock());}
 void Creature::SetScale(float scale, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        auto lock = AcquireLock();
-        scale_ = scale;
-    }
+	scale_ = scale;
 	DISPATCH(Creature, Scale);
 }
 

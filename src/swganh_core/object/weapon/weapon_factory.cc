@@ -27,14 +27,17 @@ void WeaponFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		if(object->IsDatabasePersisted())
-			PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
-uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
-	return TangibleFactory::PersistObject(object, persist_inherited);
+	return TangibleFactory::PersistObject(object, lock, persist_inherited);
 }
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)

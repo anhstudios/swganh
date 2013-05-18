@@ -59,7 +59,7 @@ void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
 {
     std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("CALL sp_GetObject(?);"));
 
-    statement->setUInt64(1, object->GetObjectId());
+    statement->setUInt64(1, object->GetObjectId(lock));
     
     std::unique_ptr<sql::ResultSet> result(statement->executeQuery());        
     
@@ -69,26 +69,25 @@ void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
         {
             object->SetEventDispatcher(GetEventDispatcher());
 
-            object->SetSceneId(result->getUInt("scene_id"));
-            object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
+            object->SetSceneId(result->getUInt("scene_id"), lock);
+            object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")), lock);
             object->UpdateWorldCollisionBox();
-            object->UpdateAABB();
+            object->UpdateAABB(lock);
         
             object->SetOrientation(glm::quat(
                 static_cast<float>(result->getDouble("w_orientation")),
             	static_cast<float>(result->getDouble("x_orientation")),
                 static_cast<float>(result->getDouble("y_orientation")),
-                static_cast<float>(result->getDouble("z_orientation"))));
+                static_cast<float>(result->getDouble("z_orientation"))), lock);
             
-            object->SetComplexity(static_cast<float>(result->getDouble("complexity")));
-            object->SetStfName(result->getString("stf_name_file"),
-                               result->getString("stf_name_string"));
+            object->SetComplexity(static_cast<float>(result->getDouble("complexity")), lock);
+            object->SetStfName(result->getString("stf_name_file"), result->getString("stf_name_string"), lock);
             string custom_string = result->getString("custom_name");
-            object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            object->SetVolume(result->getUInt("volume"));
-            object->SetTemplate(result->getString("iff_template"));
+            object->SetCustomName(wstring(begin(custom_string), end(custom_string)), lock);
+            object->SetVolume(result->getUInt("volume"), lock);
+            object->SetTemplate(result->getString("iff_template"), lock);
             object->SetArrangementId(result->getInt("arrangement_id"));
-            object->SetAttributeTemplateId(result->getInt("attribute_template_id"));
+            object->SetAttributeTemplateId(result->getInt("attribute_template_id"), lock);
         
             auto permissions_objects_ = object_manager_->GetPermissionsMap();
             auto permissions_itr = permissions_objects_.find(result->getInt("permission_type"));
@@ -110,8 +109,8 @@ void ObjectFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
         }
     } while(statement->getMoreResults());
 
-	LoadAttributes(connection, object);
-	GetClientData(object);
+	LoadAttributes(connection, object, lock);
+	GetClientData(object, lock);
 }
 
 void ObjectFactory::RegisterEventHandlers()
@@ -137,8 +136,11 @@ void ObjectFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		if(object->IsDatabasePersisted())
-			PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
@@ -152,40 +154,45 @@ void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& inc
 	}
 }
 
-uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
     try {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto prepared_statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-        prepared_statement->setUInt64(counter++, object->GetObjectId());
-		if (object->GetContainer() != nullptr)
+        prepared_statement->setUInt64(counter++, object->GetObjectId(lock));
+		auto container = object->GetContainer(lock);
+		if (container != nullptr)
 		{
-			prepared_statement->setUInt(counter++, object->GetSceneId());
-			prepared_statement->setUInt64(counter++, object->GetContainer()->GetObjectId());
+			prepared_statement->setUInt(counter++, object->GetSceneId(lock));
+
+			//We need to make sure we only have one object locked a time.
+			lock.unlock();
+			prepared_statement->setUInt64(counter++, container->GetObjectId());
+			lock.lock();
 		}
         else
 		{
-			prepared_statement->setUInt(counter++, object->GetSceneId());
+			prepared_statement->setUInt(counter++, object->GetSceneId(lock));
             prepared_statement->setUInt64(counter++, 0);
 		}
-        prepared_statement->setString(counter++, object->GetTemplate());
-        auto position = object->GetPosition();
+        prepared_statement->setString(counter++, object->GetTemplate(lock));
+        auto position = object->GetPosition(lock);
         prepared_statement->setDouble(counter++, position.x);
         prepared_statement->setDouble(counter++, position.y);
         prepared_statement->setDouble(counter++, position.z);
-        auto orientation = object->GetOrientation();
+        auto orientation = object->GetOrientation(lock);
         prepared_statement->setDouble(counter++, orientation.x);
         prepared_statement->setDouble(counter++, orientation.y);
         prepared_statement->setDouble(counter++, orientation.z);
         prepared_statement->setDouble(counter++, orientation.w);
-        prepared_statement->setDouble(counter++, object->GetComplexity());
-        prepared_statement->setString(counter++, object->GetStfNameFile());
-        prepared_statement->setString(counter++, object->GetStfNameString());
-        auto custom_name = object->GetCustomName();
+        prepared_statement->setDouble(counter++, object->GetComplexity(lock));
+        prepared_statement->setString(counter++, object->GetStfNameFile(lock));
+        prepared_statement->setString(counter++, object->GetStfNameString(lock));
+        auto custom_name = object->GetCustomName(lock);
         prepared_statement->setString(counter++, string(begin(custom_name), end(custom_name)));
-        prepared_statement->setUInt(counter++, object->GetVolume());
+        prepared_statement->setUInt(counter++, object->GetVolume(lock));
 		prepared_statement->setInt(counter++, object->GetArrangementId());
 		prepared_statement->setInt(counter++, object->GetPermissions()->GetType());
 		prepared_statement->setInt(counter++, object->GetType());
@@ -193,7 +200,7 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, bool per
         prepared_statement->executeUpdate();
 
 		// Now Persist the objects
-		PersistAttributes(object);
+		PersistAttributes(object, lock);
 	}
     catch(sql::SQLException &e)
     {
@@ -203,11 +210,12 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, bool per
 	return counter;
 }
 
-void ObjectFactory::LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void ObjectFactory::LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object,
+								   boost::unique_lock<boost::mutex>& lock)
 {
     auto statement = connection->prepareStatement("CALL sp_GetAttributes(?);");
 
-    statement->setUInt64(1, object->GetObjectId());
+    statement->setUInt64(1, object->GetObjectId(lock));
 
     auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());         
     do
@@ -219,32 +227,32 @@ void ObjectFactory::LoadAttributes(const std::shared_ptr<sql::Connection>& conne
 
             if(auto& int_value = IsInteger(unparsed_value))
             {
-                object->SetAttribute(attr_name, *int_value);
+                object->SetAttribute(attr_name, *int_value, lock);
             }
             else if(auto& float_value = IsFloat(unparsed_value))
             {
-                object->SetAttribute(attr_name, *float_value);
+                object->SetAttribute(attr_name, *float_value, lock);
             }
             else
             {
-                object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
+                object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()), lock);
             }
         }
     } while(statement->getMoreResults());
 }
 
-void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
+void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object, boost::unique_lock<boost::mutex>& lock)
 {
 	try 
 	{
 		auto conn = GetDatabaseManager()->getConnection("galaxy");
-		for (auto& attribute : object->GetAttributeMap())
+		for (auto& attribute : object->GetAttributeMap(lock))
 		{
 			auto statement = conn->prepareStatement("CALL sp_PersistAttribute(?,?,?);");
-			statement->setUInt64(1, object->GetObjectId());
+			statement->setUInt64(1, object->GetObjectId(lock));
 			std::string name = attribute.first.ident_string();
 			statement->setString(2, name);
-			std::wstring attr = object->GetAttributeAsString(name);
+			std::wstring attr = object->GetAttributeAsString(name, lock);
 			statement->setString(3, std::string(attr.begin(), attr.end()));
                         
 			statement->executeUpdate();    
@@ -345,15 +353,15 @@ void ObjectFactory::DeleteObjectFromStorage(const std::shared_ptr<Object>& objec
     }
 }
 
-void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
+void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object,boost::unique_lock<boost::mutex>& lock)
 {
 	try {
 
-		auto oiff = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(object->GetTemplate());
+		auto oiff = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(object->GetTemplate(lock));
 		auto object_name = oiff->attribute<shared_ptr<ObjectVisitor::ClientString>>("objectName");
-		if (object->GetStfNameFile().length() == 0)
+		if (object->GetStfNameFile(lock).length() == 0)
 		{
-			object->SetStfName(object_name->file, object_name->entry);
+			object->SetStfName(object_name->file, object_name->entry, lock);
 		}
 
 	} catch (std::exception& /*ex*/) {

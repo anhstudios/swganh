@@ -791,31 +791,34 @@ void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface
 	//DLOG(info) << "SEND [" << GetObjectId() << "] (" << GetTemplate() <<") TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
-    scene_object.object_id = GetObjectId();
-    scene_object.object_crc = swganh::memcrc(GetTemplate());
-    scene_object.position = GetPosition();
-	scene_object.orientation = GetOrientation();
+    scene_object.object_id = GetObjectId(lock);
+    scene_object.object_crc = swganh::memcrc(GetTemplate(lock));
+    scene_object.position = GetPosition(lock);
+	scene_object.orientation = GetOrientation(lock);
     scene_object.byte_flag = 0;
+
     observer->Notify(&scene_object);
 
-	SendUpdateContainmentMessage(observer);
+	SendUpdateContainmentMessage(observer, lock, true);
 }
 
-void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent)
+void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent) { SendUpdateContainmentMessage(observer, AcquireLock(), send_on_no_parent); }
+void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock, bool send_on_no_parent)
 {
 	if(observer == nullptr)
 		return;
 
 	uint64_t container_id = 0;
-	if (auto container = GetContainer())
+	if (auto container = GetContainer(lock))
 	{
+		lock.unlock();
 		container_id = container->GetObjectId();
+		lock.lock();
 	}
 
 	if(send_on_no_parent || container_id != 0)
 	{
 		//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
-		auto lock = AcquireLock();
 		UpdateContainmentMessage containment_message;
 		containment_message.container_id = container_id;
 		containment_message.object_id = GetObjectId(lock);
@@ -831,6 +834,7 @@ void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> ob
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId(lock);
+
 	observer->Notify(&scene_object);
 }
 
@@ -992,10 +996,11 @@ AttributeVariant Object::GetAttribute(const std::string& name, boost::unique_loc
 	return boost::blank();
 }
 
-std::wstring Object::GetAttributeAsString(const std::string& name)
+std::wstring Object::GetAttributeAsString(const std::string& name) { return GetAttributeAsString(name, AcquireLock()); }
+std::wstring Object::GetAttributeAsString(const std::string& name, boost::unique_lock<boost::mutex>& lock)
 {
 	try {
-		auto val = GetAttribute(name);		
+		auto val = GetAttribute(name, lock);		
 		wstringstream attribute;
 		switch (val.which())
 		{
@@ -1073,7 +1078,10 @@ void Object::BuildCollisionBox() { BuildCollisionBox(AcquireLock()); }
 void Object::BuildCollisionBox(boost::unique_lock<boost::mutex>& lock)
 {
 	__BuildCollisionBox();
+
+	lock.unlock();
 	__InternalUpdateWorldCollisionBox();
+	lock.lock();
 }
 
 void Object::UpdateAABB() { UpdateAABB(AcquireLock()); }

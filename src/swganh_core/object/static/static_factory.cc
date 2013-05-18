@@ -17,7 +17,7 @@ void StaticFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
     ObjectFactory::LoadFromStorage(connection, object, lock);
 }
 
-uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 

@@ -9,6 +9,8 @@
 
 #include <cppconn/connection.h>
 
+#include <boost/thread.hpp>
+
 namespace swganh {
 namespace object {
 
@@ -25,7 +27,7 @@ namespace object {
          *
          * @param object the object instance to persist.
          */
-        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false) = 0;
+        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false) = 0;
 
         /**
          * Deletes the requested object from storage.

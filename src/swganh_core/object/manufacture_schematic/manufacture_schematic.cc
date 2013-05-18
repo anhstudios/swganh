@@ -364,34 +364,31 @@ uint16_t ManufactureSchematic::AddExperiment(std::string experiment_stf_file,  s
     float value, float offset, float size, float max_value, boost::unique_lock<boost::mutex>& lock)
 {
 	int32_t index = 0;
+	auto find_iter = find_if(
+		experiments_.begin(),
+		experiments_.end(),
+		[&experiment_stf_name] (const Experiment& experiment)
 	{
-		auto lock = AcquireLock();
-		auto find_iter = find_if(
-			experiments_.begin(),
-			experiments_.end(),
-			[&experiment_stf_name] (const Experiment& experiment)
-		{
-			return experiment.experiment_stf_name.compare(experiment_stf_name) == 0;
-		});
+		return experiment.experiment_stf_name.compare(experiment_stf_name) == 0;
+	});
 
-		if (find_iter != experiments_.end())
-		{
-			// Already in the list.
-			return 0;
-		}
-
-		Experiment experiment;    
-		experiment.index = experiments_.Size()+ 1;
-		index = experiment.index;
-		experiment.experiment_stf_file = move(experiment_stf_file);
-		experiment.experiment_stf_name = move(experiment_stf_name);
-		experiment.value = value;
-		experiment.offset = offset;
-		experiment.size = size;
-		experiment.max_value = max_value;
-
-		experiments_.Add(experiment);
+	if (find_iter != experiments_.end())
+	{
+		// Already in the list.
+		return 0;
 	}
+
+	Experiment experiment;    
+	experiment.index = experiments_.Size()+ 1;
+	index = experiment.index;
+	experiment.experiment_stf_file = move(experiment_stf_file);
+	experiment.experiment_stf_name = move(experiment_stf_name);
+	experiment.value = value;
+	experiment.offset = offset;
+	experiment.size = size;
+	experiment.max_value = max_value;
+
+	experiments_.Add(experiment);
 	DISPATCH(ManufactureSchematic, Experiment);
 
     return index;
@@ -403,29 +400,26 @@ void ManufactureSchematic::UpdateExperiment( uint16_t index, std::string experim
 void ManufactureSchematic::UpdateExperiment( uint16_t index, std::string experiment_stf_file,  std::string experiment_stf_name,
     float value, float offset, float size, float max_value, boost::unique_lock<boost::mutex>& lock)
 {
+	auto find_iter = find_if(
+		experiments_.begin(),
+		experiments_.end(),
+		[index] (const Experiment& experiment)
 	{
-		auto lock = AcquireLock();
-		auto find_iter = find_if(
-			experiments_.begin(),
-			experiments_.end(),
-			[index] (const Experiment& experiment)
-		{
-			return index == experiment.index;
-		});
+		return index == experiment.index;
+	});
 
-		if (find_iter == experiments_.end())
-		{
-			// Not in the list.
-			return;
-		}
-
-		find_iter->experiment_stf_file = move(experiment_stf_file);
-		find_iter->experiment_stf_name = move(experiment_stf_name);
-		find_iter->value = value;
-		find_iter->offset = offset;
-		find_iter->size = size;
-		find_iter->max_value = max_value;
+	if (find_iter == experiments_.end())
+	{
+		// Not in the list.
+		return;
 	}
+
+	find_iter->experiment_stf_file = move(experiment_stf_file);
+	find_iter->experiment_stf_name = move(experiment_stf_name);
+	find_iter->value = value;
+	find_iter->offset = offset;
+	find_iter->size = size;
+	find_iter->max_value = max_value;
 	DISPATCH(ManufactureSchematic, Experiment);
 }
 
@@ -546,15 +540,12 @@ void ManufactureSchematic::UpdateCustomization( uint16_t index, std::string name
 void ManufactureSchematic::ResetCustomizations(std::vector<Customization> customizations) { ResetCustomizations(customizations, AcquireLock()); }
 void ManufactureSchematic::ResetCustomizations(std::vector<Customization> customizations, boost::unique_lock<boost::mutex>& lock)
 {
+	customizations_.Clear();
+	for (auto& c : customizations)
 	{
-		auto lock = AcquireLock();
-		customizations_.Clear();
-		for (auto& c : customizations)
-		{
-			customizations_.Add(c);
-		}
-		customizations_.Reinstall();
+		customizations_.Add(c);
 	}
+	customizations_.Reinstall();
 	DISPATCH(ManufactureSchematic, Customization);
 }
 

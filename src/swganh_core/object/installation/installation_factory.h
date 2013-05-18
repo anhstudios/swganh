@@ -18,7 +18,7 @@ namespace object {
         
         virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, bool persist_inherited = false);
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 		virtual void PersistChangedObjects();
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 

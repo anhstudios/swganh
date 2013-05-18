@@ -46,15 +46,15 @@ void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     auto statement = std::shared_ptr<sql::PreparedStatement>
         (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
     
-    statement->setUInt64(1, waypoint->GetObjectId());
+    statement->setUInt64(1, waypoint->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
     do
     {
         while (result->next())
         {
-            result->getUInt("active") == 0 ? waypoint->DeActivate() : waypoint->Activate();
-            waypoint->SetColor(result->getString("color"));
+            result->getUInt("active") == 0 ? waypoint->DeActivate(lock) : waypoint->Activate(lock);
+            waypoint->SetColor(result->getString("color"), lock);
         }
     } while(statement->getMoreResults());
 }
@@ -73,8 +73,11 @@ void WaypointFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		if(object->IsDatabasePersisted())
-			PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
@@ -100,11 +103,11 @@ void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shar
     }
 }
 
-uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 	
-    IntangibleFactory::PersistObject(object, persist_inherited);
+    IntangibleFactory::PersistObject(object, lock, persist_inherited);
 
     if (object)
     {
@@ -113,23 +116,23 @@ uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, bool p
             auto waypoint = static_pointer_cast<Waypoint>(object);
             auto conn = GetDatabaseManager()->getConnection("galaxy");
             auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?,?,?,?,?);");
-            statement->setDouble(counter++,waypoint->GetComplexity());
-            statement->setString(counter++, waypoint->GetStfNameFile());
-            statement->setString(counter++, waypoint->GetStfNameString());
+            statement->setDouble(counter++,waypoint->GetComplexity(lock));
+            statement->setString(counter++, waypoint->GetStfNameFile(lock));
+            statement->setString(counter++, waypoint->GetStfNameString(lock));
 
-            auto custom_name = waypoint->GetCustomName();
+            auto custom_name = waypoint->GetCustomName(lock);
             statement->setString(counter++, string(begin(custom_name), end(custom_name)));
 
-            statement->setUInt(counter++, waypoint->GetVolume());
+            statement->setUInt(counter++, waypoint->GetVolume(lock));
 
-            auto coords = waypoint->GetCoordinates();
+            auto coords = waypoint->GetCoordinates(lock);
             statement->setDouble(counter++, coords.x);
             statement->setDouble(counter++, coords.y);
             statement->setDouble(counter++, coords.z);
-            statement->setUInt(counter++, waypoint->GetActiveFlag());
-            statement->setString(counter++, waypoint->GetPlanet());
-            statement->setString(counter++, waypoint->GetNameStandard());
-            statement->setString(counter++, waypoint->GetColor());
+            statement->setUInt(counter++, waypoint->GetActiveFlag(lock));
+            statement->setString(counter++, waypoint->GetPlanet(lock));
+            statement->setString(counter++, waypoint->GetNameStandard(lock));
+            statement->setString(counter++, waypoint->GetColor(lock));
             statement->execute();
 						
         }
