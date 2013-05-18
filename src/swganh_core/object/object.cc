@@ -291,8 +291,6 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_p
 
 	//Time to update the position to the new coordinates/update AABB
 	object->SetPosition(new_position);
-	object->__InternalUpdateWorldCollisionBox();
-	object->UpdateAABB();
 
 	//Because we may have calculated it internally, send the arrangement_id used back
 	//To the caller so it can send the appropriate update.
@@ -572,7 +570,8 @@ void Object::AddDeltasUpdate(DeltasMessage* message)
 void Object::SetPosition(glm::vec3 position) { SetPosition(position, AcquireLock()); }
 void Object::SetPosition(glm::vec3 position, boost::unique_lock<boost::mutex>& lock)
 {
-    position_ = position;
+	position_ = position;
+    BuildSpatialProfile(lock);
 	DISPATCH(Object, Position);
 }
 
@@ -1099,17 +1098,19 @@ const std::set<std::shared_ptr<Object>>& Object::GetCollidedObjects(boost::uniqu
 void Object::AddCollidedObject(std::shared_ptr<Object> obj) { AddCollidedObject(obj, AcquireLock()); } 
 void Object::AddCollidedObject(std::shared_ptr<Object> obj, boost::unique_lock<boost::mutex>& lock)
 {
-	collided_objects_.insert(obj);
+	if(collided_objects_.insert(obj).second)
+    {
+        OnCollisionEnter(obj);
+    }
 }
 
 void Object::RemoveCollidedObject(std::shared_ptr<Object> obj) { RemoveCollidedObject(obj, AcquireLock()); }
 void Object::RemoveCollidedObject(std::shared_ptr<Object> obj, boost::unique_lock<boost::mutex>& lock)
 {
-	auto i = collided_objects_.find(obj);
-	if(i != collided_objects_.end())
-	{
-		collided_objects_.erase(i);
-	}
+	if(collided_objects_.erase(obj) > 0)
+    {
+        OnCollisionLeave(obj);
+    }
 }
 
 const CollisionBox& Object::GetLocalCollisionBox(void) const { return GetLocalCollisionBox(AcquireLock()); }

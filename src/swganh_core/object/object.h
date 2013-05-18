@@ -617,15 +617,6 @@ public:
 
 	void BuildSpatialProfile();
 	void BuildSpatialProfile(boost::unique_lock<boost::mutex>& lock);
-	
-	void BuildCollisionBox();
-	void BuildCollisionBox(boost::unique_lock<boost::mutex>& lock);
-	
-	void UpdateAABB();
-	void UpdateAABB(boost::unique_lock<boost::mutex>& lock);
-	
-	void UpdateWorldCollisionBox();
-	void __InternalUpdateWorldCollisionBox();
 
 	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const;
 	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(boost::unique_lock<boost::mutex>& lock) const;
@@ -666,6 +657,15 @@ private:
     
     typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
+    
+	void BuildCollisionBox();
+	void BuildCollisionBox(boost::unique_lock<boost::mutex>& lock);
+	
+	void UpdateAABB();
+	void UpdateAABB(boost::unique_lock<boost::mutex>& lock);
+	
+	void UpdateWorldCollisionBox();
+	void __InternalUpdateWorldCollisionBox();
 
 	mutable boost::mutex object_mutex_;
 

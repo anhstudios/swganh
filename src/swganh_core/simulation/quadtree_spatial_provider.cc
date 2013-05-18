@@ -25,9 +25,7 @@ QuadtreeSpatialProvider::QuadtreeSpatialProvider()
 }
 
 QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
-{
-	__this.reset();
-}
+{}
 
 void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> requester, shared_ptr<Object> object, int32_t arrangement_id)
 {
@@ -35,7 +33,7 @@ void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> 
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 		root_node_.InsertObject(object);
-		object->SetContainer(__this);
+		object->SetContainer(shared_from_this());
 		object->SetArrangementId(arrangement_id);
 		object->SetSceneId(scene_id_);
 	}
@@ -238,10 +236,8 @@ void QuadtreeSpatialProvider::__InternalViewAwareObjects(std::function<void(std:
 int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, glm::vec3 new_position, int32_t arrangement_id)
 {
 	//Update position now to make sure the object ends up where it needs to be.
-	object->SetContainer(__this);
+	object->SetContainer(shared_from_this());
 	object->SetPosition(new_position);
-	object->__InternalUpdateWorldCollisionBox();
-	object->UpdateAABB();
 	root_node_.InsertObject(object);
 	object->SetSceneId(scene_id_);
 	return -1;
@@ -255,11 +251,7 @@ void QuadtreeSpatialProvider::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& 
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
-	glm::vec3 position;
-	glm::quat orientation;
-	object->__InternalGetAbsolutes(position, orientation);
-	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), 
-					quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
+	return GetQueryBoxViewRange(object->GetAABB());	
 }
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(const swganh::object::AABB& box)
@@ -292,10 +284,10 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 {
 	std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> obj_map;
 
-	if(requester->GetContainer() != __this)
+	if(requester->GetContainer() != shared_from_this())
 	{
 		auto root_obj = requester->GetContainer();
-		while(root_obj->GetContainer() != __this && root_obj->GetContainer() != nullptr)
+		while(root_obj->GetContainer() != shared_from_this() && root_obj->GetContainer() != nullptr)
 			root_obj = root_obj->GetContainer();
 
 		root_obj->ViewObjects(requester, 0, true, [=, &obj_map](std::shared_ptr<swganh::object::Object> object) {
@@ -349,71 +341,47 @@ std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> QuadtreeSpat
 
 void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)
 {
-	if(object->IsCollidable() == false)
-		return;
+    // Prep work
+    auto new_objects = root_node_.Query(object->GetAABB());
+    auto old_objects = object->GetCollidedObjects();
+    
+    auto new_itr = new_objects.begin();
+    auto new_end = new_objects.end();
+    bool new_done = new_itr == new_end;
+    
+    auto old_itr = old_objects.begin();
+    auto old_end = old_objects.end();
+    bool old_done = old_itr == old_end;
+    
+    while(!new_done || !old_done)
+    {
+        if(old_done || *new_itr < *old_itr)
+        {
+            //It's a new object!
+            object->AddCollidedObject(*new_itr);
+            (*new_itr)->AddCollidedObject(object);
 
-	auto objects = root_node_.Query(object->GetAABB());
-	auto collided_objects = object->GetCollidedObjects();
-	std::for_each(collided_objects.begin(), collided_objects.end(), [=, &objects](std::shared_ptr<swganh::object::Object> other) {
-		auto iter = std::find(objects.begin(), objects.end(), other);
-		
-		if(iter == objects.end())
-		{
-			//std::cout << "Object::OnCollisionLeave " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-			object->RemoveCollidedObject(other);
-			other->RemoveCollidedObject(object);
+            ++new_itr;
+        }
+        else if(new_done || *old_itr < *new_itr)
+        {
+            //It's an old object!
+            object->RemoveCollidedObject(*old_itr);
+            (*old_itr)->RemoveCollidedObject(object);
 
-			object->OnCollisionLeave(other);
-			other->OnCollisionLeave(object);
-			
-			objects.erase(iter);
-		}
-		else
-		{
-			// Make sure we still are intersecting.
-			if(boost::geometry::intersects(object->GetWorldCollisionBox(), other->GetWorldCollisionBox()) == false) {
-				//std::cout << "Object::OnCollisionLeave " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-				
-				object->RemoveCollidedObject(other);
-				other->RemoveCollidedObject(object);
-				
-				object->OnCollisionLeave(other);
-				other->OnCollisionLeave(object);
-				
-				objects.erase(iter);
-				return;
-			}
-			//std::cout << "Object::OnCollisionStay " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-			object->OnCollisionStay(other);
-			other->OnCollisionStay(object);
-		}
-	});
+            ++old_itr;
+        }
+        else
+        {
+            //Otherwise both are equal
+            object->OnCollisionStay(*new_itr);
+            (*new_itr)->OnCollisionStay(object);
 
-	std::for_each(objects.begin(), objects.end(), [=](const std::shared_ptr<swganh::object::Object> other) {
-		if(other->GetObjectId() == object->GetObjectId() || other->IsCollidable() == false)
-			return;
+            ++new_itr;
+            ++old_itr;
+        }
 
-		if(boost::geometry::intersects(object->GetWorldCollisionBox(), other->GetWorldCollisionBox()))
-		{
-			bool found = false;
-			auto collided_objects = object->GetCollidedObjects();
-			std::for_each(collided_objects.begin(), collided_objects.end(), [=, &found](std::shared_ptr<Object> collided_object){
-				if(collided_object->GetObjectId() == other->GetObjectId())
-				{
-					found = true;
-				}
-			});
-
-			if(!found)
-			{
-				//std::cout << "Object::OnCollisionEnter " << object->GetObjectId() << " (" << object->GetTemplate() << ") <-> " << other->GetObjectId() << " (" << other->GetTemplate() << ")" << std::endl;
-				
-				object->AddCollidedObject(other);
-				other->AddCollidedObject(object);
-
-				object->OnCollisionEnter(other);
-				other->OnCollisionEnter(object);
-			}
-		}
-	});
+        new_done = new_itr == new_end;
+        old_done = old_itr == old_end;
+    }
 }
