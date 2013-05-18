@@ -25,15 +25,14 @@ public:
     *   @returns cell number
     */
     uint32_t GetCell();
+	uint32_t GetCell(boost::unique_lock<boost::mutex>& lock);
 
     /**
     * @brief sets the current cell number
     *   @param cell number
     */
     void SetCell(uint32_t cell_number);
-
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Cell> other);
+	void SetCell(uint32_t cell_number, boost::unique_lock<boost::mutex>& lock);
 
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Cell>> CellEvent;

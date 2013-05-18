@@ -8,12 +8,12 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object;
 
-void ShipFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void ShipFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    ObjectFactory::LoadFromStorage(connection, object);
+    ObjectFactory::LoadFromStorage(connection, object, lock);
 }
 
-uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 

@@ -28,9 +28,9 @@ TangibleFactory::TangibleFactory(swganh::app::SwganhKernel* kernel)
 {	
 }
 
-void TangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void TangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    ObjectFactory::LoadFromStorage(connection, object);
+    ObjectFactory::LoadFromStorage(connection, object, lock);
 
     auto tangible = std::dynamic_pointer_cast<Tangible>(object);
     if(!tangible)
@@ -41,19 +41,19 @@ void TangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     auto statement = std::shared_ptr<sql::PreparedStatement>
         (connection->prepareStatement("CALL sp_GetTangible(?);"));
     
-    statement->setUInt64(1, tangible->GetObjectId());
+    statement->setUInt64(1, tangible->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
     do
     {
         while (result->next())
         {        
-            tangible->SetCustomization(result->getString("customization"));
-            tangible->SetOptionsMask(result->getUInt("options_bitmask"));
-            tangible->SetCounter(result->getUInt("incap_timer"));
-            tangible->SetConditionDamage(result->getUInt("condition_damage"));
-            tangible->SetMaxCondition(result->getUInt("max_condition"));
-            tangible->SetStatic(result->getBoolean("is_static"));
+            tangible->SetCustomization(result->getString("customization"), lock);
+            tangible->SetOptionsMask(result->getUInt("options_bitmask"), lock);
+            tangible->SetCounter(result->getUInt("incap_timer"), lock);
+            tangible->SetConditionDamage(result->getUInt("condition_damage"), lock);
+            tangible->SetMaxCondition(result->getUInt("max_condition"), lock);
+            tangible->SetStatic(result->getBoolean("is_static"), lock);
         }
     } while(statement->getMoreResults());
 }
@@ -81,16 +81,19 @@ void TangibleFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		if(object->IsDatabasePersisted())
-			PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
-uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 
-	ObjectFactory::PersistObject(object, persist_inherited);
+	ObjectFactory::PersistObject(object, lock, persist_inherited);
 
     try 
     {
@@ -99,13 +102,13 @@ uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, bool p
             (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?);"));
         // cast to tangible
         auto tangible = static_pointer_cast<Tangible>(object);
-		statement->setUInt64(counter++, tangible->GetObjectId());
-        statement->setString(counter++, tangible->GetCustomization());
-        statement->setInt(counter++, tangible->GetOptionsMask());
-        statement->setInt(counter++, tangible->GetCounter());
-        statement->setInt(counter++, tangible->GetCondition());
-        statement->setInt(counter++, tangible->GetMaxCondition());
-        statement->setBoolean(counter++, tangible->IsStatic());
+		statement->setUInt64(counter++, tangible->GetObjectId(lock));
+        statement->setString(counter++, tangible->GetCustomization(lock));
+        statement->setInt(counter++, tangible->GetOptionsMask(lock));
+        statement->setInt(counter++, tangible->GetCounter(lock));
+        statement->setInt(counter++, tangible->GetCondition(lock));
+        statement->setInt(counter++, tangible->GetMaxCondition(lock));
+        statement->setBoolean(counter++, tangible->IsStatic(lock));
         statement->executeUpdate();		
     }
     catch(sql::SQLException &e)

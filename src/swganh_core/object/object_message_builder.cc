@@ -108,29 +108,29 @@ void ObjectMessageBuilder::BuildServerIDDelta(const shared_ptr<Object>& object)
     }
 }
 
-boost::optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(const shared_ptr<Object>& object)
+boost::optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(object, Object::VIEW_3);
-    message.data.write(object->GetComplexity());
-    message.data.write(object->GetStfNameFile());
+    auto message = CreateBaselinesMessage(object, lock, Object::VIEW_3);
+    message.data.write(object->GetComplexity(lock));
+    message.data.write(object->GetStfNameFile(lock));
     message.data.write<uint32_t>(0); // spacer
-    message.data.write(object->GetStfNameString());
-    message.data.write(object->GetCustomName());
-    message.data.write(object->GetVolume());
+    message.data.write(object->GetStfNameString(lock));
+    message.data.write(object->GetCustomName(lock));
+    message.data.write(object->GetVolume(lock));
     return BaselinesMessage(move(message));
 }
 
-boost::optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline6(const shared_ptr<Object>& object)
+boost::optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline6(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(object, Object::VIEW_6);
-	message.data.write(object->GetSceneId());
+    auto message = CreateBaselinesMessage(object, lock, Object::VIEW_6);
+	message.data.write(object->GetSceneId(lock));
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage ObjectMessageBuilder::CreateBaselinesMessage(const shared_ptr<Object>& object, uint8_t view_type, uint16_t opcount)
+BaselinesMessage ObjectMessageBuilder::CreateBaselinesMessage(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, uint8_t view_type, uint16_t opcount)
 {
     BaselinesMessage message;
-    message.object_id = object->GetObjectId();
+    message.object_id = object->GetObjectId(lock);
     message.object_type = object->GetType();
     message.view_type = view_type;
     message.object_opcount = opcount;
@@ -138,7 +138,7 @@ BaselinesMessage ObjectMessageBuilder::CreateBaselinesMessage(const shared_ptr<O
     return message;
 }
 
-DeltasMessage ObjectMessageBuilder::CreateDeltasMessage(const shared_ptr<Object>& object, uint8_t view_type, uint16_t update_type, uint16_t update_count)
+DeltasMessage ObjectMessageBuilder::CreateDeltasMessage(const shared_ptr<Object>& object,  uint8_t view_type, uint16_t update_type, uint16_t update_count)
 {
     DeltasMessage message;
     message.object_id = object->GetObjectId();

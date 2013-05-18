@@ -20,17 +20,16 @@ void BuildingMessageBuilder::RegisterEventHandlers()
 }
 
 // baselines
-boost::optional<BaselinesMessage> BuildingMessageBuilder::BuildBaseline3(const shared_ptr<Building>& building)
+boost::optional<BaselinesMessage> BuildingMessageBuilder::BuildBaseline3(const shared_ptr<Building>& building, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(building, Object::VIEW_3, 11);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline3(building)).data);
+    auto message = CreateBaselinesMessage(building, lock, Object::VIEW_3, 11);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(building, lock)).data);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> BuildingMessageBuilder::BuildBaseline6(const shared_ptr<Building>& building)
+boost::optional<BaselinesMessage> BuildingMessageBuilder::BuildBaseline6(const shared_ptr<Building>& building, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(building, Object::VIEW_6, 2);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline6(building)).data);
- 
+    auto message = CreateBaselinesMessage(building, lock, Object::VIEW_6, 2);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(building, lock)).data);
     return BaselinesMessage(std::move(message));
 }

@@ -30,6 +30,7 @@ ObjectController::ObjectController(
     shared_ptr<ConnectionClientInterface> client)
     : object_(object)
     , client_(client)
+	, object_id_(object->GetObjectId())
 {
 }
 
@@ -40,12 +41,7 @@ ObjectController::~ObjectController()
 
 uint64_t ObjectController::GetId() const
 {
-    if (!object_)
-    {
-        return 0;
-    }
-
-    return object_->GetObjectId();
+    return object_id_;
 }
 
 shared_ptr<Object> ObjectController::GetObject() const

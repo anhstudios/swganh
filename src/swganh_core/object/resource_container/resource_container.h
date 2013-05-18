@@ -27,23 +27,34 @@ public:
     const static uint32_t type = 0x52434e4f;
 
     uint32_t GetCurrentQuantity();
+	uint32_t GetCurrentQuantity(boost::unique_lock<boost::mutex>& lock);
+
     void SetCurrentQuantity(uint32_t quantity);
+	void SetCurrentQuantity(uint32_t quantity, boost::unique_lock<boost::mutex>& lock);
 
     uint64_t GetGlobalResource();
+	uint64_t GetGlobalResource(boost::unique_lock<boost::mutex>& lock);
+
     void SetGlobalResource(uint64_t global_resource);
+	void SetGlobalResource(uint64_t global_resource, boost::unique_lock<boost::mutex>& lock);
 
     uint32_t GetMaxQuantity();
+	uint32_t GetMaxQuantity(boost::unique_lock<boost::mutex>& lock);
+
     void SetMaxQuantity(uint32_t max_quantity);
+	void SetMaxQuantity(uint32_t max_quantity, boost::unique_lock<boost::mutex>& lock);
 
     std::string GetResourceType();
+	std::string GetResourceType(boost::unique_lock<boost::mutex>& lock);
+
     void SetResourceType(const std::string& resource_type);
+	void SetResourceType(const std::string& resource_type, boost::unique_lock<boost::mutex>& lock);
 
     std::wstring GetResourceName();
-    void SetResourceName(const std::wstring& name);
+	std::wstring GetResourceName(boost::unique_lock<boost::mutex>& lock);
 
-	
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<ResourceContainer> other);
+    void SetResourceName(const std::wstring& name);
+	void SetResourceName(const std::wstring& name, boost::unique_lock<boost::mutex>& lock);
 
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;

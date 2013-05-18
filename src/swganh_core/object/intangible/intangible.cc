@@ -14,42 +14,23 @@ Intangible::Intangible()
 {
 }
 
-uint32_t Intangible::GetGenericInt()
+uint32_t Intangible::GetGenericInt() { return GetGenericInt(AcquireLock()); }
+uint32_t Intangible::GetGenericInt(boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return generic_int_;
 }
 
-void Intangible::SetGenericInt(uint32_t generic_int)
+void Intangible::SetGenericInt(uint32_t generic_int) { SetGenericInt(generic_int, AcquireLock()); }
+void Intangible::SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::mutex>& lock)
 {
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		generic_int_ = generic_int;
-	}
-
-}
-
-std::shared_ptr<Object> Intangible::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Intangible>();
-	Clone(other);
-	return other;
-}
-
-void Intangible::Clone(std::shared_ptr<Intangible> other)
-{
-	other->generic_int_.store(generic_int_);
-
-	//Call the method in the super class
-	Object::Clone(other);
+	generic_int_ = generic_int;
 }
 
 void Intangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	if (event_dispatcher_)
+	if (auto dispatch = GetEventDispatcher())
 	{
-		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+		dispatch->Dispatch(make_shared<ObserverEvent>
 			("Intangible::Baselines", shared_from_this(), observer));
 	}
 }

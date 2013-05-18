@@ -41,9 +41,7 @@ public:
     const static uint32_t type = 0x6AAC0CFE;    
 private:
 	WeaponType weapon_type_;
-	
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Weapon> other);
+
 };
     
 }}  // namespace swganh::object

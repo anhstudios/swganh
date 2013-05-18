@@ -28,16 +28,17 @@ public:
      */
     virtual uint32_t GetType() const { return Intangible::type; }
     const static uint32_t type = 0x49544e4f;
+	
 	uint32_t GetGenericInt();
+	uint32_t GetGenericInt(boost::unique_lock<boost::mutex>& lock);
+	
 	void SetGenericInt(uint32_t generic_int);
-
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Intangible> other);
+	void SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::mutex>& lock);
 
     void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
     
 protected:
-	std::atomic<uint32_t> generic_int_;
+	uint32_t generic_int_;
 };
     
 }}  // namespace swganh::object

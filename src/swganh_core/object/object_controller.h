@@ -95,6 +95,7 @@ namespace object {
         ObjectController();
 
         std::shared_ptr<Object> object_;
+		uint64_t object_id_;
         std::shared_ptr<swganh::connection::ConnectionClientInterface> client_;
     };
 

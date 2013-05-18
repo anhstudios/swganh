@@ -12,12 +12,12 @@ ResourceContainerFactory::ResourceContainerFactory(swganh::app::SwganhKernel* ke
 	: TangibleFactory(kernel)
 {}
 
-void ResourceContainerFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void ResourceContainerFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    TangibleFactory::LoadFromStorage(connection, object);
+    TangibleFactory::LoadFromStorage(connection, object, lock);
 }
 
-uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 	return counter;

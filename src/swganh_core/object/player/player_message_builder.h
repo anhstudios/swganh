@@ -55,10 +55,10 @@ namespace object {
         static void BuildJediStateDelta(const std::shared_ptr<Player>& object);
 
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Player>& object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Player>& object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline8(const std::shared_ptr<Player>& object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline9(const std::shared_ptr<Player>& object);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline8(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline9(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
     
     private:
         typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;

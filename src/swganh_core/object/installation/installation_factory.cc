@@ -24,9 +24,9 @@ InstallationFactory::InstallationFactory(swganh::app::SwganhKernel* kernel)
 	: TangibleFactory(kernel)
 {}
 
-void InstallationFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void InstallationFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {    
-    TangibleFactory::LoadFromStorage(connection, object);
+    TangibleFactory::LoadFromStorage(connection, object, lock);
 
     auto installation = std::dynamic_pointer_cast<Installation>(object);
     if(!installation)
@@ -37,7 +37,7 @@ void InstallationFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>
     auto statement = std::shared_ptr<sql::PreparedStatement>
         (connection->prepareStatement("CALL sp_GetInstallation(?);"));
     
-    statement->setUInt64(1, installation->GetObjectId());
+    statement->setUInt64(1, installation->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
     
@@ -45,21 +45,21 @@ void InstallationFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>
     {
         while (result->next())
         {
-            installation->SetSelectedResourceId(result->getUInt64("selected_resource_id"));
+            installation->SetSelectedResourceId(result->getUInt64("selected_resource_id"), lock);
 
             if (result->getInt("is_active") == 1)
-                installation->Activate();
+                installation->Activate(lock);
 
-            installation->SetPowerReserve(static_cast<float>(result->getDouble("power_reserve")));
-            installation->SetPowerCost(static_cast<float>(result->getDouble("power_cost")));
-            installation->SetMaxExtractionRate(static_cast<float>(result->getDouble("max_extraction_rate")));
-            installation->SetCurrentExtractionRate(static_cast<float>(result->getDouble("current_extraction_rate")));
-            installation->SetCurrentHopperSize(static_cast<float>(result->getDouble("current_hopper_size")));
+            installation->SetPowerReserve(static_cast<float>(result->getDouble("power_reserve")), lock);
+            installation->SetPowerCost(static_cast<float>(result->getDouble("power_cost")), lock);
+            installation->SetMaxExtractionRate(static_cast<float>(result->getDouble("max_extraction_rate")), lock);
+            installation->SetCurrentExtractionRate(static_cast<float>(result->getDouble("current_extraction_rate")), lock);
+            installation->SetCurrentHopperSize(static_cast<float>(result->getDouble("current_hopper_size")), lock);
 
             if (result->getInt("is_updating") == 1)
-                installation->StartUpdating();
+                installation->StartUpdating(lock);
             
-            installation->SetConditionPercentage(result->getInt("condition_percentage"));
+            installation->SetConditionPercentage(result->getInt("condition_percentage"), lock);
         }
     } while(statement->getMoreResults());
 }
@@ -90,15 +90,18 @@ void InstallationFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		if(object->IsDatabasePersisted())
-			PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
-uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
 	
-    TangibleFactory::PersistObject(object, persist_inherited);
+    TangibleFactory::PersistObject(object, lock, persist_inherited);
 
 	try 
     {
@@ -107,16 +110,16 @@ uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object, bo
 			(conn->prepareStatement("CALL sp_PersistInstallation(?,?,?,?,?,?,?,?,?,?);"));        
 
 		auto installation = static_pointer_cast<Installation>(object);
-		statement->setUInt64(counter++, installation->GetObjectId());
-		statement->setUInt64(counter++, installation->GetSelectedResourceId());
-		statement->setInt(counter++, installation->IsActive() == true ? 1 : 0);
-		statement->setDouble(counter++, installation->GetPowerReserve());
-		statement->setDouble(counter++, installation->GetPowerCost());
-		statement->setDouble(counter++, installation->GetMaxExtractionRate());
-		statement->setDouble(counter++, installation->GetCurrentExtractionRate());
-		statement->setDouble(counter++, installation->GetCurrentHopperSize());
-		statement->setInt(counter++, installation->IsUpdating() == true ? 1 : 0);
-		statement->setDouble(counter++, installation->GetConditionPercentage());
+		statement->setUInt64(counter++, installation->GetObjectId(lock));
+		statement->setUInt64(counter++, installation->GetSelectedResourceId(lock));
+		statement->setInt(counter++, installation->IsActive(lock) == true ? 1 : 0);
+		statement->setDouble(counter++, installation->GetPowerReserve(lock));
+		statement->setDouble(counter++, installation->GetPowerCost(lock));
+		statement->setDouble(counter++, installation->GetMaxExtractionRate(lock));
+		statement->setDouble(counter++, installation->GetCurrentExtractionRate(lock));
+		statement->setDouble(counter++, installation->GetCurrentHopperSize(lock));
+		statement->setInt(counter++, installation->IsUpdating(lock) == true ? 1 : 0);
+		statement->setDouble(counter++, installation->GetConditionPercentage(lock));
 
 		statement->executeUpdate();
 	}

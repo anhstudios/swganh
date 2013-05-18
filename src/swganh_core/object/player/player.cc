@@ -51,270 +51,241 @@ Player::Player()
 , jedi_state_(0)
 , gender_(MALE)
 {}
-std::array<FlagBitmask, 4> Player::GetStatusFlags() 
+
+std::array<FlagBitmask, 4> Player::GetStatusFlags() { return GetStatusFlags(AcquireLock()); }
+std::array<FlagBitmask, 4> Player::GetStatusFlags(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return status_flags_;
 }
-void Player::AddStatusFlag(StatusFlags flag, StatusIndex index)
+
+void Player::AddStatusFlag(StatusFlags flag, StatusIndex index) { AddStatusFlag(flag, AcquireLock(), index); }
+void Player::AddStatusFlag(StatusFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
-    }
+    status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
 	DISPATCH(Player, StatusBitmask);
 }
 
-void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
+void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index) { RemoveStatusFlag(flag, AcquireLock(), index); }
+void Player::RemoveStatusFlag(StatusFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
-    }
+	status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
     DISPATCH(Player, StatusBitmask);
 }
 
-void Player::ClearStatusFlags()
+void Player::ClearStatusFlags() { ClearStatusFlags(AcquireLock()); }
+void Player::ClearStatusFlags(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-    
-        for_each(
-            begin(status_flags_), 
-            end(status_flags_),
-            [] (vector<FlagBitmask>::value_type& value) 
-            {
-                value = FlagBitmask(0);
-            });
-    }
+    for_each(begin(status_flags_), end(status_flags_), [] (vector<FlagBitmask>::value_type& value) {
+		value = FlagBitmask(0);
+	});
     DISPATCH(Player, StatusBitmask);
 }
 
-std::array<FlagBitmask, 4> Player::GetProfileFlags() 
+std::array<FlagBitmask, 4> Player::GetProfileFlags() { return GetProfileFlags(AcquireLock()); }
+std::array<FlagBitmask, 4> Player::GetProfileFlags(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return profile_flags_;
 }
 
-void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index)
+void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index) { AddProfileFlag(flag, AcquireLock(), index); }
+void Player::AddProfileFlag(ProfileFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
-    }
+	profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
 	DISPATCH(Player, ProfileFlag);
 }
 
-void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
+void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index) { RemoveProfileFlag(flag, AcquireLock(), index); }
+void Player::RemoveProfileFlag(ProfileFlags flag, boost::unique_lock<boost::mutex>& lock, StatusIndex index)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
-    }
+	profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
 	DISPATCH(Player, ProfileFlag);
 }
 
-void Player::ClearProfileFlags()
+void Player::ClearProfileFlags() { ClearProfileFlags(AcquireLock()); }
+void Player::ClearProfileFlags(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        
-        for_each(
-            begin(profile_flags_), 
-            end(profile_flags_),
-            [] (vector<FlagBitmask>::value_type& value) 
-        {
-            value = FlagBitmask(0);
-        });
-    }
+    for_each(begin(profile_flags_), end(profile_flags_), [] (vector<FlagBitmask>::value_type& value)  {
+		value = FlagBitmask(0);
+	});
 	DISPATCH(Player, ProfileFlag);
 }
 
-std::string Player::GetProfessionTag() 
+std::string Player::GetProfessionTag() { return GetProfessionTag(AcquireLock()); }
+std::string Player::GetProfessionTag(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return profession_tag_;
 }
 
-void Player::SetProfessionTag(string profession_tag)
+void Player::SetProfessionTag(string profession_tag) { SetProfessionTag(profession_tag, AcquireLock()); }
+void Player::SetProfessionTag(string profession_tag, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        profession_tag_ = profession_tag;
-    }
+    profession_tag_ = profession_tag;
 	DISPATCH(Player, ProfessionTag);
 }
 
-uint32_t Player::GetBornDate() 
+uint32_t Player::GetBornDate() { return GetBornDate(AcquireLock()); }
+uint32_t Player::GetBornDate(boost::unique_lock<boost::mutex>& lock) 
 {
     return born_date_;
 }
 
-void Player::SetBornDate(uint32_t born_date)
+void Player::SetBornDate(uint32_t born_date) { SetBornDate(born_date, AcquireLock()); }
+void Player::SetBornDate(uint32_t born_date, boost::unique_lock<boost::mutex>& lock)
 {
     born_date_ = born_date;
 	DISPATCH(Player, BornDate);
 }
 
-uint32_t Player::GetTotalPlayTime() 
+uint32_t Player::GetTotalPlayTime() { return GetTotalPlayTime(AcquireLock()); }
+uint32_t Player::GetTotalPlayTime(boost::unique_lock<boost::mutex>& lock) 
 {
     return total_playtime_;
 }
 
-void Player::SetTotalPlayTime(uint32_t play_time)
+void Player::SetTotalPlayTime(uint32_t play_time) { SetTotalPlayTime(play_time, AcquireLock()); }
+void Player::SetTotalPlayTime(uint32_t play_time, boost::unique_lock<boost::mutex>& lock)
 {
     total_playtime_ = play_time;
 	DISPATCH(Player, TotalPlayTime);
 }
 
-void Player::IncrementTotalPlayTime(uint32_t increment)
+void Player::IncrementTotalPlayTime(uint32_t increment) { IncrementTotalPlayTime(increment, AcquireLock()); }
+void Player::IncrementTotalPlayTime(uint32_t increment, boost::unique_lock<boost::mutex>& lock)
 {
     total_playtime_ += increment;
 	DISPATCH(Player, TotalPlayTime);
 }
 
-uint8_t Player::GetAdminTag() 
+uint8_t Player::GetAdminTag() { return GetAdminTag(AcquireLock()); }
+uint8_t Player::GetAdminTag(boost::unique_lock<boost::mutex>& lock) 
 {
     return admin_tag_;
 }
 
-void Player::SetAdminTag(uint8_t tag)
+void Player::SetAdminTag(uint8_t tag) { SetAdminTag(tag, AcquireLock()); }
+void Player::SetAdminTag(uint8_t tag, boost::unique_lock<boost::mutex>& lock)
 {
     admin_tag_ = tag;
 	DISPATCH(Player, AdminTag);
 }
 
-std::map<string, XpData> Player::GetXp() 
+std::map<string, XpData> Player::GetXp() { return GetXp(AcquireLock()); }
+std::map<string, XpData> Player::GetXp(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return std::move(experience_.Get());
 }
 
-void Player::AddExperience(XpData experience)
+void Player::AddExperience(XpData experience) { AddExperience(experience, AcquireLock()); }
+void Player::AddExperience(XpData experience, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        experience_.Update(experience.type, experience);
-    }
+    experience_.Update(experience.type, experience);
 	DISPATCH(Player, Experience);
 }
 
-void Player::DeductXp(XpData experience)
+void Player::DeductXp(XpData experience) { DeductXp(experience, AcquireLock()); }
+void Player::DeductXp(XpData experience, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        experience_.Update(experience.type, experience);
-    }
+    experience_.Update(experience.type, experience);
 	DISPATCH(Player, Experience);
 }
 
-void Player::ClearXpType(string type)
+void Player::ClearXpType(string type) { ClearXpType(type, AcquireLock()); }
+void Player::ClearXpType(string type, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        auto iter = find_if(begin(experience_), end(experience_), [type](pair<string, XpData> xp) {
+    auto iter = find_if(begin(experience_), end(experience_), [type](pair<string, XpData> xp) {
             return xp.first == type;
-        });
-        if (iter == end(experience_))
-        {
-            return;
-        }
+	});
+
+    if (iter == end(experience_))
+    {
+        return;
+    }
             
-        experience_.Remove(iter);
-    }
+    experience_.Remove(iter);
 	DISPATCH(Player, Experience);
 }
 
-void Player::ResetXp(std::map<std::string, XpData>& experience)
+void Player::ResetXp(std::map<std::string, XpData>& experience) { ResetXp(experience, AcquireLock()); }
+void Player::ResetXp(std::map<std::string, XpData>& experience, boost::unique_lock<boost::mutex>& lock)
 {
+    experience_.Clear();
+    for(auto& pair : experience)
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        experience_.Clear();
-        for(auto& pair : experience)
-        {
-            experience_.Add(pair.first, pair.second);
-        }
-        experience_.Reinstall();
+        experience_.Add(pair.first, pair.second);
     }
+    experience_.Reinstall();
 	DISPATCH(Player, Experience);
 }
 
-void Player::ClearAllXp()
+void Player::ClearAllXp() { ClearAllXp(AcquireLock()); }
+void Player::ClearAllXp(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        experience_.Clear();
-    }
+	experience_.Clear();
 	DISPATCH(Player, Experience);
 }
 
-std::map<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
+std::map<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints()  { return GetWaypoints(AcquireLock()); }
+std::map<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return std::move(waypoints_.Get());
 }
 
-void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
+void Player::AddWaypoint(PlayerWaypointSerializer waypoint) { AddWaypoint(waypoint, AcquireLock()); }
+void Player::AddWaypoint(PlayerWaypointSerializer waypoint,boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
-    }
+	waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
 	DISPATCH(Player, Waypoint);
 }
 
-void Player::RemoveWaypoint(uint64_t waypoint_id)
+void Player::RemoveWaypoint(uint64_t waypoint_id) { RemoveWaypoint(waypoint_id, AcquireLock()); }
+void Player::RemoveWaypoint(uint64_t waypoint_id, boost::unique_lock<boost::mutex>& lock)
 {
+	auto find_iter = find_if(
+        begin(waypoints_),
+        end(waypoints_),
+        [waypoint_id] (pair<uint64_t, PlayerWaypointSerializer> stored_waypoint)
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        auto find_iter = find_if(
-            begin(waypoints_),
-            end(waypoints_),
-            [waypoint_id] (pair<uint64_t, PlayerWaypointSerializer> stored_waypoint)
-        {
-            return waypoint_id == stored_waypoint.first;
-        });
+        return waypoint_id == stored_waypoint.first;
+    });
 
-        if (find_iter == end(waypoints_))
-        {
-            return;
-        }
-
-        waypoints_.Remove(find_iter);
+    if (find_iter == end(waypoints_))
+    {
+        return;
     }
+
+    waypoints_.Remove(find_iter);
 	DISPATCH(Player, Waypoint);
 }
 
-void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
+void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint) { ModifyWaypoint(waypoint, AcquireLock()); }
+void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
-    }
+	waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
 	DISPATCH(Player, Waypoint);
 }
 
-void Player::ClearAllWaypoints()
+void Player::ClearAllWaypoints() { ClearAllWaypoints(AcquireLock()); }
+void Player::ClearAllWaypoints(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        waypoints_.Clear();
-    }
+    waypoints_.Clear();
 	DISPATCH(Player, Waypoint);
 }
 
-int32_t Player::GetCurrentForcePower() 
+int32_t Player::GetCurrentForcePower() { return GetCurrentForcePower(AcquireLock()); }
+int32_t Player::GetCurrentForcePower(boost::unique_lock<boost::mutex>& lock) 
 {
     return current_force_power_;
 }
 
-void Player::SetCurrentForcePower(int32_t force_power)
+void Player::SetCurrentForcePower(int32_t force_power) { SetCurrentForcePower(force_power, AcquireLock()); }
+void Player::SetCurrentForcePower(int32_t force_power, boost::unique_lock<boost::mutex>& lock)
 {
     current_force_power_ = force_power;
 	DISPATCH(Player, ForcePower);
 }
 
-void Player::IncrementForcePower(int32_t force_power)
+void Player::IncrementForcePower(int32_t force_power) { IncrementForcePower(force_power, AcquireLock()); }
+void Player::IncrementForcePower(int32_t force_power, boost::unique_lock<boost::mutex>& lock)
 {
     int32_t new_force_power = current_force_power_ + force_power;
 
@@ -322,139 +293,143 @@ void Player::IncrementForcePower(int32_t force_power)
     DISPATCH(Player, ForcePower);
 }
 
-int32_t Player::GetMaxForcePower() 
+int32_t Player::GetMaxForcePower() { return GetMaxForcePower(AcquireLock()); }
+int32_t Player::GetMaxForcePower(boost::unique_lock<boost::mutex>& lock) 
 {
     return max_force_power_;
 }
 
-void Player::SetMaxForcePower(int32_t force_power)
+void Player::SetMaxForcePower(int32_t force_power) { SetMaxForcePower(force_power, AcquireLock()); }
+void Player::SetMaxForcePower(int32_t force_power, boost::unique_lock<boost::mutex>& lock)
 {
     max_force_power_ = force_power;
 	DISPATCH(Player, MaxForcePower);
 }
 
-uint32_t Player::GetCurrentForceSensitiveQuests()
+uint32_t Player::GetCurrentForceSensitiveQuests() { return GetCurrentForceSensitiveQuests(AcquireLock()); }
+uint32_t Player::GetCurrentForceSensitiveQuests(boost::unique_lock<boost::mutex>& lock)
 {
     return current_force_sensitive_quests_;
 }
 
-void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask)
+void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask) { AddCurrentForceSensitiveQuest(quest_mask, AcquireLock()); }
+void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask, boost::unique_lock<boost::mutex>& lock)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ | quest_mask;
     DISPATCH(Player, ForceSensitiveQuests);
 }
 
-void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask)
+void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask) { RemoveCurrentForceSensitiveQuest(quest_mask, AcquireLock()); }
+void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask, boost::unique_lock<boost::mutex>& lock)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ & ~quest_mask;
 	DISPATCH(Player, ForceSensitiveQuests);
 }
 
-void Player::ClearCurrentForceSensitiveQuests()
+void Player::ClearCurrentForceSensitiveQuests() { ClearCurrentForceSensitiveQuests(AcquireLock()); }
+void Player::ClearCurrentForceSensitiveQuests(boost::unique_lock<boost::mutex>& lock)
 {
     current_force_sensitive_quests_ = 0;
 	DISPATCH(Player, ForceSensitiveQuests);
 }
 
-uint32_t Player::GetCompletedForceSensitiveQuests()
+uint32_t Player::GetCompletedForceSensitiveQuests() { return GetCompletedForceSensitiveQuests(AcquireLock()); }
+uint32_t Player::GetCompletedForceSensitiveQuests(boost::unique_lock<boost::mutex>& lock)
 {
     return completed_force_sensitive_quests_;
 }
 
-void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask)
+void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask) { AddCompletedForceSensitiveQuest(quest_mask, AcquireLock()); }
+void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask, boost::unique_lock<boost::mutex>& lock)
 {
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ | quest_mask;
     DISPATCH(Player, CompletedForceSensitiveQuests);
 }
 
-void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask)
+void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask) { RemoveCompletedForceSensitiveQuest(quest_mask, AcquireLock()); }
+void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask, boost::unique_lock<boost::mutex>& lock)
 {
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ & ~quest_mask;
 	DISPATCH(Player, CompletedForceSensitiveQuests);
 }
 
-void Player::ClearCompletedForceSensitiveQuests()
+void Player::ClearCompletedForceSensitiveQuests() { ClearCompletedForceSensitiveQuests(AcquireLock()); }
+void Player::ClearCompletedForceSensitiveQuests(boost::unique_lock<boost::mutex>& lock)
 {
     completed_force_sensitive_quests_ = 0;
 	DISPATCH(Player, CompletedForceSensitiveQuests);
 }
 
-std::map<uint32_t, QuestJournalData> Player::GetQuests() 
+std::map<uint32_t, QuestJournalData> Player::GetQuests() { return GetQuests(AcquireLock()); }
+std::map<uint32_t, QuestJournalData> Player::GetQuests(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return std::move(quest_journal_.Get());
 }
 
-void Player::AddQuest(QuestJournalData quest)
+void Player::AddQuest(QuestJournalData quest) { AddQuest(quest, AcquireLock()); }
+void Player::AddQuest(QuestJournalData quest, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        quest_journal_.Add(quest.quest_crc, quest);
-    }
+    quest_journal_.Add(quest.quest_crc, quest);
 	DISPATCH(Player, QuestJournal);
 }
 
-void Player::RemoveQuest(QuestJournalData quest)
+void Player::RemoveQuest(QuestJournalData quest) { RemoveQuest(quest, AcquireLock()); }
+void Player::RemoveQuest(QuestJournalData quest, boost::unique_lock<boost::mutex>& lock)
 {
+    auto find_iter = find_if(begin(quest_journal_), end(quest_journal_), 
+	[&quest] ( pair<uint32_t, QuestJournalData> stored_quest){
+        return quest.quest_crc == stored_quest.first;
+    });
+
+    if (find_iter == end(quest_journal_))
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        
-        auto find_iter = find_if(
-            begin(quest_journal_),
-            end(quest_journal_),
-            [&quest] ( pair<uint32_t, QuestJournalData> stored_quest)
-        {
-            return quest.quest_crc == stored_quest.first;
-        });
-
-        if (find_iter == end(quest_journal_))
-        {
-            return;
-        }
-
-        quest_journal_.Remove(find_iter);
+        return;
     }
+
+    quest_journal_.Remove(find_iter);
     DISPATCH(Player, QuestJournal);
 }
 
-void Player::UpdateQuest(QuestJournalData quest)
+void Player::UpdateQuest(QuestJournalData quest) { UpdateQuest(quest, AcquireLock()); }
+void Player::UpdateQuest(QuestJournalData quest, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        quest_journal_.Update(quest.quest_crc, quest);
-    }
+	quest_journal_.Update(quest.quest_crc, quest);
     DISPATCH(Player, QuestJournal);
 }
 
-void Player::ClearAllQuests()
+void Player::ClearAllQuests() { ClearAllQuests(AcquireLock()); }
+void Player::ClearAllQuests(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        quest_journal_.Clear();
-    }
+    quest_journal_.Clear();
     DISPATCH(Player, QuestJournal);
 }
 
-std::vector<Ability> Player::GetAbilityList() 
+std::vector<Ability> Player::GetAbilityList() { return GetAbilityList(AcquireLock()); }
+std::vector<Ability> Player::GetAbilityList(boost::unique_lock<boost::mutex>& lock) 
 {
-    auto creature = GetContainer<Creature>();
-	auto skill_commands = creature->GetSkillCommands();
+    //@TODO: Lock both Creature and Player simultaneous
 	
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto creature = GetContainer<Creature>(lock);
+
+	lock.unlock();
+	auto skill_commands = creature->GetSkillCommands();
+
 	std::vector<Ability> abilities;
     for_each(begin(skill_commands), end(skill_commands),[&abilities](pair<uint32_t, string> skill_command){
         abilities.push_back(Ability(skill_command.second));
     });
+	lock.lock();
     return abilities;
 }
 
-bool Player::HasAbility(string ability)
+bool Player::HasAbility(string ability) { return HasAbility(ability, AcquireLock()); }
+bool Player::HasAbility(string ability, boost::unique_lock<boost::mutex>& lock)
 {
+	//@TODO: Lock both Creature and Player simultaneous.
+
     auto creature = GetContainer<Creature>();
     auto abilities = creature->GetSkillCommands();
     
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
     auto find_it = find_if(begin(abilities), end(abilities),[=, &abilities](pair<uint32_t, string> skill_command){
         return (ability == skill_command.second);
        });
@@ -463,42 +438,48 @@ bool Player::HasAbility(string ability)
     return false;
 }
 
-uint32_t Player::GetExperimentationFlag() 
+uint32_t Player::GetExperimentationFlag() { return GetExperimentationFlag(AcquireLock()); }
+uint32_t Player::GetExperimentationFlag(boost::unique_lock<boost::mutex>& lock) 
 {
     return experimentation_flag_;
 }
 
-void Player::SetExperimentationFlag(uint32_t experimentation_flag)
+void Player::SetExperimentationFlag(uint32_t experimentation_flag) { SetExperimentationFlag(experimentation_flag, AcquireLock()); }
+void Player::SetExperimentationFlag(uint32_t experimentation_flag, boost::unique_lock<boost::mutex>& lock)
 {
     experimentation_flag_ = experimentation_flag;
 	DISPATCH(Player, ExperimentationFlag);
 }
 
-uint32_t Player::GetCraftingStage() 
+uint32_t Player::GetCraftingStage() { return GetCraftingStage(AcquireLock()); }
+uint32_t Player::GetCraftingStage(boost::unique_lock<boost::mutex>& lock) 
 {
     return crafting_stage_;
 }
 
-void Player::SetCraftingStage(uint32_t crafting_stage)
+void Player::SetCraftingStage(uint32_t crafting_stage) { SetCraftingStage(crafting_stage, AcquireLock()); }
+void Player::SetCraftingStage(uint32_t crafting_stage, boost::unique_lock<boost::mutex>& lock)
 {
     crafting_stage_ = crafting_stage;
     DISPATCH(Player, CraftingStage);
 }
 
-uint64_t Player::GetNearestCraftingStation() 
+uint64_t Player::GetNearestCraftingStation() { return GetNearestCraftingStation(AcquireLock()); }
+uint64_t Player::GetNearestCraftingStation(boost::unique_lock<boost::mutex>& lock) 
 {
     return nearest_crafting_station_;
 }
 
-void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
+void Player::SetNearestCraftingStation(uint64_t crafting_station_id) { SetNearestCraftingStation(crafting_station_id, AcquireLock()); }
+void Player::SetNearestCraftingStation(uint64_t crafting_station_id, boost::unique_lock<boost::mutex>& lock)
 {
     nearest_crafting_station_ = crafting_station_id;
 	DISPATCH(Player, NearestCraftingStation);
 }
 
-std::vector<DraftSchematicData> Player::GetDraftSchematics() 
+std::vector<DraftSchematicData> Player::GetDraftSchematics() { return GetDraftSchematics(AcquireLock()); }
+std::vector<DraftSchematicData> Player::GetDraftSchematics(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
 	std::vector<DraftSchematicData> schematics;
 
 	for(auto& v : draft_schematics_)
@@ -509,87 +490,89 @@ std::vector<DraftSchematicData> Player::GetDraftSchematics()
     return std::move(schematics);
 }
 
-void Player::AddDraftSchematic(DraftSchematicData schematic)
-{
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        draft_schematics_.Add(schematic);
-    }
+void Player::AddDraftSchematic(DraftSchematicData schematic) { AddDraftSchematic(schematic, AcquireLock()); }
+void Player::AddDraftSchematic(DraftSchematicData schematic, boost::unique_lock<boost::mutex>& lock)
+{ 
+	draft_schematics_.Add(schematic);
 	DISPATCH(Player, DraftSchematic);
 }
 
-void Player::RemoveDraftSchematic(uint32_t schematic_id)
+void Player::RemoveDraftSchematic(uint32_t schematic_id) { RemoveDraftSchematic(schematic_id, AcquireLock()); }
+void Player::RemoveDraftSchematic(uint32_t schematic_id, boost::unique_lock<boost::mutex>& lock)
 {
+    auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
+    if(iter == end(draft_schematics_))
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
-        if(iter == end(draft_schematics_))
-        {
-            return;
-        }
+        return;
+    }
             
-        draft_schematics_.Remove(iter);
-    }
+    draft_schematics_.Remove(iter);
     DISPATCH(Player, DraftSchematic);
 }
 
-void Player::ClearDraftSchematics()
+void Player::ClearDraftSchematics() { ClearDraftSchematics(AcquireLock()); }
+void Player::ClearDraftSchematics(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        draft_schematics_.Clear();
-    }
+	draft_schematics_.Clear();
     DISPATCH(Player, DraftSchematic);
 }
 
-uint32_t Player::GetExperimentationPoints() 
+uint32_t Player::GetExperimentationPoints()  { return GetExperimentationPoints(AcquireLock()); }
+uint32_t Player::GetExperimentationPoints(boost::unique_lock<boost::mutex>& lock) 
 {
     return experimentation_points_;
 }
 
-void Player::AddExperimentationPoints(uint32_t points)
+void Player::AddExperimentationPoints(uint32_t points) { AddExperimentationPoints(points, AcquireLock()); }
+void Player::AddExperimentationPoints(uint32_t points, boost::unique_lock<boost::mutex>& lock)
 {
     experimentation_points_ += points;
     DISPATCH(Player, ExperimentationPoints);
 }
 
-void Player::RemoveExperimentationPoints(uint32_t points)
+void Player::RemoveExperimentationPoints(uint32_t points) { RemoveExperimentationPoints(points, AcquireLock()); }
+void Player::RemoveExperimentationPoints(uint32_t points, boost::unique_lock<boost::mutex>& lock)
 {
     experimentation_points_ -= points;
 	DISPATCH(Player, ExperimentationPoints);
 }
 
-void Player::ResetExperimentationPoints(uint32_t points)
+void Player::ResetExperimentationPoints(uint32_t points) { ResetExperimentationPoints(points, AcquireLock()); }
+void Player::ResetExperimentationPoints(uint32_t points, boost::unique_lock<boost::mutex>& lock)
 {
     experimentation_points_ = points;
 	DISPATCH(Player, ExperimentationPoints);
 }
 
-uint32_t Player::GetAccomplishmentCounter() 
+uint32_t Player::GetAccomplishmentCounter() { return GetAccomplishmentCounter(AcquireLock()); }
+uint32_t Player::GetAccomplishmentCounter(boost::unique_lock<boost::mutex>& lock) 
 {
     return accomplishment_counter_;
 }
 
-void Player::ResetAccomplishmentCounter(uint32_t counter)
+void Player::ResetAccomplishmentCounter(uint32_t counter) { ResetAccomplishmentCounter(counter, AcquireLock()); }
+void Player::ResetAccomplishmentCounter(uint32_t counter, boost::unique_lock<boost::mutex>& lock)
 {
     accomplishment_counter_ = counter;
 	DISPATCH(Player, AccomplishmentCounter);
 }
 
-void Player::IncrementAccomplishmentCounter()
+void Player::IncrementAccomplishmentCounter() { IncrementAccomplishmentCounter(AcquireLock()); }
+void Player::IncrementAccomplishmentCounter(boost::unique_lock<boost::mutex>& lock)
 {
     ++accomplishment_counter_;
 	DISPATCH(Player, AccomplishmentCounter);
 }
 
-std::vector<Name> Player::GetFriends()
+std::vector<Name> Player::GetFriends() { return GetFriends(AcquireLock()); }
+std::vector<Name> Player::GetFriends(boost::unique_lock<boost::mutex>& lock)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return std::move(friends_.Get());
 }
-bool Player::IsFriend(std::string friend_name)
+
+bool Player::IsFriend(std::string friend_name) { return IsFriend(friend_name, AcquireLock()); }
+bool Player::IsFriend(std::string friend_name, boost::unique_lock<boost::mutex>& lock)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
         return (x.Contains(friend_name));
     });
@@ -599,52 +582,47 @@ bool Player::IsFriend(std::string friend_name)
 
     return false;
 }
-void Player::AddFriend(string friend_name, uint64_t id)
+
+void Player::AddFriend(string friend_name, uint64_t id) { AddFriend(friend_name, id, AcquireLock()); }
+void Player::AddFriend(string friend_name, uint64_t id, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        friends_.Add(Name(friend_name, id));
-    }
+    friends_.Add(Name(friend_name, id));
 	DISPATCH(Player, Friend);
 }
 
-void Player::RemoveFriend(string friend_name)
+void Player::RemoveFriend(string friend_name) { RemoveFriend(friend_name, AcquireLock()); }
+void Player::RemoveFriend(string friend_name, boost::unique_lock<boost::mutex>& lock)
 {
+    auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
+        return (x.Contains(friend_name));
+    });
+        
+    if (iter == end(friends_))
     {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
-            return (x.Contains(friend_name));
-        });
-        
-        if (iter == end(friends_))
-        {
-            return;
-        }
-        
-        friends_.ClearDeltas();
-        friends_.Remove(iter);
+        return;
     }
+        
+    friends_.ClearDeltas();
+    friends_.Remove(iter);
 	DISPATCH(Player, RemoveFriend);
 }
 
-void Player::ClearFriends()
+void Player::ClearFriends() { ClearFriends(AcquireLock()); }
+void Player::ClearFriends(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        friends_.Clear();
-    }
+    friends_.Clear();
 	DISPATCH(Player, Friend);
 }
 
-std::vector<Name> Player::GetIgnoredPlayers()
+std::vector<Name> Player::GetIgnoredPlayers() { return GetIgnoredPlayers(AcquireLock()); }
+std::vector<Name> Player::GetIgnoredPlayers(boost::unique_lock<boost::mutex>& lock)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return std::move(ignored_players_.Get());
 }
 
-bool Player::IsIgnored(string player_name)
+bool Player::IsIgnored(string player_name) { return IsIgnored(player_name, AcquireLock()); }
+bool Player::IsIgnored(string player_name, boost::unique_lock<boost::mutex>& lock)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
         return (x.Contains(player_name));
     });
@@ -655,59 +633,57 @@ bool Player::IsIgnored(string player_name)
     return false;
 }
 
-void Player::IgnorePlayer(string player_name, uint64_t player_id)
+void Player::IgnorePlayer(string player_name, uint64_t player_id) { IgnorePlayer(player_name, player_id, AcquireLock()); }
+void Player::IgnorePlayer(string player_name, uint64_t player_id, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        ignored_players_.Add(Name(player_name, player_id));
-    }
+    ignored_players_.Add(Name(player_name, player_id));
 	DISPATCH(Player, IgnorePlayer);
 }
 
-void Player::StopIgnoringPlayer(string player_name)
+void Player::StopIgnoringPlayer(string player_name) { StopIgnoringPlayer(player_name, AcquireLock()); }
+void Player::StopIgnoringPlayer(string player_name, boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
-            return (x.Contains(player_name));
-        });
+    auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
+        return (x.Contains(player_name));
+    });
 
-        if (iter != end(ignored_players_))
-        {
-            return;
-        }
+    if (iter != end(ignored_players_))
+    {
+        return;
+    }
         
-        ignored_players_.Remove(iter); 
-    } 
+    ignored_players_.Remove(iter); 
 	DISPATCH(Player, RemoveIgnoredPlayer);
 }
 
-void Player::ClearIgnored()
+void Player::ClearIgnored() { ClearIgnored(AcquireLock()); }
+void Player::ClearIgnored(boost::unique_lock<boost::mutex>& lock)
 {
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        ignored_players_.Clear();
-    }
+    ignored_players_.Clear();
     DISPATCH(Player, IgnorePlayer);
 }
 
-uint32_t Player::GetLanguage() 
+uint32_t Player::GetLanguage() { return GetLanguage(AcquireLock()); }
+uint32_t Player::GetLanguage(boost::unique_lock<boost::mutex>& lock) 
 {
     return language_;
 }
 
-void Player::SetLanguage(uint32_t language_id)
+void Player::SetLanguage(uint32_t language_id) { SetLanguage(language_id, AcquireLock()); }
+void Player::SetLanguage(uint32_t language_id, boost::unique_lock<boost::mutex>& lock)
 {
     language_ = language_id;
 	DISPATCH(Player, Language);
 }
 
-uint32_t Player::GetCurrentStomach() 
+uint32_t Player::GetCurrentStomach() { return GetCurrentStomach(AcquireLock()); }
+uint32_t Player::GetCurrentStomach(boost::unique_lock<boost::mutex>& lock) 
 {
     return current_stomach_;
 }
 
-void Player::IncreaseCurrentStomach(uint32_t stomach)
+void Player::IncreaseCurrentStomach(uint32_t stomach) { IncreaseCurrentStomach(stomach, AcquireLock()); }
+void Player::IncreaseCurrentStomach(uint32_t stomach, boost::unique_lock<boost::mutex>& lock)
 {
     uint32_t new_stomach = current_stomach_ + stomach;
 
@@ -715,35 +691,41 @@ void Player::IncreaseCurrentStomach(uint32_t stomach)
     DISPATCH(Player, CurrentStomach);
 }
 
-void Player::DecreaseCurrentStomach(uint32_t stomach)
+void Player::DecreaseCurrentStomach(uint32_t stomach) { DecreaseCurrentStomach(stomach, AcquireLock()); }
+void Player::DecreaseCurrentStomach(uint32_t stomach, boost::unique_lock<boost::mutex>& lock)
 {
     current_stomach_ -= stomach;
     DISPATCH(Player, CurrentStomach);
 }
 
-void Player::ResetCurrentStomach(uint32_t stomach)
+void Player::ResetCurrentStomach(uint32_t stomach) { ResetCurrentStomach(stomach, AcquireLock()); }
+void Player::ResetCurrentStomach(uint32_t stomach, boost::unique_lock<boost::mutex>& lock)
 {
     current_stomach_ = stomach;
 	DISPATCH(Player, CurrentStomach);
 }
 
-uint32_t Player::GetMaxStomach() 
+uint32_t Player::GetMaxStomach() { return GetMaxStomach(AcquireLock()); }
+uint32_t Player::GetMaxStomach(boost::unique_lock<boost::mutex>& lock) 
 {
     return max_stomach_;
 }
 
-void Player::ResetMaxStomach(uint32_t stomach)
+void Player::ResetMaxStomach(uint32_t stomach) { ResetMaxStomach(stomach, AcquireLock()); }
+void Player::ResetMaxStomach(uint32_t stomach, boost::unique_lock<boost::mutex>& lock)
 {
     max_stomach_ = stomach;
 	DISPATCH(Player, MaxStomach);
 }
 
-uint32_t Player::GetCurrentDrink() 
+uint32_t Player::GetCurrentDrink() { return GetCurrentDrink(AcquireLock()); }
+uint32_t Player::GetCurrentDrink(boost::unique_lock<boost::mutex>& lock) 
 {
     return current_drink_;
 }
 
-void Player::IncreaseCurrentDrink(uint32_t drink)
+void Player::IncreaseCurrentDrink(uint32_t drink) { IncreaseCurrentDrink(drink, AcquireLock()); }
+void Player::IncreaseCurrentDrink(uint32_t drink, boost::unique_lock<boost::mutex>& lock)
 {
     uint32_t new_drink = current_drink_ + drink;
 
@@ -751,54 +733,61 @@ void Player::IncreaseCurrentDrink(uint32_t drink)
     DISPATCH(Player, CurrentDrink);
 }
 
-void Player::DecreaseCurrentDrink(uint32_t drink)
+void Player::DecreaseCurrentDrink(uint32_t drink) { DecreaseCurrentDrink(drink, AcquireLock()); }
+void Player::DecreaseCurrentDrink(uint32_t drink, boost::unique_lock<boost::mutex>& lock)
 {
     current_drink_ -= drink;
     DISPATCH(Player, CurrentDrink);
 }
 
-void Player::ResetCurrentDrink(uint32_t drink)
+void Player::ResetCurrentDrink(uint32_t drink) { ResetCurrentDrink(drink, AcquireLock()); }
+void Player::ResetCurrentDrink(uint32_t drink, boost::unique_lock<boost::mutex>& lock)
 {
     current_drink_ = drink;
 	DISPATCH(Player, CurrentDrink);
 }
 
-uint32_t Player::GetMaxDrink() 
+uint32_t Player::GetMaxDrink()  { return GetMaxDrink(AcquireLock()); }
+uint32_t Player::GetMaxDrink(boost::unique_lock<boost::mutex>& lock) 
 {
     return max_drink_;
 }
 
-void Player::ResetMaxDrink(uint32_t drink)
+void Player::ResetMaxDrink(uint32_t drink) { ResetMaxDrink(drink, AcquireLock()); }
+void Player::ResetMaxDrink(uint32_t drink, boost::unique_lock<boost::mutex>& lock)
 {
     max_drink_ = drink;
 	DISPATCH(Player, MaxDrink);
 }
 
-uint32_t Player::GetJediState() 
+uint32_t Player::GetJediState() { return GetJediState(AcquireLock()); }
+uint32_t Player::GetJediState(boost::unique_lock<boost::mutex>& lock) 
 {
     return jedi_state_;
 }
 
-void Player::SetJediState(uint32_t jedi_state)
+void Player::SetJediState(uint32_t jedi_state) { SetJediState(jedi_state, AcquireLock()); }
+void Player::SetJediState(uint32_t jedi_state, boost::unique_lock<boost::mutex>& lock)
 {
     jedi_state_ = jedi_state;
 	DISPATCH(Player, JediState);
 }
 
-Gender Player::GetGender() 
+Gender Player::GetGender() { return GetGender(AcquireLock()); }
+Gender Player::GetGender(boost::unique_lock<boost::mutex>& lock) 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return gender_;
 }
-void Player::SetGender(Gender value)
+
+void Player::SetGender(Gender value) { return SetGender(value, AcquireLock()); }
+void Player::SetGender(Gender value, boost::unique_lock<boost::mutex>& lock)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
     gender_ = value;
 }
 
-void Player::RemoveBadge(uint32_t id)
+void Player::RemoveBadge(uint32_t id) { RemoveBadge(id, AcquireLock()); }
+void Player::RemoveBadge(uint32_t id, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto iter = std::find(badges_.begin(), badges_.end(), id);
 
 	if(iter == badges_.end())
@@ -808,18 +797,18 @@ void Player::RemoveBadge(uint32_t id)
 	badges_.erase(iter);
 }
 
-void Player::AddBadge(uint32_t id)
+void Player::AddBadge(uint32_t id) { AddBadge(id, AcquireLock()); }
+void Player::AddBadge(uint32_t id, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	
 	badges_sync_queue_.push(std::pair<uint8_t, uint32_t>(1, id));
 	badges_.push_back(id);
 	
-
 	DISPATCH(Player, BadgeFlags);
 }
 
-bool Player::HasBadge(uint32_t id)
+bool Player::HasBadge(uint32_t id) { return HasBadge(id, AcquireLock()); }
+bool Player::HasBadge(uint32_t id, boost::unique_lock<boost::mutex>& lock)
 {
 	auto i = std::find(badges_.begin(), badges_.end(), id);
 	if(i != badges_.end())
@@ -866,94 +855,63 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
 
 void Player::CreateBaselines(shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-    if (event_dispatcher_)
+    if (auto dispatch = GetEventDispatcher())
 	{
-		GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+		dispatch->Dispatch(make_shared<ObserverEvent>
 			("Player::Baselines", shared_from_this(), observer));
 	}
 }
 
-std::shared_ptr<Object> Player::Clone()
+void Player::SerializeXp(swganh::messages::BaseSwgMessage* message) { SerializeXp(message, AcquireLock()); }
+void Player::SerializeXp(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Player>();
-	Clone(other);
-	return other;
-}
-
-void Player::Clone(std::shared_ptr<Player> other)
-{
-	other->status_flags_ = status_flags_;
-    other->profile_flags_ = profile_flags_;
-    other->profession_tag_ = profession_tag_;
-    other->born_date_.store(born_date_);
-    other->total_playtime_.store(total_playtime_);
-    other->admin_tag_.store(admin_tag_);
-    other->region_ .store(region_);
-    other->experience_ = experience_;
-    other->waypoints_ = waypoints_;
-    other->current_force_power_.store(current_force_power_);
-	other->max_force_power_.store(max_force_power_);
-	other->current_force_sensitive_quests_.store(current_force_sensitive_quests_);
-	other->completed_force_sensitive_quests_.store(completed_force_sensitive_quests_);
-    other->quest_journal_ = quest_journal_;
-	other->experimentation_flag_.store(experimentation_flag_);
-	other->crafting_stage_.store(crafting_stage_);
-	other->nearest_crafting_station_.store(nearest_crafting_station_);
-	other->draft_schematics_ = draft_schematics_;
-	other->experimentation_points_.store(experimentation_points_);
-	other->friends_ = friends_;
-	other->ignored_players_ = ignored_players_;
-	other->accomplishment_counter_.store(accomplishment_counter_);
-	other->language_.store(language_);
-	other->current_stomach_.store(current_stomach_);
-    other->max_stomach_.store(max_stomach_);
-	other->current_drink_.store(current_drink_);
-    other->max_drink_.store(max_drink_);
-	other->jedi_state_.store(jedi_state_);
-    other->gender_ = gender_;
-
-	Intangible::Clone(other);
-}
-
-void Player::SerializeXp(swganh::messages::BaseSwgMessage* message)
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	experience_.Serialize(message);
 }
 
-void Player::SerializeWaypoints(swganh::messages::BaseSwgMessage* message)
+void Player::SerializeWaypoints(swganh::messages::BaseSwgMessage* message) { SerializeWaypoints(message, AcquireLock()); }
+void Player::SerializeWaypoints(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	waypoints_.Serialize(message);
 }
 
-void Player::SerializeQuests(swganh::messages::BaseSwgMessage* message)
+void Player::SerializeQuests(swganh::messages::BaseSwgMessage* message) { SerializeQuests(message, AcquireLock()); }
+void Player::SerializeQuests(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	quest_journal_.Serialize(message);
 }
 
-void Player::SerializeAbilities(swganh::messages::BaseSwgMessage* message)
+void Player::SerializeAbilities(swganh::messages::BaseSwgMessage* message) { SerializeAbilities(message, AcquireLock()); }
+void Player::SerializeAbilities(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	auto list = GetAbilityList();
-	NetworkList<Ability>(GetAbilityList()).Serialize(message);
+	NetworkList<Ability>(GetAbilityList(lock)).Serialize(message);
 }
 
-void Player::SerializeDraftSchematics(swganh::messages::BaseSwgMessage* message)
+void Player::SerializeDraftSchematics(swganh::messages::BaseSwgMessage* message) { SerializeDraftSchematics(message, AcquireLock()); }
+void Player::SerializeDraftSchematics(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	draft_schematics_.Serialize(message);
 }
 
-void Player::SerializeFriends(swganh::messages::BaseSwgMessage* message)
+void Player::SerializeFriends(swganh::messages::BaseSwgMessage* message) { SerializeFriends(message, AcquireLock()); }
+void Player::SerializeFriends(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	friends_.Serialize(message);
 }
 
-void Player::SerializeIgnoredPlayers(swganh::messages::BaseSwgMessage* message)
+void Player::SerializeIgnoredPlayers(swganh::messages::BaseSwgMessage* message) { SerializeIgnoredPlayers(message, AcquireLock()); }
+void Player::SerializeIgnoredPlayers(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	ignored_players_.Serialize(message);
+}
+
+std::list<uint32_t> Player::GetBadges() { return GetBadges(AcquireLock()); }
+std::list<uint32_t> Player::GetBadges(boost::unique_lock<boost::mutex>& lock)
+{
+	return badges_;
+}
+
+std::queue<std::pair<uint8_t, uint32_t>> Player::GetBadgesSyncQueue() { return GetBadgesSyncQueue(AcquireLock()); }
+std::queue<std::pair<uint8_t, uint32_t>> Player::GetBadgesSyncQueue(boost::unique_lock<boost::mutex>& lock)
+{
+	return badges_sync_queue_;
 }

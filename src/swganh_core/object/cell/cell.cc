@@ -9,26 +9,15 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
 
-void Cell::SetCell(uint32_t cell_number) {
+void Cell::SetCell(uint32_t cell_number) { SetCell(cell_number, AcquireLock()); }
+void Cell::SetCell(uint32_t cell_number, boost::unique_lock<boost::mutex>& lock) 
+{
 	generic_int_ = cell_number;
 	DISPATCH(Cell, Cell);
 }
 
-uint32_t Cell::GetCell()
+uint32_t Cell::GetCell() { return GetCell(AcquireLock()); }
+uint32_t Cell::GetCell(boost::unique_lock<boost::mutex>& lock)
 {
 	return generic_int_;
-}
-
-
-std::shared_ptr<Object> Cell::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = make_shared<Cell>();
-	Clone(other);
-	return other;
-}
-
-void Cell::Clone(std::shared_ptr<Cell> other)
-{
-	Intangible::Clone(other);
 }

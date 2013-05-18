@@ -369,9 +369,10 @@ void ObjectManager::PersistObject(const std::shared_ptr<Object>& object, bool pe
 		factory = find_iter->second;
 	}
 
-	if(object->IsDatabasePersisted())
+	auto lock = object->AcquireLock();
+	if(object->IsDatabasePersisted(lock))
     {
-		factory->PersistObject(object, persist_inherited);
+		factory->PersistObject(object, lock, persist_inherited);
 	}
 }
 

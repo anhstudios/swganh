@@ -29,9 +29,9 @@ namespace object {
         static void BuildDefendersDelta(const std::shared_ptr<Tangible>& tangible);
         
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Tangible>& tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Tangible>& tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<Tangible>& tangible);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Tangible>& tangible, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Tangible>& tangible, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<Tangible>& tangible, boost::unique_lock<boost::mutex>& lock);
     private:
         typedef swganh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
                 

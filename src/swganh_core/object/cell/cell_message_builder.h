@@ -31,8 +31,8 @@ namespace object {
         virtual void RegisterEventHandlers();
         static void BuildStfDetailDelta(const std::shared_ptr<Cell>& intangible);
 
-		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Cell>& cell);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Cell>& cell);
+		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock);
     };
 
 }}  // swganh::object

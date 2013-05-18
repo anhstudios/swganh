@@ -234,40 +234,40 @@ void InstallationMessageBuilder::BuildConditionPercentDelta(const std::shared_pt
     }
 }
 
-boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline3(const std::shared_ptr<Installation>& installation)
+boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline3(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(installation, Object::VIEW_3, 14);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline3(installation)).data);
-	message.data.write<uint8_t>((installation->IsActive()) ? 1 : 0);
-	message.data.write(installation->GetPowerReserve());
-	message.data.write(installation->GetPowerCost());
+	auto message = CreateBaselinesMessage(installation, lock, Object::VIEW_3, 14);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(installation, lock)).data);
+	message.data.write<uint8_t>((installation->IsActive(lock)) ? 1 : 0);
+	message.data.write(installation->GetPowerReserve(lock));
+	message.data.write(installation->GetPowerCost(lock));
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline6(const std::shared_ptr<Installation>& installation)
+boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline6(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(installation, Object::VIEW_6, 2);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline6(installation)).data);
+	auto message = CreateBaselinesMessage(installation, lock, Object::VIEW_6, 2);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(installation, lock)).data);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline7(const std::shared_ptr<Installation>& installation)
+boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline7(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(installation, Object::VIEW_7, 11);
-	message.data.write<uint8_t>((installation->IsUpdating()) ? 1 : 0);
-	installation->GetResourceIds_().Serialize(message);
-	installation->GetResourceIds_().Serialize(message); //No idea why this is repeated...
-	installation->GetResourceNames_().Serialize(message);
-	installation->GetResourceTypes_().Serialize(message);
-	message.data.write(installation->GetSelectedResourceId());
-	message.data.write<uint8_t>((installation->IsActive()) ? 1 : 0);
-	message.data.write(installation->GetDisplayedMaxExtractionRate());
-	message.data.write(installation->GetMaxExtractionRate());
-	message.data.write(installation->GetCurrentExtractionRate());
-	message.data.write(installation->GetCurrentHopperSize());
-	message.data.write(installation->GetMaxHopperSize());
-	message.data.write<uint8_t>((installation->IsUpdating()) ? 1 : 0);
-	installation->GetHopperContents().Serialize(message);
-	message.data.write(installation->GetConditionPercentage());
+	auto message = CreateBaselinesMessage(installation, lock, Object::VIEW_7, 11);
+	message.data.write<uint8_t>((installation->IsUpdating(lock)) ? 1 : 0);
+	installation->GetResourceIds_(lock).Serialize(message);
+	installation->GetResourceIds_(lock).Serialize(message); //No idea why this is repeated...
+	installation->GetResourceNames_(lock).Serialize(message);
+	installation->GetResourceTypes_(lock).Serialize(message);
+	message.data.write(installation->GetSelectedResourceId(lock));
+	message.data.write<uint8_t>((installation->IsActive(lock)) ? 1 : 0);
+	message.data.write(installation->GetDisplayedMaxExtractionRate(lock));
+	message.data.write(installation->GetMaxExtractionRate(lock));
+	message.data.write(installation->GetCurrentExtractionRate(lock));
+	message.data.write(installation->GetCurrentHopperSize(lock));
+	message.data.write(installation->GetMaxHopperSize(lock));
+	message.data.write<uint8_t>((installation->IsUpdating(lock)) ? 1 : 0);
+	installation->GetHopperContents(lock).Serialize(message);
+	message.data.write(installation->GetConditionPercentage(lock));
     return BaselinesMessage(std::move(message));
 }

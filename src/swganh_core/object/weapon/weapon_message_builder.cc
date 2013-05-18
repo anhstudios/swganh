@@ -19,17 +19,17 @@ void WeaponMessageBuilder::RegisterEventHandlers()
 {
 }
 
-boost::optional<BaselinesMessage> WeaponMessageBuilder::BuildBaseline3(const shared_ptr<Weapon>& weapon)
+boost::optional<BaselinesMessage> WeaponMessageBuilder::BuildBaseline3(const shared_ptr<Weapon>& weapon, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(weapon, Object::VIEW_3, 11);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline3(weapon)).data);
+    auto message = CreateBaselinesMessage(weapon, lock, Object::VIEW_3, 11);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(weapon, lock)).data);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> WeaponMessageBuilder::BuildBaseline6(const shared_ptr<Weapon>& weapon)
+boost::optional<BaselinesMessage> WeaponMessageBuilder::BuildBaseline6(const shared_ptr<Weapon>& weapon, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(weapon, Object::VIEW_6, 2);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline6(weapon)).data);
+    auto message = CreateBaselinesMessage(weapon, lock, Object::VIEW_6, 2);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(weapon, lock)).data);
  
     return BaselinesMessage(std::move(message));
 }

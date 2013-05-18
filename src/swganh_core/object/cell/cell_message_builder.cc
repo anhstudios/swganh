@@ -20,16 +20,16 @@ void CellMessageBuilder::RegisterEventHandlers()
     // TODO: Register Handlers for Cells
 }
 
-boost::optional<BaselinesMessage> CellMessageBuilder::BuildBaseline3(const shared_ptr<Cell>& cell)
+boost::optional<BaselinesMessage> CellMessageBuilder::BuildBaseline3(const shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(cell, Object::VIEW_3, 5);
-    message.data.append((*IntangibleMessageBuilder::BuildBaseline3(cell)).data);
+    auto message = CreateBaselinesMessage(cell, lock, Object::VIEW_3, 5);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline3(cell, lock)).data);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> CellMessageBuilder::BuildBaseline6(const shared_ptr<Cell>& cell)
+boost::optional<BaselinesMessage> CellMessageBuilder::BuildBaseline6(const shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(cell, Object::VIEW_6, 5);
-    message.data.append((*IntangibleMessageBuilder::BuildBaseline6(cell)).data);
+    auto message = CreateBaselinesMessage(cell, lock, Object::VIEW_6, 5);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline6(cell, lock)).data);
     return BaselinesMessage(std::move(message));
 }

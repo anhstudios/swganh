@@ -21,9 +21,9 @@ CellFactory::CellFactory(swganh::app::SwganhKernel* kernel)
     : IntangibleFactory(kernel)
 {}
 
-void CellFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object)
+void CellFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    IntangibleFactory::LoadFromStorage(connection, object);
+    IntangibleFactory::LoadFromStorage(connection, object, lock);
 }
 
 void CellFactory::RegisterEventHandlers()
@@ -41,17 +41,20 @@ void CellFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		if(object->IsDatabasePersisted())
-			PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
-uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, bool persist_inherited)
+uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	// Persist Intangible and Base Object First
     uint32_t counter = 1;
 	
-    IntangibleFactory::PersistObject(object, persist_inherited);
+    IntangibleFactory::PersistObject(object, lock, persist_inherited);
 
 	try 
     {
@@ -60,7 +63,7 @@ uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, bool persi
 			(conn->prepareStatement("CALL sp_PersistCell(?);"));
 		
 		auto cell = static_pointer_cast<Cell>(object);
-		statement->setInt(counter++, cell->GetCell());
+		statement->setInt(counter++, cell->GetCell(lock));
 		statement->executeUpdate();
 	}
 	catch(sql::SQLException &e)

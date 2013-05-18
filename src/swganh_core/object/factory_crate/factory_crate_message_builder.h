@@ -22,8 +22,8 @@ namespace object {
         virtual void RegisterEventHandlers();
 
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<FactoryCrate>& factory_crate);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<FactoryCrate>& factory_crate);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<FactoryCrate>& factory_crate, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<FactoryCrate>& factory_crate, boost::unique_lock<boost::mutex>& lock);
     private:
         typedef swganh::ValueEvent<std::shared_ptr<FactoryCrate>> FactoryCrateEvent;
     };
