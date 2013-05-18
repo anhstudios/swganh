@@ -594,22 +594,19 @@ public:
 	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
 	void AddCollidedObject(std::shared_ptr<Object> obj)
 	{
-		bool found = false;
-
-		std::for_each(collided_objects_.begin(), collided_objects_.end(), [=, &found](std::shared_ptr<Object> other) {
-			if(other->GetObjectId() == obj->GetObjectId())
-				found = true;
-		});
-
-		if(found == false)
-			collided_objects_.insert(obj);
+        if(collided_objects_.find(obj) != collided_objects_.end())
+        {
+            collided_objects_.insert(obj);
+            OnCollisionEnter(obj);
+        }
 	}
 
 	void RemoveCollidedObject(std::shared_ptr<Object> obj)
 	{
-		auto i = collided_objects_.find(obj);
-		if(i != collided_objects_.end())
-			collided_objects_.erase(i);
+        if(collided_objects_.erase(obj) > 0)
+        {
+            OnCollisionLeave(obj);
+        }
 	}
 
 	const CollisionBox& GetLocalCollisionBox(void) const { return local_collision_box_; }
