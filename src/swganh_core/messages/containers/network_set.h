@@ -6,19 +6,19 @@
 #include <queue>
 #include <functional>
 
-#include "detault_serializer.h"
+#include "default_serializer.h"
 
 namespace swganh
 {
 namespace containers
 {
 
-template<typename T, Serializer=DefaultSerializer<T>>
+template<typename T, typename Serializer=DefaultSerializer<T>>
 class NetworkSet
 {
 public:
 
-	void remove(T& data, bool update=true)
+	void remove(const T& data, bool update=true)
 	{
 		auto itr = data_.find(data);
 		if(itr != data_.end())
@@ -26,24 +26,24 @@ public:
 			data_.erase(itr);
 			if(update)
 			{
-				deltas_.push_back([=] (swganh::messages::DeltasMessage& message) {
+				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 					message.data.write<uint8_t>(0);
-					Serializer::SerializeDelta(message, data);
+					Serializer::SerializeDelta(message.data, data);
 				});
 			}
 		}
 	}
 	
-	void add(T& data, bool update=true)
+	void add(const T& data, bool update=true)
 	{
 		auto pair = data_.insert(data);
 		if(pair.second)
 		{
 			if(update)
 			{
-				deltas_.push_back([=] (swganh::messages::DeltasMessage& message) {
+				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 					message.data.write<uint8_t>(1);
-					Serializer::SerializeDelta(message, pair.first);
+					Serializer::SerializeDelta(message.data, *pair.first);
 				});
 			}
 		}
@@ -54,7 +54,7 @@ public:
 		data_.clear();
 		if(update)
 		{
-			deltas_.push_back([=] (swganh::messages::DeltasMessage& message) {
+			deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 				message.data.write<uint8_t>(2);
 			});
 		}
@@ -88,7 +88,7 @@ public:
         message.data.write<uint32_t>(0);
 		for(auto& item : data_)
 		{
-			Serializer::SerializeBaseline(message, item);
+			Serializer::SerializeBaseline(message.data, item);
 		}
 	}
 	
@@ -99,7 +99,7 @@ public:
 		
 		while(!deltas_.empty())
 		{
-			deltas_.top()(message.data);
+			deltas_.front()(message);
 			deltas_.pop();
 		}
 	}

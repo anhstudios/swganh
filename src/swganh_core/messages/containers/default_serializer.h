@@ -12,15 +12,14 @@ class DefaultSerializer
 {
 public:
 	
-	static void SerializeBaseline(swganh::ByteBuffer& message, T& t)
+	static void SerializeBaseline(swganh::ByteBuffer& data, const T& t)
 	{
-		message.data.write<uint8_t>(0);
-		message.data.write<T>(t);
+		data.write<T>(t);
 	}
 	
-	static void SerializeDelta(swganh::ByteBuffer& message, T& t)
+	static void SerializeDelta(swganh::ByteBuffer& data, const T& t)
 	{
-		message.data.write<T>(t);
+		data.write<T>(t);
 	}
 	
 };

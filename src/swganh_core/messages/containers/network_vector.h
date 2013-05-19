@@ -6,7 +6,7 @@
 #include <queue>
 #include <functional>
 
-#include "detault_serializer.h"
+#include "default_serializer.h"
 
 namespace swganh
 {
@@ -18,19 +18,19 @@ class NetworkVector
 {
 public:
 
-	void remove(uint16_t index, bool update=true)
+	void remove(const uint16_t index, bool update=true)
 	{
 		data_.remove(index);
 		if(update)
 		{
-			deltas_.push_back([=] (swganh::messages::DeltasMessage& message) {
+			deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 				message.data.write<uint8_t>(0);
 				message.data.write<uint16_t>(index);
 			});
 		}
 	}
 	
-	void add(T& data, bool update=true)
+	void add(const T& data, bool update=true)
 	{
 		data_.push_back(data);
 		
@@ -39,30 +39,34 @@ public:
 		
 		if(update)
 		{
-			deltas_.push_back([=] (swganh::messages::DeltasMessage& message) {
+			deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 				message.data.write<uint8_t>(1);
 				message.data.write<uint16_t>(index);
-				Serializer::SerializeDelta(message, new_data);
+				Serializer::SerializeDelta(message.data, new_data);
 			});
 		}
 	}
 	
-	void update(uint16_t index)
+	void update(const uint16_t index)
 	{
-		deltas_.push_back([=] (swganh::messages::DeltasMessage& message) {
+		deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 			message.data.write<uint8_t>(2);
-			Serializer::SerializeDelta(message, data_[index]);
+			Serializer::SerializeDelta(message.data, data_[index]);
 		});
 	}
 	
-	void reset(std::vector<T> other, bool update=true)
+	void reset(const std::vector<T>& other, bool update=true)
 	{
 		if(update)
 		{
 			//A copy will be made for the update
-			deltas_.push_back([=] (swganh::messages::DeltasMessage& message) {
+			deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 				message.data.write<uint8_t>(3);
 				message.data.write<uint16_t>(other.size());
+				for(auto& item : other)
+				{
+					Serializer::SerializeDelta(message.data, item);
+				}
 			});
 		}
 		
@@ -75,9 +79,18 @@ public:
 		data_.clear();
 		if(update)
 		{
-			deltas_.push_back([] (swganh::messages::DeltasMessage& message) {
+			deltas_.push([] (swganh::messages::DeltasMessage& message) {
 				message.data.write<uint8_t>(4);
 			});
+		}
+	}
+
+	void erase(const T& value)
+	{
+		auto itr = std::find(data_.begin(), data_.end(), value);
+		if(itr != data_.end())
+		{
+			data_.erase(itr);
 		}
 	}
 
@@ -93,12 +106,17 @@ public:
 	
 	T& get(const uint16_t index)
 	{
-		return data_.get(index);
+		return data_.at(index);
 	}
 	
 	T& operator[](const uint16_t index)
 	{
-		return data_.get(index);
+		return data_.at(index);
+	}
+	
+	uint16_t size()
+	{
+		return data_.size();
 	}
 	
 	void Serialize(swganh::messages::BaseSwgMessage* message)
@@ -119,7 +137,7 @@ public:
         message.data.write<uint32_t>(0);
 		for(auto& item : data_)
 		{
-			Serializer::SerializeBaseline(message, item);
+			Serializer::SerializeBaseline(message.data, item);
 		}
 	}
 	
@@ -130,7 +148,7 @@ public:
 		
 		while(!deltas_.empty())
 		{
-			deltas_.top()(message.data);
+			deltas_.front()(message);
 			deltas_.pop();
 		}
 	}
