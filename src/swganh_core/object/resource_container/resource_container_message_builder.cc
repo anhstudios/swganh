@@ -97,21 +97,21 @@ void ResourceContainerMessageBuilder::BuildVariationNameDelta(const std::shared_
 }
 
 // baselines
-boost::optional<BaselinesMessage> ResourceContainerMessageBuilder::BuildBaseline3(const std::shared_ptr<ResourceContainer>& resource_container)
+boost::optional<BaselinesMessage> ResourceContainerMessageBuilder::BuildBaseline3(const std::shared_ptr<ResourceContainer>& resource_container, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(resource_container, Object::VIEW_3, 13);
-	message.data.append((*TangibleMessageBuilder::BuildBaseline3(resource_container)).data);
-	message.data.write(resource_container->GetCurrentQuantity());
-	message.data.write(resource_container->GetGlobalResource());
+	auto message = CreateBaselinesMessage(resource_container, lock, Object::VIEW_3, 13);
+	message.data.append((*TangibleMessageBuilder::BuildBaseline3(resource_container, lock)).data);
+	message.data.write(resource_container->GetCurrentQuantity(lock));
+	message.data.write(resource_container->GetGlobalResource(lock));
     return BaselinesMessage(move(message));
 }
 
-boost::optional<BaselinesMessage> ResourceContainerMessageBuilder::BuildBaseline6(const std::shared_ptr<ResourceContainer>& resource_container)
+boost::optional<BaselinesMessage> ResourceContainerMessageBuilder::BuildBaseline6(const std::shared_ptr<ResourceContainer>& resource_container, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(resource_container, Object::VIEW_6, 5);
-	message.data.append((*TangibleMessageBuilder::BuildBaseline6(resource_container)).data);
-	message.data.write(resource_container->GetMaxQuantity());
-	message.data.write(resource_container->GetResourceType());
-	message.data.write(resource_container->GetResourceName());
+	auto message = CreateBaselinesMessage(resource_container, lock, Object::VIEW_6, 5);
+	message.data.append((*TangibleMessageBuilder::BuildBaseline6(resource_container, lock)).data);
+	message.data.write(resource_container->GetMaxQuantity(lock));
+	message.data.write(resource_container->GetResourceType(lock));
+	message.data.write(resource_container->GetResourceName(lock));
     return BaselinesMessage(move(message));
 }

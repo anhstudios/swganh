@@ -469,12 +469,12 @@ void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
 }
 
 // baselines
-boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& object)
+boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(object, Object::VIEW_3, 10);
-    message.data.append((*IntangibleMessageBuilder::BuildBaseline3(object)).data);
+    auto message = CreateBaselinesMessage(object, lock, Object::VIEW_3, 10);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline3(object, lock)).data);
     
-    auto status_flags = object->GetStatusFlags();
+    auto status_flags = object->GetStatusFlags(lock);
 
     message.data.write<uint32_t>(status_flags.size());
 
@@ -485,7 +485,7 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const sha
         flag.Serialize(message);
     });
 
-    auto profile_flags = object->GetProfileFlags();
+    auto profile_flags = object->GetProfileFlags(lock);
 
     message.data.write<uint32_t>(profile_flags.size());
 
@@ -496,28 +496,28 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const sha
         flag.Serialize(message);
     });
 
-    message.data.write<std::string>(object->GetProfessionTag());        // Profession Tag
-    message.data.write<uint32_t>(object->GetBornDate());                // Born Date
-    message.data.write<uint32_t>(object->GetTotalPlayTime());           // Total Play Time
+    message.data.write<std::string>(object->GetProfessionTag(lock));        // Profession Tag
+    message.data.write<uint32_t>(object->GetBornDate(lock));                // Born Date
+    message.data.write<uint32_t>(object->GetTotalPlayTime(lock));           // Total Play Time
     return BaselinesMessage(move(message));
 }
 
-boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(const shared_ptr<Player>& object)
+boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(const shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(object, Object::VIEW_6, 2);
-    message.data.append((*IntangibleMessageBuilder::BuildBaseline6(object)).data);
-    message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
+    auto message = CreateBaselinesMessage(object, lock, Object::VIEW_6, 2);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline6(object, lock)).data);
+    message.data.write<uint8_t>(object->GetAdminTag(lock));     // Admin Tag
     return BaselinesMessage(move(message));
 }
 
-boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(const shared_ptr<Player>& object)
+boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(const shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(object, Object::VIEW_8, 7);
-    object->SerializeXp(&message);
-    object->SerializeWaypoints(&message);
+    auto message = CreateBaselinesMessage(object, lock, Object::VIEW_8, 7);
+    object->SerializeXp(&message, lock);
+    object->SerializeWaypoints(&message, lock);
     
-    message.data.write<uint32_t>(object->GetCurrentForcePower());
-    message.data.write<uint32_t>(object->GetMaxForcePower());
+    message.data.write<uint32_t>(object->GetCurrentForcePower(lock));
+    message.data.write<uint32_t>(object->GetMaxForcePower(lock));
     
     message.data.write<uint32_t>(0); // Force Sensetive Quest List Soze
     message.data.write<uint32_t>(0); // Force Sensetive Quest List Counter
@@ -525,39 +525,39 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(const sha
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Size
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Counter
     
-    object->SerializeQuests(&message);
+    object->SerializeQuests(&message, lock);
     
     return BaselinesMessage(move(message));
 }
 
-boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(const shared_ptr<Player>& object)
+boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(const shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(object, Object::VIEW_9, 17);
+    auto message = CreateBaselinesMessage(object, lock, Object::VIEW_9, 17);
     
-    object->SerializeAbilities(&message);
-    message.data.write<uint32_t>(object->GetExperimentationFlag());
-    message.data.write<uint32_t>(object->GetCraftingStage());
-    message.data.write<uint64_t>(object->GetNearestCraftingStation());
+    object->SerializeAbilities(&message, lock);
+    message.data.write<uint32_t>(object->GetExperimentationFlag(lock));
+    message.data.write<uint32_t>(object->GetCraftingStage(lock));
+    message.data.write<uint64_t>(object->GetNearestCraftingStation(lock));
     
-    object->SerializeDraftSchematics(&message);
+    object->SerializeDraftSchematics(&message, lock);
     
-    message.data.write<uint32_t>(object->GetExperimentationPoints());
-    message.data.write<uint32_t>(object->GetAccomplishmentCounter());
+    message.data.write<uint32_t>(object->GetExperimentationPoints(lock));
+    message.data.write<uint32_t>(object->GetAccomplishmentCounter(lock));
     
-    object->SerializeFriends(&message);
+    object->SerializeFriends(&message, lock);
     
-    object->SerializeIgnoredPlayers(&message);
+    object->SerializeIgnoredPlayers(&message, lock);
     
-    message.data.write<uint32_t>(object->GetLanguage());
-    message.data.write<uint32_t>(object->GetCurrentStomach());
-    message.data.write<uint32_t>(object->GetMaxStomach());
-    message.data.write<uint32_t>(object->GetCurrentDrink());
-    message.data.write<uint32_t>(object->GetMaxDrink());
+    message.data.write<uint32_t>(object->GetLanguage(lock));
+    message.data.write<uint32_t>(object->GetCurrentStomach(lock));
+    message.data.write<uint32_t>(object->GetMaxStomach(lock));
+    message.data.write<uint32_t>(object->GetCurrentDrink(lock));
+    message.data.write<uint32_t>(object->GetMaxDrink(lock));
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(0); // Unused
-    message.data.write<uint32_t>(object->GetJediState()); // Jedi State
+    message.data.write<uint32_t>(object->GetJediState(lock)); // Jedi State
     
     return BaselinesMessage(message);
 }

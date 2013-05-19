@@ -36,9 +36,9 @@ namespace object {
 		static void BuildConditionPercentDelta(const std::shared_ptr<Installation>& installation);
 
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Installation>& installation);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Installation>& installation);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<Installation>& installation);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock);
     private:
         typedef swganh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
         

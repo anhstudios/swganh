@@ -149,31 +149,31 @@ void TangibleMessageBuilder::BuildDefendersDelta(const shared_ptr<Tangible>& tan
 }
 
 // baselines
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangible>& tangible)
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangible>& tangible, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(tangible, Object::VIEW_3, 11);
-    message.data.append((*ObjectMessageBuilder::BuildBaseline3(tangible)).data);
-    message.data.write<std::string>(tangible->GetCustomization());
-    tangible->SerializeComponentCustomization(&message);
-    message.data.write<uint32_t>(tangible->GetOptionsMask());
-    message.data.write<uint32_t>(tangible->GetCounter());
-    message.data.write<uint32_t>(tangible->GetCondition());
-    message.data.write<uint32_t>(tangible->GetMaxCondition());
-    message.data.write<uint8_t>(tangible->IsStatic() ? 1 : 0);
+    auto message = CreateBaselinesMessage(tangible, lock, Object::VIEW_3, 11);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline3(tangible, lock)).data);
+    message.data.write<std::string>(tangible->GetCustomization(lock));
+    tangible->SerializeComponentCustomization(&message, lock);
+    message.data.write<uint32_t>(tangible->GetOptionsMask(lock));
+    message.data.write<uint32_t>(tangible->GetCounter(lock));
+    message.data.write<uint32_t>(tangible->GetCondition(lock));
+    message.data.write<uint32_t>(tangible->GetMaxCondition(lock));
+    message.data.write<uint8_t>(tangible->IsStatic(lock) ? 1 : 0);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(const shared_ptr<Tangible>& tangible)
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(const shared_ptr<Tangible>& tangible, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(tangible, Object::VIEW_6, 2);
-    message.data.append((*ObjectMessageBuilder::BuildBaseline6(tangible)).data);
-    tangible->SerializeDefenders(&message);
+    auto message = CreateBaselinesMessage(tangible, lock,  Object::VIEW_6, 2);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline6(tangible, lock)).data);
+    tangible->SerializeDefenders(&message, lock);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(const shared_ptr<Tangible>& tangible)
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(const shared_ptr<Tangible>& tangible, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(tangible, Object::VIEW_7, 2);
+    auto message = CreateBaselinesMessage(tangible, lock, Object::VIEW_7, 2);
     message.data.write<uint64_t>(0);
     message.data.write<uint64_t>(0);
     return BaselinesMessage(std::move(message));

@@ -43,11 +43,15 @@ public:
     *   @returns glm::vec3 coordinates
     */
     glm::vec3 GetCoordinates() ;
+	glm::vec3 GetCoordinates(boost::unique_lock<boost::mutex>& lock) ;
+
     /**
     * @brief sets the glm::vec3 coordinates of the waypoint
     *   @param coords referenced glm::vec3 object
     */
     void SetCoordinates(const glm::vec3& coords);
+	void SetCoordinates(const glm::vec3& coords, boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief sets the coordinates of the waypoint
     *   @param float x, x coordinate
@@ -55,52 +59,70 @@ public:
     *   @param float z, z coordinate
     */
     void SetCoordinates(float x, float y, float z);
+	void SetCoordinates(float x, float y, float z, boost::unique_lock<boost::mutex>& lock);
 
     /**
     * @brief checks if the waypoint is activated
     *   @returns true if the waypoint is activated
     */
     bool Active() const;
+	bool Active(boost::unique_lock<boost::mutex>& lock) const;
+
     /**
     * @brief checks if the waypoint is activated
     *   @returns 0 if the waypoint is activated, 1 else
     */
     uint8_t GetActiveFlag();
+	uint8_t GetActiveFlag(boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief sets the current waypoint to Activated
     */
     void Activate();
+	void Activate(boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief sets the current waypoint to DeActivated
     */
     void DeActivate();
+	void DeActivate(boost::unique_lock<boost::mutex>& lock);
 
     uint64_t GetLocationNetworkId() const;
+	uint64_t GetLocationNetworkId(boost::unique_lock<boost::mutex>& lock) const;
 
     void SetLocationNetworkId(uint64_t location_network_id);
+	void SetLocationNetworkId(uint64_t location_network_id, boost::unique_lock<boost::mutex>& lock);
 
     /**
     * @brief Gets the string of the planet name as seen in the CRC Tables
     *   @returns string of the planet the waypoint is located
     */
     const std::string& GetPlanet();
+	const std::string& GetPlanet(boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief sets the current waypoint's planet
     *   @param planet_name the planet to set the string to
     */
     void SetPlanet(const std::string& planet_name);
+	void SetPlanet(const std::string& planet_name, boost::unique_lock<boost::mutex>& lock);
 
     /**
     * @brief gets the waypoint's Unicode name
     *   @returns name of the waypoint in Unicode
     */
     const std::wstring& GetName();
+	const std::wstring& GetName(boost::unique_lock<boost::mutex>& lock);
+
     std::string GetNameStandard();
+	std::string GetNameStandard(boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief sets the waypoint's Unicode name
     *   @param name of the waypoint in Unicode
     */
     void SetName(const std::wstring& name);
+	void SetName(const std::wstring& name, boost::unique_lock<boost::mutex>& lock);
 
     /**
     * @brief gets the waypoint's current color
@@ -109,6 +131,8 @@ public:
     *   @returns color of the waypoint
     */
     const std::string& GetColor();
+	const std::string& GetColor(boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief gets the waypoint's current color as a Byte
     *
@@ -116,6 +140,8 @@ public:
     *   @returns Byte color of the waypoint
     */
     uint8_t GetColorByte();
+	uint8_t GetColorByte(boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief sets the waypoint's color
     *
@@ -123,6 +149,8 @@ public:
     *   @param color of the waypoint
     */
     void SetColor(const std::string& color);
+	void SetColor(const std::string& color, boost::unique_lock<boost::mutex>& lock);
+
     /**
     * @brief sets the waypoint's color byte
     *
@@ -130,16 +158,15 @@ public:
     *   @param color_byte to set the waypoint
     */
     void SetColorByte(uint8_t color_byte);
+	void SetColorByte(uint8_t color_byte, boost::unique_lock<boost::mutex>& lock);
 
     typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
 
-	virtual std::shared_ptr<Object> Clone();
-	void Clone(std::shared_ptr<Waypoint> other);
 private:
 
     glm::vec3 coordinates_;			                    //update 3
-    std::atomic<uint8_t> activated_flag_;		        //update 3
-    std::atomic<uint64_t> location_network_id_;	        //update 3
+    uint8_t activated_flag_;		        //update 3
+	uint64_t location_network_id_;	        //update 3
     std::string planet_name_;		                    //update 3
     std::wstring name_;				                    //update 3
     std::string color_;				                    //update 3

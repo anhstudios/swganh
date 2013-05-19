@@ -36,13 +36,16 @@ namespace object {
         {
             std::vector<boost::optional<swganh::messages::BaselinesMessage>> baselines;
             
-            baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline1(subject));
-            baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline3(subject));
-            baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline4(subject));
-            baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline6(subject));
-            baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline7(subject));
-            baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline8(subject));
-            baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline9(subject));
+			{
+				auto lock = subject->AcquireLock();
+				baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline1(subject, lock));
+				baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline3(subject, lock));
+				baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline4(subject, lock));
+				baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline6(subject, lock));
+				baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline7(subject, lock));
+				baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline8(subject, lock));
+				baselines.emplace_back(SubjectT::MessageBuilderType::BuildBaseline9(subject, lock));
+			}
 
             for (auto& baseline : baselines)
             {
@@ -64,17 +67,17 @@ namespace object {
         // delta 6
         static void BuildServerIDDelta(const std::shared_ptr<Object>& object);
 
-        static swganh::messages::BaselinesMessage CreateBaselinesMessage(const std::shared_ptr<Object>& object, uint8_t view_type, uint16_t opcount = 0) ;
+        static swganh::messages::BaselinesMessage CreateBaselinesMessage(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, uint8_t view_type, uint16_t opcount = 0) ;
 
         static swganh::messages::DeltasMessage CreateDeltasMessage(const std::shared_ptr<Object>& object, uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
         
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline1(const std::shared_ptr<Object>& object) { return boost::optional<swganh::messages::BaselinesMessage>(); }
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Object>& object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(const std::shared_ptr<Object>& object) { return boost::optional<swganh::messages::BaselinesMessage>(); }
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Object>& object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<Object>& object) { return boost::optional<swganh::messages::BaselinesMessage>(); }
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline8(const std::shared_ptr<Object>& object) { return boost::optional<swganh::messages::BaselinesMessage>(); }
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline9(const std::shared_ptr<Object>& object) { return boost::optional<swganh::messages::BaselinesMessage>(); }
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline1(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock) { return boost::optional<swganh::messages::BaselinesMessage>(); }
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock) { return boost::optional<swganh::messages::BaselinesMessage>(); }
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock) { return boost::optional<swganh::messages::BaselinesMessage>(); }
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline8(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock) { return boost::optional<swganh::messages::BaselinesMessage>(); }
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline9(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock) { return boost::optional<swganh::messages::BaselinesMessage>(); }
 
         typedef swganh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
     protected:

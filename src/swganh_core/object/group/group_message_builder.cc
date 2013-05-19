@@ -61,18 +61,18 @@ void GroupMessageBuilder::BuildLootMasterDelta(const shared_ptr<Group>& group)
     }
 }
 
-boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline3(const std::shared_ptr<Group>& group)
+boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline3(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(group, Object::VIEW_3, 8);
-	message.data.append((*ObjectMessageBuilder::BuildBaseline3(group)).data);
+	auto message = CreateBaselinesMessage(group, lock, Object::VIEW_3, 8);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline3(group, lock)).data);
 	return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group>& group)
+boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(group, Object::VIEW_6, 6);
-	message.data.append((*ObjectMessageBuilder::BuildBaseline6(group)).data);
-    group->GetGroupMembers().Serialize(message);
+	auto message = CreateBaselinesMessage(group, lock, Object::VIEW_6, 6);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline6(group, lock)).data);
+    group->GetGroupMembers(lock).Serialize(message);
 	
 	//Unknown List
 	message.data.write<uint32_t>(0);
@@ -81,10 +81,10 @@ boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(const std:
 	//Unknown String
 	message.data.write<std::string>("");
 
-    message.data.write<uint16_t>(group->GetDifficulty());
+    message.data.write<uint16_t>(group->GetDifficulty(lock));
 	message.data.write<uint32_t>(4); //Unknown Int
-    message.data.write<uint64_t>(group->GetLootMaster());
-    message.data.write<uint32_t>(group->GetLootMode());
+    message.data.write<uint64_t>(group->GetLootMaster(lock));
+    message.data.write<uint32_t>(group->GetLootMode(lock));
 	return BaselinesMessage(std::move(message));
 }
 

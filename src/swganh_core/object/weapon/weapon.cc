@@ -17,16 +17,3 @@ uint32_t Weapon::GetType() const
 { 
 	return Weapon::type; 
 }
-
-std::shared_ptr<Object> Weapon::Clone()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto other = std::make_shared<Weapon>();
-	Clone(other);
-	return other;
-}
-
-void Weapon::Clone(std::shared_ptr<Weapon> other)
-{
-	Tangible::Clone(other);
-}

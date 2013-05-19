@@ -643,74 +643,72 @@ void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(const shared_ptr<Creatu
     }
 }
 
-boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creature>& creature)
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(creature, Object::VIEW_1, 4);
-    message.data.write<uint32_t>(creature->GetBankCredits());                  // Bank Credits
-    message.data.write<uint32_t>(creature->GetCashCredits());                  // Cash Credits
-    creature->SerializeBaseStats(&message);                           // Stats Negative
-    creature->SerializeSkills(&message);                                   // Skills
-    
+    auto message = CreateBaselinesMessage(creature, lock, Object::VIEW_1, 4);
+    message.data.write<uint32_t>(creature->GetBankCredits(lock));                  // Bank Credits
+    message.data.write<uint32_t>(creature->GetCashCredits(lock));                  // Cash Credits
+    creature->SerializeBaseStats(&message, lock);                           // Stats Negative
+    creature->SerializeSkills(&message, lock);                                   // Skills
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creature>& creature)
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(creature, Object::VIEW_3, 18);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline3(creature)).data);
-    message.data.write<uint8_t>(creature->GetPosture());                        // Posture
-    message.data.write<uint8_t>(creature->GetFactionRank());                   // Faction Rank
-    message.data.write<uint64_t>(creature->GetOwnerId());                      // Owner Id
-    message.data.write<float>(creature->GetScale());                            // Scale
-    message.data.write<uint32_t>(creature->GetBattleFatigue());                // Battle Fatigue
-    message.data.write<uint64_t>(creature->GetStateBitmask());                 // States Bitmask
-    creature->SerializeStatWounds(&message);                          // Stat Wounds
+    auto message = CreateBaselinesMessage(creature, lock, Object::VIEW_3, 18);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline3(creature, lock)).data);
+    message.data.write<uint8_t>(creature->GetPosture(lock));                        // Posture
+    message.data.write<uint8_t>(creature->GetFactionRank(lock));                   // Faction Rank
+    message.data.write<uint64_t>(creature->GetOwnerId(lock));                      // Owner Id
+    message.data.write<float>(creature->GetScale(lock));                            // Scale
+    message.data.write<uint32_t>(creature->GetBattleFatigue(lock));                // Battle Fatigue
+    message.data.write<uint64_t>(creature->GetStateBitmask(lock));                 // States Bitmask
+    creature->SerializeStatWounds(&message, lock);                          // Stat Wounds
+    return BaselinesMessage(move(message));
+}
+
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock)
+{
+    auto message = CreateBaselinesMessage(creature, lock, Object::VIEW_4, 20);
+    message.data.write<float>(creature->GetAccelerationMultiplierBase(lock));         // Acceleration Multiplier Base
+    message.data.write<float>(creature->GetAccelerationMultiplierModifier(lock));     // Acceleration Multiplier Modifier
+    creature->SerializeStatEncumberances(&message, lock);                       // Stat Encumberances
+    creature->SerializeSkillMods(&message, lock);                               // Skill Mods
+    message.data.write<float>(creature->GetSpeedMultiplierBase(lock));                // Speed Multiplier Base
+    message.data.write<float>(creature->GetSpeedMultiplierModifier(lock));            // Speed Multiplier Modifier
+    message.data.write<uint64_t>(creature->GetListenToId(lock));                      // Listen To Id
+    message.data.write<float>(creature->GetRunSpeed(lock));                            // Run Speed
+    message.data.write<float>(creature->GetSlopeModifierAngle(lock));                 // Slope Modifier Angle
+    message.data.write<float>(creature->GetSlopeModifierPercent(lock));               // Slope Modifier Percent
+    message.data.write<float>(creature->GetTurnRadius(lock));                          // Turn Radius
+    message.data.write<float>(creature->GetWalkingSpeed(lock));                        // Walking Speed
+    message.data.write<float>(creature->GetWaterModifierPercent(lock));               // Water Modifier Percent
+    creature->SerializeMissionCriticalObjects(&message, lock);                 // Mission Critical Object
     
     return BaselinesMessage(move(message));
 }
 
-boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creature>& creature)
+boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline6(const shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(creature, Object::VIEW_4, 20);
-    message.data.write<float>(creature->GetAccelerationMultiplierBase());         // Acceleration Multiplier Base
-    message.data.write<float>(creature->GetAccelerationMultiplierModifier());     // Acceleration Multiplier Modifier
-    creature->SerializeStatEncumberances(&message);                       // Stat Encumberances
-    creature->SerializeSkillMods(&message);                               // Skill Mods
-    message.data.write<float>(creature->GetSpeedMultiplierBase());                // Speed Multiplier Base
-    message.data.write<float>(creature->GetSpeedMultiplierModifier());            // Speed Multiplier Modifier
-    message.data.write<uint64_t>(creature->GetListenToId());                      // Listen To Id
-    message.data.write<float>(creature->GetRunSpeed());                            // Run Speed
-    message.data.write<float>(creature->GetSlopeModifierAngle());                 // Slope Modifier Angle
-    message.data.write<float>(creature->GetSlopeModifierPercent());               // Slope Modifier Percent
-    message.data.write<float>(creature->GetTurnRadius());                          // Turn Radius
-    message.data.write<float>(creature->GetWalkingSpeed());                        // Walking Speed
-    message.data.write<float>(creature->GetWaterModifierPercent());               // Water Modifier Percent
-    creature->SerializeMissionCriticalObjects(&message);                 // Mission Critical Object
-    
-    return BaselinesMessage(move(message));
-}
-
-boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline6(const shared_ptr<Creature>& creature)
-{
-    auto message = CreateBaselinesMessage(creature, Object::VIEW_6, 23);
-    message.data.append((*TangibleMessageBuilder::BuildBaseline6(creature)).data);
-    message.data.write<uint16_t>(creature->GetCombatLevel());                      // Combat Level
-    message.data.write<std::string>(creature->GetAnimation());                      // Current Animation
-    message.data.write<std::string>(creature->GetMoodAnimation());                 // Mood Animation
-    message.data.write<uint64_t>(creature->GetWeaponId());                         // Weapon Id
-    message.data.write<uint64_t>(creature->GetGroupId());                          // Group Id
-    message.data.write<uint64_t>(creature->GetInviteSenderId());                  // Invite Sender Id
-    message.data.write<uint64_t>(creature->IncrementInviteCounter());                  // Invite Sender Counter
-    message.data.write<uint32_t>(creature->GetGuildId());                          // Guild Id
-    message.data.write<uint64_t>(creature->GetTargetId());                         // Target Id
-    message.data.write<uint8_t>(creature->GetMoodId());                            // Mood Id
-    message.data.write<uint32_t>(creature->IncrementPerformanceCounter());             // Performance Update Counter
-    message.data.write<uint32_t>(creature->GetPerformanceId());                    // Performance Id
-    creature->SerializeCurrentStats(&message);										// Current Stats
-    creature->SerializeMaxStats(&message);											// Max Stats
-    creature->SerializeEquipment(&message);											// Equipment
-    message.data.write<std::string>(creature->GetDisguise());                       // Disguise Template
-    message.data.write<uint8_t>(creature->IsStationary());                         // Stationary
+    auto message = CreateBaselinesMessage(creature, lock, Object::VIEW_6, 23);
+    message.data.append((*TangibleMessageBuilder::BuildBaseline6(creature, lock)).data);
+    message.data.write<uint16_t>(creature->GetCombatLevel(lock));                      // Combat Level
+    message.data.write<std::string>(creature->GetAnimation(lock));                      // Current Animation
+    message.data.write<std::string>(creature->GetMoodAnimation(lock));                 // Mood Animation
+    message.data.write<uint64_t>(creature->GetWeaponId(lock));                         // Weapon Id
+    message.data.write<uint64_t>(creature->GetGroupId(lock));                          // Group Id
+    message.data.write<uint64_t>(creature->GetInviteSenderId(lock));                  // Invite Sender Id
+    message.data.write<uint64_t>(creature->IncrementInviteCounter(lock));                  // Invite Sender Counter
+    message.data.write<uint32_t>(creature->GetGuildId(lock));                          // Guild Id
+    message.data.write<uint64_t>(creature->GetTargetId(lock));                         // Target Id
+    message.data.write<uint8_t>(creature->GetMoodId(lock));                            // Mood Id
+    message.data.write<uint32_t>(creature->IncrementPerformanceCounter(lock));             // Performance Update Counter
+    message.data.write<uint32_t>(creature->GetPerformanceId(lock));                    // Performance Id
+    creature->SerializeCurrentStats(&message, lock);										// Current Stats
+    creature->SerializeMaxStats(&message, lock);											// Max Stats
+    creature->SerializeEquipment(&message, lock);											// Equipment
+    message.data.write<std::string>(creature->GetDisguise(lock));                       // Disguise Template
+    message.data.write<uint8_t>(creature->IsStationary(lock));                         // Stationary
     
     return BaselinesMessage(move(message));
 }

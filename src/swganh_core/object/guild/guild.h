@@ -59,8 +59,13 @@ public:
     ~Guild();
 
     void AddGuildTag(uint32_t guild_id, std::string abbreviation);
+	void AddGuildTag(uint32_t guild_id, std::string abbreviation, boost::unique_lock<boost::mutex>& lock);
+
     void RemoveGuildTag(uint32_t guild_id);
+	void RemoveGuildTag(uint32_t guild_id, boost::unique_lock<boost::mutex>& lock);
+
     swganh::messages::containers::NetworkList<GuildTag>& GetGuildList();
+	swganh::messages::containers::NetworkList<GuildTag>& GetGuildList(boost::unique_lock<boost::mutex>& lock);
 
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;

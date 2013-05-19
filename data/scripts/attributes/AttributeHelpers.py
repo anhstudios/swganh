@@ -17,11 +17,8 @@ def PERCENT_DASH(input):
 		
 def SetOptionalAttribute(attribute_list, attribute_name, attribute_label, object, is_recursive, func=RAW):
 	attr_val = ""
-	if is_recursive:
-		attr_val = object.getAttributeRecursive(attribute_label)
-	else:
-		if object.hasAttribute(attribute_label):
-			attr_val = object.getStringAttribute(attribute_label)
+	if object.hasAttribute(attribute_label):
+		attr_val = object.getStringAttribute(attribute_label)
 			
 	attr_val = func(attr_val)
 	

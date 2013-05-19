@@ -28,17 +28,17 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
         guild->GetGuildList().ClearDeltas();
 }
 
-boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(guild, Object::VIEW_3, 5);
-    message.data.append((*ObjectMessageBuilder::BuildBaseline3(guild)).data);
-    guild->GetGuildList().Serialize(message);
+    auto message = CreateBaselinesMessage(guild, lock, Object::VIEW_3, 5);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline3(guild, lock)).data);
+    guild->GetGuildList(lock).Serialize(message);
     return BaselinesMessage(std::move(message));
 }
 
-boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline6(const shared_ptr<Guild>& guild)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline6(const shared_ptr<Guild>& guild, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(guild, Object::VIEW_6, 5);
-    message.data.append((*ObjectMessageBuilder::BuildBaseline6(guild)).data);
+    auto message = CreateBaselinesMessage(guild, lock, Object::VIEW_6, 5);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline6(guild, lock)).data);
     return BaselinesMessage(std::move(message));
 }
