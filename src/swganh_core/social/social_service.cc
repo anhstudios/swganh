@@ -64,7 +64,7 @@ bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& fr
     /// If we found our friend, lets add them to our friends list (which will get updated by the player)
     if (friend_id > 0)
     {
-        player->AddFriend(friend_name, friend_id);
+        player->AddFriend(friend_name);
         return true;
     }
 
@@ -77,7 +77,7 @@ bool SocialService::AddIgnore(const shared_ptr<Player>& player, const string& pl
     /// If we found the player name, lets add them to our ignore list (which will get updated by the player)
     if (player_id > 0)
     {
-        player->IgnorePlayer(player_name, player_id);
+        player->IgnorePlayer(player_name);
         return true;
     }
 
