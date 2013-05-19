@@ -13,27 +13,33 @@ namespace swganh
 namespace containers
 {
 
-template<typename K, typename V, typename Serializer=DefaultSerializer<T>>
+template<typename K, typename V, typename Serializer=DefaultSerializer<V>>
 class NetworkMap
 {
 public:
+	typedef typename std::map<K, V>::const_iterator const_iterator;
+	typedef typename std::map<K, V>::iterator iterator;
 
 	void remove(const K& key, bool update=true)
 	{
-		auto itr = data_.find(key);
+		remove(data_.find(key));
+	}
+	
+	void remove(iterator itr, bool update=true)
+	{
 		if(itr != data_.end())
 		{
 			if(update)
 			{
 				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 					message.data.write<uint8_t>(1);
-					Serializer::SerializeDelta(message.data, itr.second);
+					Serializer::SerializeDelta(message.data, itr->second);
 				});
 			}
 			data_.erase(itr);
 		}
 	}
-	
+
 	void add(const K& key, const V& value, bool update=true)
 	{
 		auto pair = data_.insert(std::make_pair(key, value));
@@ -57,12 +63,12 @@ public:
 		});
 	}
 
-	std::set<T> data()
+	std::map<K,V> data()
 	{
 		return data_;
 	}
 	
-	std::set<T>& raw()
+	std::map<K,V>& raw()
 	{
 		return data_;
 	}
@@ -70,6 +76,16 @@ public:
 	uint32_t size()
 	{
 		return data_.size();
+	}
+
+	iterator begin()
+	{
+		return data_.begin();
+	}
+
+	iterator end()
+	{
+		return data_.end();
 	}
 
 	void Serialize(swganh::messages::BaseSwgMessage* message)
@@ -88,9 +104,9 @@ public:
 	{
 		message.data.write<uint32_t>(data_.size());
         message.data.write<uint32_t>(0);
-		for(auto& item : data_)
+		for(auto& pair : data_)
 		{
-			Serializer::SerializeBaseline(message, item);
+			Serializer::SerializeBaseline(message.data, pair.second);
 		}
 	}
 	
@@ -101,7 +117,7 @@ public:
 		
 		while(!deltas_.empty())
 		{
-			deltas_.top()(message);
+			deltas_.front()(message);
 			deltas_.pop();
 		}
 	}

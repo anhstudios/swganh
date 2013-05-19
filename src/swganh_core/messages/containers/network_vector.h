@@ -17,10 +17,24 @@ template<typename T, typename Serializer=DefaultSerializer<T>>
 class NetworkVector
 {
 public:
+	typedef typename std::vector<T>::const_iterator const_iterator;
+	typedef typename std::vector<T>::iterator iterator;
+
+	NetworkVector() 
+	{
+	}
+
+	NetworkVector(uint32_t reserve)
+	{
+		for(uint32_t i=0; i < reserve; ++i)
+		{
+			data_.push_back(0);
+		}
+	}
 
 	void remove(const uint16_t index, bool update=true)
 	{
-		data_.remove(index);
+		data_.erase(data_.begin() + index);
 		if(update)
 		{
 			deltas_.push([=] (swganh::messages::DeltasMessage& message) {
@@ -30,6 +44,11 @@ public:
 		}
 	}
 	
+	void remove(iterator itr, bool update=true)
+	{
+		remove(itr - data_.begin(), update);
+	}
+
 	void add(const T& data, bool update=true)
 	{
 		data_.push_back(data);
@@ -51,10 +70,22 @@ public:
 	{
 		deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 			message.data.write<uint8_t>(2);
+			message.data.write<uint16_t>(index);
 			Serializer::SerializeDelta(message.data, data_[index]);
 		});
 	}
 	
+	void update(iterator itr)
+	{
+		update(itr - data_.begin());
+	}
+
+	void update(const uint16_t index, const T& new_value)
+	{
+		data_[index] = new_value;
+		update(index);
+	}
+
 	void reset(const std::vector<T>& other, bool update=true)
 	{
 		if(update)
@@ -119,6 +150,16 @@ public:
 		return data_.size();
 	}
 	
+	iterator begin()
+	{
+		return data_.begin();
+	}
+
+	iterator end()
+	{
+		return data_.end();
+	}
+
 	void Serialize(swganh::messages::BaseSwgMessage* message)
 	{
 		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)

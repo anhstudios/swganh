@@ -17,23 +17,30 @@ template<typename T, typename Serializer=DefaultSerializer<T>>
 class NetworkSet
 {
 public:
-
+	typedef typename std::set<T>::const_iterator const_iterator;
+	typedef typename std::set<T>::iterator iterator;
+	
 	void remove(const T& data, bool update=true)
 	{
-		auto itr = data_.find(data);
+		remove(data_.find(data));
+	}
+	
+	void remove(iterator itr, bool update=true)
+	{
 		if(itr != data_.end())
 		{
-			data_.erase(itr);
 			if(update)
 			{
+				const T& data = *itr;
 				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
 					message.data.write<uint8_t>(0);
 					Serializer::SerializeDelta(message.data, data);
 				});
 			}
+			data_.erase(itr);
 		}
 	}
-	
+
 	void add(const T& data, bool update=true)
 	{
 		auto pair = data_.insert(data);
@@ -60,6 +67,11 @@ public:
 		}
 	}
 	
+	bool contains(const T& data)
+	{
+		return data_.find(data) != data_.end();
+	}
+
 	std::set<T> data()
 	{
 		return data_;
@@ -68,6 +80,16 @@ public:
 	std::set<T>& raw()
 	{
 		return data_;
+	}
+
+	iterator begin()
+	{
+		return data_.begin();
+	}
+
+	iterator end()
+	{
+		return data_.end();
 	}
 
 	void Serialize(swganh::messages::BaseSwgMessage* message)
