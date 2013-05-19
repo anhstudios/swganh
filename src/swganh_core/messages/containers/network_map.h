@@ -6,6 +6,9 @@
 #include <queue>
 #include <functional>
 
+#include "swganh_core/messages/baselines_message.h"
+#include "swganh_core/messages/deltas_message.h"
+
 #include "default_serializer.h"
 
 namespace swganh
@@ -63,6 +66,16 @@ public:
 		});
 	}
 
+	bool contains(const K& key)
+	{
+		return data_.find(key) != data_.end();
+	}
+	
+	iterator find(const K& key)
+	{
+		return data_.find(key);
+	}
+
 	std::map<K,V> data()
 	{
 		return data_;
@@ -86,6 +99,11 @@ public:
 	iterator end()
 	{
 		return data_.end();
+	}
+
+	V& operator[](const K& key)
+	{
+		return find(key)->second;
 	}
 
 	void Serialize(swganh::messages::BaseSwgMessage* message)

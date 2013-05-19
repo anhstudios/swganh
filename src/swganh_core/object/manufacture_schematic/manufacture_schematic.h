@@ -7,8 +7,13 @@
 
 #include "swganh_core/object/intangible/intangible.h"
 
-#include "swganh_core/messages/containers/network_array.h"
-#include "swganh_core/messages/containers/network_sorted_vector.h"
+#include "swganh_core/messages/containers/network_vector.h"
+#include "swganh_core/messages/containers/network_map.h"
+
+#include "property.h"
+#include "slot.h"
+#include "customization.h"
+#include "experiment.h"
 
 namespace swganh {
 namespace object {
@@ -20,94 +25,6 @@ class ManufactureSchematic : public swganh::object::Intangible
 public:
 	typedef ManufactureSchematicFactory FactoryType;
 	typedef ManufactureSchematicMessageBuilder MessageBuilderType;
-    struct Property
-    {
-        std::string property_stf_file;
-        std::string property_stf_name;
-        float value;
-
-		bool operator==(const Property& other)
-		{
-			return other.value == value;
-		}
-		void Serialize(swganh::messages::BaselinesMessage& message)
-		{
-			
-		}
-
-		void Serialize(swganh::messages::DeltasMessage& message)
-		{
-        
-		}
-    };
-
-    struct Slot 
-    {
-        uint32_t index;
-        std::string slot_stf_file;
-        std::string slot_stf_name;
-        uint32_t type;
-        uint64_t ingredient;
-        uint32_t ingredient_quantity;
-        uint32_t clean;
-
-		bool operator==(const Slot& other) const
-		{
-			return other.ingredient == ingredient;
-		}
-		void Serialize(swganh::messages::BaselinesMessage& message)
-		{
-		}
-
-		void Serialize(swganh::messages::DeltasMessage& message)
-		{
-		}
-    };
-
-    struct Experiment
-    {
-        uint16_t index;
-        std::string experiment_stf_file; 
-        std::string experiment_stf_name;
-        float value;
-        float offset;
-        float size;
-        float max_value;
-		bool operator==(const Experiment& other)
-		{
-			return other.value == value;
-		}
-		void Serialize(swganh::messages::BaselinesMessage& message)
-		{
-		}
-
-		void Serialize(swganh::messages::DeltasMessage& message)
-		{
-		}
-    };
-	
-    struct Customization
-    {
-        uint16_t index;
-        std::string name;
-        uint32_t pallet_selection;
-        uint32_t pallet_start_index;
-        uint32_t pallet_end_index;
-
-		bool operator==(const Customization& other)
-		{
-			return other.name == name;
-		}
-		void Serialize(swganh::messages::BaselinesMessage& message)
-		{
-		}
-
-		void Serialize(swganh::messages::DeltasMessage& message)
-		{
-		}
-    };
-
-public:
 
 	ManufactureSchematic();
     // MSCO
@@ -322,8 +239,8 @@ public:
     /**
      * @return the list of ingredient slots.
      */
-    std::vector<Slot> GetSlots() const;
-	std::vector<Slot> GetSlots(boost::unique_lock<boost::mutex>& lock) const;
+    std::vector<Slot> GetSlots();
+	std::vector<Slot> GetSlots(boost::unique_lock<boost::mutex>& lock);
 
 	void SerializeSlots(swganh::messages::BaseSwgMessage* message);
 	void SerializeSlots(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
@@ -382,8 +299,8 @@ public:
     /**
      * @return experiment list.
      */
-    std::vector<Experiment> GetExperiments() const;
-	std::vector<Experiment> GetExperiments(boost::unique_lock<boost::mutex>& lock) const;
+    std::vector<Experiment> GetExperiments();
+	std::vector<Experiment> GetExperiments(boost::unique_lock<boost::mutex>& lock);
 
 	void SerializeExperiments(swganh::messages::BaseSwgMessage* message);
 	void SerializeExperiments(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
@@ -472,8 +389,8 @@ public:
     /**
      * @return customizations list.
      */
-    std::vector<Customization> GetCustomizations() const;
-	std::vector<Customization> GetCustomizations(boost::unique_lock<boost::mutex>& lock) const;
+    std::vector<Customization> GetCustomizations();
+	std::vector<Customization> GetCustomizations(boost::unique_lock<boost::mutex>& lock);
     
 	void SerializeCustomizations(swganh::messages::BaseSwgMessage* message);
 	void SerializeCustomizations(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
@@ -562,7 +479,7 @@ public:
 	typedef swganh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
 
 private:
-	swganh::messages::containers::NetworkArray<Property> properties_;
+	swganh::containers::NetworkMap<std::string, Property> properties_;
     std::wstring creator_;
     uint32_t complexity_;
     float schematic_data_size_;
@@ -572,10 +489,9 @@ private:
     bool is_active_;
     uint8_t slot_count_;
     
-	swganh::messages::containers::NetworkSortedVector<Slot> slots_;
-
-    swganh::messages::containers::NetworkSortedVector<Experiment> experiments_;
-    swganh::messages::containers::NetworkSortedVector<Customization> customizations_;
+	swganh::containers::NetworkVector<Slot> slots_;
+    swganh::containers::NetworkVector<Experiment> experiments_;
+    swganh::containers::NetworkVector<Customization> customizations_;
     float risk_factor_;
     bool is_ready_;
 };

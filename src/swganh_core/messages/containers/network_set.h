@@ -6,6 +6,9 @@
 #include <queue>
 #include <functional>
 
+#include "swganh_core/messages/baselines_message.h"
+#include "swganh_core/messages/deltas_message.h"
+
 #include "default_serializer.h"
 
 namespace swganh

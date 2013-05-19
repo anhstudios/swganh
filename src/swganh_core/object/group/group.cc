@@ -7,20 +7,16 @@
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
-using namespace swganh::object;
-using namespace swganh::object;
 
 Group::Group()
-    : member_list_(5)
-    , difficulty_(0)
+    : difficulty_(0)
     , loot_master_(0)
     , loot_mode_(FREE_LOOT)
 {
 }
 
 Group::Group(uint32_t max_member_size)
-    : member_list_(max_member_size)
-    , difficulty_(0)
+    : difficulty_(0)
     , loot_master_(0)
     , loot_mode_(FREE_LOOT)
 {
@@ -33,7 +29,7 @@ Group::~Group()
 void Group::AddGroupMember(uint64_t member, std::string name) { AddGroupMember(member, name, AcquireLock());}
 void Group::AddGroupMember(uint64_t member, std::string name, boost::unique_lock<boost::mutex>& lock)
 {
-	member_list_.Add(Member(member, name));
+	member_list_.add(Member(member, name));
     DISPATCH(Group, Member);
 }
 
@@ -49,14 +45,20 @@ void Group::RemoveGroupMember(uint64_t member, boost::unique_lock<boost::mutex>&
 		return;
 	}
         
-	member_list_.Remove(iter);
+	member_list_.remove(iter);
     DISPATCH(Group, Member);
 }
     
-swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMembers() { return GetGroupMembers(AcquireLock());}
-swganh::messages::containers::NetworkSortedVector<Member>& Group::GetGroupMembers(boost::unique_lock<boost::mutex>& lock)
+std::vector<Member> Group::GetGroupMembers() { return GetGroupMembers(AcquireLock());}
+std::vector<Member> Group::GetGroupMembers(boost::unique_lock<boost::mutex>& lock)
 {
-    return member_list_;
+    return member_list_.raw();
+}
+
+void Group::SerializeGroupMembers(swganh::messages::BaseSwgMessage* message) {SerializeGroupMembers(message, AcquireLock());}
+void Group::SerializeGroupMembers(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+{
+	member_list_.Serialize(message);
 }
 
 void Group::SetLootMode(LootMode loot_mode) { SetLootMode(loot_mode, AcquireLock());}
@@ -99,14 +101,8 @@ uint64_t Group::GetLootMaster(boost::unique_lock<boost::mutex>& lock)
     return loot_master_;
 }
 
-uint16_t Group::GetCapacity() { return GetCapacity(AcquireLock());}
-uint16_t Group::GetCapacity(boost::unique_lock<boost::mutex>& lock)
-{
-    return member_list_.Capacity();
-}
-
 uint16_t Group::GetSize() { return GetSize(AcquireLock());}
 uint16_t Group::GetSize(boost::unique_lock<boost::mutex>& lock)
 {
-    return member_list_.Size();
+    return member_list_.size();
 }

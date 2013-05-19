@@ -2,6 +2,8 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include "swganh/byte_buffer.h"
+
 namespace swganh
 {
 namespace containers

@@ -6,6 +6,9 @@
 #include <queue>
 #include <functional>
 
+#include "swganh_core/messages/baselines_message.h"
+#include "swganh_core/messages/deltas_message.h"
+
 #include "default_serializer.h"
 
 namespace swganh
@@ -30,6 +33,11 @@ public:
 		{
 			data_.push_back(0);
 		}
+	}
+
+	NetworkVector(const std::vector<T>& data)
+	{
+		data_ = data;
 	}
 
 	void remove(const uint16_t index, bool update=true)

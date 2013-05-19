@@ -24,11 +24,9 @@ void GroupMessageBuilder::BuildMemberListDelta(const shared_ptr<Group>& group)
     if(group->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(group, Object::VIEW_6, 1);
-        group->GetGroupMembers().Serialize(message);
+        group->SerializeGroupMembers(&message);
         group->AddDeltasUpdate(&message);
     }
-    else
-        group->GetGroupMembers().ClearDeltas();
 }
 
 void GroupMessageBuilder::BuildLootModeDelta(const shared_ptr<Group>& group)
@@ -72,7 +70,7 @@ boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(const std:
 {
 	auto message = CreateBaselinesMessage(group, lock, Object::VIEW_6, 6);
 	message.data.append((*ObjectMessageBuilder::BuildBaseline6(group, lock)).data);
-    group->GetGroupMembers(lock).Serialize(message);
+    group->SerializeGroupMembers(&message, lock);
 	
 	//Unknown List
 	message.data.write<uint32_t>(0);
