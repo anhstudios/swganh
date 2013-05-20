@@ -9,74 +9,11 @@
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/tangible/tangible.h"
 
+#include "hopper_item.h"
+#include "resource.h"
+
 namespace swganh {
 namespace object {
-
-
-struct ResourceId
-{
-    ResourceId(void)
-        : id(0)
-    {}
-
-    ResourceId(const uint64_t& value_)
-        : id(value_)
-    {}
-
-    ~ResourceId()
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint64_t>(id);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<uint64_t>(id);
-    }
-    bool operator==(const ResourceId& other)
-    {
-        return id == other.id;
-    }
-
-    uint64_t id;
-};
-
-struct ResourceString
-{
-    ResourceString(void)
-        : name("")
-    {}
-
-    ResourceString(const std::string& value_)
-        : name(value_)
-    {}
-
-    ~ResourceString()
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<std::string>(name);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<std::string>(name);
-    }
-    bool Contains(const std::string& str) const
-    {
-        return name.find(str) != std::string::npos;
-    }
-    bool operator==(const ResourceString& other)
-    {
-        return name == other.name;
-    }
-
-    std::string name;
-};
-
 
 class InstallationFactory;
 class InstallationMessageBuilder;
@@ -85,36 +22,6 @@ class Installation : public swganh::object::Tangible
 public:
 	typedef InstallationFactory FactoryType;
     typedef InstallationMessageBuilder MessageBuilderType;
-
-	struct Resource
-	{
-		uint64_t global_id;
-		std::string resource_name;
-		std::string resource_type;
-	};
-
-    struct HopperItem
-    {
-        uint64_t global_id;
-        float quantity;
-
-		void Serialize(swganh::messages::BaselinesMessage& message)
-		{
-			message.data.write(global_id);
-			message.data.write(quantity);
-		}
-
-		void Serialize(swganh::messages::DeltasMessage& message)
-		{
-			message.data.write(global_id);
-			message.data.write(quantity);
-		}
-
-		bool operator==(const HopperItem& other)
-		{
-			return other.global_id == global_id;
-		}
-    };
 
 	Installation();
 
@@ -209,14 +116,6 @@ public:
      */
     void UpdateResource(uint64_t global_id, std::string name, std::string type);
 	void UpdateResource(uint64_t global_id, std::string name, std::string type, boost::unique_lock<boost::mutex>& lock);
-    
-    /**
-     * Resets the list of available resources.
-     *
-     * @param available_resource_pool The new resource pool.
-     */
-    void ResetAvailableResources(std::vector<Resource> available_resource_pool);
-	void ResetAvailableResources(std::vector<Resource> available_resource_pool, boost::unique_lock<boost::mutex>& lock);
     
     /**
      * Clears out the list of available resources.
@@ -333,8 +232,8 @@ public:
     /**
      * @return the current hopper contents.
      */
-	swganh::messages::containers::NetworkSortedVector<HopperItem>& GetHopperContents();
-	swganh::messages::containers::NetworkSortedVector<HopperItem>& GetHopperContents(boost::unique_lock<boost::mutex>& lock);
+	std::vector<HopperItem> GetHopperContents();
+	std::vector<HopperItem> GetHopperContents(boost::unique_lock<boost::mutex>& lock);
 
     /**
      * Adds a quantity of a resource to the hopper.
@@ -390,14 +289,26 @@ public:
     void SetConditionPercentage(uint8_t condition);
 	void SetConditionPercentage(uint8_t condition, boost::unique_lock<boost::mutex>& lock);
 
-	swganh::messages::containers::NetworkSortedVector<ResourceId>& GetResourceIds_();
-	swganh::messages::containers::NetworkSortedVector<ResourceId>& GetResourceIds_(boost::unique_lock<boost::mutex>& lock);
+	std::vector<uint64_t> GetResourceIds();
+	std::vector<uint64_t> GetResourceIds(boost::unique_lock<boost::mutex>& lock);
 
-	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceNames_();
-	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceNames_(boost::unique_lock<boost::mutex>& lock);
-	
-	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceTypes_();
-	swganh::messages::containers::NetworkSortedVector<ResourceString>& GetResourceTypes_(boost::unique_lock<boost::mutex>& lock);
+	std::vector<std::string> GetResourceNames();
+	std::vector<std::string> GetResourceNames(boost::unique_lock<boost::mutex>& lock);
+
+	std::vector<std::string> GetResourceTypes();
+	std::vector<std::string> GetResourceTypes(boost::unique_lock<boost::mutex>& lock);
+
+	void SerializeResourceIds(swganh::messages::BaseSwgMessage* message);
+	void SerializeResourceIds(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
+
+	void SerializeResourceNames(swganh::messages::BaseSwgMessage* message);
+	void SerializeResourceNames(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
+
+	void SerializeResourceTypes(swganh::messages::BaseSwgMessage* message);
+	void SerializeResourceTypes(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
+
+	void SerializeHopperContents(swganh::messages::BaseSwgMessage* message);
+	void SerializeHopperContents(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
@@ -406,9 +317,9 @@ private:
     float power_reserve_;
     float power_cost_;
     
-	swganh::messages::containers::NetworkSortedVector<ResourceId> resource_pool_ids_;
-	swganh::messages::containers::NetworkSortedVector<ResourceString> resource_names_;
-	swganh::messages::containers::NetworkSortedVector<ResourceString> resource_types_;
+	swganh::containers::NetworkVector<uint64_t> resource_pool_ids_;
+	swganh::containers::NetworkVector<std::string> resource_names_;
+	swganh::containers::NetworkVector<std::string> resource_types_;
 	
     uint64_t selected_resource_;
     
@@ -420,7 +331,7 @@ private:
     uint32_t max_hopper_size_;
     
 	bool is_updating_;
-	swganh::messages::containers::NetworkSortedVector<HopperItem> hopper_;
+	swganh::containers::NetworkVector<HopperItem> hopper_;
 
     uint8_t condition_percent_;
 };

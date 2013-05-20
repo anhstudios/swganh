@@ -15,6 +15,11 @@ class ResultSet;
 }
 
 namespace swganh {
+
+namespace character{
+	class CharacterProviderInterface;
+}
+
 namespace object {
 
     
@@ -38,6 +43,8 @@ namespace object {
         
         void RegisterEventHandlers();
     private:
+		std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
+
 		void PersistBadges_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void PersistXP_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void PersistWaypoints_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);

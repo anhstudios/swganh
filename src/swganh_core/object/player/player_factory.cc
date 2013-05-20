@@ -12,6 +12,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 #include "swganh/logger.h"
+#include "swganh/plugin/plugin_manager.h"
 
 #include "swganh/crc.h"
 #include "swganh/database/database_manager.h"
@@ -20,16 +21,20 @@
 
 #include "swganh_core/object/exception.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 
 using namespace std;
 using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::simulation;
+using namespace swganh::character;
 
 PlayerFactory::PlayerFactory(swganh::app::SwganhKernel* kernel)
     : IntangibleFactory(kernel)
-{}
+{
+	character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
+}
 
 void PlayerFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
@@ -356,14 +361,16 @@ void PlayerFactory::PersistFriends_(const shared_ptr<Player>& player, boost::uni
     try 
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto friends = player->GetFriends(lock);
-        
-        for(auto& friend_name : friends)
+        for(auto& friend_name : player->GetFriends(lock))
         {
-            auto statement = conn->prepareStatement("CALL sp_UpdateFriends(?,?);");
-            statement->setUInt64(1, player->GetObjectId(lock));
-            statement->setUInt64(2, friend_name.id);
-            auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+			uint64_t friend_id = character_provider_->GetCharacterIdByName(friend_name);
+			if(friend_id != 0)
+			{
+				auto statement = conn->prepareStatement("CALL sp_UpdateFriends(?,?);");
+				statement->setUInt64(1, player->GetObjectId(lock));
+				statement->setUInt64(2, friend_id);
+				auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+			}
         };
     }
         catch(sql::SQLException &e)
@@ -378,14 +385,16 @@ void PlayerFactory::PersistIgnoredList_(const shared_ptr<Player>& player, boost:
     try 
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto ignored_players = player->GetIgnoredPlayers(lock);
-        
-        for(auto& player_name : ignored_players)
+        for(auto& player_name : player->GetIgnoredPlayers(lock))
         {
-            auto statement = conn->prepareStatement("CALL sp_UpdateIgnoreList(?,?);");
-            statement->setUInt64(1, player->GetObjectId(lock));
-            statement->setUInt64(2, player_name.id);
-            auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+			uint64_t ignore_id = character_provider_->GetCharacterIdByName(player_name);
+			if(ignore_id != 0)
+			{
+				auto statement = conn->prepareStatement("CALL sp_UpdateIgnoreList(?,?);");
+				statement->setUInt64(1, player->GetObjectId(lock));
+				statement->setUInt64(2, ignore_id);
+				auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+			}
         };
     }
         catch(sql::SQLException &e)
@@ -502,7 +511,7 @@ void PlayerFactory::LoadFriends_(const std::shared_ptr<sql::Connection>& connect
     {
         while (result->next())
         {
-            player->AddFriend(result->getString("custom_name"), result->getUInt64("id"), lock);
+            player->AddFriend(result->getString("custom_name"), lock);
         }
     } while(statement->getMoreResults());
 }
@@ -545,7 +554,7 @@ void PlayerFactory::LoadIgnoredList_(const std::shared_ptr<sql::Connection>& con
     {  
         while (result->next())
         {
-            player->IgnorePlayer(result->getString("custom_name"), result->getUInt64("id"), lock);
+            player->IgnorePlayer(result->getString("custom_name"), lock);
         }
     } while(statement->getMoreResults());
 }
@@ -606,7 +615,7 @@ void PlayerFactory::LoadXP_(const std::shared_ptr<sql::Connection>& connection, 
     { 
         while (result->next())
         {
-            player->AddExperience(XpData(result->getString("name"), result->getUInt("value")), lock);
+            player->AddExperience(result->getString("name"), result->getUInt("value"), lock);
         }
     } while(statement->getMoreResults());
 }

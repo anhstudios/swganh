@@ -9,17 +9,23 @@
 #include <string>
 #include <bitset>
 #include <queue>
-
 #include <boost/thread/mutex.hpp>
 
-#include "swganh/crc.h"
-
-#include "swganh_core/object/intangible/intangible.h"
-#include "swganh_core/object/waypoint/waypoint.h"
-
-#include "swganh_core/messages/containers/network_sorted_vector.h"
-#include "swganh_core/messages/containers/network_sorted_list.h"
 #include "swganh_core/messages/containers/network_map.h"
+#include "swganh_core/messages/containers/network_vector.h"
+#include "swganh_core/object/intangible/intangible.h"
+
+#include "gender.h"
+#include "admin_tag.h"
+#include "draft_schematic_data.h"
+#include "profile_flags.h"
+#include "quest_journal_data.h"
+#include "status_flags.h"
+#include "status_index.h"
+#include "waypoint_serializer.h"
+#include "xp_data.h"
+
+
 
 namespace swganh {
 namespace badge {
@@ -27,268 +33,6 @@ namespace badge {
 } // namespace swganh::badge
 
 namespace object {
-
-enum Gender
-{
-    FEMALE = 0,
-    MALE
-};
-
-enum StatusFlags
-{
-    CLEAR           = 0,
-    LFG             = 0x00000001,
-    HELPER          = 0x00000002,
-    ROLEPLAYER      = 0x00000004,
-    AFK             = 0x00000080,
-    LD              = 0x00000100,
-    FACTION_RANK    = 0x00000200,
-    ANONYMOUS       = 0x80000000
-};
-enum StatusIndex
-{
-    DEFAULT = 0,
-    ANON = 4
-};
-//@TODO: discover these
-enum ProfileFlags
-{
-    LIKES_X = 1,
-    DISLIKES_X
-};
-
-enum AdminTag
-{
-    CSR = 1,
-    DEVELOPER = 2
-};
-
-struct Ability
-{
-    Ability(void)
-        : ability("")
-    {}
-
-    Ability(std::string value_)
-        : ability(value_)
-    {}
-
-    ~Ability()
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<std::string>(ability);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<std::string>(ability);
-    }
-    bool operator==(const Ability& other)
-    {
-        return ability == other.ability;
-    }
-
-    std::string ability;
-};
-struct Name
-{
-    Name(void)
-        : name("")
-    {}
-
-    Name(const std::string& value_, uint64_t id_ = 0)
-        : name(value_)
-        , id(id_)
-    {}
-
-    ~Name()
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<std::string>(name);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<std::string>(name);
-    }
-    bool Contains(const std::string& str) const
-    {
-        return name.find(str) != std::string::npos;
-    }
-    bool operator==(const Name& other)
-    {
-        return name == other.name;
-    }
-
-    std::string name;
-    // id is here just for ease of use in persistence
-    // don't send over network
-    uint64_t id;
-};
-struct XpData
-{
-    XpData()
-        : type("")
-        , value(0){}
-    XpData(std::string in_type, uint32_t in_value)
-    : type(in_type)
-    , value(in_value){}
-
-    std::string type;
-    uint32_t value;
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint8_t>(0); // byte
-        message.data.write(type);
-        message.data.write(value);           
-    }
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write(type);
-        message.data.write(value);
-    }
-    bool operator==(const XpData& other)
-    {
-        return (type == other.type && value == other.value);
-    }
-};
-struct FlagBitmask
-{
-    FlagBitmask()
-        : bitmask(0)
-    {}
-
-    FlagBitmask(uint32_t flag_bitmask_)
-        : bitmask(flag_bitmask_)
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint32_t>(bitmask);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<uint32_t>(bitmask);
-    }
-
-    bool operator==(const FlagBitmask& other)
-    {
-        return other.bitmask == bitmask;
-    }
-
-    uint32_t bitmask;
-};
-
-struct QuestJournalData
-{
-    QuestJournalData()
-        : quest_crc(0)
-        , owner_id(0)
-        , active_step_bitmask(0)
-        , completed_step_bitmask(0)
-        , completed_flag(false)
-        , counter(0){}
-
-    uint32_t quest_crc;
-    uint64_t owner_id;
-    uint16_t active_step_bitmask;
-    uint16_t completed_step_bitmask;
-    bool completed_flag;
-    uint32_t counter;
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint8_t>(0); // byte
-        message.data.write<uint32_t>(quest_crc);
-        message.data.write<uint64_t>(owner_id);
-        message.data.write<uint16_t>(active_step_bitmask);
-        message.data.write<uint16_t>(completed_step_bitmask);
-        if (completed_flag)
-            message.data.write<uint8_t>(1);
-        else
-            message.data.write<uint8_t>(0);
-        message.data.write<uint32_t>(counter);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<uint32_t>(quest_crc);
-        message.data.write<uint64_t>(owner_id);
-        message.data.write<uint16_t>(active_step_bitmask);
-        message.data.write<uint16_t>(completed_step_bitmask);
-        if (completed_flag)
-            message.data.write<uint8_t>(1);
-        else
-            message.data.write<uint8_t>(0);
-        message.data.write<uint32_t>(counter);
-    }
-
-    bool operator==(const QuestJournalData& other)
-    {
-        return (quest_crc == other.quest_crc);
-    }
-};
-
-struct DraftSchematicData
-{
-    DraftSchematicData()
-        : schematic_id(0)
-        , schematic_crc(0)
-    {}
-
-    DraftSchematicData(uint32_t schematic_id_)
-        : schematic_id(schematic_id_)
-        , schematic_crc(0)
-    {}
-
-    DraftSchematicData(uint32_t schematic_id_, uint32_t schematic_crc_)
-        : schematic_id(schematic_id_)
-        , schematic_crc(schematic_crc_)
-    {}
-
-    ~DraftSchematicData()
-    {}
-
-    uint32_t schematic_id;
-    uint32_t schematic_crc;
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint32_t>(schematic_id);
-        message.data.write<uint32_t>(schematic_crc);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<uint32_t>(schematic_id);
-        message.data.write<uint32_t>(schematic_crc);
-    }
-
-    bool operator==(const DraftSchematicData& other)
-    {
-        return schematic_id == other.schematic_id;
-    }
-};
-
-struct PlayerWaypointSerializer {
-    PlayerWaypointSerializer()
-        : waypoint(nullptr){}
-    PlayerWaypointSerializer(std::shared_ptr<swganh::object::Waypoint> waypoint_)
-        : waypoint(waypoint_){}
-
-    void Serialize(swganh::messages::BaselinesMessage& message);
-
-    void Serialize(swganh::messages::DeltasMessage& message);
-    bool operator==(const PlayerWaypointSerializer& other);
-
-    std::shared_ptr<swganh::object::Waypoint> waypoint;
-};
 
 class PlayerFactory;
 class PlayerMessageBuilder;
@@ -310,8 +54,8 @@ public:
     /**
      * @return The status flags for the player object.
      */
-    std::array<FlagBitmask, 4> GetStatusFlags();
-	std::array<FlagBitmask, 4> GetStatusFlags(boost::unique_lock<boost::mutex>& lock);
+    std::array<uint32_t, 4> GetStatusFlags();
+	std::array<uint32_t, 4> GetStatusFlags(boost::unique_lock<boost::mutex>& lock);
 
     /**
      * Adds a flag to the status flags.
@@ -350,8 +94,8 @@ public:
     /**
      * @return The profile flags for the player object.
      */
-    std::array<FlagBitmask, 4> GetProfileFlags();
-    std::array<FlagBitmask, 4> GetProfileFlags(boost::unique_lock<boost::mutex>& lock);
+    std::array<uint32_t, 4> GetProfileFlags();
+    std::array<uint32_t, 4> GetProfileFlags(boost::unique_lock<boost::mutex>& lock);
 
     /**
      * Adds a flag to the profile flags.
@@ -466,16 +210,16 @@ public:
      *
      * @param experience The experience to add.
      */
-    void AddExperience(XpData experience);
-	void AddExperience(XpData experience, boost::unique_lock<boost::mutex>& lock);
+    void AddExperience(std::string type, uint32_t value);
+	void AddExperience(std::string type, uint32_t value, boost::unique_lock<boost::mutex>& lock);
     
     /**
      * Removes experience from the player.
      *
      * @param experience The experience to remove.
      */
-    void DeductXp(XpData experience);
-	void DeductXp(XpData experience, boost::unique_lock<boost::mutex>& lock);
+    void DeductXp(std::string type, uint32_t value);
+	void DeductXp(std::string type, uint32_t value, boost::unique_lock<boost::mutex>& lock);
 
 	void SerializeXp(swganh::messages::BaseSwgMessage* message);
 	void SerializeXp(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
@@ -489,20 +233,6 @@ public:
 	void ClearXpType(std::string type, boost::unique_lock<boost::mutex>& lock);
     
     /**
-     * Resets the experience of the player.
-     *
-     * @param experience The new experience counts for the player.
-     */
-    void ResetXp(std::map<std::string, XpData>& experience);
-	void ResetXp(std::map<std::string, XpData>& experience, boost::unique_lock<boost::mutex>& lock);
-    
-    /**
-     * Clears all experience.
-     */
-    void ClearAllXp();
-    void ClearAllXp(boost::unique_lock<boost::mutex>& lock);
-    
-    /**
      * @return The waypoints currently held by the player.
      */
 	std::map<uint64_t, PlayerWaypointSerializer> GetWaypoints() ;
@@ -514,7 +244,7 @@ public:
      * @param waypoint The waypoint to add to the player.
      */
     void AddWaypoint(PlayerWaypointSerializer waypoint);
-	void AddWaypoint(PlayerWaypointSerializer waypoint, boost::unique_lock<boost::mutex>& lock);
+	void AddWaypoint(uint64_t way_object_id, PlayerWaypointSerializer waypoint, boost::unique_lock<boost::mutex>& lock);
     
     /**
      * Removes a waypoint from the player.
@@ -530,16 +260,10 @@ public:
      * @param waypoint The new waypoint data.
      */
     void ModifyWaypoint(PlayerWaypointSerializer waypoint);
-	void ModifyWaypoint(PlayerWaypointSerializer waypoint, boost::unique_lock<boost::mutex>& lock);
+	void ModifyWaypoint(uint64_t way_object_id, boost::unique_lock<boost::mutex>& lock);
     
 	void SerializeWaypoints(swganh::messages::BaseSwgMessage* message);
 	void SerializeWaypoints(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
-
-    /** 
-     * Clears all waypoints.
-     */
-    void ClearAllWaypoints();
-	void ClearAllWaypoints(boost::unique_lock<boost::mutex>& lock);
 
     /**
      * @return the current force power of the player.
@@ -633,31 +357,6 @@ public:
 
 	void SerializeQuests(swganh::messages::BaseSwgMessage* message);
 	void SerializeQuests(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
-
-    /**
-     * Clears all quests in the journal.
-     */
-    void ClearAllQuests();
-	void ClearAllQuests(boost::unique_lock<boost::mutex>& lock);
-    
-    /**
-     * @return list of 
-	 and certificates this player has. 
-     */
-    std::vector<Ability> GetAbilityList() ;
-	std::vector<Ability> GetAbilityList(boost::unique_lock<boost::mutex>& lock) ;
-
-    /**
-     * Checks to see if the player has the input ability
-     *
-     * @param ability to check for
-     * @return bool true if the ability has been found
-     */
-    bool HasAbility(std::string ability);
-	bool HasAbility(std::string ability, boost::unique_lock<boost::mutex>& locks);
-    
-	void SerializeAbilities(swganh::messages::BaseSwgMessage* message);
-	void SerializeAbilities(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     /**
      * @return whether player can experiment or not.
@@ -789,8 +488,8 @@ public:
     /**
      * @return the list of friends.
      */
-    std::vector<Name> GetFriends();
-	std::vector<Name> GetFriends(boost::unique_lock<boost::mutex>& lock);
+    std::vector<std::string> GetFriends();
+	std::vector<std::string> GetFriends(boost::unique_lock<boost::mutex>& lock);
 
     /**
      * Checks to see if the name is already a friend
@@ -806,8 +505,8 @@ public:
      *
      * @param friend_name Name of the friend to add.
      */ 
-    void AddFriend(std::string friend_name, uint64_t id);
-	void AddFriend(std::string friend_name, uint64_t id, boost::unique_lock<boost::mutex>& lock);
+    void AddFriend(std::string friend_name);
+	void AddFriend(std::string friend_name, boost::unique_lock<boost::mutex>& lock);
     
     /**
      * Removes a friend from the friend list.
@@ -829,8 +528,8 @@ public:
     /**
      * @return the list of ignored players.
      */
-    std::vector<Name> GetIgnoredPlayers();
-	std::vector<Name> GetIgnoredPlayers(boost::unique_lock<boost::mutex>& lock);
+    std::vector<std::string> GetIgnoredPlayers();
+	std::vector<std::string> GetIgnoredPlayers(boost::unique_lock<boost::mutex>& lock);
 
     /**
      * Checks to see if the name is already being ignored
@@ -846,8 +545,8 @@ public:
      *
      * @param player_name Name of the player to ignore.
      */ 
-    void IgnorePlayer(std::string player_name, uint64_t player_id);
-	void IgnorePlayer(std::string player_name, uint64_t player_id, boost::unique_lock<boost::mutex>& lock);
+    void IgnorePlayer(std::string player_name);
+	void IgnorePlayer(std::string player_name, boost::unique_lock<boost::mutex>& lock);
     
     /**
      * Removes a player from the ignored list.
@@ -1030,27 +729,27 @@ public:
 private:
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
-    std::array<FlagBitmask, 4> status_flags_;
-    std::array<FlagBitmask, 4> profile_flags_;
+    std::array<uint32_t, 4> status_flags_;
+    std::array<uint32_t, 4> profile_flags_;
     std::string profession_tag_;
     uint32_t born_date_;
     uint32_t total_playtime_;
     uint8_t admin_tag_;
     uint32_t region_;
-    swganh::messages::containers::NetworkMap<std::string, XpData> experience_;
-    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> waypoints_;
+    swganh::containers::NetworkMap<std::string, XpData, XpData> experience_;
+    swganh::containers::NetworkMap<uint64_t, PlayerWaypointSerializer, PlayerWaypointSerializer> waypoints_;
     int32_t current_force_power_;
     int32_t max_force_power_;
     uint32_t current_force_sensitive_quests_;
     uint32_t completed_force_sensitive_quests_;
-    swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> quest_journal_;
+    swganh::containers::NetworkMap<uint32_t, QuestJournalData, QuestJournalData> quest_journal_;
     uint32_t experimentation_flag_;
     uint32_t crafting_stage_;
     uint64_t nearest_crafting_station_;
-    swganh::messages::containers::NetworkSortedList<DraftSchematicData> draft_schematics_;
+    swganh::containers::NetworkVector<DraftSchematicData> draft_schematics_;
     uint32_t experimentation_points_;
-    swganh::messages::containers::NetworkSortedVector<Name> friends_;
-    swganh::messages::containers::NetworkSortedVector<Name> ignored_players_;
+    swganh::containers::NetworkVector<std::string> friends_;
+    swganh::containers::NetworkVector<std::string> ignored_players_;
     uint32_t accomplishment_counter_;
     uint32_t language_;
     uint32_t current_stomach_;

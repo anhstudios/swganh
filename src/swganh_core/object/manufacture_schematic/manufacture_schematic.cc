@@ -9,12 +9,9 @@
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
-using namespace containers;
-
 
 ManufactureSchematic::ManufactureSchematic()
-	: properties_(NetworkArray<Property>(14))
-	, creator_(L"")
+	: creator_(L"")
 	, complexity_(0)
 	, schematic_data_size_(0.0f)
 	, customization_()
@@ -22,9 +19,6 @@ ManufactureSchematic::ManufactureSchematic()
 	, prototype_model_()
 	, is_active_(false)
 	, slot_count_(0)
-	, slots_(NetworkSortedVector<Slot>(8))
-	, experiments_(NetworkSortedVector<Experiment>(12))
-	, customizations_(NetworkSortedVector<Customization>(14))
 	, risk_factor_(0.0f)
 	, is_ready_(true)
 {}
@@ -236,18 +230,16 @@ void ManufactureSchematic::ResetSlotCount(uint8_t slot_count, boost::unique_lock
 	DISPATCH(ManufactureSchematic, SlotCount);
 }
 
-std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const { return GetSlots(AcquireLock()); }
-std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots(boost::unique_lock<boost::mutex>& lock) const
+std::vector<Slot> ManufactureSchematic::GetSlots() { return GetSlots(AcquireLock()); }
+std::vector<Slot> ManufactureSchematic::GetSlots(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(slots_.Get());
+    return slots_.raw();
 }
 
 void ManufactureSchematic::RemoveSlot(uint16_t index) { RemoveSlot(index, AcquireLock()); }
 void ManufactureSchematic::RemoveSlot(uint16_t index, boost::unique_lock<boost::mutex>& lock)
 {
-	auto found = slots_.At(index);
-	auto iter = slots_.Find(found);
-	slots_.Remove(iter);
+	slots_.remove(index);
 	DISPATCH(ManufactureSchematic, Slot);
 }
 
@@ -263,7 +255,7 @@ uint16_t ManufactureSchematic::AddSlot( std::string slot_stf_file, std::string s
 {
 	int16_t index;
 	Slot slot;    
-	slot.index = slots_.Size() + 1;
+	slot.index = slots_.size() + 1;
 	index = slot.index;
 	slot.slot_stf_file = move(slot_stf_file);
 	slot.slot_stf_name = move(slot_stf_name);
@@ -272,7 +264,7 @@ uint16_t ManufactureSchematic::AddSlot( std::string slot_stf_file, std::string s
 	slot.ingredient_quantity = ingredient_quantity;
 	slot.clean = clean;
 
-	slots_.Add(slot);
+	slots_.add(slot);
 	DISPATCH(ManufactureSchematic, Slot);
     return index;
 }
@@ -307,29 +299,24 @@ void ManufactureSchematic::UpdateSlot( uint16_t index, std::string slot_stf_file
 	DISPATCH(ManufactureSchematic, Slot);
 }
 
-void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> slots) { ResetSlots(slots, AcquireLock()); }
-void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> slots, boost::unique_lock<boost::mutex>& lock)
+void ManufactureSchematic::ResetSlots(std::vector<Slot> slots) { ResetSlots(slots, AcquireLock()); }
+void ManufactureSchematic::ResetSlots(std::vector<Slot> slots, boost::unique_lock<boost::mutex>& lock)
 {
-	slots_.Clear();
-	for(auto& s : slots)
-	{
-		slots_.Add(s);
-	}
-	slots_.Reinstall();
+	slots_.reset(slots);
 	DISPATCH(ManufactureSchematic, Slot);
 }
 
 void ManufactureSchematic::ClearAllSlots() { ClearAllSlots(AcquireLock()); }
 void ManufactureSchematic::ClearAllSlots(boost::unique_lock<boost::mutex>& lock)
 {
-	slots_.Clear();
+	slots_.clear();
 	DISPATCH(ManufactureSchematic, Slot);
 }
 
-std::vector<ManufactureSchematic::Experiment> ManufactureSchematic::GetExperiments() const { return GetExperiments(AcquireLock()); }
-std::vector<ManufactureSchematic::Experiment> ManufactureSchematic::GetExperiments(boost::unique_lock<boost::mutex>& lock) const
+std::vector<Experiment> ManufactureSchematic::GetExperiments() { return GetExperiments(AcquireLock()); }
+std::vector<Experiment> ManufactureSchematic::GetExperiments(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(experiments_.Get());
+    return experiments_.raw();
 }
 
 void ManufactureSchematic::RemoveExperiment(uint16_t index) { RemoveExperiment(index, AcquireLock()); }
@@ -349,7 +336,7 @@ void ManufactureSchematic::RemoveExperiment(uint16_t index, boost::unique_lock<b
 		return;
 	}
 
-	experiments_.Erase(find_iter);
+	experiments_.remove(find_iter);
 	DISPATCH(ManufactureSchematic, Experiment);
 }
 
@@ -379,7 +366,7 @@ uint16_t ManufactureSchematic::AddExperiment(std::string experiment_stf_file,  s
 	}
 
 	Experiment experiment;    
-	experiment.index = experiments_.Size()+ 1;
+	experiment.index = experiments_.size()+ 1;
 	index = experiment.index;
 	experiment.experiment_stf_file = move(experiment_stf_file);
 	experiment.experiment_stf_name = move(experiment_stf_name);
@@ -388,7 +375,7 @@ uint16_t ManufactureSchematic::AddExperiment(std::string experiment_stf_file,  s
 	experiment.size = size;
 	experiment.max_value = max_value;
 
-	experiments_.Add(experiment);
+	experiments_.add(experiment);
 	DISPATCH(ManufactureSchematic, Experiment);
 
     return index;
@@ -423,31 +410,26 @@ void ManufactureSchematic::UpdateExperiment( uint16_t index, std::string experim
 	DISPATCH(ManufactureSchematic, Experiment);
 }
 
-void ManufactureSchematic::ResetExperiments(std::vector<ManufactureSchematic::Experiment> experiments)
+void ManufactureSchematic::ResetExperiments(std::vector<Experiment> experiments)
 { ResetExperiments(experiments, AcquireLock()); }
 
-void ManufactureSchematic::ResetExperiments(std::vector<ManufactureSchematic::Experiment> experiments, boost::unique_lock<boost::mutex>& lock)
+void ManufactureSchematic::ResetExperiments(std::vector<Experiment> experiments, boost::unique_lock<boost::mutex>& lock)
 {
-	experiments_.Clear();
-	for (auto& e : experiments)
-	{
-		experiments_.Add(e);
-	}
-	experiments_.Reinstall();
+	experiments_.reset(experiments);
 	DISPATCH(ManufactureSchematic, Experiment);
 }
 
 void ManufactureSchematic::ClearAllExperiments() { ClearAllExperiments(AcquireLock()); }
 void ManufactureSchematic::ClearAllExperiments(boost::unique_lock<boost::mutex>& lock)
 {
-	experiments_.Clear();
+	experiments_.clear();
 	DISPATCH(ManufactureSchematic, Experiment);
 }
 
-std::vector<ManufactureSchematic::Customization> ManufactureSchematic::GetCustomizations() const { return GetCustomizations(AcquireLock()); }
-std::vector<ManufactureSchematic::Customization> ManufactureSchematic::GetCustomizations(boost::unique_lock<boost::mutex>& lock) const
+std::vector<Customization> ManufactureSchematic::GetCustomizations() { return GetCustomizations(AcquireLock()); }
+std::vector<Customization> ManufactureSchematic::GetCustomizations(boost::unique_lock<boost::mutex>& lock) 
 {
-    return std::move(customizations_.Get());
+    return customizations_.raw();
 }
 
 void ManufactureSchematic::RemoveCustomization(uint16_t index) { RemoveCustomization(index, AcquireLock()); }
@@ -467,7 +449,7 @@ void ManufactureSchematic::RemoveCustomization(uint16_t index, boost::unique_loc
 		return;
 	}
 
-	customizations_.Erase(find_iter);
+	customizations_.remove(find_iter);
 	DISPATCH(ManufactureSchematic, Experiment);
 }
 
@@ -497,14 +479,14 @@ uint16_t ManufactureSchematic::AddCustomization( std::string name,
 	}
 
 	Customization customization;    
-	customization.index = customizations_.Size() + 1;
+	customization.index = customizations_.size() + 1;
 	index = customization.index;
 	customization.name = move(name);
 	customization.pallet_selection = pallet_selection;
 	customization.pallet_start_index = pallet_start_index;
 	customization.pallet_end_index = pallet_end_index;
 
-	customizations_.Add(customization);
+	customizations_.add(customization);
 	DISPATCH(ManufactureSchematic, Customization);
     return index;
 }
@@ -540,19 +522,14 @@ void ManufactureSchematic::UpdateCustomization( uint16_t index, std::string name
 void ManufactureSchematic::ResetCustomizations(std::vector<Customization> customizations) { ResetCustomizations(customizations, AcquireLock()); }
 void ManufactureSchematic::ResetCustomizations(std::vector<Customization> customizations, boost::unique_lock<boost::mutex>& lock)
 {
-	customizations_.Clear();
-	for (auto& c : customizations)
-	{
-		customizations_.Add(c);
-	}
-	customizations_.Reinstall();
+	customizations_.reset(customizations);
 	DISPATCH(ManufactureSchematic, Customization);
 }
 
 void ManufactureSchematic::ClearAllCustomizations() { ClearAllCustomizations(AcquireLock()); }
 void ManufactureSchematic::ClearAllCustomizations(boost::unique_lock<boost::mutex>& lock)
 {
-    customizations_.Clear();
+    customizations_.clear();
 }
 
 bool ManufactureSchematic::IsReady() const { return IsReady(AcquireLock()); }
