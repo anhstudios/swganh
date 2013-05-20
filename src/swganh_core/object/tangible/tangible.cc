@@ -8,38 +8,34 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::messages;
-using namespace swganh::messages::containers;
+using namespace swganh::containers;
 
 Tangible::Tangible()
     : Object()
     , customization_("")
-    , component_customization_list_(NetworkList<ComponentCustomization>())
     , options_bitmask_(0)
     , counter_(0)
     , condition_damage_(0)
     , max_condition_(1000)
     , is_static_(false)
-    , defender_list_(swganh::messages::containers::NetworkSortedVector<Defender>(3))
 {}
 
 Tangible::Tangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t counter, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders)
     : Object()
     , customization_(customization)
-    , component_customization_list_(NetworkList<ComponentCustomization>())
     , options_bitmask_(bitmask_options)
     , counter_(counter)
     , condition_damage_(condition_damage)
     , max_condition_(max_condition)
     , is_static_(is_static)
-    , defender_list_(swganh::messages::containers::NetworkSortedVector<Defender>(3))
 {
     std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& def) {
-        defender_list_.Add(Defender(def));
+        defender_list_.add(def);
     });
 
     std::for_each(component_customization.begin(), component_customization.end(), [=](const uint32_t& crc) {
-        component_customization_list_.Add(ComponentCustomization(crc));
+        component_customization_list_.add(crc);
     });
 }
 
@@ -73,36 +69,27 @@ void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints, boo
 void Tangible::RemoveComponentCustomization(uint32_t customization) { RemoveComponentCustomization(customization, AcquireLock()); }
 void Tangible::RemoveComponentCustomization(uint32_t customization, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
-        return component.component_customization_crc = customization;
-    });
-
-    if(iter == end(component_customization_list_))
-    {
-        return;
-    }
-            
-    component_customization_list_.Remove(iter);
+    component_customization_list_.remove(customization);
     DISPATCH(Tangible, ComponentCustomization);
 }
 
 void Tangible::AddComponentCustomization(uint32_t customization) { AddComponentCustomization(customization, AcquireLock()); }
 void Tangible::AddComponentCustomization(uint32_t customization, boost::unique_lock<boost::mutex>& lock)
 {
-	component_customization_list_.Add(ComponentCustomization(customization));
+	component_customization_list_.add(customization);
     DISPATCH(Tangible, ComponentCustomization);
 }
 
-std::list<ComponentCustomization> Tangible::GetComponentCustomization() { return GetComponentCustomization(AcquireLock()); }
-std::list<ComponentCustomization> Tangible::GetComponentCustomization(boost::unique_lock<boost::mutex>& lock)
+std::set<uint32_t> Tangible::GetComponentCustomization() { return GetComponentCustomization(AcquireLock()); }
+std::set<uint32_t> Tangible::GetComponentCustomization(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(component_customization_list_.Get());
+    return component_customization_list_.raw();
 }
 
 void Tangible::ClearComponentCustomization() { ClearComponentCustomization(AcquireLock()); }
 void Tangible::ClearComponentCustomization(boost::unique_lock<boost::mutex>& lock)
 {
-	component_customization_list_.Clear();
+	component_customization_list_.clear();
     DISPATCH(Tangible, ComponentCustomization);
 }
 
@@ -183,64 +170,47 @@ bool Tangible::IsStatic(boost::unique_lock<boost::mutex>& lock)
 bool Tangible::IsDefending(uint64_t defender) { return IsDefending(defender, AcquireLock()); }
 bool Tangible::IsDefending(uint64_t defender, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
-        return (x.object_id == defender);
-    });
-
-    if(iter != end(defender_list_))
+    for(uint32_t i=0; i < defender_list_.size(); ++i)
 	{
-        return true;
+		if(defender_list_[i] == defender)
+		{
+			return true;
+		}
 	}
-    else
-	{
-        return false;
-	}
+	return false;
 }
 
 void Tangible::AddDefender(uint64_t defender) { AddDefender(defender, AcquireLock()); }
 void Tangible::AddDefender(uint64_t defender, boost::unique_lock<boost::mutex>& lock)
 {
-	defender_list_.Add(Defender(defender));
+	defender_list_.add(defender);
 	DISPATCH(Tangible, Defenders);
 }
 
 void Tangible::RemoveDefender(uint64_t defender) { RemoveDefender(defender, AcquireLock()); }
 void Tangible::RemoveDefender(uint64_t defender, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
-        return (x.object_id == defender);
-    });
-
-    if(iter == end(defender_list_))
-    {
-        return;
-    }
-            
-    defender_list_.Remove(iter);
+    defender_list_.erase(defender);
     DISPATCH(Tangible, Defenders);
 }
 
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders) { ResetDefenders(defenders, AcquireLock()); }
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders, boost::unique_lock<boost::mutex>& lock)
 {
-    defender_list_.Clear();
-    std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
-        defender_list_.Insert(Defender(x));
-    });
-    defender_list_.Reinstall();
+    defender_list_.reset(defenders);
     DISPATCH(Tangible, Defenders);
 }
 
-std::vector<Defender> Tangible::GetDefenders() { return GetDefenders(AcquireLock()); }
-std::vector<Defender> Tangible::GetDefenders(boost::unique_lock<boost::mutex>& lock)
+std::vector<uint64_t> Tangible::GetDefenders() { return GetDefenders(AcquireLock()); }
+std::vector<uint64_t> Tangible::GetDefenders(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(defender_list_.Get());
+    return defender_list_.raw();
 }
 
 void Tangible::ClearDefenders() { ClearDefenders(AcquireLock()); }
 void Tangible::ClearDefenders(boost::unique_lock<boost::mutex>& lock)
 {
-    defender_list_.Clear();
+    defender_list_.clear();
     DISPATCH(Tangible, Defenders);
 }
 

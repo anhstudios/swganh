@@ -123,19 +123,19 @@ void InstallationMessageBuilder::BuildAvailableResourceDelta(const std::shared_p
 	if (installation->HasObservers())
     {
         DeltasMessage message1 = CreateDeltasMessage(installation, Object::VIEW_7, 1);
-        installation->GetResourceIds_().Serialize(message1);
+        installation->SerializeResourceIds(&message1);
 		installation->AddDeltasUpdate(&message1);
 
 		DeltasMessage message2 = CreateDeltasMessage(installation, Object::VIEW_7, 2);
-		installation->GetResourceIds_().Serialize(message2);
+		installation->SerializeResourceIds(&message2);
         installation->AddDeltasUpdate(&message2);
 
 		DeltasMessage message3 = CreateDeltasMessage(installation, Object::VIEW_7, 3);
-		installation->GetResourceNames_().Serialize(message3);
+		installation->SerializeResourceNames(&message3);
 		installation->AddDeltasUpdate(&message3);
 
 		DeltasMessage message4 = CreateDeltasMessage(installation, Object::VIEW_7, 4);
-		installation->GetResourceTypes_().Serialize(message4);
+		installation->SerializeResourceTypes(&message4);
 		installation->AddDeltasUpdate(&message4);
     }
 }
@@ -219,7 +219,7 @@ void InstallationMessageBuilder::BuildHopperDelta(const std::shared_ptr<Installa
 	if (installation->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 13);
-		installation->GetHopperContents().Serialize(message);
+		installation->SerializeHopperContents(&message);
         installation->AddDeltasUpdate(&message);
     }
 }
@@ -255,10 +255,10 @@ boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline7(con
 {
 	auto message = CreateBaselinesMessage(installation, lock, Object::VIEW_7, 11);
 	message.data.write<uint8_t>((installation->IsUpdating(lock)) ? 1 : 0);
-	installation->GetResourceIds_(lock).Serialize(message);
-	installation->GetResourceIds_(lock).Serialize(message); //No idea why this is repeated...
-	installation->GetResourceNames_(lock).Serialize(message);
-	installation->GetResourceTypes_(lock).Serialize(message);
+	installation->SerializeResourceIds(&message, lock);
+	installation->SerializeResourceIds(&message, lock);
+	installation->SerializeResourceNames(&message, lock);
+	installation->SerializeResourceTypes(&message, lock);
 	message.data.write(installation->GetSelectedResourceId(lock));
 	message.data.write<uint8_t>((installation->IsActive(lock)) ? 1 : 0);
 	message.data.write(installation->GetDisplayedMaxExtractionRate(lock));
@@ -267,7 +267,7 @@ boost::optional<BaselinesMessage> InstallationMessageBuilder::BuildBaseline7(con
 	message.data.write(installation->GetCurrentHopperSize(lock));
 	message.data.write(installation->GetMaxHopperSize(lock));
 	message.data.write<uint8_t>((installation->IsUpdating(lock)) ? 1 : 0);
-	installation->GetHopperContents(lock).Serialize(message);
+	installation->SerializeHopperContents(&message, lock);
 	message.data.write(installation->GetConditionPercentage(lock));
     return BaselinesMessage(std::move(message));
 }

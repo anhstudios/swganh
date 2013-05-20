@@ -6,7 +6,6 @@
 #include "swganh/crc.h"
 
 #include "swganh_core/object/object_events.h"
-#include "swganh_core/object/player/player.h"
 #include "creature_message_builder.h"
 
 #include "swganh_core/combat/buff_interface.h"
@@ -16,7 +15,7 @@
 
 using namespace std;
 using namespace swganh::messages;
-using namespace swganh::messages::containers;
+using namespace swganh::containers;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::object;
@@ -26,19 +25,14 @@ Creature::Creature()
 : Tangible()
 , bank_credits_(0)
 , cash_credits_(0)
-, stat_base_list_(swganh::messages::containers::NetworkArray<Stat>(9))
-, skills_(swganh::messages::containers::NetworkList<Skill>())
 , posture_(0)
 , faction_rank_(0)
 , owner_id_(0)
 , scale_(1.0f)
 , battle_fatigue_(0)
 , state_bitmask_(0)
-, stat_wound_list_(swganh::messages::containers::NetworkArray<Stat>(9))
 , acceleration_multiplier_base_(1.0f)
 , acceleration_multiplier_modifier_(1.0f)
-, stat_encumberance_list_(swganh::messages::containers::NetworkArray<Stat>(9))
-, skill_mod_list_(swganh::messages::containers::NetworkMap<std::string, SkillMod>())
 , speed_multiplier_base_(1.0f)
 , speed_multiplier_modifier_(1.0f)
 , listen_to_id_(0)
@@ -48,7 +42,6 @@ Creature::Creature()
 , turn_radius_(1.0f)
 , walking_speed_(1.0f)
 , water_modifier_percent_(0.0125f)
-, mission_critical_object_list_(swganh::messages::containers::NetworkList<MissionCriticalObject>())
 , combat_level_(0)
 , animation_("")
 , mood_animation_("")
@@ -61,12 +54,14 @@ Creature::Creature()
 , mood_id_(0)
 , performance_counter_(0)
 , performance_id_(0)
-, stat_current_list_(swganh::messages::containers::NetworkArray<Stat>(9))
-, stat_max_list_(swganh::messages::containers::NetworkArray<Stat>(9))
-, equipment_list_(swganh::messages::containers::NetworkSortedList<EquipmentItem>())
 , disguise_("")
 , stationary_(0)
 , pvp_status_(PvPStatus_Player)
+, stat_base_list_(9)
+, stat_wound_list_(9)
+, stat_encumberance_list_(9)
+, stat_current_list_(9)
+, stat_max_list_(9)
 {}
 
 Creature::~Creature()
@@ -106,106 +101,80 @@ uint32_t Creature::GetCashCredits(boost::unique_lock<boost::mutex>& lock)
 void Creature::SetAllStats(int32_t value) {SetAllStats(value, AcquireLock());}
 void Creature::SetAllStats(int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-	stat_base_list_.Update(HEALTH, value);
-	stat_base_list_.Update(ACTION, value);
-	stat_base_list_.Update(MIND, value);
-	stat_current_list_.Update(HEALTH, value);
-	stat_current_list_.Update(ACTION, value);
-	stat_current_list_.Update(MIND, value);
-	stat_max_list_.Update(HEALTH, value);
-	stat_max_list_.Update(ACTION, value);
-	stat_max_list_.Update(MIND, value);
+	stat_base_list_.update(HEALTH, value);
+	stat_base_list_.update(ACTION, value);
+	stat_base_list_.update(MIND, value);
+	stat_current_list_.update(HEALTH, value);
+	stat_current_list_.update(ACTION, value);
+	stat_current_list_.update(MIND, value);
+	stat_max_list_.update(HEALTH, value);
+	stat_max_list_.update(ACTION, value);
+	stat_max_list_.update(MIND, value);
+
 	DISPATCH(Creature, StatBase);
 	DISPATCH(Creature, StatCurrent);
 	DISPATCH(Creature, StatMax);
 }
 
-void Creature::SetStatBase(StatIndex stat_index, int32_t value) {SetStatBase(stat_index, value, AcquireLock());}
-void Creature::SetStatBase(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock) 
+void Creature::SetStatBase(uint16_t stat_index, int32_t value) {SetStatBase(stat_index, value, AcquireLock());}
+void Creature::SetStatBase(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock) 
 {
-	stat_base_list_.Update(stat_index, Stat(value));
+	stat_base_list_.update(stat_index, value);
 	DISPATCH(Creature, StatBase);
 }
 
-void Creature::AddStatBase(StatIndex stat_index, int32_t value) { AddStatBase(stat_index, value, AcquireLock());}
-void Creature::AddStatBase(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddStatBase(uint16_t stat_index, int32_t value) { AddStatBase(stat_index, value, AcquireLock());}
+void Creature::AddStatBase(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    uint32_t new_stat = stat_base_list_[stat_index].value + value;
-    stat_base_list_.Update(stat_index, Stat(new_stat));
+    uint32_t new_stat = stat_base_list_[stat_index] + value;
+    stat_base_list_.update(stat_index, new_stat);
 	DISPATCH(Creature, StatBase);
 }
 
-void Creature::DeductStatBase(StatIndex stat_index, int32_t value) { DeductStatBase(stat_index, value, AcquireLock());}
-void Creature::DeductStatBase(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::DeductStatBase(uint16_t stat_index, int32_t value) { DeductStatBase(stat_index, value, AcquireLock());}
+void Creature::DeductStatBase(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t current = stat_base_list_[stat_index].value;
-    if (current > value)
-    {
-        stat_base_list_.Update(stat_index, Stat(current - value));
-    }
-    else
-    {
-        stat_base_list_.Update(stat_index, Stat(0));
-    }
+    int32_t current = stat_base_list_[stat_index];
+	stat_base_list_.update(stat_index, (current > value) ? current - value : 0);
 	DISPATCH(Creature, StatBase);
 }
 
-std::vector<Stat> Creature::GetBaseStats() { return GetBaseStats(AcquireLock());}
-std::vector<Stat> Creature::GetBaseStats(boost::unique_lock<boost::mutex>& lock)
+std::vector<int32_t> Creature::GetBaseStats() { return GetBaseStats(AcquireLock());}
+std::vector<int32_t> Creature::GetBaseStats(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(stat_base_list_.Get());
+    return stat_base_list_.raw();
 }
 
-int32_t Creature::GetStatBase(StatIndex stat_index) { return GetStatBase(stat_index, AcquireLock());}
-int32_t Creature::GetStatBase(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock)
+int32_t Creature::GetStatBase(uint16_t stat_index) { return GetStatBase(stat_index, AcquireLock());}
+int32_t Creature::GetStatBase(uint16_t stat_index, boost::unique_lock<boost::mutex>& lock)
 {
-    return stat_base_list_.At(stat_index).value;
+    return stat_base_list_[stat_index];
 }
 
 void Creature::AddSkill(std::string skill) { AddSkill(skill, AcquireLock());}
 void Creature::AddSkill(std::string skill, boost::unique_lock<boost::mutex>& lock)
 {
-    skills_.Add(Skill(skill));
+    skills_.add(skill);
 	DISPATCH(Creature, Skill);
 }
 
 void Creature::RemoveSkill(std::string skill) { RemoveSkill(skill, AcquireLock());}
 void Creature::RemoveSkill(std::string skill, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
-        return (skill == other_skill.name);
-    });
-
-    if(iter == end(skills_))
-    {
-        return;
-    }
-
-    skills_.Remove(iter);
+    skills_.remove(skill);
 	DISPATCH(Creature, Skill);
 }
 
-std::list<Skill> Creature::GetSkills() { return GetSkills(AcquireLock());}
-std::list<Skill> Creature::GetSkills(boost::unique_lock<boost::mutex>& lock)
+std::set<std::string> Creature::GetSkills() { return GetSkills(AcquireLock());}
+std::set<std::string> Creature::GetSkills(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(skills_.Get());
+    return skills_.raw();
 }
 
 bool Creature::HasSkill(std::string skill) { return HasSkill(skill, AcquireLock());}
 bool Creature::HasSkill(std::string skill, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
-        return (skill == other_skill.name);
-    });
-
-    if(iter != end(skills_))
-	{
-        return true;
-	}
-    else
-	{
-        return false;
-	}
+    return skills_.contains(skill);
 }
 
 std::map<uint32_t, std::string>  Creature::GetSkillCommands() { return GetSkillCommands(AcquireLock());}
@@ -378,46 +347,38 @@ void Creature::ToggleStateBitmask(uint64_t state_bitmask, boost::unique_lock<boo
 	DISPATCH(Creature, StateBitmask);
 }
 
-void Creature::SetStatWound(StatIndex stat_index, int32_t value) { SetStatWound(stat_index, value, AcquireLock());}
-void Creature::SetStatWound(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatWound(uint16_t stat_index, int32_t value) { SetStatWound(stat_index, value, AcquireLock());}
+void Creature::SetStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    stat_wound_list_.Update(stat_index, Stat(value));
+    stat_wound_list_.update(stat_index, value);
 	DISPATCH(Creature, StatWound);
 }
 
-void Creature::AddStatWound(StatIndex stat_index, int32_t value) { AddStatWound(stat_index, value, AcquireLock());}
-void Creature::AddStatWound(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddStatWound(uint16_t stat_index, int32_t value) { AddStatWound(stat_index, value, AcquireLock());}
+void Creature::AddStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t new_stat = stat_wound_list_[stat_index].value + value;
-    stat_wound_list_.Update(stat_index, Stat(new_stat));
+    stat_wound_list_.update(stat_index, stat_wound_list_[stat_index] + value);
 	DISPATCH(Creature, StatWound);
 }
 
-void Creature::DeductStatWound(StatIndex stat_index, int32_t value) { DeductStatWound(stat_index, value, AcquireLock());}
-void Creature::DeductStatWound(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::DeductStatWound(uint16_t stat_index, int32_t value) { DeductStatWound(stat_index, value, AcquireLock());}
+void Creature::DeductStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t current = stat_wound_list_[stat_index].value;
-    if (current > value)
-    {
-        stat_wound_list_.Update(stat_index, Stat(current - value));
-    }
-    else
-    {
-        stat_wound_list_.Update(stat_index, Stat(0));
-    }
+    int32_t current = stat_wound_list_[stat_index];
+	stat_wound_list_.update(stat_index, (current > value) ? current - value : 0);
 	DISPATCH(Creature, StatWound);
 }
 
-std::vector<Stat> Creature::GetStatWounds() { return GetStatWounds(AcquireLock());}
-std::vector<Stat> Creature::GetStatWounds(boost::unique_lock<boost::mutex>& lock)
+std::vector<int32_t> Creature::GetStatWounds() { return GetStatWounds(AcquireLock());}
+std::vector<int32_t> Creature::GetStatWounds(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(stat_wound_list_.Get());
+    return stat_wound_list_.raw();
 }
 
-int32_t Creature::GetStatWound(StatIndex stat_index) { return GetStatWound(stat_index, AcquireLock());}
-int32_t Creature::GetStatWound(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock)
+int32_t Creature::GetStatWound(uint16_t stat_index) { return GetStatWound(stat_index, AcquireLock());}
+int32_t Creature::GetStatWound(uint16_t stat_index, boost::unique_lock<boost::mutex>& lock)
 {
-    return stat_wound_list_.At(stat_index).value;
+    return stat_wound_list_[stat_index];
 }
 
 void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_bas) { SetAccelerationMultiplierBase(acceleration_multiplier_bas, AcquireLock());}
@@ -446,52 +407,45 @@ float Creature::GetAccelerationMultiplierModifier(boost::unique_lock<boost::mute
     return acceleration_multiplier_modifier_;
 }
 
-void Creature::SetStatEncumberance(StatIndex stat_index, int32_t value) { SetStatEncumberance(stat_index, value, AcquireLock()); }
-void Creature::SetStatEncumberance(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatEncumberance(uint16_t stat_index, int32_t value) { SetStatEncumberance(stat_index, value, AcquireLock()); }
+void Creature::SetStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    stat_encumberance_list_.Update(stat_index, Stat(value));
+    stat_encumberance_list_.update(stat_index, value);
 	DISPATCH(Creature, StatEncumberance);
 }
 
-void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value) { AddStatEncumberance(stat_index, value, AcquireLock()); }
-void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddStatEncumberance(uint16_t stat_index, int32_t value) { AddStatEncumberance(stat_index, value, AcquireLock()); }
+void Creature::AddStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t new_stat = stat_encumberance_list_[stat_index].value + value;
-    stat_encumberance_list_.Update(stat_index, Stat(new_stat));
+    int32_t new_stat = stat_encumberance_list_[stat_index] + value;
+    stat_encumberance_list_.update(stat_index, new_stat);
 	DISPATCH(Creature, StatEncumberance);
 }
 
-void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value) { DeductStatEncumberance(stat_index, value, AcquireLock()); }
-void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::DeductStatEncumberance(uint16_t stat_index, int32_t value) { DeductStatEncumberance(stat_index, value, AcquireLock()); }
+void Creature::DeductStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t current = stat_encumberance_list_[stat_index].value;
-    if (current > value)
-    {
-        stat_encumberance_list_.Update(stat_index, Stat(current - value));
-    }
-    else
-    {
-        stat_encumberance_list_.Update(stat_index, Stat(0));
-    }
+    int32_t current = stat_encumberance_list_[stat_index];
+    stat_encumberance_list_.update(stat_index, (current > value) ? (current - value) : 0);
 	DISPATCH(Creature, StatEncumberance);
 }
 
-std::vector<Stat> Creature::GetStatEncumberances() { return GetStatEncumberances(AcquireLock()); }
-std::vector<Stat> Creature::GetStatEncumberances(boost::unique_lock<boost::mutex>& lock)
+std::vector<int32_t> Creature::GetStatEncumberances() { return GetStatEncumberances(AcquireLock()); }
+std::vector<int32_t> Creature::GetStatEncumberances(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(stat_encumberance_list_.Get());
+    return stat_encumberance_list_.raw();
 }
 
-int32_t Creature::GetStatEncumberance(StatIndex stat_index) { return GetStatEncumberance(stat_index, AcquireLock()); }
-int32_t Creature::GetStatEncumberance(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock)
+int32_t Creature::GetStatEncumberance(uint16_t stat_index) { return GetStatEncumberance(stat_index, AcquireLock()); }
+int32_t Creature::GetStatEncumberance(uint16_t stat_index, boost::unique_lock<boost::mutex>& lock)
 {
-    return stat_encumberance_list_.At(stat_index).value;
+    return stat_encumberance_list_[stat_index];
 }
 
 void Creature::AddSkillMod(SkillMod mod) { AddSkillMod(mod, AcquireLock()); }
 void Creature::AddSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock)
 {
-    skill_mod_list_.Add(mod.identifier, mod);
+    skill_mod_list_.add(mod.identifier, mod);
 	DISPATCH(Creature, SkillMod);
 }
 
@@ -507,28 +461,21 @@ void Creature::RemoveSkillMod(std::string identifier, boost::unique_lock<boost::
         return;
     }
 
-    skill_mod_list_.Remove(iter);
+    skill_mod_list_.remove(iter);
 	DISPATCH(Creature, SkillMod);
 }
 
 void Creature::SetSkillMod(SkillMod mod) { SetSkillMod(mod, AcquireLock()); }
 void Creature::SetSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock)
 {
-    skill_mod_list_.Update(mod.identifier, mod);
-	DISPATCH(Creature, SkillMod);
-}
-
-void Creature::ClearSkillMods() { ClearSkillMods(AcquireLock()); }
-void Creature::ClearSkillMods(boost::unique_lock<boost::mutex>& lock)
-{
-	skill_mod_list_.Clear();
+    skill_mod_list_.update(mod.identifier);
 	DISPATCH(Creature, SkillMod);
 }
 
 std::map<std::string, SkillMod> Creature::GetSkillMods() { return GetSkillMods(AcquireLock()); }
 std::map<std::string, SkillMod> Creature::GetSkillMods(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(skill_mod_list_.Get());
+    return skill_mod_list_.raw();
 }
 
 SkillMod Creature::GetSkillMod(std::string identifier) { return GetSkillMod(identifier, AcquireLock()); }
@@ -544,7 +491,7 @@ SkillMod Creature::GetSkillMod(std::string identifier, boost::unique_lock<boost:
 	}
     else
 	{
-        return SkillMod();
+        throw SkillModNotFound();
 	}
 }
 
@@ -668,7 +615,7 @@ float Creature::GetWaterModifierPercent(boost::unique_lock<boost::mutex>& lock)
 void Creature::AddMissionCriticalObject(MissionCriticalObject& object) { AddMissionCriticalObject(object, AcquireLock()); }
 void Creature::AddMissionCriticalObject(MissionCriticalObject& object, boost::unique_lock<boost::mutex>& lock)
 {
-	mission_critical_object_list_.Add(object);
+	mission_critical_object_list_.add(object);
 	DISPATCH(Creature, MissionCriticalObject);
 }
 
@@ -694,7 +641,7 @@ void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t obje
         return;
     }
 
-    mission_critical_object_list_.Remove(iter);
+    mission_critical_object_list_.remove(iter);
 	DISPATCH(Creature, MissionCriticalObject);
 }
 
@@ -721,10 +668,10 @@ MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uin
 	}
 }
 
-std::list<MissionCriticalObject> Creature::GetMissionCriticalObjects(void) { return GetMissionCriticalObjects(AcquireLock()); }
-std::list<MissionCriticalObject> Creature::GetMissionCriticalObjects(boost::unique_lock<boost::mutex>& lock)
+std::set<MissionCriticalObject> Creature::GetMissionCriticalObjects(void) { return GetMissionCriticalObjects(AcquireLock()); }
+std::set<MissionCriticalObject> Creature::GetMissionCriticalObjects(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(mission_critical_object_list_.Get());
+    return mission_critical_object_list_.raw();
 }
 
 void Creature::SetCombatLevel(uint16_t combat_level) { SetCombatLevel(combat_level, AcquireLock()); }
@@ -893,108 +840,94 @@ uint32_t Creature::GetPerformanceCounter(boost::unique_lock<boost::mutex>& lock)
     return performance_counter_;
 }
 
-void Creature::SetStatCurrent(StatIndex stat_index, int32_t value) { SetStatCurrent(stat_index, value, AcquireLock()); }
-void Creature::SetStatCurrent(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatCurrent(uint16_t stat_index, int32_t value) { SetStatCurrent(stat_index, value, AcquireLock()); }
+void Creature::SetStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {   
-    stat_current_list_.Update(stat_index, Stat(value));
+    stat_current_list_.update(stat_index, value);
 	DISPATCH(Creature, StatCurrent);
 }
 
-void Creature::AddStatCurrent(StatIndex stat_index, int32_t value) { AddStatCurrent(stat_index, value, AcquireLock()); }
-void Creature::AddStatCurrent(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddStatCurrent(uint16_t stat_index, int32_t value) { AddStatCurrent(stat_index, value, AcquireLock()); }
+void Creature::AddStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t new_value = stat_current_list_[stat_index].value + value;
-    stat_current_list_.Update(stat_index, Stat(new_value));
+    int32_t new_value = stat_current_list_[stat_index] + value;
+    stat_current_list_.update(stat_index, new_value);
 	DISPATCH(Creature, StatCurrent);
 }
 
-void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value) { DeductStatCurrent(stat_index, value, AcquireLock()); }
-void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::DeductStatCurrent(uint16_t stat_index, int32_t value) { DeductStatCurrent(stat_index, value, AcquireLock()); }
+void Creature::DeductStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t current = stat_current_list_[stat_index].value;
-    if (current > value)
-    {
-        stat_current_list_.Update(stat_index, Stat(current - value));
-    }
-    else
-    {
-        stat_current_list_.Update(stat_index, Stat(0));
-    }
+    int32_t current = stat_current_list_[stat_index];
+	stat_current_list_.update(stat_index, (current > value) ? (current - value) : 0);
 	DISPATCH(Creature, StatCurrent);
 }
 
-std::vector<Stat> Creature::GetCurrentStats(void) { return GetCurrentStats(AcquireLock()); }
-std::vector<Stat> Creature::GetCurrentStats(boost::unique_lock<boost::mutex>& lock)
+std::vector<int32_t> Creature::GetCurrentStats(void) { return GetCurrentStats(AcquireLock()); }
+std::vector<int32_t> Creature::GetCurrentStats(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(stat_current_list_.Get());
+    return stat_current_list_.raw();
 }
 
-int32_t Creature::GetStatCurrent(StatIndex stat_index) { return GetStatCurrent(stat_index, AcquireLock()); }
-int32_t Creature::GetStatCurrent(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock)
+int32_t Creature::GetStatCurrent(uint16_t stat_index) { return GetStatCurrent(stat_index, AcquireLock()); }
+int32_t Creature::GetStatCurrent(uint16_t stat_index, boost::unique_lock<boost::mutex>& lock)
 {
-    return stat_current_list_.At(stat_index).value;
+    return stat_current_list_[stat_index];
 }
 
-void Creature::SetStatMax(StatIndex stat_index, int32_t value) { SetStatMax(stat_index, value, AcquireLock()); }
-void Creature::SetStatMax(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatMax(uint16_t stat_index, int32_t value) { SetStatMax(stat_index, value, AcquireLock()); }
+void Creature::SetStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-	stat_max_list_.Update(stat_index, Stat(value));
+	stat_max_list_.update(stat_index, value);
 	DISPATCH(Creature, StatMax);
 }
 
-void Creature::AddStatMax(StatIndex stat_index, int32_t value) { AddStatMax(stat_index, value, AcquireLock()); }
-void Creature::AddStatMax(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddStatMax(uint16_t stat_index, int32_t value) { AddStatMax(stat_index, value, AcquireLock()); }
+void Creature::AddStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value + value));
+    stat_max_list_.update(stat_index, stat_max_list_[stat_index] + value);
 	DISPATCH(Creature, StatMax);
 }
 
-void Creature::DeductStatMax(StatIndex stat_index, int32_t value) { DeductStatMax(stat_index, value, AcquireLock()); }
-void Creature::DeductStatMax(StatIndex stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::DeductStatMax(uint16_t stat_index, int32_t value) { DeductStatMax(stat_index, value, AcquireLock()); }
+void Creature::DeductStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    int32_t current = stat_max_list_[stat_index].value;
-    if (current > value)
-    {
-        stat_max_list_.Update(stat_index, Stat(current - value));
-    }
-    else
-    {
-        stat_max_list_.Update(stat_index, Stat(0));
-    }
+    int32_t current = stat_max_list_[stat_index];
+	stat_max_list_.update(stat_index, (current > value) ? (current - value) : 0);
 	DISPATCH(Creature, StatMax);
 }
 
-std::vector<Stat> Creature::GetMaxStats(void) { return GetMaxStats(AcquireLock()); }
-std::vector<Stat> Creature::GetMaxStats(boost::unique_lock<boost::mutex>& lock)
+std::vector<int32_t> Creature::GetMaxStats(void) { return GetMaxStats(AcquireLock()); }
+std::vector<int32_t> Creature::GetMaxStats(boost::unique_lock<boost::mutex>& lock)
 {
-    return std::move(stat_max_list_.Get());
+    return stat_max_list_.raw();
 }
 
-int32_t Creature::GetStatMax(StatIndex stat_index) { return GetStatMax(stat_index, AcquireLock()); }
-int32_t Creature::GetStatMax(StatIndex stat_index, boost::unique_lock<boost::mutex>& lock)
+int32_t Creature::GetStatMax(uint16_t stat_index) { return GetStatMax(stat_index, AcquireLock()); }
+int32_t Creature::GetStatMax(uint16_t stat_index, boost::unique_lock<boost::mutex>& lock)
 {
-    return stat_max_list_.At(stat_index).value;
+    return stat_max_list_[stat_index];
 }
 
 void Creature::AddEquipmentItem(EquipmentItem& item) { AddEquipmentItem(item, AcquireLock()); }
 void Creature::AddEquipmentItem(EquipmentItem& item, boost::unique_lock<boost::mutex>& lock)
 {
-    equipment_list_.Add(item);
+    equipment_list_.add(item);
 	DISPATCH(Creature, EquipmentItem);
 }
 
 void Creature::RemoveEquipmentItem(uint64_t object_id) { RemoveEquipmentItem(object_id, AcquireLock()); }
 void Creature::RemoveEquipmentItem(uint64_t object_id, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> item)->bool {
-        return (object_id == item.second.object_id);
+    auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](EquipmentItem& item)->bool {
+        return (object_id == item.object_id);
     });
 
     if(iter != end(equipment_list_))
     {
         return;
     }
-    equipment_list_.Remove(iter);
+    equipment_list_.remove(iter);
    
 	DISPATCH(Creature, EquipmentItem);
 }
@@ -1002,40 +935,32 @@ void Creature::RemoveEquipmentItem(uint64_t object_id, boost::unique_lock<boost:
 void Creature::UpdateEquipmentItem(EquipmentItem& item) { UpdateEquipmentItem(item, AcquireLock()); }
 void Creature::UpdateEquipmentItem(EquipmentItem& item, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = equipment_list_.Find(item);
-    if(iter != end(equipment_list_))
-	{
-        equipment_list_.Update(iter->first, item);
-	}
+	uint64_t object_id = item.object_id;
+	equipment_list_.update(std::find_if(begin(equipment_list_), end(equipment_list_), [=](EquipmentItem& item)->bool {
+        return (object_id == item.object_id);
+    }));
 	DISPATCH(Creature, EquipmentItem);
 }
 
-std::list<EquipmentItem> Creature::GetEquipment(void) { return GetEquipment(AcquireLock()); }
-std::list<EquipmentItem> Creature::GetEquipment(boost::unique_lock<boost::mutex>& lock)
+std::vector<EquipmentItem> Creature::GetEquipment(void) { return GetEquipment(AcquireLock()); }
+std::vector<EquipmentItem> Creature::GetEquipment(boost::unique_lock<boost::mutex>& lock)
 {
-	std::list<EquipmentItem> result;
-	for(auto& v : equipment_list_)
-	{
-		result.push_back(v.second);
-	}
-    return std::move(result);
+	return equipment_list_.raw();
 }
 
 EquipmentItem Creature::GetEquipmentItem(uint64_t object_id) { return GetEquipmentItem(object_id, AcquireLock()); }
 EquipmentItem Creature::GetEquipmentItem(uint64_t object_id, boost::unique_lock<boost::mutex>& lock)
 {
-    auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> pair) {
-        return pair.second.object_id == object_id;
+    auto iter = std::find_if(equipment_list_.begin(), equipment_list_.end(), [=](EquipmentItem& object) {
+        return object.object_id == object_id;
     });
 
     if(iter != end(equipment_list_))
 	{
-        return iter->second;
+        return *iter;
 	}
-    else
-	{
-        return EquipmentItem();
-	}
+
+	throw EquipmentNotFound();
 }
 
 void Creature::SetDisguise(std::string disguise) { SetDisguise(disguise, AcquireLock()); }

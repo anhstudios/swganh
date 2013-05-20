@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include <map>
+#include <set>
 #include <queue>
 #include <functional>
 
@@ -16,21 +16,21 @@ namespace swganh
 namespace containers
 {
 
-template<typename K, typename V, typename Serializer=DefaultSerializer<V>>
-class NetworkMap
+template<typename T, typename Serializer=DefaultSerializer<T>>
+class NetworkSet
 {
 public:
-	typedef typename std::map<K, V>::const_iterator const_iterator;
-	typedef typename std::map<K, V>::iterator iterator;
-
-	NetworkMap()
+	typedef typename std::set<T>::const_iterator const_iterator;
+	typedef typename std::set<T>::iterator iterator;
+	
+	NetworkSet()
 		: update_counter_(0)
 	{
 	}
 
-	void remove(const K& key, bool update=true)
+	void remove(const T& data, bool update=true)
 	{
-		remove(data_.find(key));
+		remove(data_.find(data));
 	}
 	
 	void remove(iterator itr, bool update=true)
@@ -39,61 +39,55 @@ public:
 		{
 			if(update)
 			{
+				const T& data = *itr;
 				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
-					message.data.write<uint8_t>(1);
-					Serializer::SerializeDelta(message.data, itr->second);
+					message.data.write<uint8_t>(0);
+					Serializer::SerializeDelta(message.data, data);
 				});
 			}
 			data_.erase(itr);
 		}
 	}
 
-	void add(const K& key, const V& value, bool update=true)
+	void add(const T& data, bool update=true)
 	{
-		auto pair = data_.insert(std::make_pair(key, value));
+		auto pair = data_.insert(data);
 		if(pair.second)
 		{
 			if(update)
 			{
 				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
-					message.data.write<uint8_t>(0);
-					Serializer::SerializeDelta(message.data, pair.first->second);
+					message.data.write<uint8_t>(1);
+					Serializer::SerializeDelta(message.data, *pair.first);
 				});
 			}
 		}
 	}
-
-	void update(const K& key)
+	
+	void clear(bool update=true)
 	{
-		deltas_.push([=] (swganh::messages::DeltasMessage& message) {
-			message.data.write<uint8_t>(2);
-			Serializer::SerializeDelta(message.data, data_[key]);
-		});
-	}
-
-	bool contains(const K& key)
-	{
-		return data_.find(key) != data_.end();
+		data_.clear();
+		if(update)
+		{
+			deltas_.push([=] (swganh::messages::DeltasMessage& message) {
+				message.data.write<uint8_t>(2);
+			});
+		}
 	}
 	
-	iterator find(const K& key)
+	bool contains(const T& data)
 	{
-		return data_.find(key);
+		return data_.find(data) != data_.end();
 	}
 
-	std::map<K,V> data()
+	std::set<T> data()
 	{
 		return data_;
 	}
 	
-	std::map<K,V>& raw()
+	std::set<T>& raw()
 	{
 		return data_;
-	}
-
-	uint32_t size()
-	{
-		return data_.size();
 	}
 
 	iterator begin()
@@ -104,11 +98,6 @@ public:
 	iterator end()
 	{
 		return data_.end();
-	}
-
-	V& operator[](const K& key)
-	{
-		return find(key)->second;
 	}
 
 	void Serialize(swganh::messages::BaseSwgMessage* message)
@@ -127,9 +116,9 @@ public:
 	{
 		message.data.write<uint32_t>(data_.size());
         message.data.write<uint32_t>(0);
-		for(auto& pair : data_)
+		for(auto& item : data_)
 		{
-			Serializer::SerializeBaseline(message.data, pair.second);
+			Serializer::SerializeBaseline(message.data, item);
 		}
 	}
 	
@@ -144,10 +133,10 @@ public:
 			deltas_.pop();
 		}
 	}
-
+	
 private:
-	std::map<K, V> data_;
-
+	std::set<T> data_;
+	
 	uint32_t update_counter_;
 	std::queue<std::function<void(swganh::messages::DeltasMessage&)>> deltas_;
 };

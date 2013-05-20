@@ -5,14 +5,13 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::messages::containers;
+using namespace swganh::containers;
 
 Installation::Installation()
 	: Tangible()
 	, resource_pool_ids_(10)
 	, resource_names_(10)
 	, resource_types_(10)
-	, hopper_(10)
 {
 }
 
@@ -78,17 +77,17 @@ void Installation::SetPowerCost(float power_cost, boost::unique_lock<boost::mute
 	DISPATCH(Installation, PowerCost);
 }
 
-std::vector<Installation::Resource> Installation::GetAvailableResources() { return GetAvailableResources(AcquireLock()); }
-std::vector<Installation::Resource> Installation::GetAvailableResources(boost::unique_lock<boost::mutex>& lock)
+std::vector<Resource> Installation::GetAvailableResources() { return GetAvailableResources(AcquireLock()); }
+std::vector<Resource> Installation::GetAvailableResources(boost::unique_lock<boost::mutex>& lock)
 {
-	std::vector<Installation::Resource> available_resources;
-	uint16_t size = resource_pool_ids_.Size();
+	std::vector<Resource> available_resources;
+	uint16_t size = resource_pool_ids_.size();
 	for(uint16_t i = 0; i < size; ++i)
 	{
-		Installation::Resource resource;
-		resource.global_id = resource_pool_ids_[i].id;
-		resource.resource_name = resource_names_[i].name;
-		resource.resource_type = resource_types_[i].name;
+		Resource resource;
+		resource.global_id = resource_pool_ids_[i];
+		resource.resource_name = resource_names_[i];
+		resource.resource_type = resource_types_[i];
 		available_resources.push_back(resource);
 	}
 
@@ -100,7 +99,7 @@ void Installation::AddAvailableResource(uint64_t global_id, std::string name, st
 {
 	bool send_update = true;
 
-	uint16_t size = resource_pool_ids_.Size();
+	uint16_t size = resource_pool_ids_.size();
 	for(uint16_t i = 0; i < size; ++i)
 	{
 		if(resource_pool_ids_[i] == global_id)
@@ -111,9 +110,9 @@ void Installation::AddAvailableResource(uint64_t global_id, std::string name, st
 		}
 	}
 	
-	resource_pool_ids_.Add(global_id);
-	resource_names_.Add(name);
-	resource_types_.Add(type);
+	resource_pool_ids_.add(global_id);
+	resource_names_.add(name);
+	resource_types_.add(type);
 
 	if(send_update)
 	{
@@ -125,15 +124,15 @@ void Installation::RemoveAvailableResourceById(uint64_t global_id) { RemoveAvail
 void Installation::RemoveAvailableResourceById(uint64_t global_id, boost::unique_lock<boost::mutex>& lock)
 {
 	bool send_update = false;
-	uint16_t size = resource_pool_ids_.Size();
+	uint16_t size = resource_pool_ids_.size();
 	uint16_t index;
 	for(index = 0; index < size; ++index)
 	{
 		if(resource_pool_ids_[index] == global_id)
 		{
-			resource_pool_ids_.Remove(index);
-			resource_names_.Remove(index);
-			resource_types_.Remove(index);
+			resource_pool_ids_.remove(index);
+			resource_names_.remove(index);
+			resource_types_.remove(index);
 			send_update = true;
 			break;
 		}
@@ -149,15 +148,15 @@ void Installation::UpdateResource(uint64_t global_id, std::string name, std::str
 void Installation::UpdateResource(uint64_t global_id, std::string name, std::string type,boost::unique_lock<boost::mutex>& lock)
 {
 	bool send_update = false;
-	uint16_t size = resource_pool_ids_.Size();
+	uint16_t size = resource_pool_ids_.size();
 	uint16_t index;
 	for(index = 0; index < size; ++index)
 	{
 		if(resource_pool_ids_[index] == global_id)
 		{
-			resource_pool_ids_.Update(index, ResourceId(global_id));
-			resource_names_.Update(index, ResourceString(name));
-			resource_types_.Update(index, ResourceString(type));
+			resource_pool_ids_.update(index, global_id);
+			resource_names_.update(index, name);
+			resource_types_.update(index, type);
 			send_update = true;
 			break;
 		}
@@ -169,39 +168,12 @@ void Installation::UpdateResource(uint64_t global_id, std::string name, std::str
 	}
 }
 
-void Installation::ResetAvailableResources(std::vector<Installation::Resource> available_resource_pool) { ResetAvailableResources(available_resource_pool, AcquireLock()); }
-void Installation::ResetAvailableResources(std::vector<Installation::Resource> available_resource_pool,boost::unique_lock<boost::mutex>& lock)
-{
-	//Clean out the lists
-	resource_pool_ids_.Clear();
-	resource_names_.Clear();
-	resource_types_.Clear();
-    
-	//Put the new values in
-	for(auto& resource : available_resource_pool)
-	{
-		resource_pool_ids_.Add(resource.global_id);
-		resource_names_.Add(resource.resource_name);
-		resource_types_.Add(resource.resource_type);
-	}
-	
-	//Clear Deltas and Reinstall
-	resource_pool_ids_.ClearDeltas();
-	resource_names_.ClearDeltas();
-	resource_types_.ClearDeltas();
-
-	resource_pool_ids_.Reinstall();
-	resource_names_.Reinstall();
-	resource_types_.Reinstall();
-	DISPATCH(Installation, AvailableResource);
-}
-
 void Installation::ClearAllAvailableResources() { ClearAllAvailableResources(AcquireLock()); }
 void Installation::ClearAllAvailableResources(boost::unique_lock<boost::mutex>& lock)
 {
-	resource_pool_ids_.Clear();
-	resource_names_.Clear();
-	resource_types_.Clear();
+	resource_pool_ids_.clear();
+	resource_names_.clear();
+	resource_types_.clear();
 	DISPATCH(Installation, AvailableResource);
 }
 
@@ -301,10 +273,10 @@ void Installation::ToggleUpdating(boost::unique_lock<boost::mutex>& lock)
 	DISPATCH(Installation, IsUpdating);
 }
 
-NetworkSortedVector<Installation::HopperItem>& Installation::GetHopperContents() { return GetHopperContents(AcquireLock()); }
-NetworkSortedVector<Installation::HopperItem>& Installation::GetHopperContents(boost::unique_lock<boost::mutex>& lock)
+std::vector<HopperItem> Installation::GetHopperContents() { return GetHopperContents(AcquireLock()); }
+std::vector<HopperItem> Installation::GetHopperContents(boost::unique_lock<boost::mutex>& lock)
 {
-    return hopper_;
+    return hopper_.raw();
 }
 
 void Installation::AddToHopper(uint64_t global_id, float quantity) { AddToHopper(global_id, quantity, AcquireLock()); }
@@ -313,7 +285,7 @@ void Installation::AddToHopper(uint64_t global_id, float quantity, boost::unique
 	HopperItem item;
 	item.global_id = global_id;
 	item.quantity = quantity;
-	hopper_.Add(move(item));
+	hopper_.add(item);
 	DISPATCH(Installation, Hopper);
 }
 
@@ -321,11 +293,11 @@ void Installation::RemoveHopperItem(uint64_t global_id) { RemoveHopperItem(globa
 void Installation::RemoveHopperItem(uint64_t global_id, boost::unique_lock<boost::mutex>& lock)
 {
 	bool send_update = false;
-	for(uint16_t i=0; i < hopper_.Size(); ++i)
+	for(uint16_t i=0; i < hopper_.size(); ++i)
 	{
 		if(hopper_[i].global_id == global_id)
 		{
-			hopper_.Remove(i);
+			hopper_.remove(i);
 			send_update = true;
 			break;
 		}
@@ -341,14 +313,14 @@ void Installation::UpdateHopperItem(uint64_t global_id, float quantity) { Update
 void Installation::UpdateHopperItem(uint64_t global_id, float quantity, boost::unique_lock<boost::mutex>& lock)
 {
     bool send_update = false;
-	for(uint16_t i=0; i < hopper_.Size(); ++i)
+	for(uint16_t i=0; i < hopper_.size(); ++i)
 	{
 		if(hopper_[i].global_id == global_id)
 		{
 			HopperItem new_item;
 			new_item.global_id = global_id;
 			new_item.quantity = quantity;
-			hopper_.Update(i, new_item);
+			hopper_.update(i);
 
 			send_update = true;
 			break;
@@ -361,25 +333,17 @@ void Installation::UpdateHopperItem(uint64_t global_id, float quantity, boost::u
 	}
 }
 
-void Installation::ResetContents(std::vector<Installation::HopperItem> hopper) { ResetContents(hopper, AcquireLock()); }
-void Installation::ResetContents(std::vector<Installation::HopperItem> hopper,boost::unique_lock<boost::mutex>& lock)
+void Installation::ResetContents(std::vector<HopperItem> hopper) { ResetContents(hopper, AcquireLock()); }
+void Installation::ResetContents(std::vector<HopperItem> hopper,boost::unique_lock<boost::mutex>& lock)
 {
-	hopper_.Clear();
-
-	for(auto& item : hopper)
-	{
-		hopper_.Add(item);
-	}
-
-	hopper_.ClearDeltas();
-	hopper_.Reinstall();
+	hopper_.reset(hopper);
 	DISPATCH(Installation, Hopper);
 }
 
 void Installation::ClearAllHopperContents() { ClearAllHopperContents(AcquireLock()); }
 void Installation::ClearAllHopperContents(boost::unique_lock<boost::mutex>& lock)
 {
-	hopper_.Clear();
+	hopper_.clear();
 	DISPATCH(Installation, Hopper);
 }
 
@@ -397,22 +361,22 @@ void Installation::SetConditionPercentage(uint8_t condition,boost::unique_lock<b
 	DISPATCH(Installation, ConditionPercent);
 }
 
-NetworkSortedVector<ResourceId>& Installation::GetResourceIds_() { return GetResourceIds_(AcquireLock()); }
-NetworkSortedVector<ResourceId>& Installation::GetResourceIds_(boost::unique_lock<boost::mutex>& lock)
+std::vector<uint64_t> Installation::GetResourceIds() { return GetResourceIds(AcquireLock()); }
+std::vector<uint64_t> Installation::GetResourceIds(boost::unique_lock<boost::mutex>& lock)
 {
-	return resource_pool_ids_;
+	return resource_pool_ids_.raw();
 }
 
-NetworkSortedVector<ResourceString>& Installation::GetResourceNames_() { return GetResourceNames_(AcquireLock()); }
-NetworkSortedVector<ResourceString>& Installation::GetResourceNames_(boost::unique_lock<boost::mutex>& lock)
+std::vector<std::string> Installation::GetResourceNames() { return GetResourceNames(AcquireLock()); }
+std::vector<std::string> Installation::GetResourceNames(boost::unique_lock<boost::mutex>& lock)
 {
-	return resource_names_;
+	return resource_names_.raw();
 }
 
-NetworkSortedVector<ResourceString>& Installation::GetResourceTypes_() { return GetResourceTypes_(AcquireLock()); }
-NetworkSortedVector<ResourceString>& Installation::GetResourceTypes_(boost::unique_lock<boost::mutex>& lock)
+std::vector<std::string> Installation::GetResourceTypes() { return GetResourceTypes(AcquireLock()); }
+std::vector<std::string> Installation::GetResourceTypes(boost::unique_lock<boost::mutex>& lock)
 {
-	return resource_types_;
+	return resource_types_.raw();
 }
 
 uint64_t Installation::GetSelectedResourceId() { return GetSelectedResourceId(AcquireLock()); }
@@ -426,4 +390,28 @@ void Installation::SetSelectedResourceId(uint64_t new_id,boost::unique_lock<boos
 {
 	selected_resource_ = new_id;
 	DISPATCH(Installation, SelectedResource);
+}
+
+void Installation::SerializeResourceIds(swganh::messages::BaseSwgMessage* message) { SerializeResourceIds(message, AcquireLock()); }
+void Installation::SerializeResourceIds(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+{
+	resource_pool_ids_.Serialize(message);
+}
+
+void Installation::SerializeResourceNames(swganh::messages::BaseSwgMessage* message) { SerializeResourceNames(message, AcquireLock()); }
+void Installation::SerializeResourceNames(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+{
+	resource_names_.Serialize(message);
+}
+
+void Installation::SerializeResourceTypes(swganh::messages::BaseSwgMessage* message) { SerializeResourceTypes(message, AcquireLock()); }
+void Installation::SerializeResourceTypes(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+{
+	resource_types_.Serialize(message);
+}
+
+void Installation::SerializeHopperContents(swganh::messages::BaseSwgMessage* message) { SerializeHopperContents(message, AcquireLock()); }
+void Installation::SerializeHopperContents(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+{
+	hopper_.Serialize(message);
 }

@@ -21,18 +21,16 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
     if(guild->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(guild, Object::VIEW_3, 4);
-        guild->GetGuildList().Serialize(message);
+        guild->SerializeGuildList(&message);
         guild->AddDeltasUpdate(&message);
     }
-    else
-        guild->GetGuildList().ClearDeltas();
 }
 
 boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild, boost::unique_lock<boost::mutex>& lock)
 {
     auto message = CreateBaselinesMessage(guild, lock, Object::VIEW_3, 5);
     message.data.append((*ObjectMessageBuilder::BuildBaseline3(guild, lock)).data);
-    guild->GetGuildList(lock).Serialize(message);
+    guild->SerializeGuildList(&message, lock);
     return BaselinesMessage(std::move(message));
 }
 
