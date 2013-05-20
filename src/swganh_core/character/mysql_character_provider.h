@@ -73,7 +73,7 @@ public:
 	/**
 	* Returns the object_id of the character with the given name
 	* @param name the name to search for
-	* @return the id of the character or 0 of not found
+	* @return the id of the character or 0 if not found
 	*/
     virtual uint64_t GetCharacterIdByName(const std::string& name);
 

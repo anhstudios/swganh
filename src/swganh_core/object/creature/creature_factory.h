@@ -17,7 +17,6 @@ namespace sql {
 namespace swganh {
 namespace object {
 
-
     class Creature;
     class CreatureFactory : public swganh::object::TangibleFactory
     {

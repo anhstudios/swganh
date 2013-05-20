@@ -16,7 +16,6 @@
 #include "swganh_core/object/player/player_events.h"
 #include "swganh_core/object/player/player.h"
 #include "swganh_core/object/exception.h"
-#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/messages/containers/network_map.h"
 
 using namespace std;
@@ -24,8 +23,7 @@ using namespace swganh;
 using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::object;
-using namespace swganh::simulation;
-using namespace swganh::messages::containers;
+using namespace swganh::containers;
 
 WaypointFactory::WaypointFactory(swganh::app::SwganhKernel* kernel)
     : IntangibleFactory(kernel)

@@ -11,8 +11,8 @@
 
 #include "swganh_core/object/object.h"
 
-#include "swganh_core/messages/containers/network_list.h"
-#include "swganh_core/messages/containers/network_sorted_vector.h"
+#include "swganh_core/messages/containers/network_vector.h"
+#include "swganh_core/messages/containers/network_set.h"
 
 namespace swganh {
 namespace object {
@@ -21,61 +21,6 @@ namespace object {
 enum StaticType {
     MOVEABLE = 0,
     STATIC
-};
-
-struct Defender
-{
-    Defender()
-        : object_id(0)
-    {}
-
-    Defender(uint64_t object_id_)
-        : object_id(object_id_)
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint64_t>(object_id);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<uint64_t>(object_id);
-    }
-
-    bool operator==(const Defender& other)
-    {
-        return other.object_id == object_id;
-    }
-
-    uint64_t object_id;
-};
-
-struct ComponentCustomization
-{
-    ComponentCustomization(uint32_t component_customization_crc_)
-        : component_customization_crc(component_customization_crc_)
-    {}
-
-    ~ComponentCustomization(void)
-    {}
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint32_t>(component_customization_crc);
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<uint32_t>(component_customization_crc);
-    }
-
-    bool operator==(const ComponentCustomization& other)
-    {
-        return component_customization_crc == other.component_customization_crc;
-    }
-
-    uint32_t component_customization_crc;
 };
 
 class TangibleFactory;
@@ -122,8 +67,8 @@ public:
 	std::string GetCustomization(boost::unique_lock<boost::mutex>& lock);
 
     // Component Customization
-    std::list<ComponentCustomization> GetComponentCustomization();
-	std::list<ComponentCustomization> GetComponentCustomization(boost::unique_lock<boost::mutex>& lock);
+    std::set<uint32_t> GetComponentCustomization();
+	std::set<uint32_t> GetComponentCustomization(boost::unique_lock<boost::mutex>& lock);
 
     void AddComponentCustomization(uint32_t customization_crc);
 	void AddComponentCustomization(uint32_t customization_crc, boost::unique_lock<boost::mutex>& lock);
@@ -191,8 +136,8 @@ public:
     bool IsDefending(uint64_t defender);
 	bool IsDefending(uint64_t defender, boost::unique_lock<boost::mutex>& lock);
 
-    std::vector<Defender> GetDefenders();
-	std::vector<Defender> GetDefenders(boost::unique_lock<boost::mutex>& lock);
+    std::vector<uint64_t> GetDefenders();
+	std::vector<uint64_t> GetDefenders(boost::unique_lock<boost::mutex>& lock);
 
 	void SerializeDefenders(swganh::messages::BaseSwgMessage* message);
 	void SerializeDefenders(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
@@ -214,15 +159,17 @@ public:
 private:
     typedef swganh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
 
-    std::string customization_;                                                                                      // update 3 variable 4
-    swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;                 // update 3 variable 5
-    uint32_t options_bitmask_;                                                                          // update 3 variable 6
+    std::string customization_;
+    
+    uint32_t options_bitmask_;
 	// Uses for uses counter on items and incap_timer for creature
-    uint32_t counter_;                                                                                  // update 3 variable 7
-    uint32_t condition_damage_;                                                                         // update 3 variable 8
-    uint32_t max_condition_;                                                                            // update 3 variable 9
-    bool is_static_;                                                                                    // update 3 variable 10
-    swganh::messages::containers::NetworkSortedVector<Defender> defender_list_;                                      // update 6 variable 1
+    uint32_t counter_;
+    uint32_t condition_damage_;
+    uint32_t max_condition_;
+    bool is_static_;
+    
+	swganh::containers::NetworkSet<uint32_t> component_customization_list_;
+	swganh::containers::NetworkVector<uint64_t> defender_list_;
     
 	// Flag to help out in combat situations
     bool auto_attack_;

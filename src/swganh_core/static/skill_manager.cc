@@ -120,7 +120,7 @@ SkillModsMap SkillManager::GetSkillMods(const std::shared_ptr<Creature>& creatur
 	auto skill_end = this->skills_.end();
 	for(auto& skill : creature->GetSkills())
 	{
-		auto skill_itr = this->skills_.find(skill.name);
+		auto skill_itr = this->skills_.find(skill);
 		if(skill_itr != skill_end)
 		{
 			for(auto& mod : skill_itr->second->skill_mods_)

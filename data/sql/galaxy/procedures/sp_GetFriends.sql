@@ -8,7 +8,7 @@ DROP PROCEDURE IF EXISTS `sp_GetFriends`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetFriends`(IN `object_id` BIGINT)
 BEGIN
-    select o.custom_name, o.id from friend_list f, object o where f.player_id = object_id and f.friend_id = o.id;
+    select o.custom_name from friend_list f, object o where f.player_id = object_id and f.friend_id = o.id;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

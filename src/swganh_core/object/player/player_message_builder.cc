@@ -185,11 +185,8 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(const shared_ptr<Player>& obj
 
         message.data.write<uint32_t>(status_flags.size());
 
-        for_each(begin(status_flags),
-            end(status_flags),
-            [&message] (vector<FlagBitmask>::value_type& flag)
-        {
-            flag.Serialize(message);
+        for_each(begin(status_flags), end(status_flags), [&message] (uint32_t& flag) {
+            message.data.write<uint32_t>(flag);
         });
         
         object->AddDeltasUpdate(&message);
@@ -205,11 +202,8 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(const shared_ptr<Player>& ob
 
         message.data.write<uint32_t>(profile_flags.size());
 
-        for_each(begin(profile_flags),
-            end(profile_flags),
-            [&message] (vector<FlagBitmask>::value_type& flag)
-        {
-            flag.Serialize(message);
+        for_each(begin(profile_flags),end(profile_flags), [&message] (uint32_t& flag) {
+            message.data.write<uint32_t>(flag);
         });
 
         object->AddDeltasUpdate(&message);
@@ -257,7 +251,7 @@ void PlayerMessageBuilder::BuildAdminTagDelta(const shared_ptr<Player>& object)
 }
 void PlayerMessageBuilder::BuildXpDelta(const shared_ptr<Player>& object)
 {
-    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 0);
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 0);
     object->SerializeXp(&message);
     object->AddDeltasUpdate(&message);
 }
@@ -265,7 +259,7 @@ void PlayerMessageBuilder::BuildWaypointDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 1);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 1);
         object->SerializeWaypoints(&message);
         object->AddDeltasUpdate(&message);
     }
@@ -324,7 +318,11 @@ void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
 	if (object->HasObservers())
     {
 		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
-		object->SerializeAbilities(&message);
+		//object->SerializeAbilities(&message);
+
+		message.data.write<uint32_t>(0);
+		message.data.write<uint32_t>(0);
+
 		object->AddDeltasUpdate(&message);
 	}
 }
@@ -478,22 +476,16 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const sha
 
     message.data.write<uint32_t>(status_flags.size());
 
-    for_each(begin(status_flags),
-        end(status_flags),
-        [&message] (vector<FlagBitmask>::value_type& flag)
-    {
-        flag.Serialize(message);
+    for_each(begin(status_flags), end(status_flags), [&message] (uint32_t& flag) {
+        message.data.write<uint32_t>(flag);
     });
 
     auto profile_flags = object->GetProfileFlags(lock);
 
     message.data.write<uint32_t>(profile_flags.size());
 
-    for_each(begin(profile_flags),
-        end(profile_flags),
-        [&message] (vector<FlagBitmask>::value_type& flag)
-    {
-        flag.Serialize(message);
+    for_each(begin(profile_flags), end(profile_flags), [&message] (uint32_t& flag) {
+        message.data.write<uint32_t>(flag);
     });
 
     message.data.write<std::string>(object->GetProfessionTag(lock));        // Profession Tag
@@ -534,8 +526,11 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(const sha
 {
     auto message = CreateBaselinesMessage(object, lock, Object::VIEW_9, 17);
     
-    object->SerializeAbilities(&message, lock);
-    message.data.write<uint32_t>(object->GetExperimentationFlag(lock));
+    //object->SerializeAbilities(&message, lock);
+    message.data.write<uint32_t>(0);
+	message.data.write<uint32_t>(0);
+	
+	message.data.write<uint32_t>(object->GetExperimentationFlag(lock));
     message.data.write<uint32_t>(object->GetCraftingStage(lock));
     message.data.write<uint64_t>(object->GetNearestCraftingStation(lock));
     
