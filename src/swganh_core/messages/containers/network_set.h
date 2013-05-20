@@ -23,6 +23,11 @@ public:
 	typedef typename std::set<T>::const_iterator const_iterator;
 	typedef typename std::set<T>::iterator iterator;
 	
+	NetworkSet()
+		: update_counter_(0)
+	{
+	}
+
 	void remove(const T& data, bool update=true)
 	{
 		remove(data_.find(data));

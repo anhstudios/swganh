@@ -23,11 +23,13 @@ public:
 	typedef typename std::vector<T>::const_iterator const_iterator;
 	typedef typename std::vector<T>::iterator iterator;
 
-	NetworkVector() 
+	NetworkVector()
+		: update_counter_(0)
 	{
 	}
 
 	NetworkVector(uint32_t reserve)
+		: update_counter_(0)
 	{
 		for(uint32_t i=0; i < reserve; ++i)
 		{
@@ -36,6 +38,7 @@ public:
 	}
 
 	NetworkVector(const std::vector<T>& data)
+		: update_counter_(0)
 	{
 		data_ = data;
 	}

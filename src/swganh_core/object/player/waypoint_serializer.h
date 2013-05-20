@@ -15,9 +15,9 @@ struct PlayerWaypointSerializer {
     PlayerWaypointSerializer(std::shared_ptr<swganh::object::Waypoint> waypoint_)
         : waypoint(waypoint_){}
 
-    void Serialize(swganh::messages::BaselinesMessage& message);
+    static void SerializeBaseline(swganh::ByteBuffer& data, const PlayerWaypointSerializer& t);
+    static void SerializeDelta(swganh::ByteBuffer& data, const PlayerWaypointSerializer& t);
 
-    void Serialize(swganh::messages::DeltasMessage& message);
     bool operator==(const PlayerWaypointSerializer& other);
 
     std::shared_ptr<swganh::object::Waypoint> waypoint;

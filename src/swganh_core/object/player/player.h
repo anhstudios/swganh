@@ -736,13 +736,13 @@ private:
     uint32_t total_playtime_;
     uint8_t admin_tag_;
     uint32_t region_;
-    swganh::containers::NetworkMap<std::string, XpData> experience_;
-    swganh::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> waypoints_;
+    swganh::containers::NetworkMap<std::string, XpData, XpData> experience_;
+    swganh::containers::NetworkMap<uint64_t, PlayerWaypointSerializer, PlayerWaypointSerializer> waypoints_;
     int32_t current_force_power_;
     int32_t max_force_power_;
     uint32_t current_force_sensitive_quests_;
     uint32_t completed_force_sensitive_quests_;
-    swganh::containers::NetworkMap<uint32_t, QuestJournalData> quest_journal_;
+    swganh::containers::NetworkMap<uint32_t, QuestJournalData, QuestJournalData> quest_journal_;
     uint32_t experimentation_flag_;
     uint32_t crafting_stage_;
     uint64_t nearest_crafting_station_;

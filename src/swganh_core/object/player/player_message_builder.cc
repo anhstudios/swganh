@@ -251,7 +251,7 @@ void PlayerMessageBuilder::BuildAdminTagDelta(const shared_ptr<Player>& object)
 }
 void PlayerMessageBuilder::BuildXpDelta(const shared_ptr<Player>& object)
 {
-    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 0);
+    DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 0);
     object->SerializeXp(&message);
     object->AddDeltasUpdate(&message);
 }
@@ -259,7 +259,7 @@ void PlayerMessageBuilder::BuildWaypointDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 1);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 1);
         object->SerializeWaypoints(&message);
         object->AddDeltasUpdate(&message);
     }

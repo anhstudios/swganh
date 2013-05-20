@@ -23,6 +23,11 @@ public:
 	typedef typename std::map<K, V>::const_iterator const_iterator;
 	typedef typename std::map<K, V>::iterator iterator;
 
+	NetworkMap()
+		: update_counter_(0)
+	{
+	}
+
 	void remove(const K& key, bool update=true)
 	{
 		remove(data_.find(key));
@@ -51,7 +56,7 @@ public:
 			if(update)
 			{
 				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
-					message.data.write<uint8_t>(1);
+					message.data.write<uint8_t>(0);
 					Serializer::SerializeDelta(message.data, pair.first->second);
 				});
 			}

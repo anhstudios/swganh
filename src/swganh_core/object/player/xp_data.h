@@ -19,17 +19,19 @@ struct XpData
     std::string type;
     uint32_t value;
 
-    void Serialize(swganh::messages::BaselinesMessage& message)
+	static void SerializeBaseline(swganh::ByteBuffer& data, const XpData& t)
     {
-        message.data.write<uint8_t>(0); // byte
-        message.data.write(type);
-        message.data.write(value);           
+        data.write<uint8_t>(0); // byte
+        data.write(t.type);
+        data.write(t.value);           
     }
-    void Serialize(swganh::messages::DeltasMessage& message)
+
+    static void SerializeDelta(swganh::ByteBuffer& data, const XpData& t)
     {
-        message.data.write(type);
-        message.data.write(value);
+        data.write(t.type);
+        data.write(t.value);
     }
+
     bool operator==(const XpData& other)
     {
         return (type == other.type && value == other.value);
