@@ -159,11 +159,18 @@ void ChatService::Startup()
 {
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
     
+	//Tell Related
     connection_service->RegisterMessageHandler(&ChatService::HandleChatInstantMessageToCharacter, this);
-    connection_service->RegisterMessageHandler(&ChatService::HandleChatPersistentMessageToServer, this);
+    
+	//Mail Related
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatPersistentMessageToServer, this);
     connection_service->RegisterMessageHandler(&ChatService::HandleChatRequestPersistentMessage, this);
     connection_service->RegisterMessageHandler(&ChatService::HandleChatDeletePersistentMessage, this);
 
+	//Chat Room Related
+	
+	
+	//Spatial
     command_service_->AddCommandCreator<SpatialChatInternalCommand>("spatialchatinternal");
     
 	kernel_->GetEventDispatcher()->Subscribe(

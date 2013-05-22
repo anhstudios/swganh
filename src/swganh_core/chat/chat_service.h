@@ -151,6 +151,26 @@ private:
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
         swganh::messages::ChatDeletePersistentMessage* message);
 
+	void HandleChatRequestRoomList(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatRequestRoomList* message);
+	
+	void HandleChatQueryRoom(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatQueryRoom* message);
+	
+	void HandleChatSendToRoom(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatSendToRoom* message);
+		
+	void HandleChatBanAvatarFromRoom(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatBanAvatarFromRoom* message);
+	
+	void HandleChatDestroyRoom(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatDestroyRoom* message);
+		
     uint32_t StorePersistentMessage(
         uint64_t recipient_id,
         const std::string& sender_name, 
