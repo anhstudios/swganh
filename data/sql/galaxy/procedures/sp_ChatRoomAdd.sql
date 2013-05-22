@@ -11,8 +11,6 @@ CREATE PROCEDURE `sp_ChatRoomAdd`(IN in_is_private TINYINT(1), IN in_is_muted TI
 	IN in_name CHAR(50), IN in_creator_id BIGINT(20), IN in_title CHAR(50))
 BEGIN
 
-	DECLARE room_id BIGINT(20);
-
 	INSERT INTO `chat_rooms` 
 	(`is_private`, `is_muted`, `name`, `creator_id`, `owner_id`, `title`) 
 	VALUES (in_is_private, in_is_muted, in_name, in_creator_id, in_creator_id, in_title);
