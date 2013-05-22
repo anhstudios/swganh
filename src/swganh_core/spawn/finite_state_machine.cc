@@ -5,17 +5,20 @@
 #include "swganh_core/spawn/fsm_controller.h"
 #include "swganh_core/object/object.h"
 
+#include "swganh/app/swganh_kernel.h"
+
 using namespace boost;
 using namespace swganh::spawn;
 
 FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, std::shared_ptr<FsmStateInterface> initial_state,
-			ControllerFactory controller_factory)
+	ControllerFactory controller_factory)
 	: kernel_(kernel)
-	, io_service_(&kernel_->GetIoService())
+	, io_service_(&kernel->GetCpuThreadPool())
 	, initial_state_(initial_state)
 	, controller_factory_(controller_factory)
 	, shutdown_(false)
 {
+	HandleDispatch();
 }
 
 void FiniteStateMachine::HandleDispatch()
@@ -45,7 +48,6 @@ void FiniteStateMachine::HandleDispatch()
 FiniteStateMachine::~FiniteStateMachine()
 {
 	shutdown_ = true;
-	for_each(threads_.begin(), threads_.end(), std::mem_fn(&std::thread::join));
 }
 
 void FiniteStateMachine::StartManagingObject(std::shared_ptr<swganh::object::Object> object)

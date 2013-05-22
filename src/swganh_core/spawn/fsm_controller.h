@@ -58,6 +58,8 @@ public:
 	* important to this machine in one of the states.
 	*/
     virtual void Notify(swganh::messages::BaseSwgMessage* message) = 0;
+	virtual void Notify(swganh::messages::BaseSwgMessage* message,
+		swganh::network::soe::Session::SequencedCallback &&) = 0;
 
 	/**
 	* @brief Called by a controller when this object is marked as dirty and a tick is scheduled

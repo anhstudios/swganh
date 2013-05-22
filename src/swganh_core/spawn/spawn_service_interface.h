@@ -16,7 +16,7 @@ namespace spawn
 	class LootGroup;
 	class SpawnRegion;
 
-	class SpawnServiceInterface : public swganh::service::ServiceInterface
+	class SpawnServiceInterface : public swganh::service::BaseService
 	{
 	public:
         virtual ~SpawnServiceInterface() {}

@@ -64,7 +64,6 @@ namespace spawn
 		void HandleDispatch();
 
 		std::atomic<bool> shutdown_;
-		std::vector<std::thread> threads_;
 		boost::mutex mutex_;
 
 		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;

@@ -33,6 +33,7 @@
 
 #include "machines/shuttle.h"
 #include "loot_group.h"
+#include "spawn_region.h"
 
 using namespace swganh::service;
 using namespace swganh::app;
@@ -47,8 +48,8 @@ using namespace swganh::scripting;
 SpawnService::SpawnService(SwganhKernel* kernel) 
 	: kernel_(kernel)
 	, fsm_manager_(kernel->GetEventDispatcher())
-	, timer_(kernel_->GetIoService(), boost::posix_time::seconds(60))
-	, active_(kernel->GetIoService())
+	, timer_(kernel->GetCpuThreadPool(), boost::posix_time::seconds(60))
+	, active_(kernel->GetCpuThreadPool())
 	, next_region_id_(0)
 {
 	//Static Objects
@@ -70,10 +71,7 @@ SpawnService::SpawnService(SwganhKernel* kernel)
 			}
 		});
 	});
-}
 
-SpawnService::~SpawnService()
-{
     SetServiceDescription(ServiceDescription(
         "SpawnService",
         "spawn",
@@ -88,9 +86,6 @@ SpawnService::~SpawnService()
 {
 	timer_.cancel();
 }
-
-void SpawnService::Initialize()
-{}
 
 void SpawnService::Startup()
 {

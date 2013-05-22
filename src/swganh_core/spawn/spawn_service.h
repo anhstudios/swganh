@@ -4,6 +4,7 @@
 
 #include <boost/asio/deadline_timer.hpp>
 
+#include "swganh/active_object.h"
 #include "swganh_core/spawn/spawn_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/object/permissions/permission_type.h"
@@ -18,9 +19,8 @@ namespace spawn
 	{
 	public:
 		SpawnService(swganh::app::SwganhKernel* kernel);
-		~SpawnService();
 		
-		swganh::service::ServiceDescription GetServiceDescription();
+		virtual ~SpawnService();
 	
 		void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine);
 
@@ -47,6 +47,7 @@ namespace spawn
 		swganh::app::SwganhKernel* kernel_;
 
 		boost::asio::deadline_timer timer_;
+		swganh::ActiveObject active_;
 	};
 }
 }
