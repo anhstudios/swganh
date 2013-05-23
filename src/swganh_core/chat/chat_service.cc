@@ -206,6 +206,7 @@ void ChatService::Startup()
 	}
 	
 	//Load moderators
+	uint64_t creature_id;
 	statement->getMoreResults();
 	result.reset(statement->getResultSet());
 	while(result->next())
@@ -214,13 +215,15 @@ void ChatService::Startup()
 		if(find_itr != rooms_.end())
 		{
 			Member m;
-			m.creature_ = simulation_service_->GetObjectById<Creature>(result->getUInt64(2));
+			creature_id = result->getUInt64(2);
+
+			m.controller_ = simulation_service_->GetObjectById<Creature>(creature_id_)->GetController();
 			m.is_present = m.creature_ != nullptr;
 			m.is_moderator = true;
 			m.is_invited = false;
 			m.custom_name = result->getString(3);
 			
-			find_itr->second.members_.insert(std::move(m));
+			find_itr->second.members_.insert(std::make_pair<uint64_t, Member>(creature_id, std::move(m)));
 		}
 	}
 
@@ -424,7 +427,7 @@ void ChatService::HandleChatPersistentMessageToServer(
             message->recipient, 
             std::string(firstname.begin(), firstname.end()), 
             "SWG", 
-            kernel_->GetServiceDirectory()->galaxy().name(), 
+            prefix_, 
             message->subject, 
             clean_message, 
             message->attachment_data))
@@ -595,12 +598,15 @@ void ChatService::HandleChatRequestRoomList(
 			room_list.data.write<uint32_t>((room.is_private) ? 1 : 0);
 			room_list.data.write<uint8_t>((room.is_muted) ? 1 : 0);
 			room_list.data.write<std::string>("SWG." + prefix_ + "." + room.name);
+			
 			room_list.data.write<std::string>("SWG");
 			room_list.data.write<std::string>(prefix_);
 			room_list.data.write<std::string>(room.owner_name);
+			
 			room_list.data.write<std::string>("SWG");
 			room_list.data.write<std::string>(prefix_);
 			room_list.data.write<std::string>(room.creator_name);
+			
 			room_list.data.write<std::wstring>(std::wstring(room.title.begin(), room.title.end()));
 		
 			//Write out empty lists to save bandwidth.

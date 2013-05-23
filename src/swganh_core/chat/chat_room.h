@@ -14,31 +14,22 @@ namespace chat
 
 struct Member
 {
-	bool is_present;
-	bool is_moderator;
-	bool is_invited;
+	bool is_present, is_moderator, is_invited;
 
-	std::shared_ptr<swganh::object::Creature> creature_;
+	std::shared_ptr<swganh::object::ObjectController> controller_;
+
 	std::string custom_name;
-	
-	bool operator<(const Member& other) const
-	{
-		return custom_name < other.custom_name;
-	}
 	
 };
 
 struct ChatRoom
 {
-	std::string name;
-	std::string title;
-	
-	std::string creator_name, owner_name;
+	std::string name, title, creator_name, owner_name;
 	uint64_t creator_id, owner_id;
 	
 	bool is_private, is_muted;
 	
-	std::set<Member> members_;
+	std::map<uint64_t, Member> members_;
 	std::set<uint64_t> bans_;
 };
 
