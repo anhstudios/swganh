@@ -36,7 +36,17 @@
 #include "swganh_core/messages/chat_on_send_persistent_message.h"
 #include "swganh_core/messages/chat_request_persistent_message.h"
 #include "swganh_core/messages/chat_delete_persistent_message.h"
+#include "swganh_core/messages/chat_request_room_list.h"
+#include "swganh_core/messages/chat_query_room.h"
+#include "swganh_core/messages/chat_send_to_room.h"
+#include "swganh_core/messages/chat_remove_avatar_from_room.h"
+#include "swganh_core/messages/chat_create_room.h"
+#include "swganh_core/messages/chat_destroy_room.h"
+#include "swganh_core/messages/chat_enter_room_by_id.h"
+#include "swganh_core/messages/chat_room_list.h"
+
 #include "swganh_core/object/object.h"
+#include "swganh_core/object/creature/creature.h"
 
 #include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/connection/connection_service_interface.h"
@@ -81,6 +91,8 @@ ChatService::ChatService(SwganhKernel* kernel)
         0, 
         0, 
         0));
+		
+	prefix_ = kernel_->GetAppConfig().galaxy_name;
 }
 
 ChatService::~ChatService()
@@ -157,6 +169,61 @@ void ChatService::Initialize()
 
 void ChatService::Startup()
 {
+	//Hit the db to load chat rooms/moderators/bans
+	auto conn = db_manager_->getConnection("galaxy");
+	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+	statement->execute("CALL sp_LoadChatData();");
+
+	//Load rooms
+	std::unique_ptr<sql::ResultSet> result(statement->getResultSet());
+	while(result->next())
+	{
+		auto pair = rooms_.emplace(result->getUInt(1), ChatRoom());
+		if(pair.second)
+		{
+			auto& room = pair.first->second;
+			room.is_private = (result->getUInt(2)) ? true : false;
+			room.is_muted = (result->getUInt(3)) ? true : false;
+			room.name = result->getString(4);
+			room.owner_id = result->getUInt64(5);
+			room.owner_name = result->getString(6);
+			room.creator_id = result->getUInt64(7);
+			room.creator_name = result->getString(8);
+			room.title = result->getString(9);
+		}
+	}
+	
+	//Load bans
+	statement->getMoreResults();
+	result.reset(statement->getResultSet());
+	while(result->next())
+	{
+		auto find_itr = rooms_.find(result->getInt(1));
+		if(find_itr != rooms_.end())
+		{
+			find_itr->second.bans_.insert(result->getUInt64(2));
+		}
+	}
+	
+	//Load moderators
+	statement->getMoreResults();
+	result.reset(statement->getResultSet());
+	while(result->next())
+	{
+		auto find_itr = rooms_.find(result->getInt(1));
+		if(find_itr != rooms_.end())
+		{
+			Member m;
+			m.creature_ = simulation_service_->GetObjectById<Creature>(result->getUInt64(2));
+			m.is_present = m.creature_ != nullptr;
+			m.is_moderator = true;
+			m.is_invited = false;
+			m.custom_name = result->getString(3);
+			
+			find_itr->second.members_.insert(std::move(m));
+		}
+	}
+
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
     
 	//Tell Related
@@ -168,7 +235,13 @@ void ChatService::Startup()
     connection_service->RegisterMessageHandler(&ChatService::HandleChatDeletePersistentMessage, this);
 
 	//Chat Room Related
-	
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatRequestRoomList, this);
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatQueryRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatSendToRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatRemoveAvatarFromRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatCreateRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatDestroyRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::HandleChatEnterRoomById, this);
 	
 	//Spatial
     command_service_->AddCommandCreator<SpatialChatInternalCommand>("spatialchatinternal");
@@ -505,4 +578,82 @@ void ChatService::LoadMessageHeaders(const std::shared_ptr<swganh::object::Objec
 std::wstring ChatService::FilterMessage(const std::wstring& message)
 {
     return message;
+}
+
+void ChatService::HandleChatRequestRoomList(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatRequestRoomList* message)
+{
+	ChatRoomList room_list;
+	{
+		boost::unique_lock<boost::mutex> lock(room_mutex_);
+		room_list.data.write<uint32_t>(rooms_.size());
+		for(auto& room_pair : rooms_)
+		{
+			ChatRoom& room = room_pair.second;
+			room_list.data.write<uint32_t>(room_pair.first);
+			room_list.data.write<uint32_t>((room.is_private) ? 1 : 0);
+			room_list.data.write<uint8_t>((room.is_muted) ? 1 : 0);
+			room_list.data.write<std::string>("SWG." + prefix_ + "." + room.name);
+			room_list.data.write<std::string>("SWG");
+			room_list.data.write<std::string>(prefix_);
+			room_list.data.write<std::string>(room.owner_name);
+			room_list.data.write<std::string>("SWG");
+			room_list.data.write<std::string>(prefix_);
+			room_list.data.write<std::string>(room.creator_name);
+			room_list.data.write<std::wstring>(std::wstring(room.title.begin(), room.title.end()));
+		
+			//Write out empty lists to save bandwidth.
+			room_list.data.write<uint32_t>(0);
+			room_list.data.write<uint32_t>(0);
+		}
+	}
+	client->GetController()->Notify(&room_list);
+}
+
+void ChatService::HandleChatQueryRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatQueryRoom* message)
+{
+	LOG(info) << "CHAT QUERY ROOM";
+	LOG(info) << "  unknown=" << message->unknown;
+	LOG(info) << "  path=" << message->channel_path;
+}
+
+void ChatService::HandleChatSendToRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatSendToRoom* message)
+{
+	LOG(info) << "CHAT MESSAGE";
+	LOG(info) << "  speaker=" << message->sender_character_name;
+	LOG(info) << "  message=" << std::string(message->message.begin(), message->message.end());
+	LOG(info) << "  channel_id=" << message->channel_id;
+}
+	
+void ChatService::HandleChatRemoveAvatarFromRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatRemoveAvatarFromRoom* message)
+{
+}
+
+void ChatService::HandleChatCreateRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatCreateRoom* message)
+{
+	LOG(info) << "CHAT CREATE ROOM";
+	LOG(info) << "  public=" << message->public_flag;
+	LOG(info) << "  moderated=" << message->moderation_flag;
+	LOG(info) << "  channel_path" << message->channel_path;
+}
+
+void ChatService::HandleChatDestroyRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatDestroyRoom* message)
+{
+}
+	
+void ChatService::HandleChatEnterRoomById(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatEnterRoomById* message)
+{
 }

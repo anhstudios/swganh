@@ -10,11 +10,14 @@ DELIMITER //
 CREATE PROCEDURE `sp_LoadChatData`()
 BEGIN
 
-	SELECT * FROM `chat_rooms`;
+	SELECT c.room_id, c.is_private, c.is_muted, c.name, c.owner, o.custom_name, c.creator, o2.custom_name, c.title FROM `chat_rooms` c
+	LEFT JOIN `object` o ON o.id = c.owner
+	LEFT JOIN `object` o2 ON o2.id = c.creator;
 	
 	SELECT * FROM `chat_room_bans`;
 	
-	SELECT * FROM `chat_moderators`;
+	SELECT cm.room_id, cm.moderator_id, o.custom_name FROM `chat_moderators` cm
+	LEFT JOIN `object` o ON o.id = cm.moderator_id;
 
 END //
 DELIMITER ;

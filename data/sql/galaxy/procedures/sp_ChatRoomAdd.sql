@@ -12,7 +12,7 @@ CREATE PROCEDURE `sp_ChatRoomAdd`(IN in_is_private TINYINT(1), IN in_is_muted TI
 BEGIN
 
 	INSERT INTO `chat_rooms` 
-	(`is_private`, `is_muted`, `name`, `creator_id`, `owner_id`, `title`) 
+	(`is_private`, `is_muted`, `name`, `creator`, `owner`, `title`) 
 	VALUES (in_is_private, in_is_muted, in_name, in_creator_id, in_creator_id, in_title);
 	
 	SELECT MAX(id) FROM chat_rooms;

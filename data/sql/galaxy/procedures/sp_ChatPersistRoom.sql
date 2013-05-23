@@ -7,10 +7,15 @@ DROP PROCEDURE IF EXISTS `sp_ChatTransferRoomOwner`;
 
 DELIMITER //
 
-CREATE PROCEDURE `sp_ChatTransferRoomOwner`(IN in_room_id INT, IN in_new_owner_id BIGINT(20))
+CREATE PROCEDURE `sp_ChatPersistRoom`(IN in_room_id INT, 
+	IN in_is_private TINYINT(1), IN in_is_muted TINYINT(1), IN in_name CHAR(50), 
+	IN in_creator_id BIGINT(20), IN in_owner_id BIGINT(20), IN in_title CHAR(50))
 BEGIN
 
-	UPDATE `chat_rooms` WHERE `room_id` = in_room_id SET `owner_id` = in_new_owner_id;
+	UPDATE `chat_rooms` 
+	WHERE `room_id` = in_room_id 
+	SET `is_private` = in_is_private, `is_muted` = in_is_muted, `name` = in_name,
+	`creator_id` = in_creator_id, `owner_id` = in_owner_id, `title` = in_title;
 
 END //
 DELIMITER ;

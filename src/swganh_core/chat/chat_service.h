@@ -6,12 +6,16 @@
 #include <memory>
 #include <string>
 
+#include <boost/thread/mutex.hpp>
+
 #include "swganh_core/chat/chat_service_interface.h"
 #include "swganh_core/command/command_service_interface.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
+
+#include "chat_room.h"
 
 namespace swganh {
 namespace connection {
@@ -22,6 +26,13 @@ namespace messages {
     struct ChatPersistentMessageToServer;
     struct ChatRequestPersistentMessage;
     struct ChatDeletePersistentMessage;
+	struct ChatRequestRoomList;
+	struct ChatQueryRoom;
+	struct ChatSendToRoom;
+	struct ChatRemoveAvatarFromRoom;
+	struct ChatCreateRoom;
+	struct ChatDestroyRoom;
+	struct ChatEnterRoomById;	
 }
 namespace object {
 	class Object;
@@ -56,7 +67,7 @@ public:
         const std::string& sender,
         const std::wstring& subject, 
         const std::wstring& message);
-
+		
 	/**
 	* Sends a spatial chat message
 	* @param actor the speaker
@@ -82,7 +93,11 @@ private:
 	swganh::command::CommandServiceInterface* command_service_;
     swganh::simulation::SimulationServiceInterface* simulation_service_;
     swganh::app::SwganhKernel* kernel_;
-    
+
+	std::string prefix_;
+	std::map<uint32_t, ChatRoom> rooms_;
+    boost::mutex room_mutex_;
+
     void SendChatPersistentMessageToClient(
         const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 
         const std::string& sender_name, 
@@ -163,13 +178,21 @@ private:
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
         swganh::messages::ChatSendToRoom* message);
 		
-	void HandleChatBanAvatarFromRoom(
+	void HandleChatRemoveAvatarFromRoom(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatBanAvatarFromRoom* message);
+        swganh::messages::ChatRemoveAvatarFromRoom* message);
+	
+	void HandleChatCreateRoom(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatCreateRoom* message);
 	
 	void HandleChatDestroyRoom(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
         swganh::messages::ChatDestroyRoom* message);
+		
+	void HandleChatEnterRoomById(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+        swganh::messages::ChatEnterRoomById* message);
 		
     uint32_t StorePersistentMessage(
         uint64_t recipient_id,

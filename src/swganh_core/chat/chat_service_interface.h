@@ -33,7 +33,6 @@ namespace chat {
             const std::wstring& message,
             const std::vector<char>& attachments) = 0;
         
-    
         virtual bool SendPersistentMessage(
             const std::string& recipient,
             const std::string& sender,
