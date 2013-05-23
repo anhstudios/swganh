@@ -5,62 +5,63 @@
 #include "swganh_core/spawn/fsm_controller.h"
 #include "swganh_core/object/object.h"
 
+#include "swganh/app/swganh_kernel.h"
 
 using namespace boost;
 using namespace swganh::spawn;
 
-FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, uint32_t threads_required, std::shared_ptr<FsmStateInterface> initial_state,
-			BundleGenerator bundle_factory)
-	: shutdown_(false)
-        , bundle_factory_(bundle_factory)
-        , initial_state_(initial_state) 
-        , kernel_(kernel)
+FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, std::shared_ptr<FsmStateInterface> initial_state,
+	ControllerFactory controller_factory)
+	: kernel_(kernel)
+	, machine_cleaner_(kernel->GetCpuThreadPool())
+	, initial_state_(initial_state)
+	, controller_factory_(controller_factory)
 {
-	while(threads_required > 0)
+	machine_cleaner_.expires_from_now(boost::posix_time::milliseconds(20));
+	machine_cleaner_.async_wait(bind(&FiniteStateMachine::HandleDispatch, this, boost::asio::placeholders::error));
+}
+
+void FiniteStateMachine::HandleDispatch(const boost::system::error_code& error)
+{
+	if(!error)
 	{
-		threads_.emplace_back([this] () {
-			while(!shutdown_)
-			{
-				std::set<std::shared_ptr<FsmController>> to_process_;
-				{
-					lock_guard<mutex> lock(mutex_);
-					to_process_.swap(dirty_controllers_);
-				}
+		std::set<std::shared_ptr<FsmController>> to_process_;
+		{
+			lock_guard<mutex> lock(mutex_);
+			to_process_.swap(dirty_controllers_);
+		}
 
-				for(auto& c : to_process_)
-				{
-					c->Cleanup(boost::posix_time::second_clock::local_time());
-					if(c->IsDirty()) 
-					{
-						MarkDirty(c);
-					}
-				}
-
-				std::this_thread::yield();
-			}
-		});
-
+		//Setup timer for next batch
+		machine_cleaner_.expires_from_now(boost::posix_time::milliseconds(20));
+		machine_cleaner_.async_wait(bind(&FiniteStateMachine::HandleDispatch, this, boost::asio::placeholders::error));
 		
-		--threads_required;
+		for(auto& c : to_process_)
+		{
+			c->Cleanup(boost::posix_time::second_clock::local_time());
+			if(c->IsDirty()) 
+			{
+				MarkDirty(c);
+			}
+		}
 	}
 }
 
 FiniteStateMachine::~FiniteStateMachine()
 {
-	shutdown_ = true;
-	for_each(threads_.begin(), threads_.end(), std::mem_fn(&std::thread::join));
 }
 
 void FiniteStateMachine::StartManagingObject(std::shared_ptr<swganh::object::Object> object)
 {
-	auto controller = std::make_shared<FsmController>(this, object, bundle_factory_(initial_state_));
+	auto controller = controller_factory_(this, object, initial_state_);
 	{
 		lock_guard<mutex> lock(mutex_);
 		controllers_.insert(controller);
 		object->SetController(controller);
 
 		if(controller->IsDirty())
+		{
 			dirty_controllers_.insert(controller);
+		}
 	}
 }
 

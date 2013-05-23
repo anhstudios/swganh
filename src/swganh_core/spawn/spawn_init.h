@@ -11,3 +11,4 @@ namespace spawn {
 	void Initialize(swganh::app::SwganhKernel* kernel);
 
 }}
+

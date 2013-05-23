@@ -13,6 +13,9 @@ namespace object
 
 namespace spawn
 {
+	class LootGroup;
+	class SpawnRegion;
+
 	class SpawnServiceInterface : public swganh::service::BaseService
 	{
 	public:
@@ -20,6 +23,11 @@ namespace spawn
 
 		virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine) = 0;
 		virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object) = 0;
+
+		virtual void AddLootGroup(std::string name, std::shared_ptr<LootGroup> group) = 0;
+		virtual std::shared_ptr<LootGroup> GetLootGroup(std::string name) = 0;
+
+		virtual void AddSpawnRegion(uint32_t scene_id, std::shared_ptr<SpawnRegion> region) = 0;
 	};
 }
 }

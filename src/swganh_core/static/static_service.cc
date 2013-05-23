@@ -134,7 +134,7 @@ StaticService::StaticService(SwganhKernel* kernel)
             		simulation_service->AddObjectToScene(combat_dummy, "corellia");
             	}
             }
-        });
+		});
 	});
 
     SetServiceDescription(ServiceDescription(

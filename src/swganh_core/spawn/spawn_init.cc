@@ -28,7 +28,7 @@ void Initialize(swganh::app::SwganhKernel* kernel)
     // Register Spawn Service
 	{ // Spawn::SpawnService
         registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-            return new SpawnService(kernel);;
+            return new SpawnService(kernel);
         };
 
         registration.DestroyObject = [] (void * object) {

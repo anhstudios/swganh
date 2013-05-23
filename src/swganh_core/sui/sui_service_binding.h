@@ -61,7 +61,7 @@ std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInt
 	[=](std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
 	{ 
 		swganh::scripting::ScopedGilLock lock;
-		return funct.callback_(object, event_type, result_list);
+		return bp::extract<bool>(funct.callback_(object, event_type, result_list));
 	});
 }
 

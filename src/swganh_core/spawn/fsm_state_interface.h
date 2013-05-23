@@ -25,9 +25,17 @@ namespace swganh
 {
 namespace spawn
 {
-	class FsmBundleInterface;
+	class FsmStateInterface;
+	class FsmController;
 
-	typedef std::function<bool(FsmBundleInterface*, std::shared_ptr<swganh::object::Object>)> TransitionHandler;
+	/**
+	* @brief A simple function which is used to determine success of a transition. This allows extra logic to be added
+	*    to a single transition. 
+	* @param FsmBundleInterface* the bundle of the object that this is transitioning on. This is provided
+	*    for convienience.
+	* @param Object the object that this is transitioning on. 
+	*/
+	typedef std::function<bool(FsmController*, std::shared_ptr<swganh::object::Object>)> TransitionHandler;
 
 	class FsmStateInterface;
 	

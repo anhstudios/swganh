@@ -15,6 +15,16 @@ namespace messages {
     
     struct SceneCreateObjectByCrc : public BaseSwgMessage
     {
+		SceneCreateObjectByCrc() {}
+		SceneCreateObjectByCrc(SceneCreateObjectByCrc* other)
+		{
+			this->object_id = other->object_id;
+			this->orientation = other->orientation;
+			this->position = other->position;
+			this->object_crc = other->object_crc;
+			this->byte_flag = other->byte_flag;
+		}
+
 		const static uint32_t opcode = 0xFE89DDEA;
         uint16_t Opcount() const { return 5; }
         uint32_t Opcode() const { return opcode; }

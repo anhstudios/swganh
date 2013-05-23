@@ -9,10 +9,16 @@
 #include <set>
 #include <thread>
 #include <boost/thread/mutex.hpp>
-#include <swganh/event_dispatcher.h>
+
+#include <boost/asio.hpp>
 
 namespace boost
 {
+namespace asio
+{
+class io_service;
+}
+
 class thread;
 }
 
@@ -34,15 +40,16 @@ namespace spawn
 	class FsmStateInterface;
 	class FsmController;
 
-	typedef std::function<std::shared_ptr<FsmBundleInterface>(std::shared_ptr<FsmStateInterface>)> BundleGenerator;
+	typedef std::function<std::shared_ptr<FsmController>(FiniteStateMachineInterface*, std::shared_ptr<swganh::object::Object>, 
+						std::shared_ptr<FsmStateInterface>)> ControllerFactory;
 
 	class FiniteStateMachine : public FiniteStateMachineInterface
 	{
 	public:
 	
-		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, uint32_t threads_required, 
+		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, 
 			std::shared_ptr<FsmStateInterface> initial_state,
-			BundleGenerator bundle_factory);
+			ControllerFactory controller_factory);
 
 		~FiniteStateMachine();
 
@@ -54,15 +61,17 @@ namespace spawn
 		swganh::app::SwganhKernel* GetKernel() { return kernel_; }
 
 	private:
-		std::atomic<bool> shutdown_;
-		std::vector<std::thread> threads_;
+
+		void HandleDispatch(const boost::system::error_code& error);
+		
 		boost::mutex mutex_;
 
 		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;
 
-		BundleGenerator bundle_factory_;
+		ControllerFactory controller_factory_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
 
+		boost::asio::deadline_timer machine_cleaner_;
 		swganh::app::SwganhKernel* kernel_;
 	};
 }
