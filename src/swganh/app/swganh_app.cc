@@ -77,7 +77,10 @@ options_description AppConfig::BuildConfigDescription() {
             
         ("resource_cache_size", boost::program_options::value<uint32_t>(&resource_cache_size),
             "Available cache size for the resource manager (in Megabytes)")
-            
+       
+		("io_threads", value<uint32_t>(&io_threads)->default_value(boost::thread::hardware_concurrency()),
+			"Total number of threads to allocate for io management.")
+
         ("db_threads", value<uint32_t>(&db_threads)->default_value(2),
             "Total number of threads to allocate for database management")
 

@@ -10,6 +10,9 @@
 #include <algorithm>
 #include <memory>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/python.hpp>
+
 #include "swganh/scripting/utilities.h"
 
 #include "swganh/logger.h"
@@ -28,11 +31,9 @@
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
-#include "machines/creature.h"
-#include "machines/lair.h"
-#include "machines/npc_factioned.h"
-#include "machines/npc_neutral.h"
 #include "machines/shuttle.h"
+#include "loot_group.h"
+#include "spawn_region.h"
 
 using namespace swganh::service;
 using namespace swganh::app;
@@ -45,10 +46,32 @@ using namespace swganh::simulation;
 using namespace swganh::scripting;
 
 SpawnService::SpawnService(SwganhKernel* kernel) 
-	: fsm_manager_(kernel->GetEventDispatcher())
-        , kernel_(kernel)
-	, timer_(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(60))
+	: kernel_(kernel)
+	, fsm_manager_(kernel->GetEventDispatcher())
+	, timer_(kernel->GetCpuThreadPool(), boost::posix_time::seconds(60))
+	, active_(kernel->GetCpuThreadPool())
+	, next_region_id_(0)
 {
+	//Static Objects
+	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
+	{
+        active_.Async([=] () {
+            auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
+
+			LOG(warning) << "Loading spawn data for: " << real_event->scene_label;
+			
+			ScopedGilLock lock;
+			try {
+				std::string module_name = "spawn."+real_event->scene_label;
+				auto config = boost::python::import(module_name.c_str());
+
+				config.attr("loadRegions")(boost::python::ptr(kernel_));
+			} catch(...) {
+				PyErr_Print();
+			}
+		});
+	});
+
     SetServiceDescription(ServiceDescription(
         "SpawnService",
         "spawn",
@@ -63,9 +86,6 @@ SpawnService::~SpawnService()
 {
 	timer_.cancel();
 }
-
-void SpawnService::Initialize()
-{}
 
 void SpawnService::Startup()
 {
@@ -91,10 +111,95 @@ void SpawnService::Startup()
 
 void SpawnService::_timerTick(const boost::system::error_code& e)
 {
-	//For each spawn group
-		//If the spawn group can handle more spawns
-			//Trigger Spawn
+	std::lock_guard<std::mutex> lock_(region_lock_); 
+	for(auto& region : spawn_regions_)
+	{
+		region.second->SpawnTick(kernel_);
+	}
 
 	timer_.expires_from_now(boost::posix_time::seconds(60));
 	timer_.async_wait(std::bind(&SpawnService::_timerTick, this, std::placeholders::_1));
+}
+
+void SpawnService::StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine)
+{
+	fsm_manager_.StartManagingObject(object, machine);
+}
+
+void SpawnService::StopManagingObject(std::shared_ptr<swganh::object::Object> object)
+{
+	fsm_manager_.StopManagingObject(object);
+}
+
+void SpawnService::AddLootGroup(std::string name, std::shared_ptr<LootGroup> group)
+{
+	std::lock_guard<std::mutex> lock_(region_lock_);
+	loot_groups_.insert(std::make_pair(name, group));
+}
+
+std::shared_ptr<LootGroup> SpawnService::GetLootGroup(std::string name)
+{
+	//Split into module name and real name
+	std::string module, real_name;
+	
+	size_t index = name.find_last_of(".");
+	if(index == std::string::npos)
+	{
+		real_name = name;
+	}
+	else
+	{
+		module = name.substr(0, index);
+		real_name = name.substr(index+1, name.size()-index);
+	}
+
+	//Try and grab a copy in memory
+	{
+		std::lock_guard<std::mutex> lock_(region_lock_);
+		auto find_itr = loot_groups_.find(name);
+		if(find_itr != loot_groups_.end())
+		{
+			return find_itr->second;
+		}
+	}
+
+	//Attempt to load from python
+	if(module.size() > 0)
+	{
+		ScopedGilLock lock;
+		try 
+		{
+			auto config = boost::python::import(name.c_str());
+			config.attr("loadLoot")(boost::python::ptr(kernel_));
+		}
+		catch(boost::python::error_already_set& /*e*/)
+		{
+			PyErr_Print();
+		}
+	}
+	else
+	{
+		//No need to reattempt since we can't load anything.
+		return nullptr;
+	}
+
+	//Retry now that we've loaded the module
+	{
+		std::lock_guard<std::mutex> lock_(region_lock_);
+		auto find_itr = loot_groups_.find(name);
+		if(find_itr != loot_groups_.end())
+		{
+			return find_itr->second;
+		}
+	}
+
+	//Fail
+	return nullptr;
+}
+
+void SpawnService::AddSpawnRegion(uint32_t scene_id, std::shared_ptr<SpawnRegion> region)
+{
+	std::lock_guard<std::mutex> lock_(region_lock_);
+	region->SetSceneId(scene_id);
+	spawn_regions_.insert(std::make_pair(next_region_id_++, region));
 }
