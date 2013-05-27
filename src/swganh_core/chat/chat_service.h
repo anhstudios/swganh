@@ -11,6 +11,7 @@
 #include "swganh_core/chat/chat_service_interface.h"
 #include "swganh_core/command/command_service_interface.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
+#include "swganh_core/equipment/equipment_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
@@ -22,9 +23,40 @@ namespace connection {
 
 namespace object {
 	class Object;
-}}  // namespace swganh::object
+}
 
-namespace swganh {
+namespace messages
+{
+	//Tell Related
+	struct ChatInstantMessageToCharacter;
+	
+	//Mail Related
+	struct ChatPersistentMessageToServer;
+	struct ChatRequestPersistentMessage;
+	struct ChatDeletePersistentMessage;
+
+	//Chat Room Related
+	struct ChatRequestRoomList;
+	struct ChatQueryRoom;
+	struct ChatSendToRoom;
+	struct ChatJoinRoom;
+	struct ChatPartRoom;
+
+	//Chat Room Management
+	struct ChatCreateRoom;
+	struct ChatDestroyRoom;
+
+	//class Room User Management
+	struct ChatBanAvatarFromRoom;
+	struct ChatUnbanAvatarFromRoom;
+	struct ChatInviteAvatarToRoom;
+	struct ChatUninviteAvatarToRoom;
+	struct ChatAddModToRoom;
+	struct ChatRemoveModFromRoom;
+
+	//Chat Room Ownership Management
+}
+
 namespace chat {
 
 class ChatRoomProviderInterface;
@@ -81,10 +113,17 @@ private:
     swganh::database::DatabaseManager* db_manager_;
 	swganh::command::CommandServiceInterface* command_service_;
     swganh::simulation::SimulationServiceInterface* simulation_service_;
+	swganh::equipment::EquipmentServiceInterface* equipment_service_;
+
+
     swganh::app::SwganhKernel* kernel_;
 	std::shared_ptr<ChatRoomProviderInterface> room_provider_;
 	std::shared_ptr<ChatUserProviderInterface> user_provider_;
 
+	std::string galaxy_name_;
+
+	std::map<uint64_t, std::set<std::shared_ptr<swganh::observer::ObserverInterface>>> player_observers_;
+	std::map<uint64_t, std::shared_ptr<swganh::observer::ObserverInterface>> online_players_;
 
     void SendChatPersistentMessageToClient(
         const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 
@@ -137,50 +176,6 @@ private:
         const std::string& sender_game, 
         const std::string& sender_galaxy, 
         const std::wstring& message);
-
-    void HandleChatInstantMessageToCharacter(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatInstantMessageToCharacter* message);
-
-    void HandleChatPersistentMessageToServer(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatPersistentMessageToServer* message);
-
-    void HandleChatRequestPersistentMessage(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatRequestPersistentMessage* message);
-
-    void HandleChatDeletePersistentMessage(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatDeletePersistentMessage* message);
-
-	void HandleChatRequestRoomList(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatRequestRoomList* message);
-	
-	void HandleChatQueryRoom(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatQueryRoom* message);
-	
-	void HandleChatSendToRoom(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatSendToRoom* message);
-		
-	void HandleChatRemoveAvatarFromRoom(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatRemoveAvatarFromRoom* message);
-	
-	void HandleChatCreateRoom(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatCreateRoom* message);
-	
-	void HandleChatDestroyRoom(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatDestroyRoom* message);
-		
-	void HandleChatEnterRoomById(
-        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-        swganh::messages::ChatEnterRoomById* message);
 		
     uint32_t StorePersistentMessage(
         uint64_t recipient_id,
@@ -193,9 +188,84 @@ private:
         uint8_t status,
         uint32_t timestamp);
 
-    void LoadMessageHeaders(const std::shared_ptr<swganh::object::Object>& receiver);
-
+    void LoadMessageHeaders(const std::shared_ptr<swganh::object::Creature>& receiver);
+	void HandleFriendsList(const std::shared_ptr<swganh::object::Creature>& receiver, uint8_t operation);
     std::wstring FilterMessage(const std::wstring& message);
+
+	//Tell Related
+	void _handleInstantMessageToCharacter(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatInstantMessageToCharacter* message);
+	
+	//Mail Related
+	void _handlePersistentMessageToServer(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatPersistentMessageToServer* message);
+
+	void _handleRequestPersistentMessage(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatRequestPersistentMessage* message);
+
+	void _handleDeletePersistentMessage(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatDeletePersistentMessage* message);
+
+	//Chat Room Related
+	void _handleRequestRoomList(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatRequestRoomList* message);
+
+	void _handleQueryRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatQueryRoom* message);
+
+	void _handleSendToRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatSendToRoom* message);
+
+	void _handleJoinRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatJoinRoom* message);
+
+	void _handlePartRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatPartRoom* message);
+
+	//Chat Room Management
+	void _handleCreateRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatCreateRoom* message);
+
+	void _handleDestroyRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatDestroyRoom* message);
+
+
+	//class Room User Management
+	void _handleBanAvatarFromRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatBanAvatarFromRoom* message);
+
+	void _handleUnbanAvatarFromRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatUnbanAvatarFromRoom* message);
+
+	void _handleInviteAvatarToRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatInviteAvatarToRoom* message);
+
+	void _handleUninviteAvatarToRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatUninviteAvatarToRoom* message);
+
+	void _handleAddModToRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatAddModToRoom* message);
+
+	void _handleRemoveModFromRoom(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatRemoveModFromRoom* message);
+
 };
 
 }}  // namespace swganh::chat

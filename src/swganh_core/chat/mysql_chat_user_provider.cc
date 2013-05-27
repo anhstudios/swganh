@@ -1,12 +1,28 @@
-#include "myql_chat_user_provider.h"
 #include <algorithm>
+#include <boost/thread/locks.hpp>
+#include "mysql_chat_user_provider.h"
 
-MysqlChatUserProvider::MysqlChatUserProvider(swganh::app::SwganhKernel* kernel);
+#include "swganh/event_dispatcher.h"
+#include "swganh/app/swganh_kernel.h"
+
+#include "swganh/database/database_manager.h"
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+
+using swganh::chat::MysqlChatUserProvider;
+
+const std::string MysqlChatUserProvider::unk_string_ = "???LOL NO IDEA???";
+
+MysqlChatUserProvider::MysqlChatUserProvider(swganh::app::SwganhKernel* kernel)
 {
 	//Grab the current user data from the DB
 	{
 		boost::lock_guard<boost::mutex> lock_(mutex_);
-		auto database_manager = kernel_->GetDatabaseManager();
+		auto database_manager = kernel->GetDatabaseManager();
 		auto conn = database_manager->getConnection("galaxy");
 		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
 		statement->execute("CALL sp_LoadCharacterNames();");
@@ -19,19 +35,19 @@ MysqlChatUserProvider::MysqlChatUserProvider(swganh::app::SwganhKernel* kernel);
 			std::string name = result->getString(2);
 
 			//Insert into the proper datastructures
-			nameToId.insert(std::make_pair<std::string, uint64_t>(name, id));
-			IdToName.insert(std::make_pair<uint64_t, std::string>(id, name));
+			nameToId.insert(std::make_pair(GetFirstNameFromFullName(name), id));
+			IdToName.insert(std::make_pair(id, std::move(name)));
 		}
 	}
 
 	//Hook into the Event Dispatcher for creation of new players
-	kernel->GetEventDispatcher()->Subscribe("Character::NewCharacter", [] (const std::shared_ptr<EventInterface>& event_interface) {
+	kernel->GetEventDispatcher()->Subscribe("Character::NewCharacter", [this] (const std::shared_ptr<EventInterface>& event_interface) {
 		auto real_event = std::static_pointer_cast<ValueEvent<std::pair<uint64_t, std::string>>>(event_interface);
 		auto& data = real_event->Get();
 
 		boost::lock_guard<boost::mutex> lock_(mutex_);
-		nameToId.insert(std::make_pair<std::string, uint64_t>(data.second, data.first));
-		IdToName.insert(std::make_pair<uint64_t, std::string>(data.first, data.second));
+		nameToId.insert(std::make_pair(GetFirstNameFromFullName(data.second), data.first));
+		IdToName.insert(std::make_pair(data.first, std::move(data.second)));
 	});
 }
 
@@ -59,10 +75,15 @@ const std::string& MysqlChatUserProvider::GetFullNameFromId(uint64_t creature_id
 	{
 		return find_itr->second;
 	}
-	return "UNKNOWN";
+	return unk_string_;
 }
 	
-const std::string& MysqlChatUserProvider::GetFirstNameFromId(uint64_t creature_id) const
+const std::string& MysqlChatUserProvider::GetFullNameFromFirstName(const std::string& name) const
+{
+	return GetFullNameFromId(GetIdFromFirstName(name));
+}
+
+std::string MysqlChatUserProvider::GetFirstNameFromId(uint64_t creature_id) const
 {
 	boost::lock_guard<boost::mutex> lock_(mutex_);
 	return GetFirstNameFromFullName(GetFullNameFromId(creature_id));

@@ -2,8 +2,12 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "chat_room_provider_interface.h"
+#include <map>
+#include <vector>
 #include <boost/thread/mutex.hpp>
+
+#include "chat_room_provider_interface.h"
+
 
 namespace swganh
 {
@@ -22,7 +26,11 @@ class MysqlChatRoomProvider
 {
 public:
 
-	MysqlChatRoomProvider(swganh::app::SwganhKernel* kernel, std::shared_ptr<ChatUserProviderInterface> user_provider);
+	MysqlChatRoomProvider(swganh::app::SwganhKernel* kernel);
+
+	void SendRoomList(const std::shared_ptr<swganh::observer::ObserverInterface>& client);
+
+	void SendQueryResults(const std::shared_ptr<swganh::observer::ObserverInterface>& client, const std::string& path);
 
 	const Room* GetRoomByPath(std::string path);
 
@@ -52,18 +60,24 @@ public:
 	
 	bool UnbanUser(const std::string& room_path, uint64_t requester, uint64_t unbanned_user);
 
-	bool SendToChannel(const std::string& room_path, const std::wstring& message, uint64_t speaker);
+	bool SendToChannel(
+		uint32_t room_id, 
+		const std::wstring& message, 
+		const std::shared_ptr<swganh::observer::ObserverInterface>& client, 
+		uint32_t request_id);
 
-	std::shared_ptr<ChatUserProviderInterface> GetUserProvider();
+	std::shared_ptr<swganh::chat::ChatUserProviderInterface> GetUserProvider();
 
 private:
 
 	Room* GetRoomByPath_(std::string path);
-	Room* GetRoomByPathHelper_(Room* room, const std::string& path, size_t current);
+	Room* GetRoomById_(uint32_t);
 
-	boost::mutex mutex_;
-	std::shared_ptr<ChatUserProviderInterface> user_provider_;
-	RoomMap top_level_rooms_;
+	mutable boost::mutex mutex_;
+
+	std::string galaxy_name_;
+	std::shared_ptr<swganh::chat::ChatUserProviderInterface> user_provider_;
+	std::map<uint32_t, Room> rooms_;
 	std::map<uint64_t, std::set<std::reference_wrapper<const Room>>> user_rooms_;
 };
 

@@ -37,7 +37,7 @@ void Initialize(swganh::app::SwganhKernel* kernel)
 		registration.DestroyObject = [] (void * object) {
 			if(object)
 			{
-				delete static_cast<MysqlChatRoomProvider>(object);
+				delete static_cast<MysqlChatRoomProvider*>(object);
 			}
 		};
 
@@ -53,7 +53,7 @@ void Initialize(swganh::app::SwganhKernel* kernel)
 		registration.DestroyObject = [] (void * object) {
 			if(object)
 			{
-				delete static_cast<MysqlChatUserProvider>(object);
+				delete static_cast<MysqlChatUserProvider*>(object);
 			}
 		};
 

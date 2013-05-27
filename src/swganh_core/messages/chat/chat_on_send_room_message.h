@@ -10,29 +10,29 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatSendToRoom : public BaseSwgMessage
+    struct ChatOnSendRoomMessage : public BaseSwgMessage
     {
-    	uint16_t Opcount() const { return 5; }
+    	uint16_t Opcount() const { return 3; }
     	uint32_t Opcode() const { return 0x20E4DBE3; }
 
-    	std::wstring message;
+		ChatOnSendRoomMessage(uint32_t error_code_, uint32_t message_counter_)
+			: error_code(error_code_)
+			, message_counter(message_counter_)
+		{
+		}
 
-    	uint32_t channel_id;
+    	uint32_t error_code;
     	uint32_t message_counter;
     	
     	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
-    		buffer.write(message);
-    		buffer.write<uint32_t>(0); //spacer 
-    		buffer.write(channel_id);
+    		buffer.write(error_code);
     		buffer.write(message_counter);
     	}
 
     	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
-    		message = buffer.read<std::wstring>();
-    		buffer.read<uint32_t>(); //spacer
-    		channel_id = buffer.read<uint32_t>();
+    		error_code = buffer.read<uint32_t>();
     		message_counter = buffer.read<uint32_t>();
     	}
     };

@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 #include "swganh/byte_buffer.h"
-#include "base_swg_message.h"
+#include "swganh_core/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {

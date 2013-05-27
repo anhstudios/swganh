@@ -16,7 +16,7 @@ BEGIN
 	
 	SELECT * FROM `chat_room_bans`;
 	
-	SELECT cm.room_id, cm.moderator_id, o.custom_name FROM `chat_moderators` cm
+	SELECT cm.room_id, cm.moderator_id FROM `chat_moderators` cm
 	LEFT JOIN `object` o ON o.id = cm.moderator_id;
 
 END //

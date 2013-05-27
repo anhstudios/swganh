@@ -2,6 +2,8 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "chat_service.h"
+#include "chat_room_provider_interface.h"
+#include "chat_user_provider_interface.h"
 
 #include <ctime>
 
@@ -20,6 +22,7 @@
 
 #include "swganh/logger.h"
 
+#include "swganh/plugin/plugin_manager.h"
 #include "swganh/database/database_manager.h"
 #include "swganh/service/service_manager.h"
 #include "swganh/service/service_directory_interface.h"
@@ -28,24 +31,25 @@
 
 #include "swganh_core/messages/controllers/spatial_chat.h"
 #include "swganh_core/messages/obj_controller_message.h"
-#include "swganh_core/messages/chat_instant_message_to_character.h"
-#include "swganh_core/messages/chat_instant_message_to_client.h"
-#include "swganh_core/messages/chat_persistent_message_to_client.h"
-#include "swganh_core/messages/chat_persistent_message_to_server.h"
-#include "swganh_core/messages/chat_on_send_instant_message.h"
-#include "swganh_core/messages/chat_on_send_persistent_message.h"
-#include "swganh_core/messages/chat_request_persistent_message.h"
-#include "swganh_core/messages/chat_delete_persistent_message.h"
-#include "swganh_core/messages/chat_request_room_list.h"
-#include "swganh_core/messages/chat_query_room.h"
-#include "swganh_core/messages/chat_send_to_room.h"
-#include "swganh_core/messages/chat_remove_avatar_from_room.h"
-#include "swganh_core/messages/chat_create_room.h"
-#include "swganh_core/messages/chat_destroy_room.h"
-#include "swganh_core/messages/chat_enter_room_by_id.h"
-#include "swganh_core/messages/chat_room_list.h"
+#include "swganh_core/messages/chat/chat_instant_message_to_character.h"
+#include "swganh_core/messages/chat/chat_instant_message_to_client.h"
+#include "swganh_core/messages/chat/chat_persistent_message_to_client.h"
+#include "swganh_core/messages/chat/chat_persistent_message_to_server.h"
+#include "swganh_core/messages/chat/chat_on_send_instant_message.h"
+#include "swganh_core/messages/chat/chat_on_send_persistent_message.h"
+#include "swganh_core/messages/chat/chat_request_persistent_message.h"
+#include "swganh_core/messages/chat/chat_delete_persistent_message.h"
+#include "swganh_core/messages/chat/chat_friends_list_update.h"
+#include "swganh_core/messages/chat/chat_request_room_list.h"
+#include "swganh_core/messages/chat/chat_query_room.h"
+#include "swganh_core/messages/chat/chat_send_to_room.h"
+#include "swganh_core/messages/chat/chat_remove_avatar_from_room.h"
+#include "swganh_core/messages/chat/chat_create_room.h"
+#include "swganh_core/messages/chat/chat_destroy_room.h"
+#include "swganh_core/messages/chat/chat_enter_room_by_id.h"
 
 #include "swganh_core/object/object.h"
+#include "swganh_core/object/player/player.h"
 #include "swganh_core/object/creature/creature.h"
 
 #include "swganh_core/connection/connection_client_interface.h"
@@ -82,6 +86,7 @@ using boost::regex_match;
 ChatService::ChatService(SwganhKernel* kernel)
     : db_manager_(kernel->GetDatabaseManager())
     , kernel_(kernel)
+	, galaxy_name_(kernel->GetAppConfig().galaxy_name)
 {
     SetServiceDescription(ServiceDescription(
         "ChatService",
@@ -163,127 +168,117 @@ void ChatService::Initialize()
 {
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
-	
-	room_provider_ = kernel->GetPluginManager()->CreateObject<ChatRoomProviderInterface>("Chat::RoomProvider");
+	equipment_service_ = kernel_->GetServiceManager()->GetService<swganh::equipment::EquipmentServiceInterface>("EquipmentService");
+
+	room_provider_ = kernel_->GetPluginManager()->CreateObject<ChatRoomProviderInterface>("Chat::RoomProvider");
 	user_provider_ = room_provider_->GetUserProvider();
 }
 
 void ChatService::Startup()
 {
-	//Hit the db to load chat rooms/moderators/bans
-	auto conn = db_manager_->getConnection("galaxy");
-	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-	statement->execute("CALL sp_LoadChatData();");
-
-	//Load rooms
-	std::unique_ptr<sql::ResultSet> result(statement->getResultSet());
-	while(result->next())
-	{
-		auto pair = rooms_.emplace(result->getUInt(1), ChatRoom());
-		if(pair.second)
-		{
-			auto& room = pair.first->second;
-			room.is_private = (result->getUInt(2)) ? true : false;
-			room.is_muted = (result->getUInt(3)) ? true : false;
-			room.name = result->getString(4);
-			room.owner_id = result->getUInt64(5);
-			room.owner_name = result->getString(6);
-			room.creator_id = result->getUInt64(7);
-			room.creator_name = result->getString(8);
-			room.title = result->getString(9);
-		}
-	}
-	
-	//Load bans
-	statement->getMoreResults();
-	result.reset(statement->getResultSet());
-	while(result->next())
-	{
-		auto find_itr = rooms_.find(result->getInt(1));
-		if(find_itr != rooms_.end())
-		{
-			find_itr->second.bans_.insert(result->getUInt64(2));
-		}
-	}
-	
-	//Load moderators
-	uint64_t creature_id;
-	statement->getMoreResults();
-	result.reset(statement->getResultSet());
-	while(result->next())
-	{
-		auto find_itr = rooms_.find(result->getInt(1));
-		if(find_itr != rooms_.end())
-		{
-			Member m;
-			creature_id = result->getUInt64(2);
-
-			m.controller_ = simulation_service_->GetObjectById<Creature>(creature_id_)->GetController();
-			m.is_present = m.creature_ != nullptr;
-			m.is_moderator = true;
-			m.is_invited = false;
-			m.custom_name = result->getString(3);
-			
-			find_itr->second.members_.insert(std::make_pair<uint64_t, Member>(creature_id, std::move(m)));
-		}
-	}
-
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
-    
-	//Tell Related
-    connection_service->RegisterMessageHandler(&ChatService::HandleChatInstantMessageToCharacter, this);
-    
-	//Mail Related
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatPersistentMessageToServer, this);
-    connection_service->RegisterMessageHandler(&ChatService::HandleChatRequestPersistentMessage, this);
-    connection_service->RegisterMessageHandler(&ChatService::HandleChatDeletePersistentMessage, this);
 
-	//Chat Room Related
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatRequestRoomList, this);
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatQueryRoom, this);
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatSendToRoom, this);
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatRemoveAvatarFromRoom, this);
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatCreateRoom, this);
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatDestroyRoom, this);
-	connection_service->RegisterMessageHandler(&ChatService::HandleChatEnterRoomById, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleInstantMessageToCharacter, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handlePersistentMessageToServer, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleRequestPersistentMessage, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleDeletePersistentMessage, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleRequestRoomList, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleQueryRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleSendToRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handleJoinRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handlePartRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleCreateRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleDestroyRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handleBanAvatarFromRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handleUnbanAvatarFromRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handleInviteAvatarToRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handleUninviteAvatarToRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handleAddModToRoom, this);
+	//connection_service->RegisterMessageHandler(&ChatService::_handleRemoveModFromRoom, this);
 	
 	//Spatial
     command_service_->AddCommandCreator<SpatialChatInternalCommand>("spatialchatinternal");
     
-	kernel_->GetEventDispatcher()->Subscribe(
-		"ObjectReadyEvent",
+	//When a new player arrives we must load mail/friends for him
+	kernel_->GetEventDispatcher()->Subscribe("ObjectReadyEvent",
 	[this] (shared_ptr<swganh::EventInterface> incoming_event)
 	{
-	    const auto& player_obj = static_pointer_cast<ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
-        LoadMessageHeaders(player_obj);
+	    auto& creo_obj = static_pointer_cast<ValueEvent<shared_ptr<Creature>>>(incoming_event)->Get();
+        LoadMessageHeaders(creo_obj);
+		HandleFriendsList(creo_obj, 1);
+	});
+
+	//When a player leaves we need to send messages to all friends
+	kernel_->GetEventDispatcher()->Subscribe("Connection::PlayerRemoved",
+	[this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+	    auto& play_obj = static_pointer_cast<ValueEvent<shared_ptr<Player>>>(incoming_event)->Get();
+		auto creo_obj = std::static_pointer_cast<Creature>(play_obj->GetContainer());
+		HandleFriendsList(creo_obj, 0);
+	});
+
+	//When a player is added to a friend's list
+	kernel_->GetEventDispatcher()->Subscribe("Player::AddFriend",
+	[this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+		auto& real_event = static_pointer_cast<ValueEvent<std::pair<std::shared_ptr<Player>, std::string>>>(incoming_event)->Get();
+		auto creo_obj = std::static_pointer_cast<Creature>(real_event.first->GetContainer());
+
+		uint64_t friend_id = user_provider_->GetIdFromFullName(real_event.second);
+		auto controller = creo_obj->GetController(); 
+
+		//If we're adding we simply insert
+		auto lb = player_observers_.lower_bound(friend_id);
+		if(lb != player_observers_.end() && !(player_observers_.key_comp()(friend_id, lb->first)))
+		{
+			lb->second.insert(controller);
+		}
+		else
+		{
+			std::set<std::shared_ptr<swganh::observer::ObserverInterface>> v;
+			v.insert(controller);
+
+			player_observers_.insert(lb, std::make_pair(friend_id, v));
+		}
+
+		//If they're online send the reverse message
+		auto find_itr = online_players_.find(friend_id);
+		if(find_itr != online_players_.end())
+		{
+			//Send friend list update message
+			controller->Notify(&ChatFriendsListUpdate(galaxy_name_, real_event.second, 1));
+		}
+
+	});
+
+	//When a player is removed from a friend's list
+	kernel_->GetEventDispatcher()->Subscribe("Player::RemoveFriend",
+	[this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+		auto& real_event = static_pointer_cast<ValueEvent<std::pair<std::shared_ptr<Player>, std::string>>>(incoming_event)->Get();
+		auto creo_obj = std::static_pointer_cast<Creature>(real_event.first->GetContainer());
+
+		uint64_t friend_id = user_provider_->GetIdFromFullName(real_event.second);
+		auto controller = creo_obj->GetController(); 
+
+		//we need to find the proper entry and remove it
+		auto find_itr = player_observers_.find(friend_id);
+		if(find_itr != player_observers_.end())
+		{
+			auto& observer_set = find_itr->second;
+			auto observer_find = observer_set.find(controller);
+			if(observer_find != observer_set.end())
+			{
+				observer_set.erase(observer_find);
+			}
+		}
 	});
 }
    
 uint64_t ChatService::GetObjectIdByCustomName(const std::string& custom_name)
 {
-    uint64_t object_id = 0;
-
-    try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = std::unique_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT sf_GetObjectIdByCustomName(?);"));
-
-        statement->setString(1, custom_name);
-
-        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-
-        while (result_set->next()) {
-            object_id = result_set->getUInt64(1);
-        }
-
-    } catch(sql::SQLException &e) {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-
-    return object_id;
+    return user_provider_->GetIdFromFullName(custom_name);
 }
-
 
 void ChatService::SendChatPersistentMessageToClient(
     const std::shared_ptr<ObserverInterface>& receiver, 
@@ -381,128 +376,6 @@ void ChatService::SendChatInstantMessageToClient(
     receiver->Notify(&instant_message);
 }
 
-void ChatService::HandleChatInstantMessageToCharacter(
-    const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-    swganh::messages::ChatInstantMessageToCharacter* message)
-{
-	auto sender = simulation_service_->GetObjectById(client->GetController()->GetId());
-    if (!sender)
-    {
-        return;
-    }
-
-    auto clean_message = FilterMessage(message->message);        
-    uint32_t receiver_status = ChatOnSendInstantMessage::FAILED;
-    
-    if (auto receiver = simulation_service_->GetObjectByCustomName(message->recipient_character_name))
-    {
-        receiver_status = ChatOnSendInstantMessage::OK;
-        auto firstname = sender->GetFirstName();
-
-        SendChatInstantMessageToClient(
-            receiver->GetController(),           
-            std::string(std::begin(firstname), std::end(firstname)),
-            "SWG",
-            kernel_->GetServiceDirectory()->galaxy().name(), 
-            clean_message);
-    }
-
-    SendChatOnSendInstantMessage(sender->GetController(), message->sequence_number, receiver_status);
-}
-
-void ChatService::HandleChatPersistentMessageToServer(
-    const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-    swganh::messages::ChatPersistentMessageToServer* message)
-{
-	auto sender = simulation_service_->GetObjectById(client->GetController()->GetId());
-    if (!sender)
-    {
-        return;
-    }
-
-    uint32_t receiver_status = ChatOnSendInstantMessage::FAILED;
-    auto clean_message = FilterMessage(message->message);    
-    auto firstname = sender->GetFirstName();
-
-    if (SendPersistentMessage(
-            message->recipient, 
-            std::string(firstname.begin(), firstname.end()), 
-            "SWG", 
-            prefix_, 
-            message->subject, 
-            clean_message, 
-            message->attachment_data))
-    {
-        receiver_status = ChatOnSendInstantMessage::OK;
-    }
-
-    SendChatOnSendPersistentMessage(sender->GetController(), message->mail_id, receiver_status);
-}
-
-void ChatService::HandleChatRequestPersistentMessage(
-    const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-    swganh::messages::ChatRequestPersistentMessage* message)
-{    
-    try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = std::unique_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("CALL sp_MailGetMessage(?, ?);"));
-
-        statement->setUInt(1, message->mail_message_id);
-        statement->setUInt64(2, client->GetController()->GetId());
-
-        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-
-        while (result_set->next()) {
-            
-            std::string tmp = result_set->getString("subject");
-            std::wstring subject(std::begin(tmp), std::end(tmp));
-
-            tmp = result_set->getString("message");
-            std::wstring message(std::begin(tmp), std::end(tmp));
-
-            tmp = result_set->getString("attachments");
-            std::vector<char> attachments(std::begin(tmp), std::end(tmp));
-
-            SendChatPersistentMessageToClient(client->GetController(), 
-                result_set->getString("sender"),
-                result_set->getString("sender_game"),
-                result_set->getString("sender_galaxy"),
-                subject,
-                message,
-                result_set->getUInt("id"),
-                result_set->getUInt("status"),
-                attachments,
-                result_set->getUInt("sent_time"),
-                false);
-        }
-        
-		while(statement->getMoreResults());
-    } catch(sql::SQLException &e) {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-
-void ChatService::HandleChatDeletePersistentMessage(
-    const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-    swganh::messages::ChatDeletePersistentMessage* message)
-{
-    try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = std::unique_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("CALL sp_MailDeleteMessage(?, ?);"));
-
-        statement->setUInt(1, message->mail_message_id);
-        statement->setUInt64(2, client->GetController()->GetId());
-
-        statement->execute();
-    } catch(sql::SQLException &e) {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-
 uint32_t ChatService::StorePersistentMessage(
     uint64_t recipient_id,
     const std::string& sender_name, 
@@ -546,7 +419,7 @@ uint32_t ChatService::StorePersistentMessage(
     return message_id;
 }
     
-void ChatService::LoadMessageHeaders(const std::shared_ptr<swganh::object::Object>& receiver)
+void ChatService::LoadMessageHeaders(const std::shared_ptr<swganh::object::Creature>& receiver)
 {
     try {
         auto conn = db_manager_->getConnection("galaxy");
@@ -579,88 +452,311 @@ void ChatService::LoadMessageHeaders(const std::shared_ptr<swganh::object::Objec
     }
 }
 
+void ChatService::HandleFriendsList(const std::shared_ptr<swganh::object::Creature>& receiver, uint8_t operation)
+{
+	auto player = std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(receiver, "ghost"));
+
+	std::shared_ptr<ObserverInterface> controller;
+	std::wstring custom_name;
+	uint64_t object_id;
+	{
+		auto lock = receiver->AcquireLock();
+		controller = receiver->GetController(lock);
+		custom_name = receiver->GetCustomName(lock);
+		object_id = receiver->GetObjectId(lock);
+	}
+
+	//Insert/Remove into/from the online players list
+	if(operation) 
+	{
+		online_players_.insert(std::make_pair(object_id, controller));
+	} 
+	else 
+	{
+		auto find_itr = online_players_.find(object_id);
+		if(find_itr != online_players_.end())
+			online_players_.erase(find_itr);
+	}
+
+	//Send a message to all players in this player's observer list.
+	auto find_itr = player_observers_.find(object_id);
+	if(find_itr != player_observers_.end())
+	{
+		for_each(find_itr->second.begin(), find_itr->second.end(), 
+		[&] (const std::shared_ptr<swganh::observer::ObserverInterface>& id) {
+			//Send friend list update message
+			id->Notify(&ChatFriendsListUpdate(galaxy_name_, std::string(custom_name.begin(), custom_name.end()), operation));
+		});
+	}
+
+	//Add Player to observer lists for all relevant players on his friend's list
+	auto friends_list = player->GetFriends();
+	for_each(friends_list.begin(), friends_list.end(), [&] (const std::string& friend_name) {
+		
+		uint64_t friend_id = user_provider_->GetIdFromFullName(friend_name);
+
+		if(operation)
+		{
+			//If we're adding we simply insert
+			auto lb = player_observers_.lower_bound(friend_id);
+			if(lb != player_observers_.end() && !(player_observers_.key_comp()(friend_id, lb->first)))
+			{
+				lb->second.insert(controller);
+			}
+			else
+			{
+				std::set<std::shared_ptr<swganh::observer::ObserverInterface>> v;
+				v.insert(controller);
+
+				player_observers_.insert(lb, std::make_pair(friend_id, v));
+			}
+
+			//If they're online send the reverse message
+			auto find_itr = online_players_.find(friend_id);
+			if(find_itr != online_players_.end())
+			{
+				//Send friend list update message
+				controller->Notify(&ChatFriendsListUpdate(galaxy_name_, friend_name, 1));
+			}
+		}
+		else
+		{
+			//Otherwise we need to find the proper entry and remove it
+			auto find_itr = player_observers_.find(friend_id);
+			if(find_itr != player_observers_.end())
+			{
+				auto& observer_set = find_itr->second;
+				auto observer_find = observer_set.find(controller);
+				if(observer_find != observer_set.end())
+				{
+					observer_set.erase(observer_find);
+				}
+			}
+		}
+	});
+
+}
+
 std::wstring ChatService::FilterMessage(const std::wstring& message)
 {
     return message;
 }
 
-void ChatService::HandleChatRequestRoomList(
+//Tell Related
+void ChatService::_handleInstantMessageToCharacter(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatInstantMessageToCharacter* message)
+{
+	//Get both controllers
+	std::shared_ptr<swganh::observer::ObserverInterface> sender_controller = client->GetController();
+	std::shared_ptr<swganh::observer::ObserverInterface> recv_controller;
+
+	std::string first_name = user_provider_->GetFirstNameFromFullName(message->recipient_character_name);
+
+	auto recv_itr = online_players_.find(user_provider_->GetIdFromFirstName(first_name));
+	if(recv_itr != online_players_.end())
+	{
+		recv_controller = recv_itr->second;
+	}
+
+	//Prep the message
+	auto clean_message = FilterMessage(message->message);        
+	uint32_t receiver_status = ChatOnSendInstantMessage::FAILED;
+    
+	if (sender_controller && recv_controller)
+	{
+		receiver_status = ChatOnSendInstantMessage::OK;
+
+		SendChatInstantMessageToClient(
+			recv_controller,           
+			first_name,
+			"SWG",
+			kernel_->GetServiceDirectory()->galaxy().name(), 
+			clean_message);
+	}
+
+	SendChatOnSendInstantMessage(sender_controller, message->sequence_number, receiver_status);
+}
+	
+//Mail Related
+void ChatService::_handlePersistentMessageToServer(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatPersistentMessageToServer* message)
+{
+	auto sender = simulation_service_->GetObjectById(client->GetController()->GetId());
+	if (!sender)
+	{
+		return;
+	}
+
+	uint32_t receiver_status = ChatOnSendInstantMessage::FAILED;
+	auto clean_message = FilterMessage(message->message);    
+	auto firstname = sender->GetFirstName();
+
+	if (SendPersistentMessage(
+			message->recipient, 
+			std::string(firstname.begin(), firstname.end()), 
+			"SWG", 
+			galaxy_name_, 
+			message->subject, 
+			clean_message, 
+			message->attachment_data))
+	{
+		receiver_status = ChatOnSendInstantMessage::OK;
+	}
+
+	SendChatOnSendPersistentMessage(sender->GetController(), message->mail_id, receiver_status);
+}
+
+void ChatService::_handleRequestPersistentMessage(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatRequestPersistentMessage* message)
+{
+	try {
+		auto conn = db_manager_->getConnection("galaxy");
+		auto statement = std::unique_ptr<sql::PreparedStatement>(
+			conn->prepareStatement("CALL sp_MailGetMessage(?, ?);"));
+
+		statement->setUInt(1, message->mail_message_id);
+		statement->setUInt64(2, client->GetController()->GetId());
+
+		auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+		while (result_set->next()) {
+            
+			std::string tmp = result_set->getString("subject");
+			std::wstring subject(std::begin(tmp), std::end(tmp));
+
+			tmp = result_set->getString("message");
+			std::wstring message(std::begin(tmp), std::end(tmp));
+
+			tmp = result_set->getString("attachments");
+			std::vector<char> attachments(std::begin(tmp), std::end(tmp));
+
+			SendChatPersistentMessageToClient(client->GetController(), 
+				result_set->getString("sender"),
+				result_set->getString("sender_game"),
+				result_set->getString("sender_galaxy"),
+				subject,
+				message,
+				result_set->getUInt("id"),
+				result_set->getUInt("status"),
+				attachments,
+				result_set->getUInt("sent_time"),
+				false);
+		}
+        
+		while(statement->getMoreResults());
+	} catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+}
+
+void ChatService::_handleDeletePersistentMessage(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatDeletePersistentMessage* message)
+{
+	try {
+		auto conn = db_manager_->getConnection("galaxy");
+		auto statement = std::unique_ptr<sql::PreparedStatement>(
+			conn->prepareStatement("CALL sp_MailDeleteMessage(?, ?);"));
+
+		statement->setUInt(1, message->mail_message_id);
+		statement->setUInt64(2, client->GetController()->GetId());
+
+		statement->execute();
+	} catch(sql::SQLException &e) {
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+}
+
+//Chat Room Related
+void ChatService::_handleRequestRoomList(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatRequestRoomList* message)
 {
-	ChatRoomList room_list;
-	{
-		boost::unique_lock<boost::mutex> lock(room_mutex_);
-		room_list.data.write<uint32_t>(rooms_.size());
-		for(auto& room_pair : rooms_)
-		{
-			ChatRoom& room = room_pair.second;
-			room_list.data.write<uint32_t>(room_pair.first);
-			room_list.data.write<uint32_t>((room.is_private) ? 1 : 0);
-			room_list.data.write<uint8_t>((room.is_muted) ? 1 : 0);
-			room_list.data.write<std::string>("SWG." + prefix_ + "." + room.name);
-			
-			room_list.data.write<std::string>("SWG");
-			room_list.data.write<std::string>(prefix_);
-			room_list.data.write<std::string>(room.owner_name);
-			
-			room_list.data.write<std::string>("SWG");
-			room_list.data.write<std::string>(prefix_);
-			room_list.data.write<std::string>(room.creator_name);
-			
-			room_list.data.write<std::wstring>(std::wstring(room.title.begin(), room.title.end()));
-		
-			//Write out empty lists to save bandwidth.
-			room_list.data.write<uint32_t>(0);
-			room_list.data.write<uint32_t>(0);
-		}
-	}
-	client->GetController()->Notify(&room_list);
+	room_provider_->SendRoomList(client->GetController());
 }
 
-void ChatService::HandleChatQueryRoom(
+void ChatService::_handleQueryRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatQueryRoom* message)
 {
-	LOG(info) << "CHAT QUERY ROOM";
-	LOG(info) << "  unknown=" << message->unknown;
-	LOG(info) << "  path=" << message->channel_path;
+	room_provider_->SendQueryResults(client->GetController(), message->channel_path);
 }
 
-void ChatService::HandleChatSendToRoom(
+void ChatService::_handleSendToRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatSendToRoom* message)
 {
-	LOG(info) << "CHAT MESSAGE";
-	LOG(info) << "  speaker=" << message->sender_character_name;
-	LOG(info) << "  message=" << std::string(message->message.begin(), message->message.end());
-	LOG(info) << "  channel_id=" << message->channel_id;
+	room_provider_->SendToChannel(
+		message->channel_id, 
+		message->message, 
+		client->GetController(), 
+		message->message_counter);
 }
-	
-void ChatService::HandleChatRemoveAvatarFromRoom(
+
+void ChatService::_handleJoinRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatRemoveAvatarFromRoom* message)
+	swganh::messages::ChatJoinRoom* message)
 {
 }
 
-void ChatService::HandleChatCreateRoom(
+void ChatService::_handlePartRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatPartRoom* message)
+{
+}
+
+//Chat Room Management
+void ChatService::_handleCreateRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatCreateRoom* message)
 {
-	LOG(info) << "CHAT CREATE ROOM";
-	LOG(info) << "  public=" << message->public_flag;
-	LOG(info) << "  moderated=" << message->moderation_flag;
-	LOG(info) << "  channel_path" << message->channel_path;
 }
 
-void ChatService::HandleChatDestroyRoom(
+void ChatService::_handleDestroyRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatDestroyRoom* message)
 {
 }
-	
-void ChatService::HandleChatEnterRoomById(
+
+
+//class Room User Management
+void ChatService::_handleBanAvatarFromRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatEnterRoomById* message)
+	swganh::messages::ChatBanAvatarFromRoom* message)
+{
+}
+
+void ChatService::_handleUnbanAvatarFromRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatUnbanAvatarFromRoom* message)
+{
+}
+
+void ChatService::_handleInviteAvatarToRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatInviteAvatarToRoom* message)
+{
+}
+
+void ChatService::_handleUninviteAvatarToRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatUninviteAvatarToRoom* message)
+{
+}
+
+void ChatService::_handleAddModToRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatAddModToRoom* message)
+{
+}
+
+void ChatService::_handleRemoveModFromRoom(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatRemoveModFromRoom* message)
 {
 }

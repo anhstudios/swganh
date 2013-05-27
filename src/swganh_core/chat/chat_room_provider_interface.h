@@ -6,27 +6,27 @@
 #include <functional>
 #include <string>
 #include <cstdint>
+#include <map>
+#include <set>
+
 
 namespace swganh
 {
-namespace object
+namespace observer
 {
 	class ObserverInterface;
 }
-
-typedef std::map<std::reference_wrapper<const std::string>, std::reference_wrapper<Room>> RoomMap;
 
 namespace chat
 {
 
 struct Room
 {
-	bool is_private_, is_muted_, is_heading_;
-	std::string name_;
+	uint32_t id_;
+	bool is_private_, is_muted_, is_heading_, is_hidden_;
+	std::string name_, title_;
 	uint64_t owner_, creator_;
-	Room* parent_;
-	RoomMap sub_rooms_;
-	std::set<uint64_t> moderators, invited_users_, banned_users_;
+	std::set<uint64_t> moderators_, invited_users_, banned_users_;
 	std::set<std::shared_ptr<swganh::observer::ObserverInterface>> users_;
 };
 
@@ -34,6 +34,10 @@ class ChatUserProviderInterface;
 class ChatRoomProviderInterface
 {
 public:
+
+	virtual void SendRoomList(const std::shared_ptr<swganh::observer::ObserverInterface>& client) = 0;
+
+	virtual void SendQueryResults(const std::shared_ptr<swganh::observer::ObserverInterface>& client, const std::string& path) = 0;
 
 	/*!
 	* @param path the path to the room which is requested
@@ -142,12 +146,16 @@ public:
 	virtual bool UnbanUser(const std::string& room_path, uint64_t requester, uint64_t unbanned_user) = 0;
 
 	/*!
-	* @param room_path the room to send the chat to
+	* @param room_id the room to send the chat to
 	* @param message the message to send
 	* @param speaker the user doing the speaking
 	* @return true if the user is in the channel, has permissions to do the speaking, and the speaking was performed
 	*/
-	virtual bool SendToChannel(const std::string& room_path, const std::wstring& message, uint64_t speaker) = 0;
+	virtual bool SendToChannel(
+		uint32_t room_id, 
+		const std::wstring& message, 
+		const std::shared_ptr<swganh::observer::ObserverInterface>& client, 
+		uint32_t request_id) = 0;
 
 	/*!
 	* @return the user provider that is associated with this room provider.

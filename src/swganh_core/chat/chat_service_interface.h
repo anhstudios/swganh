@@ -45,6 +45,7 @@ namespace chat {
             std::wstring chat_message,
             uint16_t chat_type,
             uint16_t mood) = 0;
+
     };
 
 }}  // namespace swganh::chat

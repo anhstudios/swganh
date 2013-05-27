@@ -36,8 +36,14 @@ public:
 	* @param creature_id the id of the user's creature
 	* @return the first name of the user
 	*/
-	virtual const std::string& GetFirstNameFromId(uint64_t creature_id) const = 0;
+	virtual std::string GetFirstNameFromId(uint64_t creature_id) const = 0;
 	
+	/*!
+	* @param name the first name of the player requested
+	* @return the full name of the player.
+	*/
+	const std::string& GetFullNameFromFirstName(const std::string& name) const;
+
 	/*!
 	* @param creature_id the id of the user's creature
 	* @return the full path of the user
@@ -48,7 +54,7 @@ public:
 	* @param name the full name of the user
 	* @return the first name of the user
 	*/
-	virtual static std::string GetFirstNameFromFullName(const std::string& name) const = 0;
+	virtual std::string GetFirstNameFromFullName(const std::string& name) const = 0;
 	
 };
 

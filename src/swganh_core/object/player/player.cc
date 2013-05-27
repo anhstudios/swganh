@@ -512,6 +512,11 @@ void Player::AddFriend(string friend_name, boost::unique_lock<boost::mutex>& loc
 {
     friends_.add(friend_name);
 	DISPATCH(Player, Friend);
+	if(auto dispatcher = GetEventDispatcher())
+	{
+		dispatcher->Dispatch(std::make_shared<ValueEvent<std::pair<std::shared_ptr<Object>, std::string>>>(
+			"Player::AddFriend", std::make_pair(shared_from_this(), friend_name)));
+	}
 }
 
 void Player::RemoveFriend(string friend_name) { RemoveFriend(friend_name, AcquireLock()); }
@@ -525,6 +530,11 @@ void Player::RemoveFriend(string friend_name, boost::unique_lock<boost::mutex>& 
     {
 		friends_.remove(iter);
 		DISPATCH(Player, RemoveFriend);
+		if(auto dispatcher = GetEventDispatcher())
+		{
+			dispatcher->Dispatch(std::make_shared<ValueEvent<std::pair<std::shared_ptr<Object>, std::string>>>(
+				"Player::RemoveFriend", std::make_pair(shared_from_this(), friend_name)));
+		}
 	}
 }
 
