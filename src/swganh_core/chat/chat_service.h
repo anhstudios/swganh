@@ -15,31 +15,20 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
-#include "chat_room.h"
-
 namespace swganh {
 namespace connection {
     class ConnectionClientInterface;
 }
-namespace messages {
-    struct ChatInstantMessageToCharacter;
-    struct ChatPersistentMessageToServer;
-    struct ChatRequestPersistentMessage;
-    struct ChatDeletePersistentMessage;
-	struct ChatRequestRoomList;
-	struct ChatQueryRoom;
-	struct ChatSendToRoom;
-	struct ChatRemoveAvatarFromRoom;
-	struct ChatCreateRoom;
-	struct ChatDestroyRoom;
-	struct ChatEnterRoomById;	
-}
+
 namespace object {
 	class Object;
 }}  // namespace swganh::object
 
 namespace swganh {
 namespace chat {
+
+class ChatRoomProviderInterface;
+class ChatUserProviderInterface;
 
 /*
 * The chat service handles chat related functions
@@ -93,10 +82,9 @@ private:
 	swganh::command::CommandServiceInterface* command_service_;
     swganh::simulation::SimulationServiceInterface* simulation_service_;
     swganh::app::SwganhKernel* kernel_;
+	std::shared_ptr<ChatRoomProviderInterface> room_provider_;
+	std::shared_ptr<ChatUserProviderInterface> user_provider_;
 
-	std::string prefix_;
-	std::map<uint32_t, ChatRoom> rooms_;
-    boost::mutex room_mutex_;
 
     void SendChatPersistentMessageToClient(
         const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 

@@ -91,8 +91,6 @@ ChatService::ChatService(SwganhKernel* kernel)
         0, 
         0, 
         0));
-		
-	prefix_ = kernel_->GetAppConfig().galaxy_name;
 }
 
 ChatService::~ChatService()
@@ -165,6 +163,9 @@ void ChatService::Initialize()
 {
 	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
+	
+	room_provider_ = kernel->GetPluginManager()->CreateObject<ChatRoomProviderInterface>("Chat::RoomProvider");
+	user_provider_ = room_provider_->GetUserProvider();
 }
 
 void ChatService::Startup()

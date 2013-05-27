@@ -120,6 +120,11 @@ void CharacterService::HandleClientCreateCharacter_(
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
         client->SendTo(success);
+
+		//Send an event to all interested parties
+		kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<std::pair<uint64_t, std::string>>>(
+			"Character::NewCharacter",
+			std::make_pair(character_id, message->character_name)));
     }
 }
 

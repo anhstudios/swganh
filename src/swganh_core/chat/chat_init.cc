@@ -14,6 +14,9 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "chat_service.h"
+#include "mysql_chat_room_provider.h"
+#include "mysql_chat_user_provider.h"
+
 #include "version.h"
 
 namespace swganh {
@@ -25,6 +28,38 @@ void Initialize(swganh::app::SwganhKernel* kernel)
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
     
+	//Register MysqlChatRoomProvider
+	{
+		registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+			return new MysqlChatRoomProvider(kernel);
+		};
+
+		registration.DestroyObject = [] (void * object) {
+			if(object)
+			{
+				delete static_cast<MysqlChatRoomProvider>(object);
+			}
+		};
+
+		kernel->GetPluginManager()->RegisterObject("Chat::RoomProvider", &registration);
+	}
+
+	//Register MysqlChatUserProvider
+	{
+		registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+			return new MysqlChatUserProvider(kernel);
+		};
+
+		registration.DestroyObject = [] (void * object) {
+			if(object)
+			{
+				delete static_cast<MysqlChatUserProvider>(object);
+			}
+		};
+
+		kernel->GetPluginManager()->RegisterObject("Chat::UserProvider", &registration);
+	}
+
     // Register Chat Service
 	{ // Chat::ChatService
         registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
