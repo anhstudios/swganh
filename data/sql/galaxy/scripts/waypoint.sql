@@ -14,7 +14,7 @@
 DROP TABLE IF EXISTS `waypoint`;
 CREATE TABLE IF NOT EXISTS `waypoint` (
   `id` bigint(20) NOT NULL,
-  `player_id` bigint(20) DEFAULT NULL,
+  `owner_id` bigint(20) DEFAULT NULL,
   `x_coordinate` double NOT NULL,
   `y_coordinate` double NOT NULL,
   `z_coordinate` double NOT NULL,
@@ -23,10 +23,9 @@ CREATE TABLE IF NOT EXISTS `waypoint` (
   `name` varchar(255) NOT NULL,
   `color` smallint(6) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `IDX_B3DC588199E6F5DF` (`player_id`),
-  CONSTRAINT `FK_B3DC588199E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`),
-  CONSTRAINT `FK_B3DC5881BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `IDX_B3DC588199E6F5DF` (`owner_id`),
+  CONSTRAINT `FK_B3DC588199E6F5DF` FOREIGN KEY (`owner_id`) REFERENCES `object` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=137438953472 DEFAULT CHARSET=utf8;
 
 -- Dumping data for table galaxy.waypoint: ~12 rows (approximately)
 /*!40000 ALTER TABLE `waypoint` DISABLE KEYS */;
