@@ -596,8 +596,22 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
     {   
         while (result->next())
         {
-            //auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-            //GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>("LoadWaypoints", player, result));
+            auto waypoint = std::make_shared<Waypoint>();
+            waypoint->SetObjectId(result->getUInt64("id"));
+            waypoint->SetCoordinates( glm::vec3(
+                result->getDouble("x_position"),
+                result->getDouble("y_position"),
+                result->getDouble("z_position"))
+                );
+            waypoint->SetLocationNetworkId(result->getUInt("scene_id"));
+            string custom_string = result->getString("custom_name");
+            waypoint->SetName(wstring(begin(custom_string), end(custom_string)));
+            uint16_t activated = result->getUInt("is_active");
+            activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
+            waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")));
+            waypoint->SetPlanet(result->getString("planet"));
+
+            player->AddWaypoint(waypoint);
         }
     } while(statement->getMoreResults());
 }
