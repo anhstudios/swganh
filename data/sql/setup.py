@@ -167,7 +167,7 @@ class Menu(object):
         #Add some operations!
         self.operations.append((I18N['INSTALL_ALL_MSG'], lambda cfg: list(map((lambda db: installDatabase(cfg, db)), cfg['databases']))))
         for i in range(len(cfg['databases'])):
-            self.operations.append((I18N['INSTALL_MSG']+cfg['databases'][i], lambda cfg: installDatabase(cfg, cfg['databases'][i])))
+            self.operations.append((I18N['INSTALL_MSG']+cfg['databases'][i], lambda cfg, i=i: installDatabase(cfg, cfg['databases'][i])))
         self.operations.append((I18N['BACKUP_MSG'], backupDB)) 
         self.operations.append((I18N['RESTORE_MSG'], restoreDB))
         self.operations.append((I18N['RECONFIG_MSG'], rebuildCfg))
