@@ -20,10 +20,11 @@ namespace messages {
     	std::string character_name;
     	uint32_t success_bitmask;
     	uint32_t channel_id;
-    	uint32_t unknown;
+    	uint32_t nothing;
 
     	ChatOnEnteredRoom()
     		: game_name("SWG")
+			, nothing(0)
     	{}
 
     	void OnSerialize(swganh::ByteBuffer& buffer) const
@@ -33,7 +34,7 @@ namespace messages {
     		buffer.write(character_name);
     		buffer.write(success_bitmask);
     		buffer.write(channel_id);
-    		buffer.write(unknown);
+    		buffer.write(nothing);
     	}
 
     	void OnDeserialize(swganh::ByteBuffer& buffer)
@@ -43,7 +44,7 @@ namespace messages {
     		character_name = buffer.read<std::string>();
     		success_bitmask = buffer.read<uint32_t>();
     		channel_id = buffer.read<uint32_t>();
-    		unknown = buffer.read<uint32_t>();
+    		nothing = buffer.read<uint32_t>();
     	}
     };
 

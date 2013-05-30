@@ -3,19 +3,28 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include "swganh/byte_buffer.h"
 #include "swganh_core/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
-    struct ChatOnConnectAvatar : public BaseSwgMessage
+    struct ChatQueryRoomResponse : public BaseSwgMessage
     {
-    	uint16_t Opcount() const { return 1; }
-    	uint32_t Opcode() const { return 0xD72FE9BE; }
-    	
-    	void OnSerialize(swganh::ByteBuffer& buffer) const {}
-    	
+    	uint16_t Opcount() const { return 7; }
+    	uint32_t Opcode() const { return 0xC4DE864E; }
+
+		swganh::ByteBuffer data;
+		
+    	ChatQueryRoomResponse()
+    	{}
+
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
+    	{
+			buffer.append(data);
+    	}
+
     	void OnDeserialize(swganh::ByteBuffer& buffer) {}
     };
 

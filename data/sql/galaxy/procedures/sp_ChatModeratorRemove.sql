@@ -11,7 +11,7 @@ CREATE PROCEDURE `sp_ChatModeratorRemove`(IN in_room_id INT, IN in_moderator_id 
 BEGIN
 
 	DELETE FROM `chat_moderators`
-	WHERE `room_id` = in_room_id AND `moderator_id` = in_moderator_id
+	WHERE `room_id` = in_room_id AND `moderator_id` = in_moderator_id;
 
 END //
 DELIMITER ;

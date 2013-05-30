@@ -30,7 +30,6 @@
 #include "simulation/simulation_init.h"
 #include "map/map_init.h"
 #include "player/player_init.h"
-#include "social/social_init.h"
 #include "equipment/equipment_init.h"
 #include "spawn/spawn_init.h"
 #include "static/static_init.h"
@@ -74,7 +73,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     swganh::chat::Initialize(swganh_kernel);
 	swganh::simulation::Initialize(swganh_kernel);
 	swganh::player::Initialize(swganh_kernel);
-	swganh::social::Initialize(swganh_kernel);
 	swganh::spawn::Initialize(swganh_kernel);
 	swganh::statics::Initialize(swganh_kernel);
 	swganh::sui::Initialize(swganh_kernel);

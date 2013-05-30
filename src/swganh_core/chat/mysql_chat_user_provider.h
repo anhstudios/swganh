@@ -16,7 +16,7 @@ namespace app
 namespace chat
 {
 
-class MysqlChatUserProvider
+class MysqlChatUserProvider : public ChatUserProviderInterface
 {
 public:
 

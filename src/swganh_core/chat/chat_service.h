@@ -16,6 +16,8 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
+#include "room.h"
+
 namespace swganh {
 namespace connection {
     class ConnectionClientInterface;
@@ -39,8 +41,8 @@ namespace messages
 	struct ChatRequestRoomList;
 	struct ChatQueryRoom;
 	struct ChatSendToRoom;
-	struct ChatJoinRoom;
-	struct ChatPartRoom;
+	struct ChatEnterRoomById;
+	struct ChatLeaveRoom;
 
 	//Chat Room Management
 	struct ChatCreateRoom;
@@ -59,7 +61,6 @@ namespace messages
 
 namespace chat {
 
-class ChatRoomProviderInterface;
 class ChatUserProviderInterface;
 
 /*
@@ -104,26 +105,14 @@ public:
         uint16_t chat_type,
         uint16_t mood);
 
+	
+
 	void Initialize();
     void Startup();
 
     uint64_t GetObjectIdByCustomName(const std::string& custom_name);
 
 private:
-    swganh::database::DatabaseManager* db_manager_;
-	swganh::command::CommandServiceInterface* command_service_;
-    swganh::simulation::SimulationServiceInterface* simulation_service_;
-	swganh::equipment::EquipmentServiceInterface* equipment_service_;
-
-
-    swganh::app::SwganhKernel* kernel_;
-	std::shared_ptr<ChatRoomProviderInterface> room_provider_;
-	std::shared_ptr<ChatUserProviderInterface> user_provider_;
-
-	std::string galaxy_name_;
-
-	std::map<uint64_t, std::set<std::shared_ptr<swganh::observer::ObserverInterface>>> player_observers_;
-	std::map<uint64_t, std::shared_ptr<swganh::observer::ObserverInterface>> online_players_;
 
     void SendChatPersistentMessageToClient(
         const std::shared_ptr<swganh::observer::ObserverInterface>& receiver, 
@@ -225,11 +214,11 @@ private:
 
 	void _handleJoinRoom(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatJoinRoom* message);
+		swganh::messages::ChatEnterRoomById* message);
 
-	void _handlePartRoom(
+	void _handleLeaveRoom(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatPartRoom* message);
+		swganh::messages::ChatLeaveRoom* message);
 
 	//Chat Room Management
 	void _handleCreateRoom(
@@ -266,6 +255,25 @@ private:
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 		swganh::messages::ChatRemoveModFromRoom* message);
 
+	const Room* GetRoomByPath(std::string path);
+	Room* GetRoomByPath_(std::string path);
+	Room* GetRoomById_(uint32_t id);
+
+	swganh::database::DatabaseManager* db_manager_;
+	swganh::command::CommandServiceInterface* command_service_;
+    swganh::simulation::SimulationServiceInterface* simulation_service_;
+	swganh::equipment::EquipmentServiceInterface* equipment_service_;
+
+
+    swganh::app::SwganhKernel* kernel_;
+	std::shared_ptr<ChatUserProviderInterface> user_provider_;
+
+	mutable boost::mutex room_mutex_;
+	std::string galaxy_name_;
+	std::map<uint32_t, Room> rooms_, hidden_rooms_;
+
+	std::map<uint64_t, std::set<std::shared_ptr<swganh::observer::ObserverInterface>>> player_observers_;
+	std::map<uint64_t, std::shared_ptr<swganh::observer::ObserverInterface>> online_players_;
 };
 
 }}  // namespace swganh::chat

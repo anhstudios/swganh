@@ -13,9 +13,9 @@ CREATE PROCEDURE `sp_ChatPersistRoom`(IN in_room_id INT,
 BEGIN
 
 	UPDATE `chat_rooms` 
-	WHERE `room_id` = in_room_id 
 	SET `is_private` = in_is_private, `is_muted` = in_is_muted, `name` = in_name,
-	`creator_id` = in_creator_id, `owner_id` = in_owner_id, `title` = in_title;
+	`creator_id` = in_creator_id, `owner_id` = in_owner_id, `title` = in_title
+	WHERE `room_id` = in_room_id;
 
 END //
 DELIMITER ;

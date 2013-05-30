@@ -33,7 +33,8 @@ void Initialize(swganh::app::SwganhKernel* kernel)
 		};
 
 		registration.DestroyObject = [] (void * object) {
-			if (object) {
+			if (object) 
+			{
 				delete static_cast<MysqlCharacterProvider*>(object);
 			}
 		};
