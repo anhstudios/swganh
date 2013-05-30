@@ -12,7 +12,7 @@ void exportIntangible()
     namespace bp = boost::python;
     namespace so = swganh::object;
 
-    bp::class_<so::Intangible, bp::bases<so::Object>, std::shared_ptr<so::Intangible>, boost::noncopyable>("Waypoint")
+    bp::class_<so::Intangible, bp::bases<so::Object>, std::shared_ptr<so::Intangible>, boost::noncopyable>("Intangible")
     ;
 
     bp::implicitly_convertible<std::shared_ptr<so::Intangible>, std::shared_ptr<so::Object>>();
