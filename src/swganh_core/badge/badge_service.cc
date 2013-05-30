@@ -65,7 +65,7 @@ BadgeService::BadgeService(swganh::app::SwganhKernel* kernel)
 		std::for_each(badge_regions_.begin(), badge_regions_.end(), [=](std::shared_ptr<swganh::badge::BadgeRegion> badge_region) {
 			if(real_event->scene_id == badge_region->GetSceneId())
 			{
-				simulation_service->TransferObjectToScene(badge_region, real_event->scene_label);
+                simulation_service->AddObjectToScene(badge_region, real_event->scene_label);
 			}
 		});
 	});
@@ -256,14 +256,10 @@ void BadgeService::LoadBadgeRegions_()
 			
 			badge_region->SetPosition(glm::vec3(result->getDouble("x"), 0.0f, result->getDouble("z")));
 			badge_region->SetSceneId(result->getUInt("planet_id") + 1);
-			badge_region->SetDatabasePersisted(false);
 			
 			auto name = result->getString("name").asStdString();
-			badge_region->SetCustomName(std::wstring(name.begin(), name.end()));
-			
+			badge_region->SetCustomName(std::wstring(name.begin(), name.end()));			
 			badge_region->SetObjectId(result->getUInt64("id"));
-			badge_region->SetInSnapshot(true);
-			badge_region->SetDatabasePersisted(false);
 			
 			badge_region->SetCollisionBoxSize((float)result->getDouble("width"), (float)result->getDouble("length"));
 			badge_region->SetPermissions(std::make_shared<swganh::object::WorldPermission>());

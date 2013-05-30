@@ -48,7 +48,9 @@ boost::optional<std::shared_ptr<CommandCallback>> RequestBadgesCommand::Run()
 
 	auto badges = player->GetBadges();
 	std::for_each(badges.begin(), badges.end(), [=, &badges_response](const uint32_t id) {
-		badges_response.badge_flags.at(GetBadgeBitmaskBitById2(id)) = true;
+        auto index = GetBadgeBitmaskIndexById2(id);
+        auto bit = GetBadgeBitmaskBitById2(id);
+		badges_response.badge_flags[index].at(bit) = true;
 	});
 
 	GetActor()->GetController()->Notify(&badges_response);
