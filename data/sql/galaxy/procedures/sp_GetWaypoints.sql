@@ -3,14 +3,15 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-DROP PROCEDURE IF EXISTS `sp_GetWaypoints`;
+DROP PROCEDURE IF EXISTS `sp_GetWaypoint`;
 
 DELIMITER //
-CREATE PROCEDURE `sp_GetWaypoints`(IN `object_id` BIGINT)
+CREATE PROCEDURE `sp_GetWaypoint`(IN `object_id` BIGINT)
 BEGIN
     select *
-    from waypoint w
-    where w.player_id = object_id;
+    from waypoint w, object o
+    where w.player_id = object_id
+    and o.id = w.id;
 END//
 DELIMITER ;
 

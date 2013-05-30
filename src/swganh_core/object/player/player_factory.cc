@@ -587,7 +587,7 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
 								   boost::unique_lock<boost::mutex>& lock)
 {
     auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
+        (connection->prepareStatement("CALL sp_GetWaypoints(?);"));
     
     statement->setUInt64(1, player->GetObjectId(lock));
 
