@@ -28,7 +28,7 @@ class WaypointCommand(BaseSwgCommand):
             SystemMessage.sendSystemMessage(actor, "[SYNTAX] /waypoint <x> <z> or /waypoint <x> <y> <z>", True, False)
             return
 
-        waypoint = Waypoint.create()
+        waypoint = Waypoint()
 
         waypoint.setCoordinates(waypoint_position)
         waypoint.setPlanet(simulation.getSceneName(actor.scene_id))
