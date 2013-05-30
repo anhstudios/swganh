@@ -358,24 +358,33 @@ void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Ob
         if(old_done || *new_itr < *old_itr)
         {
             //It's a new object!
-            object->AddCollidedObject(*new_itr);
-            (*new_itr)->AddCollidedObject(object);
+            if (object != *new_itr)
+            {
+                object->AddCollidedObject(*new_itr);
+                (*new_itr)->AddCollidedObject(object);
+            }
 
             ++new_itr;
         }
         else if(new_done || *old_itr < *new_itr)
         {
             //It's an old object!
-            object->RemoveCollidedObject(*old_itr);
-            (*old_itr)->RemoveCollidedObject(object);
+            if(object != *old_itr)
+            {
+                object->RemoveCollidedObject(*old_itr);
+                (*old_itr)->RemoveCollidedObject(object);
+            }
 
             ++old_itr;
         }
         else
         {
             //Otherwise both are equal
-            object->OnCollisionStay(*new_itr);
-            (*new_itr)->OnCollisionStay(object);
+            if(object != *new_itr)
+            {
+                object->OnCollisionStay(*new_itr);
+                (*new_itr)->OnCollisionStay(object);
+            }
 
             ++new_itr;
             ++old_itr;
