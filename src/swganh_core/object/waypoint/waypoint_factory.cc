@@ -104,7 +104,7 @@ void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shar
         activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
         waypoint->SetColor(Waypoint::WaypointColor(result_set->getUInt("color")));
             
-        player->AddWaypoint(move(PlayerWaypointSerializer(waypoint)));
+        player->AddWaypoint(waypoint);
     }
 }
 

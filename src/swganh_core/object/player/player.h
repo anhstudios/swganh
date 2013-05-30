@@ -235,16 +235,16 @@ public:
     /**
      * @return The waypoints currently held by the player.
      */
-	std::map<uint64_t, PlayerWaypointSerializer> GetWaypoints() ;
-	std::map<uint64_t, PlayerWaypointSerializer> GetWaypoints(boost::unique_lock<boost::mutex>& lock) ;
+	std::vector<std::shared_ptr<Waypoint>> GetWaypoints() ;
+	std::vector<std::shared_ptr<Waypoint>> GetWaypoints(boost::unique_lock<boost::mutex>& lock) ;
     
     /**
      * Adds a waypoint to the player.
      *
      * @param waypoint The waypoint to add to the player.
      */
-    void AddWaypoint(PlayerWaypointSerializer waypoint);
-	void AddWaypoint(uint64_t way_object_id, PlayerWaypointSerializer waypoint, boost::unique_lock<boost::mutex>& lock);
+    void AddWaypoint(const std::shared_ptr<Waypoint>& waypoint);
+	void AddWaypoint(const std::shared_ptr<Waypoint>& waypoint, boost::unique_lock<boost::mutex>& lock);
     
     /**
      * Removes a waypoint from the player.
@@ -259,7 +259,7 @@ public:
      *
      * @param waypoint The new waypoint data.
      */
-    void ModifyWaypoint(PlayerWaypointSerializer waypoint);
+    void ModifyWaypoint(uint64_t way_object_id);
 	void ModifyWaypoint(uint64_t way_object_id, boost::unique_lock<boost::mutex>& lock);
     
 	void SerializeWaypoints(swganh::messages::BaseSwgMessage* message);
