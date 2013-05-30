@@ -59,7 +59,14 @@ void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
 
 void WaypointFactory::RegisterEventHandlers()
 {
-	GetEventDispatcher()->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    auto event_dispatcher = GetEventDispatcher();
+    event_dispatcher->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    
+    event_dispatcher->Subscribe("LoadWaypoints", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto waypoint_event = static_pointer_cast<WaypointEvent>(incoming_event);
+        LoadWaypoints(waypoint_event->player, waypoint_event->result_set);
+    });
 }
 
 void WaypointFactory::PersistChangedObjects()
