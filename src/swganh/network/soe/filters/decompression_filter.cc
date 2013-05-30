@@ -51,6 +51,7 @@ void DecompressionFilter::Decompress_(ByteBuffer* buffer)
     
     buffer->write_position(offset);
     buffer->write(&decompression_output_[0], zstream_.total_out);
-    
+    buffer->resize(zstream_.total_out + offset);
+
     inflateEnd(&zstream_);
 }
