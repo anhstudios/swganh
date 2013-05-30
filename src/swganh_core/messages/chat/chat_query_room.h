@@ -13,7 +13,7 @@ namespace messages {
     struct ChatQueryRoom : public BaseSwgMessage
     {
     	uint16_t Opcount() const { return 3; }
-    	uint32_t Opcode() const { return 0x92B1F29C; }
+    	uint32_t Opcode() const { return 0x9cf2b192 ; }
 
 		uint32_t request_id;
     	std::string channel_path; // path to the channel, e.g. "swg/server/tatooine/<channel_name>" (presumably exclude channel_name)

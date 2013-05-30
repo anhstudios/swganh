@@ -11,11 +11,19 @@ CREATE PROCEDURE `sp_ChatRoomAdd`(IN in_is_private TINYINT(1), IN in_is_muted TI
 	IN in_name CHAR(50), IN in_creator_id BIGINT(20), IN in_title CHAR(50))
 BEGIN
 
+	DECLARE max_id INT;
+
 	INSERT INTO `chat_rooms` 
 	(`is_private`, `is_muted`, `name`, `creator`, `owner`, `title`) 
 	VALUES (in_is_private, in_is_muted, in_name, in_creator_id, in_creator_id, in_title);
 	
-	SELECT MAX(room_id) FROM chat_rooms;
+	SELECT MAX(room_id) FROM chat_rooms INTO max_id;
+	
+	INSERT INTO `chat_moderators`
+	(`room_id`, `moderator_id`)
+	VALUES (max_id, in_creator_id);
+	
+	SELECT max_id;
 
 END //
 DELIMITER ;

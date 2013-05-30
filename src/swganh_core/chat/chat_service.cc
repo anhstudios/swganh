@@ -31,6 +31,7 @@
 #include "swganh_core/messages/controllers/spatial_chat.h"
 #include "swganh_core/messages/obj_controller_message.h"
 
+#include "swganh_core/messages/chat/chat_ban_avatar.h"
 #include "swganh_core/messages/chat/chat_create_room.h"
 #include "swganh_core/messages/chat/chat_delete_persistent_message.h"
 #include "swganh_core/messages/chat/chat_destroy_room.h"
@@ -38,12 +39,27 @@
 #include "swganh_core/messages/chat/chat_friends_list_update.h"
 #include "swganh_core/messages/chat/chat_instant_message_to_character.h"
 #include "swganh_core/messages/chat/chat_instant_message_to_client.h"
+#include "swganh_core/messages/chat/chat_invite_avatar.h"
+#include "swganh_core/messages/chat/chat_kick_avatar.h"
 #include "swganh_core/messages/chat/chat_leave_room.h"
+#include "swganh_core/messages/chat/chat_moderator_add.h"
+#include "swganh_core/messages/chat/chat_moderator_remove.h"
+#include "swganh_core/messages/chat/chat_on_ban_avatar.h"
+#include "swganh_core/messages/chat/chat_on_connect_avatar.h"
+#include "swganh_core/messages/chat/chat_on_create_room.h"
+#include "swganh_core/messages/chat/chat_on_destroy_room.h"
 #include "swganh_core/messages/chat/chat_on_entered_room.h"
+#include "swganh_core/messages/chat/chat_on_invite_avatar.h"
+#include "swganh_core/messages/chat/chat_on_kick_avatar.h"
 #include "swganh_core/messages/chat/chat_on_leave_room.h"
+#include "swganh_core/messages/chat/chat_on_moderator_add.h"
+#include "swganh_core/messages/chat/chat_on_moderator_remove.h"
+#include "swganh_core/messages/chat/chat_on_receive_room_invitation.h"
 #include "swganh_core/messages/chat/chat_on_send_instant_message.h"
 #include "swganh_core/messages/chat/chat_on_send_persistent_message.h"
 #include "swganh_core/messages/chat/chat_on_send_room_message.h"
+#include "swganh_core/messages/chat/chat_on_unban_avatar.h"
+#include "swganh_core/messages/chat/chat_on_uninvite_avatar.h"
 #include "swganh_core/messages/chat/chat_persistent_message_to_client.h"
 #include "swganh_core/messages/chat/chat_persistent_message_to_server.h"
 #include "swganh_core/messages/chat/chat_query_room.h"
@@ -54,6 +70,8 @@
 #include "swganh_core/messages/chat/chat_room_message.h"
 #include "swganh_core/messages/chat/chat_send_to_room.h"
 #include "swganh_core/messages/chat/chat_server_status.h"
+#include "swganh_core/messages/chat/chat_unban_avatar.h"
+#include "swganh_core/messages/chat/chat_uninvite_avatar.h"
 
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/player/player.h"
@@ -95,6 +113,9 @@ ChatService::ChatService(SwganhKernel* kernel)
     , kernel_(kernel)
 	, galaxy_name_(kernel->GetAppConfig().galaxy_name)
 {
+	//Remove spaces from the galaxy name because that causes problems.
+	galaxy_name_.erase(std::remove(galaxy_name_.begin(), galaxy_name_.end(), ' '), galaxy_name_.end());
+
     SetServiceDescription(ServiceDescription(
         "ChatService",
         "chat",
@@ -183,71 +204,102 @@ void ChatService::Initialize()
 	try 
 	{
 		auto conn = db_manager_->getConnection("galaxy");
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-		statement->execute("CALL sp_LoadChatData();");
+		{
+			auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+			statement->execute("CALL sp_LoadChatData();");
 
-		//Load rooms
-		std::unique_ptr<sql::ResultSet> result(statement->getResultSet());
-		uint32_t count = 0;
-		while(result->next())
-		{
-			++count;
-			auto pair = rooms_.emplace(result->getUInt(1), Room());
-			if(pair.second)
+			//Load rooms
+			std::unique_ptr<sql::ResultSet> result(statement->getResultSet());
+			uint32_t count = 0;
+			while(result->next())
 			{
-				auto& room = pair.first->second;
-				room.id_ = result->getUInt(1);
-				room.is_private_ = (result->getUInt(2)) ? true : false;
-				room.is_muted_ = (result->getUInt(3)) ? true : false;
-				room.name_ = result->getString(4);
-				room.owner_ = result->getUInt64(5);
-				room.creator_ = result->getUInt64(7);
-				room.title_ = result->getString(9);
+				++count;
+				auto pair = rooms_.emplace(result->getUInt(1), Room());
+				if(pair.second)
+				{
+					auto& room = pair.first->second;
+					room.id_ = result->getUInt(1);
+					room.is_private_ = (result->getUInt(2)) ? true : false;
+					room.is_muted_ = (result->getUInt(3)) ? true : false;
+					room.name_ = result->getString(4);
+					room.owner_ = result->getUInt64(5);
+					room.creator_ = result->getUInt64(7);
+					room.title_ = result->getString(9);
+				}
 			}
-		}
 	
-		//Load bans
-		statement->getMoreResults();
-		result.reset(statement->getResultSet());
-		while(result->next())
-		{
-			auto find_itr = rooms_.find(result->getInt(1));
-			if(find_itr != rooms_.end())
+			//Load bans
+			statement->getMoreResults();
+			result.reset(statement->getResultSet());
+			while(result->next())
 			{
-				find_itr->second.banned_users_.insert(result->getUInt64(2));
+				auto find_itr = rooms_.find(result->getInt(1));
+				if(find_itr != rooms_.end())
+				{
+					find_itr->second.banned_users_.insert(result->getUInt64(2));
+				}
 			}
-		}
 	
-		//Load moderators
-		statement->getMoreResults();
-		result.reset(statement->getResultSet());
-		while(result->next())
-		{
-			auto find_itr = rooms_.find(result->getInt(1));
-			if(find_itr != rooms_.end())
+			//Load moderators
+			statement->getMoreResults();
+			result.reset(statement->getResultSet());
+			while(result->next())
 			{
-				find_itr->second.moderators_.insert(result->getUInt64(2));
+				auto find_itr = rooms_.find(result->getInt(1));
+				if(find_itr != rooms_.end())
+				{
+					find_itr->second.moderators_.insert(result->getUInt64(2));
+				}
 			}
-		}
 	
-		while(statement->getMoreResults());
+			while(statement->getMoreResults());
+		}
+
+		auto channelAdder = [&, this] (std::string name) 
+		{
+			if(GetRoomByPath_(name) == nullptr)
+			{
+
+				auto statement = std::unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_ChatRoomAdd(?,?,?,?,?);"));
+				statement->setInt(1, 0);
+				statement->setInt(2, 0);
+				statement->setString(3, name);
+				statement->setUInt64(4, 0);
+				statement->setString(5, "");
+	
+				//If we have a result it was created!
+				std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+				Room room;
+				if(result->next())
+				{
+					room.id_ = result->getInt(1);
+					room.is_private_ = false;
+					room.is_muted_ = false;
+					room.name_ = name;
+					room.title_ = "";
+					room.owner_ = 0;
+					room.creator_ = 0;
+
+					boost::lock_guard<boost::mutex> lock_(room_mutex_);
+					auto insert_itr = rooms_.insert(std::make_pair(room.id_, std::move(room)));
+				}
+			}
+		};
+
+		channelAdder("SWG." + galaxy_name_ + ".Chat");
+
+		for(auto& scene : kernel_->GetAppConfig().scenes)
+		{
+			boost::algorithm::to_lower(scene);
+			channelAdder("SWG." + galaxy_name_ + "." + scene + ".Planet");
+			channelAdder("SWG." + galaxy_name_ + "." + scene + ".Chat");
+		}
 	}
 	catch(sql::SQLException &e) 
 	{
 		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
 		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
 	}
-
-	//Validate all necessary channels exist.
-
-	//CreateChannel("SWG")
-	//CreateChannel("SWG.GALAXY_NAME")
-
-	//CreateChannel("SWG.GALAXY_NAME.group")
-	//CreateChannel("SWG.GALAXY_NAME.guild")
-
-	//CreateChannel("SWG.GALAXY_NAME.PLANET")
-	//CreateChannel("SWG.GALAXY_NAME.PLANET.Chat")
 }
 
 void ChatService::Startup()
@@ -265,12 +317,13 @@ void ChatService::Startup()
 	connection_service->RegisterMessageHandler(&ChatService::_handleLeaveRoom, this);
 	connection_service->RegisterMessageHandler(&ChatService::_handleCreateRoom, this);
 	connection_service->RegisterMessageHandler(&ChatService::_handleDestroyRoom, this);
-	//connection_service->RegisterMessageHandler(&ChatService::_handleBanAvatarFromRoom, this);
-	//connection_service->RegisterMessageHandler(&ChatService::_handleUnbanAvatarFromRoom, this);
-	//connection_service->RegisterMessageHandler(&ChatService::_handleInviteAvatarToRoom, this);
-	//connection_service->RegisterMessageHandler(&ChatService::_handleUninviteAvatarToRoom, this);
-	//connection_service->RegisterMessageHandler(&ChatService::_handleAddModToRoom, this);
-	//connection_service->RegisterMessageHandler(&ChatService::_handleRemoveModFromRoom, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleBanAvatar, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleUnbanAvatar, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleInviteAvatar, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleUninviteAvatar, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleModeratorAdd, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleModeratorRemove, this);
+	connection_service->RegisterMessageHandler(&ChatService::_handleKickAvatar, this);
 	
 	//Spatial
     command_service_->AddCommandCreator<SpatialChatInternalCommand>("spatialchatinternal");
@@ -282,6 +335,12 @@ void ChatService::Startup()
 	    auto& creo_obj = static_pointer_cast<ValueEvent<shared_ptr<Creature>>>(incoming_event)->Get();
         LoadMessageHeaders(creo_obj);
 		HandleFriendsList(creo_obj, 1);
+
+		if(auto controller = creo_obj->GetController())
+		{
+			controller->Notify(&ChatServerStatus(1));
+			controller->Notify(&ChatOnConnectAvatar());
+		}
 	});
 
 	//When a player leaves we need to send messages to all friends
@@ -764,30 +823,13 @@ void ChatService::_handleRequestRoomList(
 			{
 				Room& room = room_pair.second;
 
-				if(room.is_hidden_)
-					continue;
+				room.SerializeBody(room_list.data, galaxy_name_, user_provider_);
 
-				room_list.data.write<uint32_t>(room_pair.first);
-				room_list.data.write<uint32_t>((room.is_private_) ? 1 : 0);
-				room_list.data.write<uint8_t>((room.is_muted_) ? 1 : 0);
-				room_list.data.write<std::string>(room.name_);
-			
-				room_list.data.write<std::string>("SWG");
-				room_list.data.write<std::string>(galaxy_name_);
-				room_list.data.write<std::string>(user_provider_->GetFullNameFromId(room.owner_));
-			
-				room_list.data.write<std::string>("SWG");
-				room_list.data.write<std::string>(galaxy_name_);
-				room_list.data.write<std::string>(user_provider_->GetFullNameFromId(room.creator_));
-			
-				room_list.data.write<std::wstring>(std::wstring(room.title_.begin(), room.title_.end()));
-		
 				//Write out empty lists to save bandwidth (only the result of the Query is displayed.)
 				room_list.data.write<uint32_t>(0);
 				room_list.data.write<uint32_t>(0);
 			}
 		}
-		controller->Notify(&ChatServerStatus(1));
 		controller->Notify(&room_list);
 	}
 }
@@ -801,57 +843,14 @@ void ChatService::_handleQueryRoom(
 	{
 		ChatQueryRoomResponse reply;
 
-		//Write out user list
-		reply.data.write<uint32_t>(room->users_.size());
-		for(auto& entry : room->users_)
-		{
-			reply.data.write<std::string>("SWG");
-			reply.data.write<std::string>(galaxy_name_);
-			reply.data.write<std::string>(user_provider_->GetFirstNameFromId(entry->GetId()));
-		}
-
-		//Write out invited user list
-		reply.data.write<uint32_t>(room->invited_users_.size());
-		for(auto& entry : room->invited_users_)
-		{
-			reply.data.write<std::string>("SWG");
-			reply.data.write<std::string>(galaxy_name_);
-			reply.data.write<std::string>(user_provider_->GetFirstNameFromId(entry));
-		}
-
-		//Write out moderator list
-		reply.data.write<uint32_t>(room->moderators_.size());
-		for(auto& entry : room->moderators_)
-		{
-			reply.data.write<std::string>("SWG");
-			reply.data.write<std::string>(galaxy_name_);
-			reply.data.write<std::string>(user_provider_->GetFirstNameFromId(entry));
-		}
-
-		//Write out ban list
-		reply.data.write<uint32_t>(room->banned_users_.size());
-		for(auto& entry : room->banned_users_)
-		{
-			reply.data.write<std::string>("SWG");
-			reply.data.write<std::string>(galaxy_name_);
-			reply.data.write<std::string>(user_provider_->GetFirstNameFromId(entry));
-		}
+		room->SerializeUsers(reply.data, galaxy_name_, user_provider_);
+		Room::SerializeIdSet(reply.data, galaxy_name_, user_provider_, room->invited_users_);
+		Room::SerializeIdSet(reply.data, galaxy_name_, user_provider_, room->moderators_);
+		Room::SerializeIdSet(reply.data, galaxy_name_, user_provider_, room->banned_users_);
 
 		reply.data.write<uint32_t>(message->request_id);
-		reply.data.write<uint32_t>(room->id_);
-		reply.data.write<uint32_t>((room->is_private_) ? 1 : 0);
-		reply.data.write<uint8_t>((room->is_muted_) ? 1 : 0);
-		reply.data.write<std::string>(message->channel_path);
-
-		reply.data.write<std::string>("SWG");
-		reply.data.write<std::string>(galaxy_name_);
-		reply.data.write<std::string>(user_provider_->GetFirstNameFromId(room->owner_));
-
-		reply.data.write<std::string>("SWG");
-		reply.data.write<std::string>(galaxy_name_);
-		reply.data.write<std::string>(user_provider_->GetFirstNameFromId(room->creator_));
-
-		reply.data.write<std::wstring>(std::wstring(room->title_.begin(), room->title_.end()));
+		
+		room->SerializeBody(reply.data, galaxy_name_, user_provider_);
 
 		//Write empty lists to save bandwidth
 		reply.data.write<uint32_t>(0);
@@ -917,16 +916,16 @@ void ChatService::_handleJoinRoom(
 			reply.success_bitmask = 1; //Failed for unknown reason
 		}
 
-		//If private
-		if(room->is_private_)
+		bool is_invited = room->invited_users_.find(sender_id) != room->invited_users_.end();
+		bool is_admin = (room->moderators_.find(sender_id) != room->moderators_.end()) || (room->owner_ != sender_id);
+
+		if(!is_admin && room->banned_users_.find(sender_id) != room->banned_users_.end())
 		{
-			//Check if (invited || moderator || owner)
-			if((room->invited_users_.find(sender_id) == room->invited_users_.end()) && 
-				(room->moderators_.find(sender_id) == room->moderators_.end()) && 
-				(room->owner_ != sender_id))
-			{
-				reply.success_bitmask = 16; //Cannot join because not invited.
-			}
+			reply.success_bitmask = 16; //Cannot join because not invited.
+		}
+		else if(room->is_private_ && (!(is_invited || is_admin)))
+		{
+			reply.success_bitmask = 16; //Cannot join because not invited.
 		}
 
 		//Send necessary result msg to sender
@@ -940,18 +939,9 @@ void ChatService::_handleJoinRoom(
 		{
 			//Add sender to user list
 			room->users_.insert(client->GetController());
+		}
 
-			//Send On Enter to all users
-			for(auto& user : room->users_)
-			{
-				user->Notify(&reply);
-			}
-		}
-		else
-		{
-			//Send OnEnter to only the user who tried to enter
-			client->GetController()->Notify(&reply);
-		}
+		client->GetController()->Notify(&reply);
 	}
 }
 
@@ -976,17 +966,9 @@ void ChatService::_handleLeaveRoom(
 		if(reply.error == 0)
 		{
 			room->users_.erase(find_itr);
-
-			for(auto& user : room->users_)
-			{
-				user->Notify(&reply);
-			}
-		}
-		else
-		{
-			controller->Notify(&reply);
 		}
 
+		controller->Notify(&reply);
 	}
 }
 
@@ -995,49 +977,152 @@ void ChatService::_handleCreateRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatCreateRoom* message)
 {
+	try
+	{
+		boost::lock_guard<boost::mutex> lock_(room_mutex_);
+		Room* room = GetRoomByPath_(message->channel_path);
+		if(room == nullptr)
+		{
+			uint64_t sender_id = client->GetController()->GetId();
+			auto conn = db_manager_->getConnection("galaxy");
+			auto statement = std::unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_ChatRoomAdd(?,?,?,?,?);"));
+			statement->setInt(1, (message->public_flag == 0) ? 1 : 0);
+			statement->setInt(2, message->moderation_flag);
+			statement->setString(3, message->channel_path);
+			statement->setUInt64(4, sender_id);
+			statement->setString(5, message->channel_title);
+	
+			//If we have a result it was created!
+			std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+			Room room;
+			if(result->next())
+			{
+				room.id_ = result->getInt(1);
+				room.is_private_ = (message->public_flag) ? true : false;
+				room.is_muted_ = (message->moderation_flag) ? true : false;
+				room.name_ = message->channel_path;
+				room.title_ = message->channel_title;
+				room.owner_ = sender_id;
+				room.creator_ = sender_id;
+
+				room.moderators_.insert(room.creator_);
+
+				auto insert_itr = rooms_.insert(std::make_pair(room.id_, std::move(room)));
+
+				Room& r = insert_itr.first->second;
+
+				ChatOnCreateRoom reply;
+				reply.data.write<uint32_t>(0); //Error code
+				
+				r.SerializeBody(reply.data, galaxy_name_, user_provider_);
+	
+				//Empty lists
+				reply.data.write<uint32_t>(0);
+				reply.data.write<uint32_t>(0);
+				reply.data.write<uint32_t>(message->attempts_counter);
+
+				client->GetController()->Notify(&reply);
+			}
+		}
+	}
+	catch(sql::SQLException &e) 
+	{
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
 }
 
 void ChatService::_handleDestroyRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatDestroyRoom* message)
 {
+	try
+	{
+		boost::lock_guard<boost::mutex> lock_(room_mutex_);
+		auto find_itr = rooms_.find(message->channel_id);
+		if(find_itr != rooms_.end())
+		{
+			Room* room = &find_itr->second;
+			auto controller = client->GetController();
+			uint64_t sender_id = controller->GetId();
+
+			if(room->owner_ == sender_id)
+			{
+				//Valid destroy
+				auto conn = db_manager_->getConnection("galaxy");
+				auto statement = std::unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_ChatRoomRemove(?);"));
+				statement->setInt(1, room->id_);
+				statement->execute();
+				
+				ChatOnDestroyRoom reply;
+
+				reply.game_name = "SWG";
+				reply.server_name = galaxy_name_;
+				reply.owner_name = user_provider_->GetFullNameFromId(sender_id);
+				reply.error = 0;
+				reply.channel_id = message->channel_id;
+				reply.request_id = message->attempts_counter;
+				
+				controller->Notify(&reply);
+
+				for(auto& user : room->users_)
+				{
+					user->Notify(&reply);
+				}
+
+				rooms_.erase(find_itr);
+			}
+		}
+	}
+	catch(sql::SQLException &e) 
+	{
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
 }
 
 
 //class Room User Management
-void ChatService::_handleBanAvatarFromRoom(
+void ChatService::_handleBanAvatar(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatBanAvatarFromRoom* message)
+	swganh::messages::ChatBanAvatar* message)
+{
+
+}
+
+void ChatService::_handleUnbanAvatar(
+	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+	swganh::messages::ChatUnbanAvatar* message)
 {
 }
 
-void ChatService::_handleUnbanAvatarFromRoom(
+void ChatService::_handleInviteAvatar(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatUnbanAvatarFromRoom* message)
+	swganh::messages::ChatInviteAvatar* message)
 {
 }
 
-void ChatService::_handleInviteAvatarToRoom(
+void ChatService::_handleUninviteAvatar(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatInviteAvatarToRoom* message)
+	swganh::messages::ChatUninviteAvatar* message)
 {
 }
 
-void ChatService::_handleUninviteAvatarToRoom(
+void ChatService::_handleModeratorAdd(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatUninviteAvatarToRoom* message)
+	swganh::messages::ChatModeratorAdd* message)
 {
 }
 
-void ChatService::_handleAddModToRoom(
+void ChatService::_handleModeratorRemove(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatAddModToRoom* message)
+	swganh::messages::ChatModeratorRemove* message)
 {
 }
 
-void ChatService::_handleRemoveModFromRoom(
+void ChatService::_handleKickAvatar(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-	swganh::messages::ChatRemoveModFromRoom* message)
+	swganh::messages::ChatKickAvatar* message)
 {
 }
 
@@ -1057,14 +1142,48 @@ Room* ChatService::GetRoomByPath_(std::string path)
 
 Room* ChatService::GetRoomById_(uint32_t id)
 {
-	//Linear search sucks, but is probably sufficient given the number of rooms required
-	//We can index by id later if needed.
-	for(auto& room_pair : rooms_)
+	auto find_itr = rooms_.find(id);
+	if(find_itr != rooms_.end())
 	{
-		if(room_pair.second.id_ == id)
-		{
-			return &room_pair.second;
-		}
+		return &find_itr->second;
 	}
 	return nullptr;
+}
+
+void Room::SerializeBody(swganh::ByteBuffer& data, 
+	const std::string& galaxy_name_, 
+	std::shared_ptr<ChatUserProviderInterface>& user_provider_)
+{
+	data.write<uint32_t>(id_);
+	data.write<uint32_t>((is_private_) ? 1 : 0);
+	data.write<uint8_t>((is_muted_) ? 1 : 0);
+	data.write<std::string>(name_);
+
+	SerializeUser(data, galaxy_name_, user_provider_->GetFirstNameFromId(owner_)); 
+	SerializeUser(data, galaxy_name_, user_provider_->GetFirstNameFromId(creator_)); 
+
+	data.write<std::wstring>(std::wstring(title_.begin(), title_.end()));
+}
+
+void Room::SerializeUsers(swganh::ByteBuffer& data, 
+	const std::string& galaxy_name_, 
+	std::shared_ptr<ChatUserProviderInterface>& user_provider_)
+{
+	data.write<uint32_t>(users_.size());
+	for(auto& user : users_)
+	{
+		SerializeUser(data, galaxy_name_, user_provider_->GetFirstNameFromId(user->GetId())); 
+	}
+}
+
+void Room::SerializeIdSet(swganh::ByteBuffer& data,
+	const std::string& galaxy_name_,
+	std::shared_ptr<ChatUserProviderInterface>& user_provider_,
+	const std::set<uint64_t>& data_set)
+{
+	data.write<uint32_t>(data_set.size());
+	for(const auto& id : data_set)
+	{
+		SerializeUser(data, galaxy_name_, user_provider_->GetFirstNameFromId(id));
+	}
 }

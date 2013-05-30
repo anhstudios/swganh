@@ -49,12 +49,13 @@ namespace messages
 	struct ChatDestroyRoom;
 
 	//class Room User Management
-	struct ChatBanAvatarFromRoom;
-	struct ChatUnbanAvatarFromRoom;
-	struct ChatInviteAvatarToRoom;
-	struct ChatUninviteAvatarToRoom;
-	struct ChatAddModToRoom;
-	struct ChatRemoveModFromRoom;
+	struct ChatBanAvatar;
+	struct ChatUnbanAvatar;
+	struct ChatInviteAvatar;
+	struct ChatUninviteAvatar;
+	struct ChatModeratorAdd;
+	struct ChatModeratorRemove;
+	struct ChatKickAvatar;
 
 	//Chat Room Ownership Management
 }
@@ -231,29 +232,33 @@ private:
 
 
 	//class Room User Management
-	void _handleBanAvatarFromRoom(
+	void _handleBanAvatar(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatBanAvatarFromRoom* message);
+		swganh::messages::ChatBanAvatar* message);
 
-	void _handleUnbanAvatarFromRoom(
+	void _handleUnbanAvatar(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatUnbanAvatarFromRoom* message);
+		swganh::messages::ChatUnbanAvatar* message);
 
-	void _handleInviteAvatarToRoom(
+	void _handleInviteAvatar(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatInviteAvatarToRoom* message);
+		swganh::messages::ChatInviteAvatar* message);
 
-	void _handleUninviteAvatarToRoom(
+	void _handleUninviteAvatar(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatUninviteAvatarToRoom* message);
+		swganh::messages::ChatUninviteAvatar* message);
 
-	void _handleAddModToRoom(
+	void _handleModeratorAdd(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatAddModToRoom* message);
+		swganh::messages::ChatModeratorAdd* message);
 
-	void _handleRemoveModFromRoom(
+	void _handleModeratorRemove(
 		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
-		swganh::messages::ChatRemoveModFromRoom* message);
+		swganh::messages::ChatModeratorRemove* message);
+
+	void _handleKickAvatar(
+		const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
+		swganh::messages::ChatKickAvatar* message);
 
 	const Room* GetRoomByPath(std::string path);
 	Room* GetRoomByPath_(std::string path);
@@ -264,13 +269,12 @@ private:
     swganh::simulation::SimulationServiceInterface* simulation_service_;
 	swganh::equipment::EquipmentServiceInterface* equipment_service_;
 
-
     swganh::app::SwganhKernel* kernel_;
 	std::shared_ptr<ChatUserProviderInterface> user_provider_;
 
 	mutable boost::mutex room_mutex_;
 	std::string galaxy_name_;
-	std::map<uint32_t, Room> rooms_, hidden_rooms_;
+	std::map<uint32_t, Room> rooms_;
 
 	std::map<uint64_t, std::set<std::shared_ptr<swganh::observer::ObserverInterface>>> player_observers_;
 	std::map<uint64_t, std::shared_ptr<swganh::observer::ObserverInterface>> online_players_;

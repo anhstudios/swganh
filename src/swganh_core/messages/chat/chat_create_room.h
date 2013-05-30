@@ -19,7 +19,7 @@ namespace messages {
     	uint8_t moderation_flag; // 0 = unmoderated, 1 = moderated
     	uint16_t unknown;
     	std::string channel_path; // path to the channel, e.g. "swg/<server>/tatooine/<channel_name>"
-    	std::string channel_name;
+    	std::string channel_title;
     	uint32_t attempts_counter;
 
     	void OnSerialize(swganh::ByteBuffer& buffer) const
@@ -28,7 +28,7 @@ namespace messages {
     		buffer.write(moderation_flag);
     		buffer.write(unknown);
     		buffer.write(channel_path);
-    		buffer.write(channel_name);
+    		buffer.write(channel_title);
     		buffer.write(attempts_counter);
     	}
 
@@ -38,7 +38,7 @@ namespace messages {
     		moderation_flag = buffer.read<uint8_t>();
     		unknown = buffer.read<uint16_t>();
     		channel_path = buffer.read<std::string>();
-    		channel_name = buffer.read<std::string>();
+    		channel_title = buffer.read<std::string>();
     		attempts_counter = buffer.read<uint32_t>();
     	}
     };
