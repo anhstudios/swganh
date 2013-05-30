@@ -62,15 +62,6 @@ public:
 	void SetCoordinates(const glm::vec3& coords, boost::unique_lock<boost::mutex>& lock);
 
     /**
-    * @brief sets the coordinates of the waypoint
-    *   @param float x, x coordinate
-    *   @param float y, y coordinate
-    *   @param float z, z coordinate
-    */
-    void SetCoordinates(float x, float y, float z);
-	void SetCoordinates(float x, float y, float z, boost::unique_lock<boost::mutex>& lock);
-
-    /**
     * @brief checks if the waypoint is activated
     *   @returns true if the waypoint is activated
     */
