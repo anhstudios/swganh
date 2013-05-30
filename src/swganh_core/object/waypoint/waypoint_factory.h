@@ -3,16 +3,9 @@
 #pragma once
 
 #include "swganh_core/object/intangible/intangible_factory.h"
-#include <unordered_map>
-
-namespace swganh {
-namespace database {
-class DatabaseManagerInterface;
-}} // swganh::database
 
 namespace swganh {
 namespace object {
-	class Player; 
     class Waypoint;
     class WaypointFactory : public swganh::object::IntangibleFactory
     {
@@ -30,8 +23,6 @@ namespace object {
         virtual void PersistChangedObjects();
 
         std::shared_ptr<swganh::object::Object> CreateObject();
-
-        void LoadWaypoints(const std::shared_ptr<swganh::object::Player>& player, const std::shared_ptr<sql::ResultSet> result_set);
 
         virtual void RegisterEventHandlers();
     };
