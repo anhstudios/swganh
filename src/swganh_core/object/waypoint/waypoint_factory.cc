@@ -52,7 +52,7 @@ void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
         while (result->next())
         {
             result->getUInt("active") == 0 ? waypoint->DeActivate(lock) : waypoint->Activate(lock);
-            waypoint->SetColor(result->getString("color"), lock);
+            waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")), lock);
         }
     } while(statement->getMoreResults());
 }
@@ -95,7 +95,7 @@ void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shar
         waypoint->SetName(wstring(begin(custom_string), end(custom_string)));
         uint16_t activated = result_set->getUInt("active");
         activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
-        waypoint->SetColorByte(result_set->getUInt("color"));
+        waypoint->SetColor(Waypoint::WaypointColor(result_set->getUInt("color")));
             
         player->AddWaypoint(move(PlayerWaypointSerializer(waypoint)));
     }
@@ -130,7 +130,7 @@ uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, boost:
             statement->setUInt(counter++, waypoint->GetActiveFlag(lock));
             statement->setString(counter++, waypoint->GetPlanet(lock));
             statement->setString(counter++, waypoint->GetNameStandard(lock));
-            statement->setString(counter++, waypoint->GetColor(lock));
+            statement->setUInt(counter++, waypoint->GetColor(lock));
             statement->execute();
 						
         }

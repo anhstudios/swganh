@@ -15,10 +15,10 @@ Waypoint::Waypoint()
     , location_network_id_(0)
     , planet_name_("")
     , name_(L"")
-    , color_("")
+    , color_(BLUE)
 {
 }
-Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, const wstring& name, const string& color)
+Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, const wstring& name, WaypointColor color)
     : coordinates_(coordinates)
     , planet_name_(planet)
     , name_(name)
@@ -73,63 +73,50 @@ void Waypoint::SetPlanet(const string& planet_name, boost::unique_lock<boost::mu
 	DISPATCH(Waypoint, Planet);
 }
 
-uint8_t Waypoint::GetColorByte() { return GetColorByte(AcquireLock()); }
-uint8_t Waypoint::GetColorByte(boost::unique_lock<boost::mutex>& lock)
+Waypoint::WaypointColor Waypoint::GetColor() { return GetColor(AcquireLock()); }
+Waypoint::WaypointColor Waypoint::GetColor(boost::unique_lock<boost::mutex>& lock)
 {
-
-    if (color_.compare("blue") != 0)
-        return 1;
-    else if (color_.compare("green") != 0)
-        return 2;
-    else if (color_.compare("orange") != 0)
-        return 3;
-    else if (color_.compare("yellow") != 0)
-        return 4;
-    else if (color_.compare("purple") != 0)
-        return 5;
-    else if (color_.compare("white") != 0)
-        return 6;
-    else if (color_.compare("space") != 0)
-        return 7;
-    // default
-    else
-        return 1;
+    return WaypointColor(static_cast<uint8_t>(color_));
 }
 
-void Waypoint::SetColor(const string& color) { SetColor(color, AcquireLock()); }
-void Waypoint::SetColor(const string& color, boost::unique_lock<boost::mutex>& lock)
-{
-	color_ = color;
-	DISPATCH(Waypoint, Color);
-}
 
-void Waypoint::SetColorByte(uint8_t color_byte) { SetColorByte(color_byte, AcquireLock()); }
-void Waypoint::SetColorByte(uint8_t color_byte, boost::unique_lock<boost::mutex>& lock)
+std::string Waypoint::GetColorString() { return GetColorString(AcquireLock()); }
+std::string Waypoint::GetColorString(boost::unique_lock<boost::mutex>& lock)
 {
-	switch (color_byte)
+    std::string color;
+
+    switch(color_)
     {
-    case 1:
-        SetColor("blue", lock);
+    case BLUE:
+        color = "blue";
         break;
-    case 2:
-        SetColor("green", lock);
+    case GREEN:
+        color = "green";
         break;
-    case 3:
-        SetColor("orange", lock);
+    case ORANGE:
+        color = "orange";
         break;
-    case 4:
-        SetColor("yellow", lock);
+    case YELLOW:
+        color = "yellow";
         break;
-    case 5:
-        SetColor("white", lock);
+    case PURPLE:
+        color = "purple";
         break;
-    case 6:
-        SetColor("space", lock);
+    case WHITE:
+        color = "white";
         break;
-    default:
-        SetColor("blue", lock);
+    case SPACE:
+        color = "space";
         break;
     }
+
+    return color;
+}
+
+void Waypoint::SetColor(WaypointColor color_byte) { SetColor(color_byte, AcquireLock()); }
+void Waypoint::SetColor(WaypointColor color_byte, boost::unique_lock<boost::mutex>& lock)
+{
+    color_ = color_byte;
 }
 
 void Waypoint::SetName(const std::wstring& name) { SetName(name, AcquireLock()); }
@@ -167,10 +154,4 @@ std::string Waypoint::GetNameStandard() { return GetNameStandard(AcquireLock());
 std::string Waypoint::GetNameStandard(boost::unique_lock<boost::mutex>& lock) 
 { 
 	return std::string(std::begin(name_), std::end(name_)); 
-}
-
-const std::string& Waypoint::GetColor() { return GetColor(AcquireLock()); }
-const std::string& Waypoint::GetColor(boost::unique_lock<boost::mutex>& lock) 
-{ 
-	return color_; 
 }
