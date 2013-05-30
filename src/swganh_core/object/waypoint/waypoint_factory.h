@@ -2,6 +2,9 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include <glm/glm.hpp>
+
+#include "swganh_core/object/waypoint/waypoint.h"
 #include "swganh_core/object/intangible/intangible_factory.h"
 
 namespace swganh {
@@ -22,7 +25,14 @@ namespace object {
 		
         virtual void PersistChangedObjects();
 
-        std::shared_ptr<swganh::object::Object> CreateObject();
+        std::shared_ptr<swganh::object::Object> CreateObject();        
+        std::shared_ptr<Waypoint> CreateWaypointInStorage(
+            const std::shared_ptr<Object>& owner,
+            const std::string& name,
+            const glm::vec3& coordinates,
+            const std::string& planet,
+            Waypoint::WaypointColor color = Waypoint::WHITE,
+            bool activated = true);
 
         virtual void RegisterEventHandlers();
     };

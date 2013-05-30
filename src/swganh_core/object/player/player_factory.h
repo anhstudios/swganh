@@ -55,7 +55,6 @@ namespace object {
         void RemoveFriend_(const std::shared_ptr<Player>& player, uint64_t friend_id);
         void RemoveFromIgnoredList_(const std::shared_ptr<Player>& player, uint64_t ignore_player_id);
         void PersistIgnoredList_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
-        
         void LoadStatusFlags_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void LoadProfileFlags_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void LoadBadges_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);

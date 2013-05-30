@@ -599,12 +599,12 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
             auto waypoint = std::make_shared<Waypoint>();
             waypoint->SetObjectId(result->getUInt64("id"));
             waypoint->SetCoordinates( glm::vec3(
-                result->getDouble("x_position"),
-                result->getDouble("y_position"),
-                result->getDouble("z_position"))
+                result->getDouble("x_coordinate"),
+                result->getDouble("y_coordinate"),
+                result->getDouble("z_coordinate"))
                 );
-            waypoint->SetLocationNetworkId(result->getUInt("scene_id"));
-            string custom_string = result->getString("custom_name");
+            //waypoint->SetLocationNetworkId(result->getUInt("scene_id"));
+            string custom_string = result->getString("name");
             waypoint->SetName(wstring(begin(custom_string), end(custom_string)));
             uint16_t activated = result->getUInt("is_active");
             activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
@@ -614,6 +614,36 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
             player->AddWaypoint(waypoint);
         }
     } while(statement->getMoreResults());
+}
+
+void PlayerFactory::PersistWaypoints_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock)
+{
+    try
+    {
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
+        auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?);");
+
+        for (auto& waypoint : player->GetWaypoints(lock))
+        {
+            statement->setUInt64(1, waypoint->GetObjectId());
+            statement->setUInt64(2, waypoint->GetContainer()->GetObjectId());
+            auto coords = waypoint->GetCoordinates();
+            statement->setDouble(3, coords.x);
+            statement->setDouble(4, coords.y);
+            statement->setDouble(5, coords.z);
+            statement->setUInt(6, waypoint->GetActiveFlag());
+            statement->setString(7, waypoint->GetPlanet());
+            statement->setString(8, waypoint->GetNameStandard());
+            statement->setUInt(9, waypoint->GetColor());
+
+            statement->execute();	
+        }
+    }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
 
 void PlayerFactory::LoadXP_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player,
