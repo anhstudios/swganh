@@ -11,10 +11,12 @@
 #include "swganh_core/object/player/player_binding.h"
 #include "swganh_core/object/guild/guild_binding.h"
 #include "swganh_core/object/tangible/tangible_binding.h"
+#include "swganh_core/object/intangible/intangible_binding.h"
+#include "swganh_core/object/waypoint/waypoint_binding.h"
 #include "swganh_core/object/object_controller_binding.h"
 #include "swganh_core/object/template_binding.h"
 
-BOOST_PYTHON_MODULE(py_object) 
+BOOST_PYTHON_MODULE(py_object)
 {
     docstring_options local_docstring_options(true, true, false);
 
@@ -23,6 +25,8 @@ BOOST_PYTHON_MODULE(py_object)
     exportCreature();
     exportPlayer();
 	exportWeapon();
+    exportIntangible();
+    exportWaypoint();
     exportObjectController();
     exportOutOfBand();
 	exportObjectTemplate();

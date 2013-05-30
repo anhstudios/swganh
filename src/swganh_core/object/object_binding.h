@@ -251,10 +251,6 @@ void exportObject()
 		.def(bp::vector_indexing_suite<std::vector<int>>());
 
 	class_<Cell, bases<Object>, std::shared_ptr<Cell>, boost::noncopyable>("Cell");
-	class_<Intangible, bases<Object>, std::shared_ptr<Intangible>, boost::noncopyable>("Intangible");
-
-	implicitly_convertible<std::shared_ptr<Intangible>, std::shared_ptr<Object>>();
-	implicitly_convertible<std::shared_ptr<Intangible>, std::shared_ptr<ContainerInterface>>();
 	
 	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<Object>>();
 	implicitly_convertible<std::shared_ptr<Cell>, std::shared_ptr<Intangible>>();
