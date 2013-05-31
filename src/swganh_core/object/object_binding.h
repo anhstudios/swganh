@@ -7,9 +7,7 @@
 #endif
 #include "swganh/scripting/python_shared_ptr.h"
 
-#include "swganh_core/object/object.h"
-#include "swganh_core/object/cell/cell.h"
-#include "swganh_core/object/intangible/intangible.h"
+#include "swganh_core/object/objects.h"
 #include "swganh_core/object/object_controller_binding.h"
 #include "swganh_core/object/permissions/container_permissions_interface.h"
 
@@ -149,6 +147,16 @@ std::shared_ptr<swganh::object::Creature> ToCreature(std::shared_ptr<swganh::obj
 {
 	return static_pointer_cast<swganh::object::Creature>(obj);
 }
+        
+template<typename T>
+std::shared_ptr<T> CastBaseToDerived(std::shared_ptr<swganh::object::Object> obj)
+{
+#ifdef _DEBUG
+    return std::dynamic_pointer_cast<T>(obj);
+#else
+    return std::static_pointer_cast<T>(obj);
+#endif
+}
 
 struct ProsePackageWrapper : ProsePackage, wrapper<ProsePackage>
 {
@@ -245,6 +253,23 @@ void exportObject()
 		.def("toCreature", ToCreature)
 		.def("rangeTo", &Object::RangeTo, "Gets the range from the object to the given target")
 		.def("updatePosition", UpdatePosition, UpdatePosOverload(args("self", "position", "orientation", "parent"),"Updates the position and sends an update to the player"))
+        
+        .def("castToBuilding", CastBaseToDerived<Building>, "Casts to a building object")
+        .def("castToCell", CastBaseToDerived<Cell>, "Casts to a cell object")
+        .def("castToCreature", CastBaseToDerived<Creature>, "Casts to a creature object")
+        .def("castToFactoryCrate", CastBaseToDerived<FactoryCrate>, "Casts to a factory crate object")
+        .def("castToGroup", CastBaseToDerived<Group>, "Casts to a group object")
+        .def("castToGuild", CastBaseToDerived<Guild>, "Casts to a guild object")
+        .def("castToHarvesterInstallation", CastBaseToDerived<HarvesterInstallation>, "Casts to a harvester installation object")
+        .def("castToIntangible", CastBaseToDerived<Intangible>, "Casts to an intangible object")
+        .def("castToManufactureSchematic", CastBaseToDerived<ManufactureSchematic>, "Casts to a manufacture schematic object")
+        .def("castToMission", CastBaseToDerived<Mission>, "Casts to a mission object")
+        .def("castToPlayer", CastBaseToDerived<Player>, "Casts to a player object")
+        .def("castToResourceContainer", CastBaseToDerived<ResourceContainer>, "Casts to a resource container object")
+        .def("castToShip", CastBaseToDerived<Ship>, "Casts to a ship object")
+        .def("castToStatic", CastBaseToDerived<Static>, "Casts to a static object")
+        .def("castToTangible", CastBaseToDerived<Tangible>, "Casts to a tangible object")
+        .def("castToWeapon", CastBaseToDerived<Weapon>, "Casts to a weapon object")
 		;
 
 	bp::class_<std::vector<int>>("IntVector")
