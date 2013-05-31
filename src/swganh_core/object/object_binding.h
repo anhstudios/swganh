@@ -269,6 +269,7 @@ void exportObject()
         .def("castToShip", CastBaseToDerived<Ship>, "Casts to a ship object")
         .def("castToStatic", CastBaseToDerived<Static>, "Casts to a static object")
         .def("castToTangible", CastBaseToDerived<Tangible>, "Casts to a tangible object")
+        .def("castToWaypoint", CastBaseToDerived<Waypoint>, "Casts to a waypoint object")
         .def("castToWeapon", CastBaseToDerived<Weapon>, "Casts to a weapon object")
 		;
 
