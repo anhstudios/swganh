@@ -13,7 +13,7 @@
 -- Dumping structure for table galaxy.waypoint
 DROP TABLE IF EXISTS `waypoint`;
 CREATE TABLE IF NOT EXISTS `waypoint` (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `owner_id` bigint(20) DEFAULT NULL,
   `x_coordinate` double NOT NULL,
   `y_coordinate` double NOT NULL,
