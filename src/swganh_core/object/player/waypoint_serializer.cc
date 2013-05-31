@@ -8,6 +8,7 @@ using namespace swganh::object;
 
 void PlayerWaypointSerializer::SerializeBaseline(swganh::ByteBuffer& data, const PlayerWaypointSerializer& t)
 {
+    data.write<uint8_t>(0);
     data.write<uint64_t>(t.waypoint->GetObjectId());
     data.write<uint32_t>(0);
     auto coordinates_ = t.waypoint->GetCoordinates();
@@ -24,6 +25,7 @@ void PlayerWaypointSerializer::SerializeBaseline(swganh::ByteBuffer& data, const
 
 void PlayerWaypointSerializer::SerializeDelta(swganh::ByteBuffer& data, const PlayerWaypointSerializer& t)
 {
+    data.write<uint64_t>(t.waypoint->GetObjectId());
     data.write<uint32_t>(0);
     auto coordinates_ = t.waypoint->GetCoordinates();
     data.write<float>(coordinates_.x);
