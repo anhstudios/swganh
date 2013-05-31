@@ -39,12 +39,61 @@ namespace chat {
             const std::wstring& subject, 
             const std::wstring& message) = 0;
 
+		/*!
+		* Sends a spatial chat message
+		* @param actor the speaker
+		* @param target the target
+		* @param chat_message the message
+		* @param chat_type the type of chat
+		* @param mood the mood used
+		*/
         virtual void SendSpatialChat(
 		    const std::shared_ptr<swganh::object::Object>& actor, // creature object
 		    const std::shared_ptr<swganh::object::Object>& target,	// target object
             std::wstring chat_message,
             uint16_t chat_type,
             uint16_t mood) = 0;
+
+		/*!
+		* Creates a new room with the given information, if possible.
+		* @param room_path the full path to the new room, e.g. "SWG.[GALAXY NAME].Chat.myNewChatChannel"
+		* @param room_title the title of the new room
+		* @param owner_id_ the id of the room's owner, or 0 if SYSTEM
+		* @param creator_id_ the id of the room's creator, or 0 if SYSTEM
+		* @param is_private_ true if the channel requires an invitation to enter
+		* @param is_muted_ true if only moderators can speak on the channel.
+		* @return the id of the new channel if the channel was created, or 0
+		*/
+		virtual uint32_t CreateRoom(const std::string& room_path, const std::string& room_title,
+			uint64_t owner_id_, uint64_t creator_id_,
+			bool is_private_, bool is_muted_) = 0;
+
+		/*!
+		* Destroys any room with the given path
+		* @param room_path the path to the channel to destroy, e.g. "SWG.[GALAXY NAME].Chat.myOldChatChannel"
+		*/
+		virtual void DestroyRoom(const std::string& room_path) = 0;
+
+		/*!
+		* Forces a user to join a channel.
+		* @param actor the user to force join
+		* @param room_path the room to join the user into
+		*/
+		virtual void ForceJoin(const std::shared_ptr<swganh::object::Object>& actor, const std::string& room_path) = 0;
+	
+		/*!
+		* Forces a user to leave the channel. In other words, a "silent kick"
+		* @param actor the user to kick
+		* @param room_path the room to kick the user from
+		*/
+		virtual void ForceLeave(const std::shared_ptr<swganh::object::Object>& actor, const std::string& room_path) = 0;
+
+		/*!
+		* Looks up a player with the given custom name and returns his creature's object id.
+		* @param custom_name the name of the player to lookup
+		* @return the id of the player or 0 if he does not exist
+		*/
+		virtual uint64_t GetObjectIdByCustomName(const std::string& custom_name) = 0;
 
     };
 

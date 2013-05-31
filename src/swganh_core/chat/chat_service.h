@@ -91,27 +91,29 @@ public:
         const std::wstring& subject, 
         const std::wstring& message);
 		
-	/**
-	* Sends a spatial chat message
-	* @param actor the speaker
-	* @param target the target
-	* @param chat_message the message
-	* @param chat_type the type of chat
-	* @param mood the mood used
-	*/
     void SendSpatialChat(
-		const std::shared_ptr<swganh::object::Object>& actor, // creature object
-		const std::shared_ptr<swganh::object::Object>& target,	// target object
+		const std::shared_ptr<swganh::object::Object>& actor,
+		const std::shared_ptr<swganh::object::Object>& target,
         std::wstring chat_message,
         uint16_t chat_type,
         uint16_t mood);
 
+	uint32_t CreateRoom(const std::string& room_path, const std::string& room_title,
+		uint64_t owner_id_, uint64_t creator_id_,
+		bool is_private_, bool is_muted_);
+
+	void DestroyRoom(const std::string& room_path);
+
+	void ForceJoin(const std::shared_ptr<swganh::object::Object>& actor, const std::string& room_path);
 	
+	void ForceLeave(const std::shared_ptr<swganh::object::Object>& actor, const std::string& room_path);
+
+	uint64_t GetObjectIdByCustomName(const std::string& custom_name);
 
 	void Initialize();
     void Startup();
 
-    uint64_t GetObjectIdByCustomName(const std::string& custom_name);
+    
 
 private:
 

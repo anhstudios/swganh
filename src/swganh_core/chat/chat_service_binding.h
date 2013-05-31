@@ -35,5 +35,11 @@ void exportChatService()
             const std::wstring& subject, 
             const std::wstring& message)>(&ChatServiceInterface::SendPersistentMessage),
             "Send a persistent message without attachments")
-        ;
+		
+		.def("getObjectIdByName", &ChatServiceInterface::GetObjectIdByCustomName, "Looks up the id of a player's creature by his name.")
+		.def("createRoom", &ChatServiceInterface::CreateRoom, "Creates a new room")
+		.def("destroyRoom", &ChatServiceInterface::DestroyRoom, "Destroys a room")
+		.def("forceJoinRoom", &ChatServiceInterface::ForceJoin, "Forces a player to join a channel.")
+		.def("forceLeaveRoom", &ChatServiceInterface::ForceLeave, "Forces a player from a channel.")
+		;
 }
