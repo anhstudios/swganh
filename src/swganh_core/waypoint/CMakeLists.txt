@@ -1,52 +1,17 @@
-include(ANHPlugin)
+include(ANHPythonBinding)
 
-set(ANH_PYTHON_BINDINGS "")
-
-add_subdirectory(attributes)
-add_subdirectory(badge)
-add_subdirectory(chat)
-add_subdirectory(command)
-add_subdirectory(combat)
-add_subdirectory(equipment)
-add_subdirectory(map)
-add_subdirectory(object)
-add_subdirectory(player)
-add_subdirectory(social)
-add_subdirectory(simulation)
-add_subdirectory(static)
-add_subdirectory(sui)
-add_subdirectory(terrain)
-add_subdirectory(travel)
-add_subdirectory(waypoint)
-add_subdirectory(weather)
-
-add_custom_target(
-    swgpy ALL
-    DEPENDS
-        swgpy_app swgpy_command swgpy_chat swgpy_combat swgpy_object swgpy_social swgpy_simulation swgpy_utility swgpy_waypoint
-    COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
-    VERBATIM
-)
-set_target_properties(swgpy
-    PROPERTIES
-    FOLDER "cmake_targets"
-)
-
-set_target_properties(swgpy
-    PROPERTIES
-    FOLDER "cmake_targets"
-)
-
-AddANHPlugin(swganh_core
+AddANHPythonBinding(waypoint
+	PREFIX_NAME swgpy
     DEPENDS
         swganh_lib
+        swganh_core_lib
     ADDITIONAL_INCLUDE_DIRS
-	    ${Boost_INCLUDE_DIR}
-	    ${MYSQL_INCLUDE_DIR}
-        ${MYSQLCONNECTORCPP_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
-		${PYTHON_INCLUDE_DIR}
+        ${MYSQL_INCLUDE_DIR}
+        ${MYSQLCONNECTORCPP_INCLUDE_DIRS}
+        ${PYTHON_INCLUDE_DIR}
+        ${TBB_INCLUDE_DIRS}
         ${ZLIB_INCLUDE_DIR}
     ADDITIONAL_LIBRARY_DIRS
         ${Boost_LIBRARY_DIRS}
@@ -54,7 +19,6 @@ AddANHPlugin(swganh_core
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
         ${Boost_LOG_LIBRARY_DEBUG}
-        ${Boost_LOG_SETUP_LIBRARY_DEBUG}
         ${Boost_FILESYSTEM_LIBRARY_DEBUG}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG}
         ${Boost_PYTHON3_LIBRARY_DEBUG}
@@ -64,13 +28,12 @@ AddANHPlugin(swganh_core
         ${MYSQL_LIBRARY_DEBUG}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
         ${PYTHON_LIBRARY}
-        ${TBB_LIBRARIES}
+        ${TBB_DEBUG_LIBRARIES}
         ${ZLIB_LIBRARY_DEBUG}
     OPTIMIZED_LIBRARIES
         ${Boost_CHRONO_LIBRARY_RELEASE}
         ${Boost_DATE_TIME_LIBRARY_RELEASE}
         ${Boost_LOG_LIBRARY_RELEASE}
-        ${Boost_LOG_SETUP_LIBRARY_RELEASE}
         ${Boost_FILESYSTEM_LIBRARY_RELEASE}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}
         ${Boost_PYTHON3_LIBRARY_RELEASE}

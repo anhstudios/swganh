@@ -8,6 +8,7 @@ from swgpy.command import BaseSwgCommand
 class WaypointCommand(BaseSwgCommand):
     def run(self):
         simulation = self.getKernel().serviceManager().simulationService()
+        waypoint_service = self.getKernel().serviceManager().waypointService()
         actor = self.getActor()
 
         digits = re.findall(r'\-?\d+(?:\.\d*)?', self.getCommandString())
@@ -28,11 +29,10 @@ class WaypointCommand(BaseSwgCommand):
             SystemMessage.sendSystemMessage(actor, "[SYNTAX] /waypoint <x> <z> or /waypoint <x> <y> <z>", True, False)
             return
 
-        waypoint = Waypoint()
+        planet = simulation.getSceneName(actor.scene_id)
 
-        waypoint.setCoordinates(waypoint_position)
-        waypoint.setPlanet(simulation.getSceneName(actor.scene_id))
-        waypoint.activate()
+        waypoint = waypoint_service.createWaypoint(
+            actor, "", waypoint_position, planet, WaypointColor.WHITE, True)
 
         player = self.getKernel().serviceManager().equipmentService().getPlayerObject(actor)
         player.addWaypoint(waypoint)
