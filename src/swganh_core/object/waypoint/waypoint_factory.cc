@@ -33,13 +33,7 @@ WaypointFactory::WaypointFactory(swganh::app::SwganhKernel* kernel)
 
 void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
-    IntangibleFactory::LoadFromStorage(connection, object, lock);
-
-    auto waypoint = std::dynamic_pointer_cast<Waypoint>(object);
-    if(!waypoint)
-    {
-        throw InvalidObject("Object requested for loading is not Intangible");
-    }
+    auto waypoint = std::static_pointer_cast<Waypoint>(object);
 
     auto statement = std::shared_ptr<sql::PreparedStatement>
         (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
@@ -51,6 +45,19 @@ void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     {
         while (result->next())
         {
+            waypoint->SetCoordinates( glm::vec3(
+                result->getDouble("x_coordinate"),
+                result->getDouble("y_coordinate"),
+                result->getDouble("z_coordinate"))
+                );
+            //waypoint->SetLocationNetworkId(result->getUInt("scene_id"));
+            string custom_string = result->getString("name");
+            waypoint->SetName(wstring(begin(custom_string), end(custom_string)));
+            uint16_t activated = result->getUInt("is_active");
+            activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
+            waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")));
+            waypoint->SetPlanet(result->getString("planet"));
+
             result->getUInt("active") == 0 ? waypoint->DeActivate(lock) : waypoint->Activate(lock);
             waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")), lock);
         }
@@ -61,6 +68,9 @@ void WaypointFactory::RegisterEventHandlers()
 {
     auto event_dispatcher = GetEventDispatcher();
     event_dispatcher->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Waypoint::Activated", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Waypoint::Coordinates", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Waypoint::Name", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
 }
 
 void WaypointFactory::PersistChangedObjects()
@@ -84,8 +94,6 @@ uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, boost:
 {
 	uint32_t counter = 1;
 	
-    IntangibleFactory::PersistObject(object, lock, persist_inherited);
-
     if (object)
     {
         try 
