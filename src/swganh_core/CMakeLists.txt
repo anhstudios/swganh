@@ -17,13 +17,12 @@ add_subdirectory(static)
 add_subdirectory(sui)
 add_subdirectory(terrain)
 add_subdirectory(travel)
-add_subdirectory(waypoint)
 add_subdirectory(weather)
 
 add_custom_target(
     swgpy ALL
     DEPENDS
-        swgpy_app swgpy_command swgpy_chat swgpy_combat swgpy_object swgpy_social swgpy_simulation swgpy_utility swgpy_waypoint
+        swgpy_app swgpy_command swgpy_chat swgpy_combat swgpy_object swgpy_social swgpy_simulation swgpy_utility
     COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
     VERBATIM

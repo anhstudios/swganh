@@ -23,7 +23,6 @@
 #include "swganh_core/sui/sui_service_interface.h"
 #include "swganh_core/terrain/terrain_service_interface.h"
 #include "swganh_core/equipment/equipment_service_interface.h"
-#include "swganh_core/waypoint/waypoint_service_interface.h"
 #include "swganh_core/weather/weather_service_interface.h"
 #include "swganh_core/simulation/spatial_provider_interface.h"
 #include "swganh_core/player/player_service_interface.h"
@@ -126,11 +125,6 @@ void exportSWGANHKernel()
 				return_value_policy<reference_existing_object>(),
 				boost::mpl::vector<swganh::travel::TravelServiceInterface*, swganh::service::ServiceManager*>()),
 				"returns an internal reference of the :class:.`TravelService`")
-		.def("waypointService", make_function(
-				std::bind(&swganh::service::ServiceManager::GetService<swganh::waypoint::WaypointServiceInterface>, std::placeholders::_1, "WaypointService"),
-				return_value_policy<reference_existing_object>(),
-				boost::mpl::vector<swganh::waypoint::WaypointServiceInterface*, swganh::service::ServiceManager*>()),
-				"returns an internal reference of the :class:`.WaypointService`")
        ;
        
 }

@@ -12,7 +12,6 @@ class WaypointCommand(BaseSwgCommand):
 
     def run(self):
         simulation = self.getKernel().serviceManager().simulationService()
-        waypoint_service = self.getKernel().serviceManager().waypointService()
         actor = self.getActor()
 
         digits = re.findall(r'\-?\d+(?:\.\d*)?', self.getCommandString())
