@@ -28,6 +28,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateObjectFromTemplate,
 
 void exportSimulationService()
 {
+    typedef void (SimulationServiceInterface::*PersistRelatedObjectsBinding)(const std::shared_ptr<swganh::object::Object>&);
     typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*GetObjectByIdBinding)(uint64_t);
 	typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*GetObjectByCustomNameBinding)(const std::string&);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneBinding)(uint64_t, const std::string&);
@@ -48,7 +49,7 @@ void exportSimulationService()
 		;
     // @TODO update transfer def to have unique names
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
-        .def("persist", &SimulationServiceInterface::PersistRelatedObjects, "persists the specified object and it's containing objects")
+        .def("persist", PersistRelatedObjectsBinding(&SimulationServiceInterface::PersistRelatedObjects), "persists the specified object and it's containing objects")
         .def("findObjectById", GetObjectByIdBinding(&SimulationServiceInterface::LoadObjectById), "Finds an object by its id")
         .def("findBuildingById", &SimulationServiceInterface::LoadObjectById<Building>, "Finds a building object by its id")
         .def("findCellById", &SimulationServiceInterface::LoadObjectById<Cell>, "Finds a cell object by its id")
