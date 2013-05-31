@@ -19,14 +19,9 @@ CREATE FUNCTION `sf_WaypointCreate`(
 RETURNS BIGINT(20)
 BEGIN
     INSERT INTO waypoint
-    SET owner_id = in_owner_id,
-        x_coordinate = in_x_coordinate,
-        y_coordinate = in_y_coordinate,
-        z_coordinate = in_z_coordinate,
-        is_active = in_is_active,
-        planet = in_planet,
-        name = in_name,
-        color = in_color;
+    VALUES(NULL, in_owner_id, in_x_coordinate,
+        in_y_coordinate, in_z_coordinate,
+         in_is_active, in_planet, in_name, in_color);
 
     RETURN(LAST_INSERT_ID());
 END //
