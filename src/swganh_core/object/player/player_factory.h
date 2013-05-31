@@ -47,7 +47,6 @@ namespace object {
 
 		void PersistBadges_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void PersistXP_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
-        void PersistWaypoints_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void PersistDraftSchematics_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void PersistQuestJournal_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);
         void PersistForceSensitiveQuests_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock);

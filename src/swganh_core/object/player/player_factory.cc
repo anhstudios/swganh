@@ -177,7 +177,6 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object, boost::u
         PersistFriends_(player, lock);
         PersistIgnoredList_(player, lock);
         PersistXP_(player, lock);
-        PersistWaypoints_(player, lock);
         PersistDraftSchematics_(player, lock);
         PersistForceSensitiveQuests_(player, lock);
         PersistQuestJournal_(player, lock);
@@ -220,14 +219,6 @@ void PlayerFactory::PersistXP_(const shared_ptr<Player>& player, boost::unique_l
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-
-void PlayerFactory::PersistWaypoints_(const shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock)
-{
-    for(const auto& waypoint : player->GetWaypoints())
-    {
-        object_manager_->PersistObject(waypoint->GetObjectId());
     }
 }
 
