@@ -63,6 +63,7 @@ void PlayerMessageBuilder::RegisterEventHandlers()
         auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
         BuildXpDelta(value_event->Get());
     });
+
     event_dispatcher->Subscribe("Player::Waypoint", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);

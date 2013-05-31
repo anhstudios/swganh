@@ -30,6 +30,7 @@ using namespace swganh::messages;
 
 Object::Object()
     : object_id_(0)
+    , scene_id_(0)
 	, instance_id_(0)
     , template_string_("")
     , position_(glm::vec3(0,0,0))

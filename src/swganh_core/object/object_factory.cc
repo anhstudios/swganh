@@ -46,6 +46,7 @@ std::future<std::shared_ptr<Object>> ObjectFactory::LoadFromStorage(uint64_t obj
 std::shared_ptr<Object> ObjectFactory::LoadDataFromStorage(const std::shared_ptr<sql::Connection>& connection, uint64_t object_id)
 {
     auto object = CreateObject();
+    object->SetEventDispatcher(GetEventDispatcher());
     
 	auto lock = object->AcquireLock();
 	object->SetObjectId(object_id, lock);

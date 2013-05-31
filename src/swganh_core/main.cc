@@ -46,7 +46,7 @@ using boost::program_options::options_description;
 using boost::program_options::variables_map;
 using swganh::app::SwganhKernel;
 
-extern "C" PLUGIN_API void ExitModule() 
+extern "C" PLUGIN_API void ExitModule()
 {
     return;
 }
@@ -57,10 +57,10 @@ extern "C" PLUGIN_API  void ConfigurePlugin(options_description& description)
     return;
 }
 
-extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel) 
+extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 {
-    auto swganh_kernel = static_cast<SwganhKernel*>(kernel);    
-    
+    auto swganh_kernel = static_cast<SwganhKernel*>(kernel);
+
 	swganh::attributes::Initialize(swganh_kernel);
 	swganh::badge::Initialize(swganh_kernel);
     swganh::character::Initialize(swganh_kernel);

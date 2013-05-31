@@ -113,6 +113,7 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
             }
             else
             {
+                LOG(warning) << "Invalid Command: " <<  command->GetCommandName();
                 action = 1; // indicates a general error
 				command->PostRun(false);
             }

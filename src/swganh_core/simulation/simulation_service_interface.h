@@ -15,6 +15,7 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/object/object_controller_interface.h"
 #include "swganh_core/object/permissions/permission_type.h"
+#include "swganh_core/object/waypoint/waypoint.h"
 
 namespace swganh {
 	class ByteBuffer;
@@ -72,6 +73,7 @@ namespace simulation {
 		/*
 		*	\brief this persists the given object and all related objects (ie: everything contained inside this object)
 		*/
+        virtual void PersistRelatedObjects(const std::shared_ptr<swganh::object::Object>& object) = 0;
 		virtual void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited = false) = 0;
         
         virtual std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id) = 0;
@@ -196,7 +198,18 @@ namespace simulation {
 		virtual void SendToScene(swganh::messages::BaseSwgMessage* message, std::string scene_name) = 0;
 		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, uint32_t scene_id, glm::vec3 position, float radius) = 0;
 		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, std::string scene_name, glm::vec3 position, float radius) = 0;
-
+        
+        template<typename T>
+        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0)
+        {
+            std::shared_ptr<swganh::object::Object> object = CreateObjectFromTemplate(template_name, type, is_persisted, object_id);
+#ifdef _DEBUG
+            return std::dynamic_pointer_cast<T>(object);
+#else
+            return std::static_pointer_cast<T>(object);
+#endif
+        }
 		virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0) = 0;
 

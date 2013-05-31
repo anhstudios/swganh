@@ -7,6 +7,7 @@
 #include <boost/thread/mutex.hpp>
 
 #include "swganh_core/command/command_factory_interface.h"
+#include "swganh_core/command/command_properties.h"
 
 namespace swganh {
 namespace app {
@@ -66,7 +67,7 @@ namespace command {
             {}
 
             swganh::command::CommandCreator creator_func;
-            const swganh::command::CommandProperties& properties;
+            swganh::command::CommandProperties properties;
         };
 
         typedef std::map<swganh::HashString, std::shared_ptr<CreatorData>> CreatorMap;

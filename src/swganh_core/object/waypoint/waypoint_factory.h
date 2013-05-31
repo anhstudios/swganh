@@ -2,17 +2,13 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh_core/object/intangible/intangible_factory.h"
-#include <unordered_map>
+#include <glm/glm.hpp>
 
-namespace swganh {
-namespace database {
-class DatabaseManagerInterface;
-}} // swganh::database
+#include "swganh_core/object/waypoint/waypoint.h"
+#include "swganh_core/object/intangible/intangible_factory.h"
 
 namespace swganh {
 namespace object {
-	class Player; 
     class Waypoint;
     class WaypointFactory : public swganh::object::IntangibleFactory
     {
@@ -29,9 +25,7 @@ namespace object {
 		
         virtual void PersistChangedObjects();
 
-        std::shared_ptr<swganh::object::Object> CreateObject();
-
-        void LoadWaypoints(const std::shared_ptr<swganh::object::Player>& player, const std::shared_ptr<sql::ResultSet> result_set);
+        std::shared_ptr<swganh::object::Object> CreateObject();        
 
         virtual void RegisterEventHandlers();
     };

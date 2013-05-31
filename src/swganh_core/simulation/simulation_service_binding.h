@@ -9,6 +9,8 @@
 #include "swganh/scripting/python_shared_ptr.h"
 #include "simulation_service_interface.h"
 
+#include "swganh_core/object/objects.h"
+
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
 
@@ -26,6 +28,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateObjectFromTemplate,
 
 void exportSimulationService()
 {
+    typedef void (SimulationServiceInterface::*PersistRelatedObjectsBinding)(const std::shared_ptr<swganh::object::Object>&);
     typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*GetObjectByIdBinding)(uint64_t);
 	typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*GetObjectByCustomNameBinding)(const std::string&);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneBinding)(uint64_t, const std::string&);
@@ -44,10 +47,26 @@ void exportSimulationService()
 		.value("RIDEABLE", RIDEABLE_PERMISSION)
 		.value("NO_VIEW", NO_VIEW_PERMISSION)
 		;
-
+    // @TODO update transfer def to have unique names
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
-        .def("persist", &SimulationServiceInterface::PersistRelatedObjects, "persists the specified object and it's containing objects")
+        .def("persist", PersistRelatedObjectsBinding(&SimulationServiceInterface::PersistRelatedObjects), "persists the specified object and it's containing objects")
         .def("findObjectById", GetObjectByIdBinding(&SimulationServiceInterface::LoadObjectById), "Finds an object by its id")
+        .def("findBuildingById", &SimulationServiceInterface::LoadObjectById<Building>, "Finds a building object by its id")
+        .def("findCellById", &SimulationServiceInterface::LoadObjectById<Cell>, "Finds a cell object by its id")
+        .def("findCreatureById", &SimulationServiceInterface::LoadObjectById<Creature>, "Finds a creature object by its id")
+        .def("findFactoryCrateById", &SimulationServiceInterface::LoadObjectById<FactoryCrate>, "Finds a factory crate object by its id")
+        .def("findGroupById", &SimulationServiceInterface::LoadObjectById<Group>, "Finds a group object by its id")
+        .def("findGuildById", &SimulationServiceInterface::LoadObjectById<Guild>, "Finds a guild object by its id")
+        .def("findHarvesterInstallationById", &SimulationServiceInterface::LoadObjectById<HarvesterInstallation>, "Finds a harvester installation object by its id")
+        .def("findIntangibleById", &SimulationServiceInterface::LoadObjectById<Intangible>, "Finds an intangible object by its id")
+        .def("findManufactureSchematicById", &SimulationServiceInterface::LoadObjectById<ManufactureSchematic>, "Finds a manufacture schematic object by its id")
+        .def("findMissionById", &SimulationServiceInterface::LoadObjectById<Mission>, "Finds a mission object by its id")
+        .def("findPlayerById", &SimulationServiceInterface::LoadObjectById<Player>, "Finds a player object by its id")
+        .def("findResourceContainerById", &SimulationServiceInterface::LoadObjectById<ResourceContainer>, "Finds a resource container object by its id")
+        .def("findShipById", &SimulationServiceInterface::LoadObjectById<Ship>, "Finds a ship object by its id")
+        .def("findStaticById", &SimulationServiceInterface::LoadObjectById<Static>, "Finds a static object by its id")
+        .def("findTangibleById", &SimulationServiceInterface::LoadObjectById<Tangible>, "Finds a tangible object by its id")
+        .def("findWeaponById", &SimulationServiceInterface::LoadObjectById<Weapon>, "Finds a weapon object by its id")
 		.def("transfer", TransferObjectToSceneBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene")
 		.def("transfer", TransferObjectToSceneObjectBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene")
 		.def("transfer", TransferObjectToSceneAndPositionBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene and changes the position")

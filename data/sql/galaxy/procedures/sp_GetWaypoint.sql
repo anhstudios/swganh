@@ -1,4 +1,3 @@
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
@@ -9,13 +8,9 @@ DROP PROCEDURE IF EXISTS `sp_GetWaypoint`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetWaypoint`(IN `object_id` BIGINT)
 BEGIN
-    select o.id, o.x_position, o.y_position, o.z_position, o.x_orientation, 
-        o.y_orientation, o.z_orientation, o.w_orientation, o.complexity, 
-        o.stf_name_file, o.stf_name_string, o.custom_name, o.volume, o.type_id,
-        w.is_active, w.name, w.color 
-    from waypoint w, object o 
-    where w.player_id = object_id 
-    and o.id = w.id;
+    select *
+    from waypoint w
+    where w.id = object_id;
 END//
 DELIMITER ;
 

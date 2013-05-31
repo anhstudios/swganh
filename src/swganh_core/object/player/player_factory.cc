@@ -17,6 +17,7 @@
 #include "swganh/crc.h"
 #include "swganh/database/database_manager.h"
 #include "swganh_core/object/player/player.h"
+#include "swganh_core/object/object_manager.h"
 #include "player_events.h"
 
 #include "swganh_core/object/exception.h"
@@ -587,7 +588,7 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
 								   boost::unique_lock<boost::mutex>& lock)
 {
     auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
+        (connection->prepareStatement("CALL sp_GetWaypoints(?);"));
     
     statement->setUInt64(1, player->GetObjectId(lock));
 
@@ -596,8 +597,10 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
     {   
         while (result->next())
         {
-            //auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-            //GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>("LoadWaypoints", player, result));
+            if(auto waypoint = object_manager_->CreateObjectFromStorage<Waypoint>(result->getUInt64("id")))
+            {
+                player->AddWaypoint(waypoint, lock);
+            }
         }
     } while(statement->getMoreResults());
 }
