@@ -21,11 +21,11 @@ BOOST_PYTHON_MODULE(py_object)
     docstring_options local_docstring_options(true, true, false);
 
     exportObject();
+    exportIntangible();
     exportTangible();
     exportCreature();
     exportPlayer();
 	exportWeapon();
-    exportIntangible();
     exportWaypoint();
     exportObjectController();
     exportOutOfBand();

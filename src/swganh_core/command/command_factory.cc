@@ -34,7 +34,16 @@ void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::comma
 {    
     auto properties = command_service_->FindPropertiesForCommand(command);
 
-    if (properties)
+    if (!properties)
+    {        
+        CommandProperties new_properties;
+        new_properties.command_name = command.ident_string();
+        new_properties.allow_in_locomotion = 0xffffffffffffffff;
+        new_properties.allow_in_state = 0xffffffffffffffff;
+
+        properties.reset(new_properties);
+    }
+
     {
         boost::lock_guard<boost::mutex> lg(creators_mutex_);
         command_creators_.insert(std::make_pair(command, std::make_shared<CreatorData>(std::move(creator), *properties)));

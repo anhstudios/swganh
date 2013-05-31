@@ -35,6 +35,7 @@
 #include "spawn/spawn_init.h"
 #include "static/static_init.h"
 #include "sui/sui_init.h"
+#include "waypoint/waypoint_init.h"
 #include "weather/weather_init.h"
 #include "terrain/terrain_init.h"
 #include "travel/travel_init.h"
@@ -82,5 +83,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh::terrain::Initialize(swganh_kernel);
 	swganh::map::Initialize(swganh_kernel);
 	swganh::travel::Initialize(swganh_kernel);
+	swganh::waypoint::Initialize(swganh_kernel);
     return ExitModule;
 }

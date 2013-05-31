@@ -17,6 +17,7 @@ using namespace boost::python;
 void exportWaypointService()
 {
 	class_<WaypointServiceInterface, std::shared_ptr<WaypointServiceInterface>, boost::noncopyable>("WaypointService", "The waypoint service processes in-game waypoint features.", no_init)
+        .def("createWaypoint", &WaypointServiceInterface::CreateWaypointInStorage, "Creates a new waypoint for the specified owner and returns it")
         ;
 }
 

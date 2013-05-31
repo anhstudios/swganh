@@ -23,6 +23,10 @@ namespace waypoint {
         WaypointService(swganh::app::SwganhKernel* kernel);
         ~WaypointService();
 
+        virtual void Initialize();
+		virtual void Startup();
+		virtual void Shutdown();
+
         virtual std::shared_ptr<swganh::object::Waypoint> CreateWaypointInStorage(
             const std::shared_ptr<swganh::object::Object>& owner,
             const std::string& name,

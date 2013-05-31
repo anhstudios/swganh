@@ -7,13 +7,33 @@
 #include "swganh_core/simulation/simulation_service_interface.h"
 
 using namespace swganh::waypoint;
+using swganh::service::ServiceDescription;
 using swganh::object::Object;
 using swganh::object::Waypoint;
 
 WaypointService::WaypointService(swganh::app::SwganhKernel* kernel)
-    : kernel_(kernel) {}
+    : kernel_(kernel)
+{
+    SetServiceDescription(ServiceDescription(
+        "WaypointService",
+        "waypoint",
+        "0.1",
+        "127.0.0.1",
+        0,
+        0,
+        0));
+}
 
 WaypointService::~WaypointService()
+{}
+
+void WaypointService::Initialize()
+{}
+
+void WaypointService::Startup()
+{}
+
+void WaypointService::Shutdown()
 {}
 
 std::shared_ptr<Waypoint> WaypointService::CreateWaypointInStorage(

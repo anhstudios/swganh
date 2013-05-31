@@ -2,12 +2,17 @@ import re
 import swgpy
 from swgpy.object import *
 from swgpy.simulation import *
+from swgpy.waypoint import *
 from swgpy.utility import vector3
 from swgpy.command import BaseSwgCommand
 
 class WaypointCommand(BaseSwgCommand):
+    def getCommandName(self):
+        return 'waypoint'
+
     def run(self):
         simulation = self.getKernel().serviceManager().simulationService()
+        waypoint_service = self.getKernel().serviceManager().waypointService()
         actor = self.getActor()
 
         digits = re.findall(r'\-?\d+(?:\.\d*)?', self.getCommandString())
@@ -28,10 +33,10 @@ class WaypointCommand(BaseSwgCommand):
             SystemMessage.sendSystemMessage(actor, "[SYNTAX] /waypoint <x> <z> or /waypoint <x> <y> <z>", True, False)
             return
 
-        planet = simulation.getSceneName(actor.scene_id)
+        planet = simulation.getSceneNameById(actor.scene_id)
         player = self.getKernel().serviceManager().equipmentService().getPlayerObject(actor)
 
-        waypoint = simulation.createWaypoint(
+        waypoint = waypoint_service.createWaypoint(
             player, "", waypoint_position, planet, WaypointColor.WHITE, True)
 
         player.addWaypoint(waypoint)
