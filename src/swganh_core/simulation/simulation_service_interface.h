@@ -15,6 +15,7 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/object/object_controller_interface.h"
 #include "swganh_core/object/permissions/permission_type.h"
+#include "swganh_core/object/waypoint/waypoint.h"
 
 namespace swganh {
 	class ByteBuffer;

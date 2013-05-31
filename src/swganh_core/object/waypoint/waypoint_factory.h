@@ -26,13 +26,6 @@ namespace object {
         virtual void PersistChangedObjects();
 
         std::shared_ptr<swganh::object::Object> CreateObject();        
-        std::shared_ptr<Waypoint> CreateWaypointInStorage(
-            const std::shared_ptr<Object>& owner,
-            const std::string& name,
-            const glm::vec3& coordinates,
-            const std::string& planet,
-            Waypoint::WaypointColor color = Waypoint::WHITE,
-            bool activated = true);
 
         virtual void RegisterEventHandlers();
     };
