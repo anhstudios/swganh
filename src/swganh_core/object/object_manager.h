@@ -186,7 +186,7 @@ namespace object {
         template<typename T>
         std::shared_ptr<T> CreateObjectFromStorage(uint64_t object_id)
         {
-            std::shared_ptr<Object> object = CreateObjectFromStorage(T::type, object_id);
+            std::shared_ptr<Object> object = CreateObjectFromStorage(object_id, T::type);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -270,7 +270,7 @@ namespace object {
 		PermissionsObjectMap& GetPermissionsMap();
 
 		virtual void PrepareToAccomodate(uint32_t delta);
-
+        
     private:
 		void PersistObjectsByTimer(const boost::system::error_code& e);
 		void InsertObject(std::shared_ptr<swganh::object::Object> object);
