@@ -17,7 +17,9 @@ Waypoint::Waypoint()
     , name_(L"")
     , color_(BLUE)
 {
+    SetDatabasePersisted(true);
 }
+
 Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, const wstring& name, WaypointColor color)
     : coordinates_(coordinates)
     , planet_name_(planet)
