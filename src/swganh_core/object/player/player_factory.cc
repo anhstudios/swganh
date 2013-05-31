@@ -17,6 +17,7 @@
 #include "swganh/crc.h"
 #include "swganh/database/database_manager.h"
 #include "swganh_core/object/player/player.h"
+#include "swganh_core/object/object_manager.h"
 #include "player_events.h"
 
 #include "swganh_core/object/exception.h"
@@ -176,6 +177,7 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object, boost::u
         PersistFriends_(player, lock);
         PersistIgnoredList_(player, lock);
         PersistXP_(player, lock);
+        PersistWaypoints_(player, lock);
         PersistDraftSchematics_(player, lock);
         PersistForceSensitiveQuests_(player, lock);
         PersistQuestJournal_(player, lock);
@@ -218,6 +220,14 @@ void PlayerFactory::PersistXP_(const shared_ptr<Player>& player, boost::unique_l
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
+void PlayerFactory::PersistWaypoints_(const shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock)
+{
+    for(const auto& waypoint : player->GetWaypoints())
+    {
+        object_manager_->PersistObject(waypoint->GetObjectId());
     }
 }
 
@@ -596,54 +606,12 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
     {   
         while (result->next())
         {
-            auto waypoint = std::make_shared<Waypoint>();
-            waypoint->SetObjectId(result->getUInt64("id"));
-            waypoint->SetCoordinates( glm::vec3(
-                result->getDouble("x_coordinate"),
-                result->getDouble("y_coordinate"),
-                result->getDouble("z_coordinate"))
-                );
-            //waypoint->SetLocationNetworkId(result->getUInt("scene_id"));
-            string custom_string = result->getString("name");
-            waypoint->SetName(wstring(begin(custom_string), end(custom_string)));
-            uint16_t activated = result->getUInt("is_active");
-            activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
-            waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")));
-            waypoint->SetPlanet(result->getString("planet"));
-
-            player->AddWaypoint(waypoint, lock);
+            if(auto waypoint = object_manager_->CreateObjectFromStorage<Waypoint>(result->getUInt64("id")))
+            {
+                player->AddWaypoint(waypoint, lock);
+            }
         }
     } while(statement->getMoreResults());
-}
-
-void PlayerFactory::PersistWaypoints_(const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock)
-{
-    try
-    {
-        auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?);");
-
-        for (auto& waypoint : player->GetWaypoints(lock))
-        {
-            statement->setUInt64(1, waypoint->GetObjectId());
-            statement->setUInt64(2, waypoint->GetContainer()->GetObjectId());
-            auto coords = waypoint->GetCoordinates();
-            statement->setDouble(3, coords.x);
-            statement->setDouble(4, coords.y);
-            statement->setDouble(5, coords.z);
-            statement->setUInt(6, waypoint->GetActiveFlag());
-            statement->setString(7, waypoint->GetPlanet());
-            statement->setString(8, waypoint->GetNameStandard());
-            statement->setUInt(9, waypoint->GetColor());
-
-            statement->execute();	
-        }
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
 }
 
 void PlayerFactory::LoadXP_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player,
