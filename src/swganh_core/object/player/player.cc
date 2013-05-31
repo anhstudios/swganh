@@ -222,6 +222,7 @@ std::vector<std::shared_ptr<Waypoint>> Player::GetWaypoints(boost::unique_lock<b
 void Player::AddWaypoint(const std::shared_ptr<Waypoint>& waypoint) { AddWaypoint(waypoint, AcquireLock()); }
 void Player::AddWaypoint(const std::shared_ptr<Waypoint>& waypoint, boost::unique_lock<boost::mutex>& lock)
 {
+    waypoint->SetContainer(shared_from_this());
 	waypoints_.add(waypoint->GetObjectId(), waypoint);
 	DISPATCH(Player, Waypoint);
 }
