@@ -611,7 +611,7 @@ void PlayerFactory::LoadWaypoints_(const std::shared_ptr<sql::Connection>& conne
             waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")));
             waypoint->SetPlanet(result->getString("planet"));
 
-            player->AddWaypoint(waypoint);
+            player->AddWaypoint(waypoint, lock);
         }
     } while(statement->getMoreResults());
 }
