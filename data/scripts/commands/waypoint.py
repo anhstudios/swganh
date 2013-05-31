@@ -36,7 +36,10 @@ class WaypointCommand(BaseSwgCommand):
         planet = simulation.getSceneNameById(actor.scene_id)
         player = self.getKernel().serviceManager().equipmentService().getPlayerObject(actor)
 
-        waypoint = waypoint_service.createWaypoint(
-            player, "", waypoint_position, planet, WaypointColor.WHITE, True)
+        waypoint = creature = simulation.createObject('object/waypoint/shared_waypoint.iff')
+        waypoint.setCoordinates(waypoint_position)
+        waypoint.setPlanet(planet)
+        waypoint.setColor(WaypointColor.BLUE)
+        waypoint.activate()
 
         player.addWaypoint(waypoint)
