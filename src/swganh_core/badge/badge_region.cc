@@ -13,19 +13,33 @@
 
 using namespace swganh::badge;
 using namespace swganh::messages;
+using swganh::object::Object;
 
 BadgeRegion::BadgeRegion(std::string badge_name, BadgeService* service)
 	: badge_service_(service)
 	, badge_name_(badge_name)
 {
 	SetCollidable(true);
+	SetDatabasePersisted(false);
+	SetInSnapshot(true);
 }
 
 BadgeRegion::~BadgeRegion(void)
 {
 }
 
-void BadgeRegion::OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider)
+void BadgeRegion::OnCollisionEnter(std::shared_ptr<Object> collider)
 {
-	badge_service_->GiveBadge(collider, badge_name_);
+    if(collider->HasController())
+    {
+    	badge_service_->GiveBadge(collider, badge_name_);
+    } else {
+        collider->ViewObjects(nullptr, 0, true, [this] (const std::shared_ptr<Object>& inner)
+        {
+            if(inner->HasController())
+            {
+    	        badge_service_->GiveBadge(inner, badge_name_);
+            }
+        });
+    }
 }
