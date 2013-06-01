@@ -72,6 +72,8 @@ PlayerService::PlayerService(swganh::app::SwganhKernel* kernel)
 		{
 			creature->AddBuff(result->getString(1), result->getUInt(2));
 		}
+
+		OnPlayerEnter(std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(creature, "ghost")));
 	});
 
 	player_removed_ = kernel_->GetEventDispatcher()->Subscribe(

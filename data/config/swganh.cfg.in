@@ -3,7 +3,7 @@ server_mode = all
 # Provides the core swganh functionality
 plugin = swganh_core
 
-galaxy_name = A New Hope
+galaxy_name = Naritus
 
 tre_config = C:/Star Wars Galaxies/live.cfg
 
