@@ -357,7 +357,7 @@ uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
     try {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::unique_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("sp_GetCharacterIdByName(?,?);")
+            conn->prepareStatement("CALL sp_GetCharacterIdByName(?,?);")
             );
         statement->setString(1, name + '%');
         statement->setUInt(2, swganh::object::Player::type);

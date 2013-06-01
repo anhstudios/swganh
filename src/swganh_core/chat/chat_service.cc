@@ -893,6 +893,9 @@ void ChatService::_handleRequestRoomList(
 	swganh::messages::ChatRequestRoomList* message)
 {
 	auto controller = client->GetController();
+	if(!controller)
+		return;
+
 	auto sender_id = controller->GetId();
 	if(controller)
 	{
@@ -934,6 +937,9 @@ void ChatService::_handleQueryRoom(
 	swganh::messages::ChatQueryRoom* message)
 {
 	auto controller = client->GetController();
+	if(!controller)
+		return;
+
 	uint64_t sender_id = controller->GetId();
 
 	boost::lock_guard<boost::mutex> lock_(room_mutex_);
@@ -972,6 +978,9 @@ void ChatService::_handleSendToRoom(
 	swganh::messages::ChatSendToRoom* message)
 {
 	auto controller = client->GetController();
+	if(!controller)
+		return;
+
 	uint64_t speaker = controller->GetId();
 
 	boost::lock_guard<boost::mutex> lock_(room_mutex_);
@@ -1012,6 +1021,9 @@ void ChatService::_handleJoinRoom(
 	swganh::messages::ChatEnterRoomById* message)
 {
 	auto controller = client->GetController();
+	if(!controller)
+		return;
+
 	uint64_t sender_id = controller->GetId();
 
 	boost::lock_guard<boost::mutex> lock_(room_mutex_);
@@ -1073,6 +1085,9 @@ void ChatService::_handleLeaveRoom(
 	swganh::messages::ChatLeaveRoom* message)
 {
 	auto controller = client->GetController();
+	if(!controller)
+		return;
+
 	auto sender_id = controller->GetId();
 
 	boost::lock_guard<boost::mutex> lock_(room_mutex_);
@@ -1115,6 +1130,9 @@ void ChatService::_handleCreateRoom(
 	swganh::messages::ChatCreateRoom* message)
 {
 	auto controller = client->GetController();
+	if(!controller)
+		return;
+
 	auto sender_id = controller->GetId();
 	uint32_t id = CreateRoom(message->channel_path, message->channel_title, sender_id, sender_id, 
 		(message->public_flag) ? 1 : 0, (message->moderation_flag) ? 1 : 0);
@@ -1140,6 +1158,10 @@ void ChatService::_handleDestroyRoom(
 	const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client,
 	swganh::messages::ChatDestroyRoom* message)
 {
+	auto controller = client->GetController();
+	if(!controller)
+		return;		
+
 	try
 	{
 		boost::lock_guard<boost::mutex> lock_(room_mutex_);
@@ -1147,7 +1169,7 @@ void ChatService::_handleDestroyRoom(
 		if(find_itr != rooms_.end())
 		{
 			Room* room = &find_itr->second;
-			auto controller = client->GetController();
+
 			uint64_t sender_id = controller->GetId();
 
 			if(room->owner_ == sender_id)
