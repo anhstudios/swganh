@@ -37,7 +37,7 @@ namespace command {
 			, allow_in_state(0)
 			, target_type(0)
 			, call_on_target(0)
-			, command_group(COMBAT_MELEE)
+			, command_group(COMBAT_GENERAL)
 			, max_range_to_target(0.0f)
 			, god_level(0)
 			, add_to_combat_queue(0)

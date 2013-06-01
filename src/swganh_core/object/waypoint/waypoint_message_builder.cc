@@ -84,7 +84,7 @@ void WaypointMessageBuilder::BuildColorDelta(const shared_ptr<Waypoint>& object)
 	if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 11);
-        message.data.write<uint8_t>(object->GetColorByte());
+        message.data.write<uint8_t>(object->GetColor());
     
         object->AddDeltasUpdate(&message);    
     }

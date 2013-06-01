@@ -208,16 +208,22 @@ void Player::ClearXpType(string type, boost::unique_lock<boost::mutex>& lock)
 	DISPATCH(Player, Experience);
 }
 
-std::map<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints()  { return GetWaypoints(AcquireLock()); }
-std::map<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints(boost::unique_lock<boost::mutex>& lock) 
+std::vector<std::shared_ptr<Waypoint>> Player::GetWaypoints() { return GetWaypoints(AcquireLock()); }
+std::vector<std::shared_ptr<Waypoint>> Player::GetWaypoints(boost::unique_lock<boost::mutex>& lock) 
 {
-    return waypoints_.raw();
+    std::vector<std::shared_ptr<Waypoint>> waypoints;    
+    for(const auto& i : waypoints_)
+    {
+        waypoints.push_back(i.second.waypoint);
+    }
+    return waypoints;
 }
 
-void Player::AddWaypoint(PlayerWaypointSerializer waypoint) { AddWaypoint(waypoint.waypoint->GetObjectId(), waypoint, AcquireLock()); }
-void Player::AddWaypoint(uint64_t way_object_id, PlayerWaypointSerializer waypoint,boost::unique_lock<boost::mutex>& lock)
+void Player::AddWaypoint(const std::shared_ptr<Waypoint>& waypoint) { AddWaypoint(waypoint, AcquireLock()); }
+void Player::AddWaypoint(const std::shared_ptr<Waypoint>& waypoint, boost::unique_lock<boost::mutex>& lock)
 {
-	waypoints_.add(way_object_id, waypoint);
+    waypoint->SetContainer(shared_from_this());
+	waypoints_.add(waypoint->GetObjectId(), waypoint);
 	DISPATCH(Player, Waypoint);
 }
 
@@ -238,7 +244,7 @@ void Player::RemoveWaypoint(uint64_t waypoint_id, boost::unique_lock<boost::mute
 	DISPATCH(Player, Waypoint);
 }
 
-void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint) { ModifyWaypoint(waypoint.waypoint->GetObjectId(), AcquireLock()); }
+void Player::ModifyWaypoint(uint64_t waypoint_id) { ModifyWaypoint(waypoint_id, AcquireLock()); }
 void Player::ModifyWaypoint(uint64_t way_object_id, boost::unique_lock<boost::mutex>& lock)
 {
 	waypoints_.update(way_object_id);

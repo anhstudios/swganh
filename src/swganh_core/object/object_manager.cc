@@ -419,7 +419,8 @@ std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefin
 
 void ObjectManager::LoadCollisionInfoForObject(std::shared_ptr<Object> obj)
 {
-		auto obj_visitor = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(obj->GetTemplate());
+    if(auto obj_visitor = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(obj->GetTemplate()))
+    {
 		obj_visitor->load_aggregate_data(kernel_->GetResourceManager());
 
 		if(obj_visitor->has_attribute("collisionLength") && obj_visitor->has_attribute("collisionHeight"))
@@ -429,6 +430,7 @@ void ObjectManager::LoadCollisionInfoForObject(std::shared_ptr<Object> obj)
 		}
 		else
 			obj->SetCollidable(false);
+    }
 }
 
 void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)

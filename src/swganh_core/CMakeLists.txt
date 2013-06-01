@@ -27,10 +27,6 @@ add_custom_target(
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
     VERBATIM
 )
-set_target_properties(swgpy
-    PROPERTIES
-    FOLDER "cmake_targets"
-)
 
 set_target_properties(swgpy
     PROPERTIES

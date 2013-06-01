@@ -160,7 +160,13 @@ public:
     {
         object_manager_->PersistObject(object_id, persist_inherited);
     }
-	void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
+
+    void PersistRelatedObjects(const std::shared_ptr<swganh::object::Object>& object)
+    {
+        object_manager_->PersistRelatedObjects(object, true);
+    }
+	
+    void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
 	{
         object_manager_->PersistRelatedObjects(parent_object_id, persist_inherited);
 	}
@@ -523,6 +529,10 @@ std::string SimulationService::SceneNameById(uint32_t scene_id)
 void SimulationService::PersistObject(uint64_t object_id, bool persist_inherited)
 {
     impl_->PersistObject(object_id, persist_inherited);
+}
+void SimulationService::PersistRelatedObjects(const std::shared_ptr<swganh::object::Object>& object)
+{
+	impl_->PersistRelatedObjects(object);
 }
 void SimulationService::PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
 {

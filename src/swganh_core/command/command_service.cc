@@ -109,6 +109,10 @@ void CommandService::EnqueueCommandRequest(
 
         EnqueueCommand(swg_command);
     }
+    else
+    {
+        LOG(error) << "Invalid command requested: (" << std::hex << command_request->command_crc << ")";
+    }
 }
 
 void CommandService::SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command)

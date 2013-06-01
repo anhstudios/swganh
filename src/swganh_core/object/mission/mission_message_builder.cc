@@ -222,7 +222,7 @@ void MissionMessageBuilder::BuildMissionWaypointDelta(const std::shared_ptr<Miss
 		message.data.write(mission->GetStartingSceneCrc());
 		message.data.write(waypoint->GetName());
 		message.data.write(waypoint->GetObjectId());
-		message.data.write(waypoint->GetColorByte());
+		message.data.write(waypoint->GetColor());
 		message.data.write(waypoint->GetActiveFlag());
 
 		mission->AddDeltasUpdate(&message);
@@ -269,7 +269,7 @@ boost::optional<BaselinesMessage> MissionMessageBuilder::BuildBaseline3(const st
 	message.data.write(mission->GetStartingSceneCrc(lock));
 	message.data.write(waypoint->GetName(lock));
 	message.data.write(waypoint->GetObjectId(lock));
-	message.data.write(waypoint->GetColorByte(lock));
+	message.data.write(waypoint->GetColor(lock));
 	message.data.write(waypoint->GetActiveFlag(lock));
 	return BaselinesMessage(std::move(message));
 }
