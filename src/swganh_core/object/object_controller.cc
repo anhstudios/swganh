@@ -5,7 +5,7 @@
 
 #include "swganh_core/messages/obj_controller_message.h"
 #include "swganh_core/messages/out_of_band.h"
-#include "swganh_core/messages/chat_system_message.h"
+#include "swganh_core/messages/chat/chat_system_message.h"
 #include "swganh_core/messages/controllers/show_fly_text.h"
 #include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/object/object.h"

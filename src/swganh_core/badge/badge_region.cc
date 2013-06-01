@@ -4,7 +4,7 @@
 #include <swganh_core/badge/badge_region.h>
 #include <swganh_core/connection/connection_client_interface.h>
 
-#include <swganh_core/messages/chat_system_message.h>
+#include <swganh_core/messages/chat/chat_system_message.h>
 #include <swganh_core/messages/play_music_message.h>
 #include <swganh_core/messages/out_of_band.h>
 #include <swganh_core/messages/system_message.h>
