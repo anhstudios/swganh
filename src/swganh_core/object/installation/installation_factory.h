@@ -15,6 +15,7 @@ namespace object {
 		typedef Installation ObjectType;
 
         InstallationFactory(swganh::app::SwganhKernel* kernel);
+		virtual ~InstallationFactory() {}
         
         virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 

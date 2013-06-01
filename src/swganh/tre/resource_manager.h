@@ -16,7 +16,8 @@ namespace tre {
 	{
 	public:
 		ResourceManager(std::shared_ptr<swganh::tre::TreArchive> archive);
-
+		virtual ~ResourceManager() {}
+		
 		void LoadResourceByName(const std::string& name, std::shared_ptr<VisitorInterface> visitor, bool is_cached=true);
 
 		template<class ValueType>

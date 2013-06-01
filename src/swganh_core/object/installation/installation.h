@@ -24,6 +24,7 @@ public:
     typedef InstallationMessageBuilder MessageBuilderType;
 
 	Installation();
+	virtual ~Installation() {}
 
     /**
      * @return The type of this object instance.

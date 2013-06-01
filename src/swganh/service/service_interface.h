@@ -36,6 +36,8 @@ public:
 class BaseService : public ServiceInterface
 {
 public:
+    virtual ~BaseService() {}
+
     virtual ServiceDescription& GetServiceDescription() { return service_description_; }
     void SetServiceDescription(ServiceDescription service_description) { service_description_ = service_description; }
     void SetStatus(Galaxy::StatusType status) {

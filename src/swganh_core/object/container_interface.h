@@ -23,6 +23,8 @@ namespace object
 	{
 	public:
 		
+		virtual ~ContainerInterface() {}
+		
 		virtual uint64_t GetObjectId() = 0;
 
 		//Object Management
