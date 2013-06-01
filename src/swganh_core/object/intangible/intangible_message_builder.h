@@ -27,6 +27,8 @@ namespace object {
             RegisterEventHandlers();
         }
 
+		virtual ~IntangibleMessageBuilder() {}
+
 		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock);
         static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock);
 

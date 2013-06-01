@@ -15,6 +15,8 @@ class FsmController;
 class FiniteStateMachineInterface
 {
 public:
+	virtual ~FiniteStateMachineInterface() {}
+
 	virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object) = 0;
 	virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object) = 0;
 

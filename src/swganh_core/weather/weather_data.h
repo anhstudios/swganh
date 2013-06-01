@@ -60,10 +60,11 @@ namespace weather {
         glm::vec3 cloud_vector;
     };
 
-	struct WeatherData {
+	struct WeatherData 
+	{
 		int32_t duration;
-	Weather weather_;
-    glm::vec3 cloud_vector;
-};
+		Weather weather_;
+		glm::vec3 cloud_vector;
+	};
 }
 }

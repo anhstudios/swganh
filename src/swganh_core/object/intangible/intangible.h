@@ -21,7 +21,8 @@ public:
     typedef IntangibleMessageBuilder MessageBuilderType;
 
 	Intangible();
-
+	virtual ~Intangible() {}
+	
     // ITNO
     /**
      * @return The type of this object instance.

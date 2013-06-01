@@ -25,6 +25,9 @@ namespace sui {
 class RadialInterface
 {
 public:
+
+	virtual ~RadialInterface() {}
+
     void Initialize(swganh::app::SwganhKernel* kernel)
     {
         kernel_ = kernel;

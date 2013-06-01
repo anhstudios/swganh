@@ -19,6 +19,8 @@ namespace combat
 class BuffInterface
 {
  public:
+	virtual ~BuffInterface() {}
+ 
 	virtual void ApplyBuff(std::shared_ptr<swganh::object::Creature> creature) = 0;
 
 	virtual void RemoveBuff(std::shared_ptr<swganh::object::Creature> creature) = 0;

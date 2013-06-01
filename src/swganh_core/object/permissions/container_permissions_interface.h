@@ -18,6 +18,8 @@ namespace object
 	{
 	public:
 
+		virtual ~ContainerPermissionsInterface() {}
+
 		virtual PermissionType GetType() = 0;
 
 		virtual bool canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;

@@ -31,7 +31,6 @@ public:
      */
     SwganhApp(int argc, char* argv[]);
     ~SwganhApp();
-
     /*!
      * @Brief Initializes the application taking in arguments
      * @param argc command line options for initializing the server

@@ -34,6 +34,8 @@ namespace command {
             , delay_time_ms_(delay_time_ms)
         {}
 
+        virtual ~CommandCallback() {}
+
         uint64_t GetDelayTimeInMs()
         {
             return delay_time_ms_;

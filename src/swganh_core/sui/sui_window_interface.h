@@ -50,6 +50,8 @@ namespace sui
 		{
 		}
 
+		virtual ~SUIWindowInterface() {}
+		
 		/*
 			@brief Clears a data source by name.
 		*/

@@ -53,6 +53,8 @@ namespace spawn
 		static std::vector<glm::vec3> FindPath(std::shared_ptr<swganh::object::Object> object, glm::vec3& destination);
 		*/
 
+		virtual ~FsmStateInterface() {}
+		
 		virtual void AddEventTransition(swganh::EventType type, std::shared_ptr<FsmStateInterface> end_state, TransitionHandler handler) = 0;
 		virtual void AddTimedTransition(boost::posix_time::time_duration offset_secs, std::shared_ptr<FsmStateInterface> end_state, TransitionHandler handler) = 0;
 		virtual std::map<swganh::EventType, Transition>& GetEventTransitions() = 0;

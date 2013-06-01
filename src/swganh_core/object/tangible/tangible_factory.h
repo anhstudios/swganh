@@ -26,7 +26,8 @@ namespace object {
         typedef Tangible ObjectType;
 
         TangibleFactory(swganh::app::SwganhKernel* kernel);
-
+		virtual ~TangibleFactory() {}
+		
         virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
