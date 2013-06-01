@@ -103,11 +103,6 @@ std::string MysqlChatUserProvider::GetFirstNameFromId(uint64_t creature_id) cons
 	}
 }
 	
-std::string MysqlChatUserProvider::GetUsernamePathFromId(uint64_t creature_id) const
-{
-	return "SWG.username."+GetFirstNameFromId(creature_id);
-}
-	
 std::string MysqlChatUserProvider::GetFirstNameFromFullName(const std::string& name) const
 {
 	std::string first(name.substr(0, name.find(' ')));

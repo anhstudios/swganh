@@ -286,6 +286,8 @@ void ChatService::Startup()
 	{
 	    auto& creo_obj = static_pointer_cast<ValueEvent<shared_ptr<Creature>>>(incoming_event)->Get();
         LoadMessageHeaders(creo_obj);
+
+		boost::lock_guard<boost::mutex> lock(room_mutex_);
 		HandleFriendsList(creo_obj, 1);
 	});
 
@@ -295,6 +297,8 @@ void ChatService::Startup()
 	{
 	    auto& play_obj = static_pointer_cast<ValueEvent<shared_ptr<Player>>>(incoming_event)->Get();
 		auto creo_obj = std::static_pointer_cast<Creature>(play_obj->GetContainer());
+		
+		boost::lock_guard<boost::mutex> lock(room_mutex_);
 		HandleFriendsList(creo_obj, 0);
 	});
 
@@ -302,6 +306,7 @@ void ChatService::Startup()
 	kernel_->GetEventDispatcher()->Subscribe("Player::AddFriend",
 	[this] (shared_ptr<swganh::EventInterface> incoming_event)
 	{
+		boost::lock_guard<boost::mutex> lock(room_mutex_);
 		auto& real_event = static_pointer_cast<ValueEvent<std::pair<std::shared_ptr<Player>, std::string>>>(incoming_event)->Get();
 		auto creo_obj = std::static_pointer_cast<Creature>(real_event.first->GetContainer());
 
@@ -336,6 +341,7 @@ void ChatService::Startup()
 	kernel_->GetEventDispatcher()->Subscribe("Player::RemoveFriend",
 	[this] (shared_ptr<swganh::EventInterface> incoming_event)
 	{
+		boost::lock_guard<boost::mutex> lock(room_mutex_);
 		auto& real_event = static_pointer_cast<ValueEvent<std::pair<std::shared_ptr<Player>, std::string>>>(incoming_event)->Get();
 		auto creo_obj = std::static_pointer_cast<Creature>(real_event.first->GetContainer());
 
@@ -355,10 +361,41 @@ void ChatService::Startup()
 		}
 	});
 }
-   
+ 
+bool ChatService::IsOnline(const std::string& name) const
+{
+	return IsOnline(user_provider_->GetIdFromFullName(name));
+}
+
+bool ChatService::IsOnline(uint64_t id) const
+{
+	boost::lock_guard<boost::mutex> lock(room_mutex_);
+	return online_players_.find(id) != online_players_.end();
+}
+
 uint64_t ChatService::GetObjectIdByCustomName(const std::string& custom_name)
 {
     return user_provider_->GetIdFromFullName(custom_name);
+}
+
+const std::string& ChatService::GetFullNameFromId(uint64_t creature_id) const
+{
+	return user_provider_->GetFullNameFromId(creature_id);
+}
+	
+std::string ChatService::GetFirstNameFromId(uint64_t creature_id) const
+{
+	return user_provider_->GetFirstNameFromId(creature_id);
+}
+	
+const std::string& ChatService::GetFullNameFromFirstName(const std::string& name) const
+{
+	return user_provider_->GetFullNameFromFirstName(name);
+}
+	
+std::string ChatService::GetFirstNameFromFullName(const std::string& name) const
+{
+	return user_provider_->GetFirstNameFromFullName(name);
 }
 
 void ChatService::SendChatPersistentMessageToClient(

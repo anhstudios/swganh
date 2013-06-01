@@ -110,6 +110,17 @@ public:
 
 	uint64_t GetObjectIdByCustomName(const std::string& custom_name);
 
+	const std::string& GetFullNameFromId(uint64_t creature_id) const;
+	
+	std::string GetFirstNameFromId(uint64_t creature_id) const;
+	
+	const std::string& GetFullNameFromFirstName(const std::string& name) const;
+	
+	std::string GetFirstNameFromFullName(const std::string& name) const;
+
+	bool IsOnline(const std::string& name) const;
+	bool IsOnline(uint64_t id) const;
+
 	void Initialize();
     void Startup();
 

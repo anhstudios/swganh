@@ -42,13 +42,7 @@ public:
 	* @param name the first name of the player requested
 	* @return the full name of the player.
 	*/
-	const std::string& GetFullNameFromFirstName(const std::string& name) const;
-
-	/*!
-	* @param creature_id the id of the user's creature
-	* @return the full path of the user
-	*/
-	virtual std::string GetUsernamePathFromId(uint64_t creature_id) const = 0;
+	virtual const std::string& GetFullNameFromFirstName(const std::string& name) const = 0;
 	
 	/*!
 	* @param name the full name of the user

@@ -32,8 +32,6 @@ public:
 	
 	const std::string& GetFullNameFromFirstName(const std::string& name) const;
 
-	std::string GetUsernamePathFromId(uint64_t creature_id) const;
-	
 	std::string GetFirstNameFromFullName(const std::string& name) const;
 	
 private:
