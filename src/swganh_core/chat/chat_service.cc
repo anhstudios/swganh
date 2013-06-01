@@ -697,6 +697,21 @@ void ChatService::ForceJoin(const std::shared_ptr<swganh::object::Object>& actor
 	//Do the insert
 	room->users_.insert(controller);
 
+	//If the channel is hidden we need to tell the actor about the channel
+	if(	room->owner_ == 0 && room->is_private_ &&
+		room->users_.find(controller) == room->users_.end() &&
+		room->invited_users_.find(controller->GetId()) == room->invited_users_.end())
+	{
+		ChatRoomList room_list;
+		room_list.data.write<uint32_t>(1);
+		room->SerializeBody(room_list.data, galaxy_name_, user_provider_);
+		room_list.data.write<uint32_t>(0);
+		room_list.data.write<uint32_t>(0);
+
+		controller->Notify(&room_list);
+	}
+
+
 	//Send notice to all users
 	ChatOnEnteredRoom reply;
 	reply.game_name = "SWG";
@@ -884,7 +899,9 @@ void ChatService::_handleRequestRoomList(
 		ChatRoomList room_list;
 		{
 			boost::unique_lock<boost::mutex> lock(room_mutex_);
-			room_list.data.write<uint32_t>(rooms_.size());
+			
+			uint32_t count = 0, offset = room_list.data.write_position();
+			room_list.data.write<uint32_t>(0xCAFEBABE);
 			for(auto& room_pair : rooms_)
 			{
 				Room& room = room_pair.second;
@@ -903,7 +920,9 @@ void ChatService::_handleRequestRoomList(
 				//Write out empty lists to save bandwidth (only the result of the Query is displayed.)
 				room_list.data.write<uint32_t>(0);
 				room_list.data.write<uint32_t>(0);
+				++count;
 			}
+			room_list.data.writeAt<uint32_t>(offset, count);
 		}
 		controller->Notify(&ChatServerStatus(1));
 		controller->Notify(&room_list);
@@ -976,7 +995,7 @@ void ChatService::_handleSendToRoom(
 			//Send message to all users in channel
 			ChatRoomMessage msg;
 			msg.server_name = galaxy_name_;
-			msg.sender_character_name = user_provider_->GetFullNameFromId(speaker);
+			msg.sender_character_name = user_provider_->GetFirstNameFromId(speaker);
 			msg.channel_id = message->channel_id;
 			msg.message = message->message;
 
@@ -1087,8 +1106,6 @@ void ChatService::_handleLeaveRoom(
 		{
 			room->users_.erase(find_itr);
 		}
-
-		
 	}
 }
 
