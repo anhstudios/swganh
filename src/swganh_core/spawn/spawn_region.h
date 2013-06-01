@@ -31,7 +31,7 @@ public:
 
 	SpawnRegion(std::shared_ptr<LootGroup> loot_group, uint32_t density, uint32_t timeout, float rarity);
 
-	virtual SpawnRegion() {}
+	virtual ~SpawnRegion() {}
 	
 	void SetSceneId(uint32_t scene_id);
 

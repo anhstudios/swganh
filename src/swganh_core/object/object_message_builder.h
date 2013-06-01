@@ -31,7 +31,7 @@ namespace object {
             RegisterEventHandlers();
         }
 
-		virtual ObjectMessageBuilder() {}
+		virtual ~ObjectMessageBuilder() {}
 		
         template<typename SubjectT, typename ReceiverT>
         void SendBaselines(const std::shared_ptr<SubjectT>& subject, const std::shared_ptr<ReceiverT>& receiver)
