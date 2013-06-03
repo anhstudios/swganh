@@ -19,6 +19,8 @@ namespace object {
         {
             RegisterEventHandlers();
         }
+		
+		virtual ~InstallationMessageBuilder() {}
 
         // deltas
         static void BuildActiveDelta(const std::shared_ptr<Installation>& installation);

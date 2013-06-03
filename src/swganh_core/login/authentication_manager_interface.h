@@ -15,6 +15,8 @@ class LoginClientInterface;
 class AuthenticationManagerInterface {
 public:
 
+	virtual ~AuthenticationManagerInterface() {}
+
     virtual std::shared_ptr<encoders::EncoderInterface> encoder() = 0;
 
     virtual bool Authenticate(

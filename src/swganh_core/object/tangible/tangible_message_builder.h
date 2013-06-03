@@ -18,6 +18,8 @@ namespace object {
             RegisterEventHandlers();
         }
 
+		virtual ~TangibleMessageBuilder() {}
+		
         // deltas
         static void BuildCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
         static void BuildComponentCustomizationDelta(const std::shared_ptr<Tangible>& tangible);

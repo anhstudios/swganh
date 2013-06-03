@@ -66,7 +66,7 @@ public:
     */
     DatabaseManager(sql::Driver* driver, uint32_t num_threads = 1);
 
-    ~DatabaseManager();
+    virtual ~DatabaseManager();
 
     /*! Check to see whether a specified storage type has been registered with
     * the DatabaseManager instance or not.

@@ -52,7 +52,7 @@ public:
     Tangible();
     Tangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t counter, uint32_t damage_amount, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders);
-
+	virtual ~Tangible() {}
     // Customization
     void AddCustomization(const std::string& customization);
 	void AddCustomization(const std::string& customization, boost::unique_lock<boost::mutex>& lock);

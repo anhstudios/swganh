@@ -44,7 +44,7 @@ public:
     typedef CreatureMessageBuilder MessageBuilderType;
 
     Creature();
-    ~Creature();
+    virtual ~Creature();
 
     // CREO
     uint32_t GetType() const;
