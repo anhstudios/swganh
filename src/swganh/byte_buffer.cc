@@ -238,7 +238,7 @@ const std::wstring ByteBuffer::read<std::wstring>(bool do_swap_endian, bool null
 	}
 }
 
-std::ostream& operator<<(std::ostream& message, const ByteBuffer& buffer) {
+std::ostream& swganh::operator<<(std::ostream& message, const ByteBuffer& buffer) {
     size_t length = buffer.size();
     const unsigned char* data = buffer.data();
     

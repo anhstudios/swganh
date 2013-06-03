@@ -219,6 +219,47 @@ inline bool operator!=(const ByteBuffer& lhs, const ByteBuffer& rhs) {
     return !(lhs == rhs);
 }
 
+/*! This helper function provides support for streaming ByteBuffer instances
+* to out output stream (most generally for debugging).
+*
+* @param stream Reference to the output stream to write the ByteBuffer to.
+* @param buffer Reference to a ByteBuffer instance.
+*
+* @return Reference to the output stream.
+*/
+std::ostream& operator<<(std::ostream& message, const ByteBuffer& buffer);
+
+/* Helper function for generating a serialized ByteBuffer from a type
+*/
+template<typename T>
+ByteBuffer serialize(T& val)
+{
+    ByteBuffer serialize_buffer;
+    val.serialize(serialize_buffer);
+
+    return serialize_buffer;
+}
+
+/* Helper function for generating a type from a serialized ByteBuffer
+*/
+template<typename T>
+T deserialize(ByteBuffer& buffer)
+{
+    T val;
+    return deserialize(buffer, val);
+}
+
+
+/* Helper function for reading into an existing instance of a type from a 
+* serialized ByteBuffer.
+*/
+template<typename T>
+void deserialize(ByteBuffer& buffer, T& val)
+{
+    val.deserialize(buffer);
+    return val;
+}
+
 }  // namespace swganh
 
 /*! This helper function is used to provide support for streaming values to a
