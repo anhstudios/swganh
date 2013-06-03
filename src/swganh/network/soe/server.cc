@@ -62,25 +62,22 @@ string Server::Resolve(const string& hostname)
 }
 
 void Server::AsyncReceive() {
-	if (socket_.is_open())
-	{
-		socket_.async_receive_from(
-			buffer(recv_buffer_.data(), recv_buffer_.size()), 
-			current_remote_endpoint_,
-			[this] (const boost::system::error_code& error, std::size_t bytes_transferred) {
-				if(!error)
-				{
-					bytes_recv_ += bytes_transferred;
+    socket_.async_receive_from(
+        buffer(recv_buffer_.data(), recv_buffer_.size()),
+        current_remote_endpoint_,
+        [this] (const boost::system::error_code& error, std::size_t bytes_transferred)
+    {
+        if(!error && bytes_transferred > 0)
+        {
+            bytes_recv_ += bytes_transferred;
 
-					GetSession(current_remote_endpoint_)->HandleProtocolMessage(ByteBuffer(recv_buffer_.data(), bytes_transferred));                			
-				}
-				else if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset )
-				{
-					LOG(info) << "lost client with AsyncReceive error: " << error.message();				
-				}		
-				AsyncReceive();
-		});
-	}
+            GetSession(current_remote_endpoint_)->HandleProtocolMessage(ByteBuffer(recv_buffer_.data(), bytes_transferred));                			
+        }
+
+        if(error != boost::asio::error::operation_aborted) {
+            AsyncReceive();
+        }
+    });
 }
 
 uint32_t Server::max_receive_size() {
