@@ -10,6 +10,7 @@
 
 #include "swganh/crc.h"
 #include "swganh/event_dispatcher.h"
+#include "swganh/network/resolver.h"
 #include "swganh/network/soe/server.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh/service/service_directory_interface.h"
@@ -62,7 +63,7 @@ ConnectionService::ConnectionService(
         "Connection Service",
         "connection",
         "0.1",
-        Resolve(listen_address_),
+        swganh::network::resolve_to_string(listen_address_),
         0,
         listen_port_,
         ping_port_));

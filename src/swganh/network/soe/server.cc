@@ -34,7 +34,8 @@ void Server::StartListening(uint16_t port)
     AsyncReceive();
 }
 
-void Server::StopListening(void) {
+void Server::StopListening()
+{
 	socket_.close();
 }
     
@@ -43,22 +44,8 @@ void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
         endpoint, 
         [this] (const boost::system::error_code& error, std::size_t bytes_transferred)
     {
-        if (bytes_transferred == 0)
-        {
-            DLOG(warning) << "Sent 0 bytes";
-        }
-		
         bytes_sent_ += bytes_transferred;
     });
-}
-
-string Server::Resolve(const string& hostname)
-{
-    udp::resolver resolver(socket_.get_io_service());
-    udp::resolver::query query(udp::v4(), hostname, "");
-    udp::endpoint resolved_endpoint = *resolver.resolve(query);
-
-    return resolved_endpoint.address().to_string();
 }
 
 void Server::AsyncReceive() {

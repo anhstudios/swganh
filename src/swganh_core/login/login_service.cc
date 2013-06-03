@@ -11,6 +11,7 @@
 
 #include "swganh/event_dispatcher.h"
 
+#include "swganh/network/resolver.h"
 #include "swganh/network/soe/session.h"
 #include "swganh/network/soe/server.h"
 
@@ -60,7 +61,7 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKe
         "Login Service",
         "login",
         "0.1",
-        Resolve(listen_address_),
+        swganh::network::resolve_to_string(listen_address_),
         0,
         listen_port_,
         0));
