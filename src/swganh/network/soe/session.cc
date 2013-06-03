@@ -243,19 +243,14 @@ void Session::handleDisconnect_(Disconnect packet)
 void Session::handlePing_(Ping packet)
 {
     Ping pong;
-
-    ByteBuffer buffer;
-    pong.serialize(buffer);
-    SendSoePacket_(std::move(buffer));
+    SendSoePacket_(serialize(pong));
 }
 
 void Session::handleNetStatsClient_(NetStatsClient packet)
 {
     server_net_stats_.client_tick_count = packet.client_tick_count;
 
-    ByteBuffer buffer;
-    server_net_stats_.serialize(buffer);
-    SendSoePacket_(std::move(buffer));
+    SendSoePacket_(serialize(server_net_stats_));
 }
 
 void Session::handleChildDataA_(ChildDataA packet)
@@ -357,28 +352,20 @@ bool Session::AcknowledgeSequence_(const uint16_t& sequence)
     if(next_client_sequence_ == sequence)
     {
         AckA ack(sequence);
-        ByteBuffer buffer;
-        ack.serialize(buffer);
-        SendSoePacket_(move(buffer));
+        SendSoePacket_(serialize(ack));
 
         next_client_sequence_ = sequence + 1;
         current_client_sequence_ = sequence;
 
         return true;
     }
-	// are we more than 50 packets out of sequence?
-	else if(sequence > (next_client_sequence_ + 50) && next_client_sequence_ > 50)
-	{
+
+    if(sequence > (next_client_sequence_ + 50) && next_client_sequence_ > 50) {
 		Close();
-	}
-    else if (next_client_sequence_ < sequence && ((std::numeric_limits<uint16_t>::max() - sequence) > (sequence - next_client_sequence_)))
-    {
+	} else {
 		// Tell the client we have received an Out of Order sequence.
 		OutOfOrderA	out_of_order(next_client_sequence_ - 1);
-		ByteBuffer buffer;
-		out_of_order.serialize(buffer);
-		encryption_filter_(this, &buffer);
-		SendSoePacket_(move(buffer));        
+		SendSoePacket_(serialize(out_of_order));        
     }
 	
     DLOG(warning) << "Invalid sequence: [" << sequence << "] Current sequence [" << next_client_sequence_ << "]";
