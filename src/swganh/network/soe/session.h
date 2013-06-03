@@ -156,7 +156,6 @@ private:
     void handleAckA_(AckA packet);
     void handleOutOfOrderA_(OutOfOrderA packet);
     void SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
-    void SendSoePacketInternal(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
     void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 

@@ -358,11 +358,6 @@ void Session::handleOutOfOrderA_(OutOfOrderA packet)
 
 void Session::SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence)
 {
-    strand_.post(bind(&Session::SendSoePacketInternal, shared_from_this(), std::move(message), sequence));
-}
-
-void Session::SendSoePacketInternal(swganh::ByteBuffer message, boost::optional<uint16_t> sequence)
-{
 	LOG_NET << "Server -> Client: \n" << message;
 
     compression_filter_(this, &message);
