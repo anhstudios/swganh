@@ -69,52 +69,56 @@ uint32_t Session::crc_seed() const {
     return crc_seed_;
 }
 
-vector<ByteBuffer> Session::GetUnacknowledgedMessages() const {
-    vector<ByteBuffer> unacknowledged_messages;
+void Session::SendSoePacket_(swganh::ByteBuffer& message)
+{
+	LOG_NET << "Server -> Client: \n" << message;
 
-    for_each(
-        sent_messages_.begin(),
-        sent_messages_.end(),
-        [&unacknowledged_messages] (const SequencedMessageMap::value_type& i)
-    {
-        unacknowledged_messages.push_back(i.second);
-    });
-
-    return unacknowledged_messages;
+    compression_filter_(this, &message);
+    encryption_filter_(this, &message);
+    crc_output_filter_(this, &message);
+	
+    // Store it for resending later if necessary
+    server_->SendTo(remote_endpoint(), message);
 }
 
-void Session::SendFragmentedPacket_(ByteBuffer message, SequencedCallbacks callbacks)
+void Session::SendFragmentedPacket_(ByteBuffer message, boost::optional<SequencedCallbacks> callbacks)
 {
-    uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 3;
-
-    list<ByteBuffer> fragmented_message = SplitDataChannelMessage(
-            message,
-            max_data_channel_size);
-
-    auto list_size = fragmented_message.size();
-    for (auto& fragment : fragmented_message)
-    {
-        if (list_size == 1)
-        {
-            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), callbacks);            
-        }
-        else
-        {
-            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment), SequencedCallbacks());
-        }
-
-        --list_size;
+    auto fragments = SplitDataChannelMessage(message, max_data_size());
+    
+    auto& current_fragment = fragments.front();
+    while(fragments.size() > 1) {
+        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(current_fragment));
+        fragments.pop_front();
     }
+
+    if(fragments.size() > 0) {
+        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(current_fragment), std::move(callbacks));
+    }
+}
+
+void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks) {
+    // Get the next sequence number
+    uint16_t message_sequence = server_sequence_++;
+
+    // Allocate a new packet
+    ByteBuffer data_channel_message;
+    data_channel_message.append(header_builder(message_sequence));
+    data_channel_message.append(move(message));
+
+    // Send it over the wire
+    SendSoePacket_(data_channel_message);
+    
+    unacknowledged_messages_.emplace_back(std::make_tuple(message_sequence, std::move(message), std::move(callbacks)));
 }
 
 void Session::SendTo(ByteBuffer message, boost::optional<SequencedCallback> callback)
 {    
     uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 3;
 
-    SequencedCallbacks callbacks;
-    if (callback)
-    {
-        callbacks.push_back(*callback);
+    boost::optional<SequencedCallbacks> callbacks;
+    if (callback) {
+        callbacks = SequencedCallbacks();
+        (*callbacks).emplace_back(std::move(*callback));
     }
 
     if (message.size() > max_data_channel_size) {
@@ -131,13 +135,9 @@ void Session::Close(void)
         connected_ = false;
 
         Disconnect disconnect(connection_id_);
-        ByteBuffer buffer;
+        SendSoePacket_(serialize(disconnect));
 
-        disconnect.serialize(buffer);
-        SendSoePacket_(move(buffer));
-
-        auto this_session = shared_from_this();
-        server_->RemoveSession(this_session);
+        server_->RemoveSession(shared_from_this());
 
         OnClose();
     }
@@ -189,23 +189,6 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
     } catch(const std::exception& e) {
         LOG(warning) << "Error handling protocol message\n\n" << e.what();
     }
-}
-
-
-void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks) {
-    // Get the next sequence number
-    uint16_t message_sequence = server_sequence_++;
-
-    // Allocate a new packet
-    ByteBuffer data_channel_message;
-    data_channel_message.append(header_builder(message_sequence));
-    data_channel_message.append(move(message));
-
-    // Send it over the wire
-    SendSoePacket_(data_channel_message, message_sequence);
-
-	if(callbacks.get().size() > 0)
-		QueueSequencedCallback(message_sequence, callbacks.get());
 }
 
 void Session::handleSessionRequest_(SessionRequest packet)
@@ -285,46 +268,28 @@ void Session::handleDataFragA_(DataFragA packet)
 
 void Session::handleAckA_(AckA packet)
 {
-    auto it = find_if(
-        sent_messages_.begin(),
-        sent_messages_.end(),
-        [this, &packet] (const SequencedMessageMap::value_type& message)
-    {
-        return (message.first == packet.sequence) ? true : false;
-    });
+    auto& front = unacknowledged_messages_.front();
+    while(std::get<0>(front) <= packet.sequence) {
+        if (auto& callbacks = std::get<2>(front)) {
+            auto current_sequence = std::get<0>(front);
+            for(auto& func : *callbacks) {
+			    func(current_sequence);
+            }
+        }
 
-    sent_messages_.erase(sent_messages_.begin(), it);
+        unacknowledged_messages_.pop_front();
+    }
 
     last_acknowledged_sequence_ = packet.sequence;
-	DequeueSequencedCallback(packet.sequence);
 }
 
 void Session::handleOutOfOrderA_(OutOfOrderA packet)
-{
-    std::for_each(
-        begin(sent_messages_),
-        end(sent_messages_),
-        [=](const SequencedMessageMap::value_type& item)
-    {
-        server_->SendTo(remote_endpoint(), item.second);
-    });
-}
+{    
+    for(const auto& message : unacknowledged_messages_) {
+        server_->SendTo(remote_endpoint(), std::get<1>(message));
 
-void Session::SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence)
-{
-	LOG_NET << "Server -> Client: \n" << message;
-
-    compression_filter_(this, &message);
-    encryption_filter_(this, &message);
-    crc_output_filter_(this, &message);
-	
-    // Store it for resending later if necessary
-    if (sequence)
-    {
-        sent_messages_.push_back(make_pair(*sequence, message));
-    } 
-
-    server_->SendTo(remote_endpoint(), move(message));	
+        if(std::get<0>(message) == packet.sequence) break;
+    }
 }
 
 bool Session::AcknowledgeSequence_(const uint16_t& sequence)
@@ -350,35 +315,4 @@ bool Session::AcknowledgeSequence_(const uint16_t& sequence)
 	
     DLOG(warning) << "Invalid sequence: [" << sequence << "] Current sequence [" << next_client_sequence_ << "]";
 	return false;
-}
-
-void Session::QueueSequencedCallback(uint16_t sequence, SequencedCallbacks callbacks)
-{
-	auto iter = acknowledgement_callbacks_.find(sequence);
-	if(iter == acknowledgement_callbacks_.end())
-	{
-		acknowledgement_callbacks_.insert(std::pair<uint16_t, SequencedCallbacks>(sequence, callbacks));
-	}
-	else
-		LOG(error) << "Sequence callback is slotted but has not been dequeued.";
-}
-
-void Session::DequeueSequencedCallback(uint16_t sequence)
-{
-	for(std::map<uint16_t, SequencedCallbacks>::iterator iter = acknowledgement_callbacks_.begin(); iter != acknowledgement_callbacks_.end(); iter++)
-	{
-		if((*iter).first > sequence)
-			break;
-
-		for(auto& func : (*iter).second)
-		{
-			func((*iter).first);
-		}
-	}
-	
-	auto iter = acknowledgement_callbacks_.find(sequence);
-	if(iter != acknowledgement_callbacks_.end()) {
-		acknowledgement_callbacks_.erase(acknowledgement_callbacks_.begin(), iter);
-		acknowledgement_callbacks_.erase(iter);
-	}
 }

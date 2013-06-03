@@ -5,6 +5,7 @@
 #include <atomic>
 #include <list>
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #ifdef WIN32
@@ -53,7 +54,9 @@ public:
 
 	typedef std::function<void(uint16_t /* sequence */)> SequencedCallback;
 	typedef std::list<SequencedCallback> SequencedCallbacks;
-	typedef std::pair<ByteBuffer, boost::optional<SequencedCallback>> OutgoingMessage;
+    typedef std::list<std::tuple<uint16_t, ByteBuffer, boost::optional<SequencedCallbacks>>> SequencedMessagesList;
+
+    uint32_t max_data_size() const { return receive_buffer_size_ - crc_length_ - 3; }
 
     /**
     * @return The current send sequence for the server.
@@ -83,14 +86,6 @@ public:
      * @return The crc seed used to encrypt this session's messages.
      */
     uint32_t crc_seed() const;
-
-    /**
-     * Get a list of all outgoing data channel messages that have not yet been acknowledged
-     * by the remote end.
-     *
-     * @return List of unacknowledged data channel messages.
-     */
-    std::vector<swganh::ByteBuffer> GetUnacknowledgedMessages() const;
 
     /**
     * Sends a data channel message to the remote client.
@@ -140,8 +135,6 @@ private:
 
     typedef swganh::ByteBuffer(*HeaderBuilder)(uint16_t);
 
-    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
-
     virtual void OnClose() {}
 
     void handleSessionRequest_(SessionRequest packet);
@@ -153,19 +146,19 @@ private:
     void handleDataFragA_(DataFragA packet);
     void handleAckA_(AckA packet);
     void handleOutOfOrderA_(OutOfOrderA packet);
-    void SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
-    void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);
+    void SendSoePacket_(swganh::ByteBuffer& message);
+    void SendFragmentedPacket_(swganh::ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());    
+    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
+
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 
     bool AcknowledgeSequence_(const uint16_t& sequence);
-	void QueueSequencedCallback(uint16_t sequence, SequencedCallbacks);
-	void DequeueSequencedCallback(uint16_t sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     ServerInterface*					server_; // owner
     boost::asio::strand strand_;
 
-    SequencedMessageMap					sent_messages_;
+    SequencedMessagesList unacknowledged_messages_;
 
     bool								connected_;
 
@@ -184,8 +177,6 @@ private:
     // Net Stats
     NetStatsServer						server_net_stats_;
 
-    Concurrency::concurrent_queue<OutgoingMessage> outgoing_data_messages_;
-
     uint16_t incoming_fragmented_total_len_;
     ByteBuffer incoming_frag_;
 
@@ -196,8 +187,6 @@ private:
     filters::DecryptionFilter decryption_filter_;
     filters::EncryptionFilter encryption_filter_;
     filters::SecurityFilter security_filter_;
-
-	std::map<uint16_t, SequencedCallbacks> acknowledgement_callbacks_;
 };
 
 }}} // namespace swganh::network::soe
