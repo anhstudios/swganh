@@ -30,7 +30,6 @@ Session::Session(ServerInterface* server, boost::asio::io_service& cpu_pool, boo
     , server_sequence_()
     , server_net_stats_(0, 0, 0, 0, 0, 0)
     , incoming_fragmented_total_len_(0)
-    , incoming_fragmented_curr_len_(0)
     , decompression_filter_(server_->max_receive_size())
     , security_filter_(server_->max_receive_size())
 {
@@ -267,38 +266,19 @@ void Session::handleDataFragA_(DataFragA packet)
     if(!AcknowledgeSequence_(packet.sequence)) return;
     
     // Continuing a frag
-    if(incoming_fragmented_total_len_ > 0)
-    {
-        incoming_fragmented_curr_len_ += packet.data.size();
-        incoming_fragmented_messages_.push_back(packet.data);
+    if(incoming_fragmented_total_len_ > 0) {
+        incoming_frag_.append(packet.data);
 
-        if(incoming_fragmented_total_len_ == incoming_fragmented_curr_len_)
-        {
-            // Send to translator.
+        if(incoming_fragmented_total_len_ == incoming_frag_.size()) {
             incoming_fragmented_total_len_ = 0;
-            incoming_fragmented_curr_len_ = 0;
-
-            ByteBuffer full_packet;
-            std::for_each(
-                incoming_fragmented_messages_.cbegin(),
-                incoming_fragmented_messages_.cend(),
-                [&full_packet] (const ByteBuffer& buffer) {
-                    full_packet.append(buffer);
-                }
-            );
-
-            ChildDataA child_data_a(full_packet);
-            handleChildDataA_(child_data_a);
-
-            incoming_fragmented_messages_.clear();
+            server_->HandleMessage(shared_from_this(), std::move(incoming_frag_));
         }
     }
     // Starting a new frag
     else
     {
         incoming_fragmented_total_len_ = packet.data.read<uint16_t>();
-        incoming_fragmented_curr_len_ += packet.data.size();
-        incoming_fragmented_messages_.push_back(swganh::ByteBuffer(packet.data.data()+2, packet.data.size()-2));
+        incoming_frag_.append(packet.data);
     }
 
 }

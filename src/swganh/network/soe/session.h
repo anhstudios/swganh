@@ -186,10 +186,8 @@ private:
 
     Concurrency::concurrent_queue<OutgoingMessage> outgoing_data_messages_;
 
-    std::list<swganh::ByteBuffer>			incoming_fragmented_messages_;
-
-    uint16_t							incoming_fragmented_total_len_;
-    uint16_t							incoming_fragmented_curr_len_;
+    uint16_t incoming_fragmented_total_len_;
+    ByteBuffer incoming_frag_;
 
     filters::CompressionFilter compression_filter_;
     filters::CrcInFilter crc_input_filter_;
