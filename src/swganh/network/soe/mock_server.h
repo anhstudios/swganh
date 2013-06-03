@@ -28,7 +28,6 @@ MOCK_BASE_CLASS(MockServer, ServerInterface )
     MOCK_METHOD(CreateSession, 1);
     MOCK_METHOD(GetSession, 1);
 
-    MOCK_METHOD(socket, 0);
     MOCK_METHOD(max_receive_size, 0);
 };
     

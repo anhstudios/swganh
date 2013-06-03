@@ -65,17 +65,14 @@ void Server::AsyncReceive() {
 	if (socket_.is_open())
 	{
 		socket_.async_receive_from(
-			buffer(&recv_buffer_[0], recv_buffer_.size()), 
+			buffer(recv_buffer_.data(), recv_buffer_.size()), 
 			current_remote_endpoint_,
 			[this] (const boost::system::error_code& error, std::size_t bytes_transferred) {
 				if(!error)
 				{
 					bytes_recv_ += bytes_transferred;
 
-					ByteBuffer message(bytes_transferred);
-					message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
-
-					GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));                			
+					GetSession(current_remote_endpoint_)->HandleProtocolMessage(ByteBuffer(recv_buffer_.data(), bytes_transferred));                			
 				}
 				else if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset )
 				{
@@ -84,10 +81,6 @@ void Server::AsyncReceive() {
 				AsyncReceive();
 		});
 	}
-}
-
-boost::asio::ip::udp::socket* Server::socket() {
-    return &socket_;
 }
 
 uint32_t Server::max_receive_size() {

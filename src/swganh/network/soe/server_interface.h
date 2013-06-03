@@ -45,8 +45,6 @@ public:
     
     virtual std::shared_ptr<Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     
-    virtual boost::asio::ip::udp::socket* socket() = 0;
-
     virtual uint32_t max_receive_size() = 0;
 };
 
