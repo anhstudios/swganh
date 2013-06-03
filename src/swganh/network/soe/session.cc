@@ -144,11 +144,6 @@ void Session::Close(void)
     }
 }
 
-ServerInterface* Session::server()
-{
-    return server_;
-}
-
 void Session::HandleMessage(swganh::ByteBuffer message)
 {
     switch(swganh::bigToHost(message.peek<uint16_t>()))
@@ -235,13 +230,9 @@ void Session::handleSessionRequest_(SessionRequest packet)
 
 void Session::handleMultiPacket_(MultiPacket packet)
 {
-    std::for_each(
-        begin(packet.packets),
-        end(packet.packets),
-        [=](swganh::ByteBuffer& buffer)
-    {
-        HandleMessage(move(buffer));
-    });
+    for(auto& message : packet.packets) {
+        HandleMessage(std::move(message));
+    }
 }
 
 void Session::handleDisconnect_(Disconnect packet)
@@ -276,13 +267,9 @@ void Session::handleChildDataA_(ChildDataA packet)
 
     AcknowledgeSequence_(packet.sequence);
 
-    std::for_each(
-        begin(packet.messages),
-        end(packet.messages),
-        [this] (ByteBuffer& message)
-    {
-        server_->HandleMessage(this->shared_from_this(), std::move(message));
-    });
+    for(auto& message : packet.messages) {
+        server_->HandleMessage(shared_from_this(), std::move(message));
+    }
 }
 
 void Session::handleDataFragA_(DataFragA packet)

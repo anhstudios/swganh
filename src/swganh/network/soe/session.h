@@ -135,8 +135,6 @@ public:
 
     boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
-    ServerInterface* server();
-
 private:
     typedef std::list<std::pair<uint16_t, swganh::ByteBuffer>> SequencedMessageMap;
 
