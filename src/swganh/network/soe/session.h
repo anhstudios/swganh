@@ -158,7 +158,6 @@ private:
     void SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
     void SendSoePacketInternal(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
     void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);
-    void HandleMessageInternal(swganh::ByteBuffer message);
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 
     bool SequenceIsValid_(const uint16_t& sequence);

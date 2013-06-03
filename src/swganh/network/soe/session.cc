@@ -151,11 +151,6 @@ ServerInterface* Session::server()
 
 void Session::HandleMessage(swganh::ByteBuffer message)
 {
-    strand_.post(bind(&Session::HandleMessageInternal, shared_from_this(), move(message)));
-}
-
-void Session::HandleMessageInternal(swganh::ByteBuffer message) 
-{
     switch(swganh::bigToHost(message.peek<uint16_t>()))
 	{
 		case CHILD_DATA_A:	   { handleChildDataA_(ChildDataA(message)); break; }
