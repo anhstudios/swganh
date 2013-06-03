@@ -260,12 +260,7 @@ void Session::handleNetStatsClient_(NetStatsClient packet)
 
 void Session::handleChildDataA_(ChildDataA packet)
 {
-    if(!SequenceIsValid_(packet.sequence)) {
-        LOG(warning) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
-        return;
-    }
-
-    AcknowledgeSequence_(packet.sequence);
+    if(!AcknowledgeSequence_(packet.sequence)) return;
 
     for(auto& message : packet.messages) {
         server_->HandleMessage(shared_from_this(), std::move(message));
@@ -274,11 +269,8 @@ void Session::handleChildDataA_(ChildDataA packet)
 
 void Session::handleDataFragA_(DataFragA packet)
 {
-    if(!SequenceIsValid_(packet.sequence))
-        return;
-
-    AcknowledgeSequence_(packet.sequence);
-
+    if(!AcknowledgeSequence_(packet.sequence)) return;
+    
     // Continuing a frag
     if(incoming_fragmented_total_len_ > 0)
     {
@@ -360,10 +352,18 @@ void Session::SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_
     server_->SendTo(remote_endpoint(), move(message));	
 }
 
-bool Session::SequenceIsValid_(const uint16_t& sequence)
+bool Session::AcknowledgeSequence_(const uint16_t& sequence)
 {
     if(next_client_sequence_ == sequence)
     {
+        AckA ack(sequence);
+        ByteBuffer buffer;
+        ack.serialize(buffer);
+        SendSoePacket_(move(buffer));
+
+        next_client_sequence_ = sequence + 1;
+        current_client_sequence_ = sequence;
+
         return true;
     }
 	// are we more than 50 packets out of sequence?
@@ -383,17 +383,6 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
 	
     DLOG(warning) << "Invalid sequence: [" << sequence << "] Current sequence [" << next_client_sequence_ << "]";
 	return false;
-}
-
-void Session::AcknowledgeSequence_(const uint16_t& sequence)
-{
-    AckA ack(sequence);
-    ByteBuffer buffer;
-    ack.serialize(buffer);
-    SendSoePacket_(move(buffer));
-
-    next_client_sequence_ = sequence + 1;
-    current_client_sequence_ = sequence;
 }
 
 void Session::QueueSequencedCallback(uint16_t sequence, SequencedCallbacks callbacks)

@@ -157,8 +157,7 @@ private:
     void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 
-    bool SequenceIsValid_(const uint16_t& sequence);
-    void AcknowledgeSequence_(const uint16_t& sequence);
+    bool AcknowledgeSequence_(const uint16_t& sequence);
 	void QueueSequencedCallback(uint16_t sequence, SequencedCallbacks);
 	void DequeueSequencedCallback(uint16_t sequence);
 
