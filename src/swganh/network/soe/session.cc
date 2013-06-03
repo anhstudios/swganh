@@ -154,42 +154,24 @@ void Session::HandleMessage(swganh::ByteBuffer message)
     strand_.post(bind(&Session::HandleMessageInternal, shared_from_this(), move(message)));
 }
 
-void Session::HandleMessageInternal(swganh::ByteBuffer message)
+void Session::HandleMessageInternal(swganh::ByteBuffer message) 
 {
-	// Sanity Check
-	if (message.size() > 0)
+    switch(swganh::bigToHost(message.peek<uint16_t>()))
 	{
-		uint16_t soe_opcode = 0;
-		try {
-
-			soe_opcode = message.peek<uint16_t>(true);
-			switch(soe_opcode)
+		case CHILD_DATA_A:	   { handleChildDataA_(ChildDataA(message)); break; }
+		case MULTI_PACKET:	   { handleMultiPacket_(MultiPacket(message)); break; }
+		case DATA_FRAG_A:	   { handleDataFragA_(DataFragA(message)); break; }
+		case ACK_A:			   { handleAckA_(AckA(message)); break; }
+		case PING:			   { handlePing_(Ping(message)); break; }
+		case NET_STATS_CLIENT: { handleNetStatsClient_(NetStatsClient(message)); break; }
+		case OUT_OF_ORDER_A:   { handleOutOfOrderA_(OutOfOrderA(message)); break; }
+		case DISCONNECT:	   { handleDisconnect_(Disconnect(message)); break; }
+		case SESSION_REQUEST:  { handleSessionRequest_(SessionRequest(message)); break; }
+		case FATAL_ERROR:      { Close(); break; }
+		default:
 			{
-				case CHILD_DATA_A:	   { handleChildDataA_(ChildDataA(message)); break; }
-				case MULTI_PACKET:	   { handleMultiPacket_(MultiPacket(message)); break; }
-				case DATA_FRAG_A:	   { handleDataFragA_(DataFragA(message)); break; }
-				case ACK_A:			   { handleAckA_(AckA(message)); break; }
-				case PING:			   { handlePing_(Ping(message)); break; }
-				case NET_STATS_CLIENT: { handleNetStatsClient_(NetStatsClient(message)); break; }
-				case OUT_OF_ORDER_A:   { handleOutOfOrderA_(OutOfOrderA(message)); break; }
-				case DISCONNECT:	   { handleDisconnect_(Disconnect(message)); break; }
-				case SESSION_REQUEST:  { handleSessionRequest_(SessionRequest(message)); break; }
-				case FATAL_ERROR:      { Close(); break; }
-				default:
-					if (message.peek<uint8_t>() != 0)
-					{
-						server_->HandleMessage(shared_from_this(), move(message));
-					}
-					else
-					{
-						DLOG(warning) << "Unhandled SOE Opcode: "
-							<< std::hex << soe_opcode << "\n\n" << message;
-					}
+				LOG(warning) << "Unhandled message: \n" << message;
 			}
-		} catch(const std::exception& e) {
-			LOG(warning) << "Error handling protocol message "
-				<< std::hex << soe_opcode << "\n\n" << e.what();
-		}
 	}
 }
 
@@ -203,14 +185,18 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
     try {
         security_filter_(this, &message);
 
-        if (connected())
+        if(connected())
         {
             crc_input_filter_(this, &message);
             decryption_filter_(this, &message);
             decompression_filter_(this, &message);
         }
-
-        HandleMessage(move(message));
+        
+        if(message.peek<uint8_t>() != 0) {
+            server_->HandleMessage(shared_from_this(), std::move(message));
+        } else {
+            HandleMessage(move(message));
+        }
     } catch(const std::exception& e) {
         LOG(warning) << "Error handling protocol message\n\n" << e.what();
     }
