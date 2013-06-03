@@ -85,14 +85,13 @@ void Session::SendFragmentedPacket_(ByteBuffer message, boost::optional<Sequence
 {
     auto fragments = SplitDataChannelMessage(message, max_data_size());
     
-    auto& current_fragment = fragments.front();
     while(fragments.size() > 1) {
-        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(current_fragment));
+        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(fragments.front()));
         fragments.pop_front();
     }
 
     if(fragments.size() > 0) {
-        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(current_fragment), std::move(callbacks));
+        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(fragments.front()), std::move(callbacks));
     }
 }
 
@@ -200,11 +199,8 @@ void Session::handleSessionRequest_(SessionRequest packet)
     SessionResponse session_response(connection_id_, crc_seed_);
     session_response.server_udp_buffer_size = server_->max_receive_size();
 
-    ByteBuffer buffer;
-    session_response.serialize(buffer);
-
     // Directly put this on the wire, it requires no outgoing processing.
-    server_->SendTo(remote_endpoint_, move(buffer));
+    server_->SendTo(remote_endpoint_, serialize(session_response));
 
     connected_ = true;
     LOG(info) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
@@ -298,9 +294,9 @@ bool Session::AcknowledgeSequence_(const uint16_t& sequence)
     {
         AckA ack(sequence);
         SendSoePacket_(serialize(ack));
-
-        next_client_sequence_ = sequence + 1;
+        
         current_client_sequence_ = sequence;
+        next_client_sequence_ = current_client_sequence_ + 1;
 
         return true;
     }
@@ -309,7 +305,7 @@ bool Session::AcknowledgeSequence_(const uint16_t& sequence)
 		Close();
 	} else {
 		// Tell the client we have received an Out of Order sequence.
-		OutOfOrderA	out_of_order(next_client_sequence_ - 1);
+		OutOfOrderA	out_of_order(current_client_sequence_);
 		SendSoePacket_(serialize(out_of_order));        
     }
 	
