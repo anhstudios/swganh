@@ -1,15 +1,15 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/network/soe/session.h"
+#include "session.h"
 
 #include <algorithm>
 
 #include "swganh/logger.h"
 
-#include "swganh/network/soe/server_interface.h"
+#include "server_interface.h"
 
-#include "swganh/network/soe/packet_utilities.h"
+#include "packet_utilities.h"
 
 using namespace swganh;
 using namespace swganh::event_dispatcher;
@@ -83,25 +83,43 @@ void Session::SendSoePacket_(swganh::ByteBuffer& message)
 
 void Session::SendFragmentedPacket_(ByteBuffer message, boost::optional<SequencedCallbacks> callbacks)
 {
-    auto fragments = SplitDataChannelMessage(message, max_data_size());
-    
-    while(fragments.size() > 1) {
-        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(fragments.front()));
-        fragments.pop_front();
+    uint32_t message_size = message.size();  
+    uint32_t remaining_bytes = message_size;
+    uint32_t max_size = max_data_size();
+    uint32_t chunk_size = 0;
+
+    if (message_size < max_size) {
+        throw std::invalid_argument("Message must be bigger than max size to fragment");
     }
 
-    if(fragments.size() > 0) {
-        SendSequencedMessage_(&BuildFragmentedDataChannelHeader, std::move(fragments.front()), std::move(callbacks));
+    while (remaining_bytes != 0) {        
+        ByteBuffer fragment;
+        chunk_size = (remaining_bytes > max_size) ? max_size : remaining_bytes;
+
+        if (remaining_bytes == message_size) {
+            chunk_size -= sizeof(uint32_t);
+            fragment.write(hostToBig(message_size));
+        }
+        
+        fragment.write(message.data() + (message_size - remaining_bytes), chunk_size);
+        remaining_bytes -= chunk_size;
+
+        if (remaining_bytes == 0) {
+            SendSequencedMessage_(0x0D, std::move(fragment), std::move(callbacks));
+        } else {
+            SendSequencedMessage_(0x0D, std::move(fragment));
+        }
     }
 }
 
-void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks) {
+void Session::SendSequencedMessage_(uint16_t header, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks) {
     // Get the next sequence number
     uint16_t message_sequence = server_sequence_++;
 
     // Allocate a new packet
     ByteBuffer data_channel_message;
-    data_channel_message.append(header_builder(message_sequence));
+    data_channel_message.write(hostToBig(header));
+    data_channel_message.write(hostToBig(message_sequence));
     data_channel_message.append(move(message));
 
     // Send it over the wire
@@ -123,7 +141,7 @@ void Session::SendTo(ByteBuffer message, boost::optional<SequencedCallback> call
     if (message.size() > max_data_channel_size) {
         SendFragmentedPacket_(message, std::move(callbacks));
     } else {
-        SendSequencedMessage_(&BuildDataChannelHeader, move(message), std::move(callbacks));
+        SendSequencedMessage_(0x09, move(message), std::move(callbacks));
     }
 }
 

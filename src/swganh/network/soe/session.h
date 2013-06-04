@@ -148,7 +148,7 @@ private:
     void handleOutOfOrderA_(OutOfOrderA packet);
     void SendSoePacket_(swganh::ByteBuffer& message);
     void SendFragmentedPacket_(swganh::ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());    
-    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
+    void SendSequencedMessage_(uint16_t header, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
 
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 
