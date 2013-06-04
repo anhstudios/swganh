@@ -26,10 +26,6 @@ struct SessionRequest
         , connection_id(connection_id_)
         , client_udp_buffer_size(client_udp_buffer_size_) { }
 
-    SessionRequest(swganh::ByteBuffer& buffer) {
-        Deserialize(buffer);
-    }
-
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
         buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(crc_length));
@@ -63,12 +59,7 @@ struct SessionResponse
         , encryption_type(encryption_type_)
         , seed_length(4)
         , server_udp_buffer_size(server_udp_buffer_size)
-    {
-    }
-
-    SessionResponse(ByteBuffer& buffer) {
-        Deserialize(buffer);
-    }
+    {}
 
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::hostToBig<uint16_t>(soe_opcode));
@@ -104,14 +95,10 @@ struct MultiPacket
     MultiPacket()
         : soe_opcode(MULTI_PACKET) {}
 
-    MultiPacket(std::list<ByteBuffer> packets_)
+    explicit MultiPacket(std::list<ByteBuffer> packets_)
         : soe_opcode(MULTI_PACKET)
         , packets(packets_) {}
-
-    MultiPacket(swganh::ByteBuffer& buffer) {
-        Deserialize(buffer); 
-    }
-
+    
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
         std::for_each(packets.begin(), packets.end(), [=, &buffer](ByteBuffer& other_buffer) {
@@ -144,12 +131,10 @@ struct Disconnect
     Disconnect()
         : soe_opcode(DISCONNECT) {}
 
-    Disconnect(uint32_t connection_id_, uint16_t reason_id_ = 6)
+    explicit Disconnect(uint32_t connection_id_, uint16_t reason_id_ = 6)
         : soe_opcode(DISCONNECT)
         , connection_id(connection_id_)
         , reason_id(reason_id_) { }
-
-    Disconnect(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
 
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
@@ -172,8 +157,6 @@ struct Ping
 {
     Ping()
         : soe_opcode(PING) {}
-
-    Ping(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
 
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::hostToBig<uint16_t>(soe_opcode));
@@ -208,8 +191,6 @@ struct NetStatsClient
         , longest_update(longest_update_)
         , packets_sent(packets_sent_)
         , packets_received(packets_received_) { }
-
-    NetStatsClient(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
 
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
@@ -263,8 +244,6 @@ struct NetStatsServer
         , server_packets_sent(server_packets_sent_)
         , server_packets_received(server_packets_received_) { }
 
-    NetStatsServer(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
-
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(client_tick_count));
@@ -299,12 +278,10 @@ struct ChildDataA
     ChildDataA()
         : soe_opcode(CHILD_DATA_A) {}
 
-    ChildDataA(uint16_t sequence_)
+    explicit ChildDataA(uint16_t sequence_)
         : soe_opcode(CHILD_DATA_A)
         , sequence(sequence_) { }
 
-    ChildDataA(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
-    
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(sequence));
@@ -352,8 +329,6 @@ struct DataFragA
         , sequence(sequence_)
         , data(buf_) { }
 
-    DataFragA(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
-
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(sequence));
@@ -376,11 +351,9 @@ struct OutOfOrderA
     OutOfOrderA()
         : soe_opcode(OUT_OF_ORDER_A) {}
 
-    OutOfOrderA(uint16_t sequence_)
+    explicit OutOfOrderA(uint16_t sequence_)
         : soe_opcode(OUT_OF_ORDER_A)
         , sequence(sequence_) { }
-
-    OutOfOrderA(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
 
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
@@ -401,11 +374,9 @@ struct AckA
     AckA()
         : soe_opcode(ACK_A) {}
 
-    AckA(uint16_t sequence_)
+    explicit AckA(uint16_t sequence_)
         : soe_opcode(ACK_A)
         , sequence(sequence_) {}
-
-    AckA(swganh::ByteBuffer& buffer) { Deserialize(buffer); }
 
     void Serialize(swganh::ByteBuffer& buffer) {
         buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
