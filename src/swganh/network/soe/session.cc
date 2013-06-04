@@ -9,8 +9,6 @@
 
 #include "server_interface.h"
 
-#include "packet_utilities.h"
-
 using namespace swganh;
 using namespace swganh::event_dispatcher;
 using namespace swganh::network;

@@ -12,7 +12,6 @@
 #include "swganh/active_object.h"
 #include "swganh/hash_string.h"
 
-#include "swganh/network/soe/packet_utilities.h"
 #include "swganh/network/soe/session.h"
 #include "swganh/service/service_interface.h"
 

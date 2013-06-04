@@ -10,7 +10,6 @@
 #include "swganh/active_object.h"
 #include "swganh/logger.h"
 
-#include "swganh/network/soe/packet_utilities.h"
 #include "swganh/network/soe/server.h"
 #include "swganh/service/service_interface.h"
 

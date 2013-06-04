@@ -8,7 +8,6 @@
 
 #include "swganh/byte_buffer.h"
 #include "swganh/utilities.h"
-#include "packet_utilities.h"
 
 namespace swganh {
 namespace network {
