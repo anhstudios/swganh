@@ -31,14 +31,6 @@ swganh::ByteBuffer BuildDataChannelHeader(uint16_t sequence);
 swganh::ByteBuffer BuildFragmentedDataChannelHeader(uint16_t sequence);
 
 /**
- * Packs a list of game messages into a single message body.
- *
- * @param data_list A list of game messages to pack.
- * @return A single data channel message containing 1 or more game messages.
- */
-swganh::ByteBuffer PackDataChannelMessages(std::list<swganh::ByteBuffer> data_list);
-
-/**
  * Splits a large data channel message into fragments.
  *
  * @param message The message to split.
