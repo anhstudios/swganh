@@ -142,9 +142,9 @@ void Session::Close(void)
     }
 }
 
-void Session::HandleMessage(swganh::ByteBuffer message)
+void Session::HandleMessage(ByteBuffer message)
 {
-    switch(swganh::bigToHost(message.peek<uint16_t>()))
+    switch(bigToHost(message.read<uint16_t>()))
 	{
 		case CHILD_DATA_A:	   { handleChildDataA_(Deserialize<ChildDataA>(message)); break; }
 		case MULTI_PACKET:	   { handleMultiPacket_(Deserialize<MultiPacket>(message)); break; }
