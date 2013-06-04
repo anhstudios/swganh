@@ -232,10 +232,10 @@ std::ostream& operator<<(std::ostream& message, const ByteBuffer& buffer);
 /* Helper function for generating a serialized ByteBuffer from a type
 */
 template<typename T>
-ByteBuffer serialize(T& val)
+ByteBuffer Serialize(T& val)
 {
     ByteBuffer serialize_buffer;
-    val.serialize(serialize_buffer);
+    val.Serialize(serialize_buffer);
 
     return serialize_buffer;
 }
@@ -243,10 +243,11 @@ ByteBuffer serialize(T& val)
 /* Helper function for generating a type from a serialized ByteBuffer
 */
 template<typename T>
-T deserialize(ByteBuffer& buffer)
+T Deserialize(ByteBuffer& buffer)
 {
     T val;
-    return deserialize(buffer, val);
+    Deserialize(buffer, val);
+    return val;
 }
 
 
@@ -254,10 +255,9 @@ T deserialize(ByteBuffer& buffer)
 * serialized ByteBuffer.
 */
 template<typename T>
-void deserialize(ByteBuffer& buffer, T& val)
+void Deserialize(ByteBuffer& buffer, T& val)
 {
-    val.deserialize(buffer);
-    return val;
+    val.Deserialize(buffer);
 }
 
 }  // namespace swganh

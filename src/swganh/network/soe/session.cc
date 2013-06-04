@@ -134,7 +134,7 @@ void Session::Close(void)
         connected_ = false;
 
         Disconnect disconnect(connection_id_);
-        SendSoePacket_(serialize(disconnect));
+        SendSoePacket_(Serialize(disconnect));
 
         server_->RemoveSession(shared_from_this());
 
@@ -146,15 +146,15 @@ void Session::HandleMessage(swganh::ByteBuffer message)
 {
     switch(swganh::bigToHost(message.peek<uint16_t>()))
 	{
-		case CHILD_DATA_A:	   { handleChildDataA_(ChildDataA(message)); break; }
-		case MULTI_PACKET:	   { handleMultiPacket_(MultiPacket(message)); break; }
-		case DATA_FRAG_A:	   { handleDataFragA_(DataFragA(message)); break; }
-		case ACK_A:			   { handleAckA_(AckA(message)); break; }
-		case PING:			   { handlePing_(Ping(message)); break; }
-		case NET_STATS_CLIENT: { handleNetStatsClient_(NetStatsClient(message)); break; }
-		case OUT_OF_ORDER_A:   { handleOutOfOrderA_(OutOfOrderA(message)); break; }
-		case DISCONNECT:	   { handleDisconnect_(Disconnect(message)); break; }
-		case SESSION_REQUEST:  { handleSessionRequest_(SessionRequest(message)); break; }
+		case CHILD_DATA_A:	   { handleChildDataA_(Deserialize<ChildDataA>(message)); break; }
+		case MULTI_PACKET:	   { handleMultiPacket_(Deserialize<MultiPacket>(message)); break; }
+		case DATA_FRAG_A:	   { handleDataFragA_(Deserialize<DataFragA>(message)); break; }
+		case ACK_A:			   { handleAckA_(Deserialize<AckA>(message)); break; }
+		case PING:			   { handlePing_(Deserialize<Ping>(message)); break; }
+		case NET_STATS_CLIENT: { handleNetStatsClient_(Deserialize<NetStatsClient>(message)); break; }
+		case OUT_OF_ORDER_A:   { handleOutOfOrderA_(Deserialize<OutOfOrderA>(message)); break; }
+		case DISCONNECT:	   { handleDisconnect_(Deserialize<Disconnect>(message)); break; }
+		case SESSION_REQUEST:  { handleSessionRequest_(Deserialize<SessionRequest>(message)); break; }
 		case FATAL_ERROR:      { Close(); break; }
 		default:
 			{
@@ -200,7 +200,7 @@ void Session::handleSessionRequest_(SessionRequest packet)
     session_response.server_udp_buffer_size = server_->max_receive_size();
 
     // Directly put this on the wire, it requires no outgoing processing.
-    server_->SendTo(remote_endpoint_, serialize(session_response));
+    server_->SendTo(remote_endpoint_, Serialize(session_response));
 
     connected_ = true;
     LOG(info) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
@@ -221,14 +221,14 @@ void Session::handleDisconnect_(Disconnect packet)
 void Session::handlePing_(Ping packet)
 {
     Ping pong;
-    SendSoePacket_(serialize(pong));
+    SendSoePacket_(Serialize(pong));
 }
 
 void Session::handleNetStatsClient_(NetStatsClient packet)
 {
     server_net_stats_.client_tick_count = packet.client_tick_count;
 
-    SendSoePacket_(serialize(server_net_stats_));
+    SendSoePacket_(Serialize(server_net_stats_));
 }
 
 void Session::handleChildDataA_(ChildDataA packet)
@@ -293,7 +293,7 @@ bool Session::AcknowledgeSequence_(const uint16_t& sequence)
     if(next_client_sequence_ == sequence)
     {
         AckA ack(sequence);
-        SendSoePacket_(serialize(ack));
+        SendSoePacket_(Serialize(ack));
         
         current_client_sequence_ = sequence;
         next_client_sequence_ = current_client_sequence_ + 1;
@@ -306,7 +306,7 @@ bool Session::AcknowledgeSequence_(const uint16_t& sequence)
 	} else {
 		// Tell the client we have received an Out of Order sequence.
 		OutOfOrderA	out_of_order(current_client_sequence_);
-		SendSoePacket_(serialize(out_of_order));        
+		SendSoePacket_(Serialize(out_of_order));        
     }
 	
     DLOG(warning) << "Invalid sequence: [" << sequence << "] Current sequence [" << next_client_sequence_ << "]";
