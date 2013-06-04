@@ -6,17 +6,55 @@
 #include <list>
 #include <memory>
 
-#include <swganh/byte_buffer.h>
-#include <swganh/utilities.h>
-#include <swganh/network/soe/protocol_opcodes.h>
-#include "swganh/network/soe/packet_utilities.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/utilities.h"
+#include "packet_utilities.h"
 
 namespace swganh {
 namespace network {
 namespace soe {
-    
+
+enum ProtocolOpcodes
+{
+	SESSION_REQUEST = 1,
+	SESSION_RESPONSE,
+	MULTI_PACKET,
+	NOT_USED,
+	DISCONNECT,
+	PING,
+	NET_STATS_CLIENT,
+	NET_STATS_SERVER,
+	CHILD_DATA_A,
+	CHILD_DATA_B,
+	CHILD_DATA_C,
+	CHILD_DATA_D,
+	DATA_FRAG_A,
+	DATA_FRAG_B,
+	DATA_FRAG_C,
+	DATA_FRAG_D,
+	OUT_OF_ORDER_A,
+	OUT_OF_ORDER_B,
+	OUT_OF_ORDER_C,
+	OUT_OF_ORDER_D,
+	ACK_A,
+	ACK_B,
+	ACK_C,
+	ACK_D,
+	UNKNOWN_A,
+	UNKNOWN_B,
+	UNKNOWN_C,
+	UNKNOWN_D,
+	FATAL_ERROR,
+	FATAL_ERROR_RESPONSE
+};
+
 struct SessionRequest
 {
+    uint16_t soe_opcode;
+    uint32_t crc_length;
+    uint32_t connection_id;
+    uint32_t client_udp_buffer_size;
+
     SessionRequest()
         : soe_opcode(SESSION_REQUEST) {}
 
@@ -24,30 +62,33 @@ struct SessionRequest
         : soe_opcode(SESSION_REQUEST)
         , crc_length(crc_length_)
         , connection_id(connection_id_)
-        , client_udp_buffer_size(client_udp_buffer_size_) { }
+        , client_udp_buffer_size(client_udp_buffer_size_) {}
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(crc_length));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(connection_id));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(client_udp_buffer_size));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(crc_length));
+        buffer.write(hostToBig(connection_id));
+        buffer.write(hostToBig(client_udp_buffer_size));
     }
 
     void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        crc_length = buffer.read<uint32_t>(true);
-        connection_id = buffer.read<uint32_t>(true);
-        client_udp_buffer_size = buffer.read<uint32_t>(true);
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        crc_length = bigToHost(buffer.read<uint32_t>());
+        connection_id = bigToHost(buffer.read<uint32_t>());
+        client_udp_buffer_size = bigToHost(buffer.read<uint32_t>());
     }
-
-    uint16_t	soe_opcode;
-    uint32_t	crc_length;
-    uint32_t	connection_id;
-    uint32_t	client_udp_buffer_size;
 };
 
 struct SessionResponse
 {
+    uint16_t soe_opcode;
+    uint32_t connection_id;
+    uint32_t crc_seed;
+    uint8_t	crc_length;
+    uint8_t	encryption_type;
+    uint8_t seed_length;
+    uint32_t server_udp_buffer_size;
+
     SessionResponse()
         : soe_opcode(SESSION_RESPONSE) {}
 
@@ -61,37 +102,32 @@ struct SessionResponse
         , server_udp_buffer_size(server_udp_buffer_size)
     {}
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::hostToBig<uint16_t>(soe_opcode));
-        buffer.write<uint32_t>(swganh::hostToBig<uint32_t>(connection_id));
-        buffer.write<uint32_t>(swganh::hostToBig<uint32_t>(crc_seed));
-        buffer.write<uint8_t>(crc_length);
-        buffer.write<uint8_t>(encryption_type);
-        buffer.write<uint8_t>(4);
-        buffer.write<uint32_t>(swganh::hostToBig<uint32_t>(server_udp_buffer_size));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(connection_id));
+        buffer.write(hostToBig(crc_seed));
+        buffer.write(crc_length);
+        buffer.write(encryption_type);
+        buffer.write(uint8_t(4));
+        buffer.write(hostToBig(server_udp_buffer_size));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        connection_id = buffer.read<uint32_t>();
-        crc_seed = buffer.read<uint32_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        connection_id = bigToHost(buffer.read<uint32_t>());
+        crc_seed = bigToHost(buffer.read<uint32_t>());
         crc_length = buffer.read<uint8_t>();
         encryption_type = buffer.read<uint8_t>();
         seed_length = buffer.read<uint8_t>();
-        server_udp_buffer_size = buffer.read<uint32_t>(true);
+        server_udp_buffer_size = bigToHost(buffer.read<uint32_t>());
     }
-
-    uint16_t	soe_opcode;
-    uint32_t	connection_id;
-    uint32_t	crc_seed;
-    uint8_t		crc_length;
-    uint8_t		encryption_type;
-    uint8_t		seed_length;
-    uint32_t	server_udp_buffer_size;
 };
 
 struct MultiPacket
 {
+    uint16_t soe_opcode;
+    std::list<ByteBuffer> packets;
+
     MultiPacket()
         : soe_opcode(MULTI_PACKET) {}
 
@@ -99,35 +135,35 @@ struct MultiPacket
         : soe_opcode(MULTI_PACKET)
         , packets(packets_) {}
     
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
         std::for_each(packets.begin(), packets.end(), [=, &buffer](ByteBuffer& other_buffer) {
-            buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(other_buffer.size()));
+            buffer.write<uint8_t>(other_buffer.size());
             buffer.append(other_buffer);
         });
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
         while(buffer.read_position() < buffer.size()) {
             uint16_t next_chunk_size = buffer.read<uint8_t>();
             // Varify that we have enough bytes left to copy.
-            if(buffer.size() - buffer.read_position() >= next_chunk_size) {    
-                swganh::ByteBuffer chunk(buffer.data() + buffer.read_position(), next_chunk_size);
-                packets.push_back(chunk);
+            if(buffer.size() - buffer.read_position() >= next_chunk_size) {
+                packets.emplace_back(buffer.data() + buffer.read_position(), next_chunk_size);
                 buffer.read_position(buffer.read_position() + next_chunk_size);            
             } else {
                 break;
             }
         }
     }
-
-    uint16_t	soe_opcode;
-    std::list<ByteBuffer>	packets;
 };
 
 struct Disconnect
 {
+    uint16_t soe_opcode;
+    uint32_t connection_id;
+    uint16_t reason_id;
+
     Disconnect()
         : soe_opcode(DISCONNECT) {}
 
@@ -136,41 +172,46 @@ struct Disconnect
         , connection_id(connection_id_)
         , reason_id(reason_id_) { }
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(connection_id));
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(reason_id));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(connection_id));
+        buffer.write(hostToBig(reason_id));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        connection_id = buffer.read<uint32_t>(true);
-        reason_id = buffer.read<uint16_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        connection_id = bigToHost(buffer.read<uint32_t>());
+        reason_id = bigToHost(buffer.read<uint16_t>());
     }
-
-    uint16_t	soe_opcode;
-    uint32_t	connection_id;
-    uint16_t	reason_id;
 };
 
 struct Ping
 {
+    uint16_t soe_opcode;
+
     Ping()
         : soe_opcode(PING) {}
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::hostToBig<uint16_t>(soe_opcode));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
     }
-
-    uint16_t	soe_opcode;
 };
 
 struct NetStatsClient
 {
+    uint16_t soe_opcode;
+    uint16_t client_tick_count;
+    uint32_t last_update;
+    uint32_t average_update;
+    uint32_t shortest_update;
+    uint32_t longest_update;
+    uint64_t packets_sent;
+    uint64_t packets_received;
+
     NetStatsClient()
         : soe_opcode(NET_STATS_CLIENT)
         , client_tick_count(0)
@@ -192,40 +233,39 @@ struct NetStatsClient
         , packets_sent(packets_sent_)
         , packets_received(packets_received_) { }
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(client_tick_count));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(last_update));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(average_update));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(shortest_update));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(longest_update));
-        buffer.write<uint64_t>(swganh::bigToHost<uint64_t>(packets_sent));
-        buffer.write<uint64_t>(swganh::bigToHost<uint64_t>(packets_received));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(client_tick_count));
+        buffer.write(hostToBig(last_update));
+        buffer.write(hostToBig(average_update));
+        buffer.write(hostToBig(shortest_update));
+        buffer.write(hostToBig(longest_update));
+        buffer.write(hostToBig(packets_sent));
+        buffer.write(hostToBig(packets_received));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        client_tick_count = buffer.read<uint16_t>(true);
-        last_update = buffer.read<uint32_t>(true);
-        average_update = buffer.read<uint32_t>(true);
-        shortest_update = buffer.read<uint32_t>(true);
-        longest_update = buffer.read<uint32_t>(true);
-        packets_sent = buffer.read<uint64_t>(true);
-        packets_received = buffer.read<uint64_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        client_tick_count = bigToHost(buffer.read<uint16_t>());
+        last_update = bigToHost(buffer.read<uint32_t>());
+        average_update = bigToHost(buffer.read<uint32_t>());
+        shortest_update = bigToHost(buffer.read<uint32_t>());
+        longest_update = bigToHost(buffer.read<uint32_t>());
+        packets_sent = bigToHost(buffer.read<uint64_t>());
+        packets_received = bigToHost(buffer.read<uint64_t>());
     }
-
-    uint16_t	soe_opcode;
-    uint16_t	client_tick_count;
-    uint32_t	last_update;
-    uint32_t	average_update;
-    uint32_t	shortest_update;
-    uint32_t	longest_update;
-    uint64_t	packets_sent;
-    uint64_t	packets_received;
 };
 
 struct NetStatsServer
 {
+    uint16_t soe_opcode;
+    uint16_t client_tick_count;
+    uint32_t server_tick_count;
+    uint64_t client_packets_sent;
+    uint64_t client_packets_received;
+    uint64_t server_packets_sent;
+    uint64_t server_packets_received;
+
     NetStatsServer()
         : soe_opcode(NET_STATS_SERVER)
         , client_tick_count(0)
@@ -244,37 +284,34 @@ struct NetStatsServer
         , server_packets_sent(server_packets_sent_)
         , server_packets_received(server_packets_received_) { }
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(client_tick_count));
-        buffer.write<uint32_t>(swganh::bigToHost<uint32_t>(server_tick_count));
-        buffer.write<uint64_t>(swganh::bigToHost<uint64_t>(client_packets_sent));
-        buffer.write<uint64_t>(swganh::bigToHost<uint64_t>(client_packets_received));
-        buffer.write<uint64_t>(swganh::bigToHost<uint64_t>(server_packets_sent));
-        buffer.write<uint64_t>(swganh::bigToHost<uint64_t>(server_packets_received));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(client_tick_count));
+        buffer.write(hostToBig(server_tick_count));
+        buffer.write(hostToBig(client_packets_sent));
+        buffer.write(hostToBig(client_packets_received));
+        buffer.write(hostToBig(server_packets_sent));
+        buffer.write(hostToBig(server_packets_received));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        client_tick_count = buffer.read<uint16_t>(true);
-        server_tick_count = buffer.read<uint32_t>(true);
-        client_packets_sent = buffer.read<uint64_t>(true);
-        client_packets_received = buffer.read<uint64_t>(true);
-        server_packets_sent = buffer.read<uint64_t>(true);
-        server_packets_received = buffer.read<uint64_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        client_tick_count = bigToHost(buffer.read<uint16_t>());
+        server_tick_count = bigToHost(buffer.read<uint32_t>());
+        client_packets_sent = bigToHost(buffer.read<uint64_t>());
+        client_packets_received = bigToHost(buffer.read<uint64_t>());
+        server_packets_sent = bigToHost(buffer.read<uint64_t>());
+        server_packets_received = bigToHost(buffer.read<uint64_t>());
     }
-
-    uint16_t	soe_opcode;
-    uint16_t	client_tick_count;
-    uint32_t	server_tick_count;
-    uint64_t	client_packets_sent;
-    uint64_t	client_packets_received;
-    uint64_t	server_packets_sent;
-    uint64_t	server_packets_received;
 };
 
 struct ChildDataA
 {
+    uint16_t soe_opcode;
+    uint16_t sequence;
+    uint16_t priority;
+    std::list<swganh::ByteBuffer> messages;
+
     ChildDataA()
         : soe_opcode(CHILD_DATA_A) {}
 
@@ -282,21 +319,21 @@ struct ChildDataA
         : soe_opcode(CHILD_DATA_A)
         , sequence(sequence_) { }
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(sequence));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(sequence));
 
         // Serialize as a Multi-Data
         buffer.append(PackDataChannelMessages(messages));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        sequence = buffer.read<uint16_t>(true);
-        priority = buffer.read<uint16_t>();
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        sequence = bigToHost(buffer.read<uint16_t>());
+        priority = bigToHost(buffer.read<uint16_t>());
         
         // Check for multi-data packet.
-        if(swganh::bigToHost<uint16_t>(priority) == 0x0019) {
+        if(priority == 0x0019) {
             while(buffer.read_position() < buffer.size()) {
                 uint8_t next_chunk_size = buffer.read<uint8_t>();
 
@@ -309,18 +346,17 @@ struct ChildDataA
                 }
             }
         } else {
-            messages.emplace_back((const unsigned char*)buffer.data() + 4, buffer.size() - 4);
+            messages.emplace_back(buffer.data() + 4, buffer.size() - 4);
         }
     }
-
-    uint16_t							soe_opcode;
-    uint16_t							sequence;
-    uint16_t							priority;
-    std::list<swganh::ByteBuffer>			messages;
 };
 
 struct DataFragA
 {
+    uint16_t soe_opcode;
+    uint16_t sequence;
+    ByteBuffer data;
+
     DataFragA()
         : soe_opcode(DATA_FRAG_A) {}
 
@@ -329,25 +365,24 @@ struct DataFragA
         , sequence(sequence_)
         , data(buf_) { }
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(sequence));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(sequence));
         buffer.append(data);
     }
 
     void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        sequence = buffer.read<uint16_t>(true);
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        sequence = bigToHost(buffer.read<uint16_t>());
         data = ByteBuffer(buffer.data(), buffer.size()-7);
     }
-
-    uint16_t	soe_opcode;
-    uint16_t	sequence;
-    ByteBuffer	data;
 };
 
 struct OutOfOrderA
 {
+    uint16_t soe_opcode;
+    uint16_t sequence;
+
     OutOfOrderA()
         : soe_opcode(OUT_OF_ORDER_A) {}
 
@@ -355,22 +390,22 @@ struct OutOfOrderA
         : soe_opcode(OUT_OF_ORDER_A)
         , sequence(sequence_) { }
 
-    void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(sequence));
+    void Serialize(ByteBuffer& buffer) {
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(sequence));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        sequence = buffer.read<uint16_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        sequence = bigToHost(buffer.read<uint16_t>());
     }
-
-    uint16_t	soe_opcode;
-    uint16_t	sequence;
 };
 
 struct AckA
 {
+    uint16_t soe_opcode;
+    uint16_t sequence;
+
     AckA()
         : soe_opcode(ACK_A) {}
 
@@ -379,17 +414,14 @@ struct AckA
         , sequence(sequence_) {}
 
     void Serialize(swganh::ByteBuffer& buffer) {
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(soe_opcode));
-        buffer.write<uint16_t>(swganh::bigToHost<uint16_t>(sequence));
+        buffer.write(hostToBig(soe_opcode));
+        buffer.write(hostToBig(sequence));
     }
 
-    void Deserialize(swganh::ByteBuffer& buffer) {
-        soe_opcode = buffer.read<uint16_t>(true);
-        sequence = buffer.read<uint16_t>(true);
+    void Deserialize(ByteBuffer& buffer) {
+        soe_opcode = bigToHost(buffer.read<uint16_t>());
+        sequence = bigToHost(buffer.read<uint16_t>());
     }
-
-    uint16_t	soe_opcode;
-    uint16_t	sequence;
 };
 
 struct FatalError
