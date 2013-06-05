@@ -54,7 +54,7 @@ public:
 
 	typedef std::function<void(uint16_t /* sequence */)> SequencedCallback;
 	typedef std::list<SequencedCallback> SequencedCallbacks;
-    typedef std::list<std::tuple<uint16_t, ByteBuffer, boost::optional<SequencedCallbacks>>> SequencedMessagesList;
+    typedef std::list<std::tuple<uint16_t, ByteBuffer, SequencedCallbacks>> SequencedMessagesList;
 
     uint32_t max_data_size() const { return receive_buffer_size_ - crc_length_ - 3; }
 
@@ -107,12 +107,20 @@ public:
     *
     * @param message The payload to send in the data channel message(s).
     */
+    void SendTo(ByteBuffer message, SequencedCallbacks callbacks);
+
+    /**
+    * Sends a data channel message to the remote client.
+    *
+    * Increases the server sequence count by 1 for each individual packet sent to the
+    * remote end. This call can result in multiple packets being generated depending on
+    * the size of the payload and whether or not it needs to be fragmented.
+    *
+    * @param message The payload to send in the data channel message(s).
+    */
     template<typename T>
     void SendTo(const T& message, boost::optional<SequencedCallback> callback = boost::optional<SequencedCallback>()) {
-        ByteBuffer message_buffer;
-        message.Serialize(message_buffer);
-
-        SendTo(message_buffer, callback);
+        SendTo(Serialize(message), callback);
     }
 
     void HandleMessage(swganh::ByteBuffer message);
@@ -147,8 +155,8 @@ private:
     void handleAckA_(AckA packet);
     void handleOutOfOrderA_(OutOfOrderA packet);
     void SendSoePacket_(swganh::ByteBuffer& message);
-    void SendFragmentedPacket_(swganh::ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());    
-    void SendSequencedMessage_(uint16_t header, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
+    void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);    
+    void SendSequencedMessage_(uint16_t header, ByteBuffer message, SequencedCallbacks callbacks = SequencedCallbacks());
 
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 
