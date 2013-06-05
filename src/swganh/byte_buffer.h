@@ -186,6 +186,7 @@ public:
     size_t capacity() const;
 
     /*! @return Returns the raw ByteBuffer data */
+    unsigned char* data();
     const unsigned char* data() const;
 
     /*! @return Returns the raw ByteBuffer data */
