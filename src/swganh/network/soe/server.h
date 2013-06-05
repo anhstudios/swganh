@@ -49,7 +49,7 @@ public:
     void SendTo(const boost::asio::ip::udp::endpoint& endpoint, swganh::ByteBuffer buffer);
 
     uint32_t max_receive_size();
-
+    const boost::asio::ip::udp::endpoint& listen_endpoint() const { return listen_endpoint_; }
 private:
     Server();
     
@@ -57,6 +57,7 @@ private:
     
     boost::asio::ip::udp::socket socket_;
     boost::asio::ip::udp::endpoint current_remote_endpoint_;
+    boost::asio::ip::udp::endpoint listen_endpoint_;
     std::array<uint8_t, 496> recv_buffer_;
     
     uint64_t bytes_recv_;

@@ -29,6 +29,7 @@ MOCK_BASE_CLASS(MockServer, ServerInterface )
     MOCK_METHOD(GetSession, 1);
 
     MOCK_METHOD(max_receive_size, 0);
+    MOCK_METHOD(listen_endpoint, 0);
 };
     
 }}}  // namespace swganh::network::soe

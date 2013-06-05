@@ -22,14 +22,13 @@ Server::Server(boost::asio::io_service& io_service)
     , max_receive_size_(496)
 {}
 
-Server::~Server(void)
-{	
-}
+Server::~Server() {}
 
 void Server::StartListening(uint16_t port)
 {
+    listen_endpoint_ = udp::endpoint(udp::v4(), port);
     socket_.open(udp::v4());
-    socket_.bind(udp::endpoint(udp::v4(), port));
+    socket_.bind(listen_endpoint_);
     
     AsyncReceive();
 }
@@ -38,7 +37,7 @@ void Server::StopListening()
 {
 	socket_.close();
 }
-    
+
 void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
     socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
         endpoint, 
