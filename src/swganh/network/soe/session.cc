@@ -70,7 +70,7 @@ uint32_t Session::crc_seed() const {
 void Session::SendSoePacket_(swganh::ByteBuffer& message)
 {
 	LOG_NET << "S->C: " << server_->listen_endpoint() << " -> " << remote_endpoint() << "\n" << message;
-
+    
     compression_filter_(this, &message);
     encryption_filter_(this, &message);
     crc_output_filter_(this, &message);
@@ -220,7 +220,7 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
             HandleMessage(move(message));
         }
     } catch(const std::exception& e) {
-        LOG(warning) << "Error handling protocol message\n\n" << e.what();
+        LOG(warning) << "Error handling protocol message: " << e.what();
     }
 }
 
