@@ -30,7 +30,6 @@ void BaseSwgServer::HandleMessage(
 
     try
     {
-        LOG_NET << "HandleMessage: "  << std::hex << message_type << " Client -> Server \n" << message;
         find_iter->second(connection, move(message));
     }
     catch(std::exception& e)
