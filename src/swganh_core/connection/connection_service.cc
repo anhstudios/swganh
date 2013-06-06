@@ -11,7 +11,7 @@
 #include "swganh/crc.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh/network/resolver.h"
-#include "swganh/network/soe/server.h"
+#include "swganh/network/server.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh/service/service_directory_interface.h"
 #include "swganh/service/service_manager.h"
@@ -29,7 +29,7 @@
 
 using namespace swganh::app;
 using namespace swganh::event_dispatcher;
-using namespace swganh::network::soe;
+using namespace swganh::network;
 using namespace swganh::service;
 using namespace swganh::character;
 using namespace swganh::connection;

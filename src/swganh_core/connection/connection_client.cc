@@ -8,7 +8,7 @@
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/player/player.h"
 
-using namespace swganh::network::soe;
+using namespace swganh::network;
 using namespace std;
 using namespace swganh::connection;
 using namespace swganh::object;

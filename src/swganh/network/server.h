@@ -8,14 +8,13 @@
 
 #include <boost/asio.hpp>
 
-#include "swganh/network/soe/server_interface.h"
+#include "swganh/network/server_interface.h"
 
 namespace swganh {
 
 class ByteBuffer;
 
 namespace network {
-namespace soe {
 
 // FORWARD DECLARATION
 class Session;
@@ -65,4 +64,4 @@ private:
     uint32_t max_receive_size_;
 };
 
-}}} // namespace swganh::network::soe
+}} // namespace swganh::network

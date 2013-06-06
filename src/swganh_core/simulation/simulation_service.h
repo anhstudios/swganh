@@ -5,6 +5,9 @@
 #include "swganh_core/simulation/simulation_service_interface.h"
 
 namespace swganh {
+namespace network {
+    class ServerInterface;
+}
 namespace object {
 	class ObjectManager;
 }
@@ -92,7 +95,7 @@ namespace simulation {
     private:
 
         std::unique_ptr<SimulationServiceImpl> impl_;
-		std::shared_ptr<swganh::network::soe::ServerInterface> server_;
+		std::shared_ptr<swganh::network::ServerInterface> server_;
         swganh::app::SwganhKernel* kernel_;
     };
 

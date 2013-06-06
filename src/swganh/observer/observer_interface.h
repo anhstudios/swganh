@@ -3,7 +3,7 @@
 #pragma once
 
 #include "swganh/byte_buffer.h"
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
 namespace swganh
 {
@@ -36,7 +36,7 @@ namespace observer {
          * @param message Message containing the updated state of the observable object.
 		 * @param callback SequencedCallback fired once acknowledgement is received.
          */
-		virtual void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::soe::Session::SequencedCallback&&) = 0;
+		virtual void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::Session::SequencedCallback&&) = 0;
     };
 
 }}  // namespace swganh::observer

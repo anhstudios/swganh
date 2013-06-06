@@ -5,16 +5,16 @@
 #include <memory>
 #include <string>
 
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
 namespace swganh {
 namespace login {
 
 class Account;
 
-class LoginClientInterface : public swganh::network::soe::Session {
+class LoginClientInterface : public swganh::network::Session {
 public:    
-    LoginClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint)
+    LoginClientInterface(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint)
 		:Session(server, cpu_pool, remote_endpoint)
 	{
 	}

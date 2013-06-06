@@ -7,17 +7,15 @@
 #include <boost/test/unit_test.hpp>
 
 #include "swganh/byte_buffer.h"
-#include "swganh/network/soe/session.h"
+#include "session.h"
 
-#include "swganh/network/soe/mock_server.h"
+#include "mock_server.h"
 
-using namespace swganh::network;
 using namespace boost::asio::ip;
 using namespace std;
 
 namespace swganh {
 namespace network {
-namespace soe {
 
 class SessionTests {
 protected:
@@ -139,4 +137,4 @@ shared_ptr<MockServer> SessionTests::buildMockServer() const {
     return server;
 }
 
-}}}  // namespace swganh::network::soe
+}}  // namespace swganh::network

@@ -2,14 +2,14 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh_core/login/login_client_interface.h"
+#include "login_client_interface.h"
 
 namespace swganh {
 namespace login {
 
 class LoginClient : public swganh::login::LoginClientInterface {
 public:    
-    LoginClient(swganh::network::soe::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint);
+    LoginClient(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint);
     
     std::string GetUsername() const;
     void SetUsername(std::string username);

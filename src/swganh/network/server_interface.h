@@ -19,7 +19,6 @@ class EventDispatcherInterface;
 
 namespace swganh {
 namespace network {
-namespace soe {
 
 class Session;
 class SessionManager;
@@ -50,4 +49,4 @@ public:
     virtual const boost::asio::ip::udp::endpoint& listen_endpoint() const = 0;
 };
 
-}}} // namespace swganh::network::soe
+}} // namespace swganh::network

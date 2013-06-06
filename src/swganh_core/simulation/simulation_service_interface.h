@@ -9,7 +9,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "swganh/network/soe/server.h"
 #include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"

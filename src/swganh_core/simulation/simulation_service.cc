@@ -14,7 +14,7 @@
 #include "swganh/event_dispatcher.h"
 #include "swganh/service/service_manager.h"
 #include "swganh/database/database_manager.h"
-#include "swganh/network/soe/server_interface.h"
+#include "swganh/network/server_interface.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh_core/object/object_controller.h"
 #include "swganh/scripting/python_instance_creator.h"
@@ -68,8 +68,8 @@ using namespace swganh::player;
 using namespace swganh::tre;
 
 using swganh::observer::ObserverInterface;
-using swganh::network::soe::ServerInterface;
-using swganh::network::soe::Session;
+using swganh::network::ServerInterface;
+using swganh::network::Session;
 using swganh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 using swganh::command::CommandInterface;

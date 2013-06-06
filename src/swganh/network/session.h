@@ -22,16 +22,10 @@ namespace Concurrency {
 #include <boost/asio.hpp>
 #include <boost/optional.hpp>
 
-#include "swganh/network/soe/protocol_packets.h"
-#include "swganh/network/soe/server_interface.h"
+#include "swganh/network/protocol_packets.h"
+#include "swganh/network/server_interface.h"
 
-#include "swganh/network/soe/filters/crc_in_filter.h"
-#include "swganh/network/soe/filters/decryption_filter.h"
-#include "swganh/network/soe/filters/decompression_filter.h"
-#include "swganh/network/soe/filters/compression_filter.h"
-#include "swganh/network/soe/filters/crc_out_filter.h"
-#include "swganh/network/soe/filters/encryption_filter.h"
-#include "swganh/network/soe/filters/security_filter.h"
+#include "swganh/network/filters.h"
 
 namespace swganh {
 
@@ -39,7 +33,6 @@ namespace swganh {
 class ByteBuffer;
 
 namespace network {
-namespace soe {
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -188,13 +181,13 @@ private:
     uint16_t incoming_fragmented_total_len_;
     ByteBuffer incoming_frag_;
 
-    filters::CompressionFilter compression_filter_;
-    filters::CrcInFilter crc_input_filter_;
-    filters::CrcOutFilter crc_output_filter_;
-    filters::DecompressionFilter decompression_filter_;
-    filters::DecryptionFilter decryption_filter_;
-    filters::EncryptionFilter encryption_filter_;
-    filters::SecurityFilter security_filter_;
+    CompressionFilter compression_filter_;
+    CrcInFilter crc_input_filter_;
+    CrcOutFilter crc_output_filter_;
+    DecompressionFilter decompression_filter_;
+    DecryptionFilter decryption_filter_;
+    EncryptionFilter encryption_filter_;
+    SecurityFilter security_filter_;
 };
 
-}}} // namespace swganh::network::soe
+}} // namespace swganh::network

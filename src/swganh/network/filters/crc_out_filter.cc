@@ -5,12 +5,10 @@
 
 #include "swganh/byte_buffer.h"
 #include "swganh/crc.h"
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
-using namespace swganh;
-using namespace network::soe;
-using namespace filters;
-using namespace std;
+using namespace swganh::network;
+using swganh::ByteBuffer;
 
 void CrcOutFilter::operator()(Session* session, ByteBuffer* message) 
 {

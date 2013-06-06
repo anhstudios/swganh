@@ -1,21 +1,18 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/network/soe/server.h"
+#include "server.h"
 
 #include "swganh/logger.h"
-#include <boost/pool/pool_alloc.hpp>
 
 #include "swganh/byte_buffer.h"
 
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
-using namespace swganh;
-using namespace network::soe;
-using namespace filters;
-using namespace std;
+using namespace swganh::network;
 using boost::asio::ip::udp;
 using boost::asio::buffer;
+using swganh::ByteBuffer;
 
 Server::Server(boost::asio::io_service& io_service)
     : socket_(io_service)

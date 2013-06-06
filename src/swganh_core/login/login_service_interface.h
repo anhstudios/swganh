@@ -10,7 +10,6 @@
 #include "swganh/active_object.h"
 #include "swganh/logger.h"
 
-#include "swganh/network/soe/server.h"
 #include "swganh/service/service_interface.h"
 
 #include "swganh/network/base_swg_server.h"
@@ -20,12 +19,6 @@
 
 #include "swganh_core/login/galaxy_status.h"
 #include "swganh_core/messages/login_client_id.h"
-
-namespace swganh {
-namespace network {
-namespace soe {
-class Server;
-}}}  // namespace swganh::network::soe
 
 namespace swganh {
 namespace database {
@@ -58,14 +51,13 @@ class LoginServiceInterface
 public:
     LoginServiceInterface(boost::asio::io_service& io_service)
 		: swganh::network::BaseSwgServer(io_service)
-	{
-	}
+	{	}
     
     virtual ~LoginServiceInterface() {}
 
-    virtual bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session) = 0;
+    virtual bool RemoveSession(std::shared_ptr<swganh::network::Session> session) = 0;
 
-    virtual std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
+    virtual std::shared_ptr<swganh::network::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
 
     virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
         

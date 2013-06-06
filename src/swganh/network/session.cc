@@ -12,7 +12,6 @@
 using namespace swganh;
 using namespace swganh::event_dispatcher;
 using namespace swganh::network;
-using namespace swganh::network::soe;
 using namespace std;
 
 Session::Session(ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint)
@@ -209,7 +208,7 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
         {
             crc_input_filter_(this, &message);
             decryption_filter_(this, &message);
-            decompression_filter_(this, &message);
+            decompression_filter_(message);
         }
 	    
         LOG_NET << "C->S: " << remote_endpoint() << " -> " << server_->listen_endpoint() << "\n" << message;

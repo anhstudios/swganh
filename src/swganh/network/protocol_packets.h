@@ -11,7 +11,6 @@
 
 namespace swganh {
 namespace network {
-namespace soe {
 
 enum ProtocolOpcodes
 {
@@ -409,6 +408,4 @@ struct FatalErrorResponse
     uint16_t	soe_opcode;
 };
 
-} // namespace soe
-} // namespace network
-} // namespace swganh
+}} // namespace swganh::network
