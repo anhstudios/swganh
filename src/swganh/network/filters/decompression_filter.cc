@@ -12,27 +12,27 @@ DecompressionFilter::DecompressionFilter(uint32_t max_message_size)
     : max_message_size_(max_message_size)
 {}
 
-void DecompressionFilter::operator()(ByteBuffer& buffer)
+void DecompressionFilter::operator()(Session* session, ByteBuffer* message)
 {
-    uint32_t size_without_compression_bit = buffer.size() - 1;
-    uint8_t compressed_bit = buffer.peekAt<uint8_t>(size_without_compression_bit);
+    uint32_t size_without_compression_bit = message->size() - 1;
+    uint8_t compressed_bit = message->peekAt<uint8_t>(size_without_compression_bit);
    
-    buffer.resize(size_without_compression_bit);
+    message->resize(size_without_compression_bit);
 
     if(compressed_bit != 1) return;
 
-    uint16_t offset = (buffer.peek<uint8_t>() == 0x00) ? 2 : 1;
+    uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
     
     zbuffer_.resize(max_message_size_);
-    zbuffer_.write(0, buffer.data(), offset);
+    zbuffer_.write(0, message->data(), offset);
 
     memset((void*)&zstream_, 0, sizeof(z_stream));    
     inflateInit(&zstream_);
 
-    zstream_.next_in   = reinterpret_cast<Bytef *>(buffer.data() + offset);
-    zstream_.avail_in  = buffer.size() - offset;
+    zstream_.next_in   = reinterpret_cast<Bytef *>(message->data() + offset);
+    zstream_.avail_in  = message->size() - offset;
     zstream_.next_out  = reinterpret_cast<Bytef *>(zbuffer_.data() + offset);
-    zstream_.avail_out = zbuffer_.size();
+    zstream_.avail_out = zbuffer_.size() - offset;
 
     inflate(&zstream_, Z_FINISH); // Decompress Data
     
@@ -40,5 +40,5 @@ void DecompressionFilter::operator()(ByteBuffer& buffer)
 
     inflateEnd(&zstream_);
 
-    buffer.swap(zbuffer_);
+    message->swap(zbuffer_);
 }

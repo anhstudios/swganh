@@ -208,7 +208,7 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
         {
             crc_input_filter_(this, &message);
             decryption_filter_(this, &message);
-            decompression_filter_(message);
+            decompression_filter_(this, &message);
         }
 	    
         LOG_NET << "C->S: " << remote_endpoint() << " -> " << server_->listen_endpoint() << "\n" << message;

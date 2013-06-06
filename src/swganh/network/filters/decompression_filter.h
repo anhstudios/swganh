@@ -26,7 +26,7 @@ namespace network {
          */
         explicit DecompressionFilter(uint32_t max_message_size);
     
-        void operator()(ByteBuffer& message);
+        void operator()(Session* session, ByteBuffer* message);
     
     private:
         DecompressionFilter();
