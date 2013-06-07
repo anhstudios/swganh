@@ -5,12 +5,10 @@
 
 #include "swganh/byte_buffer.h"
 #include "swganh/crc.h"
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
-using namespace swganh;
-using namespace network::soe;
-using namespace filters;
-using namespace std;
+using namespace swganh::network;
+using swganh::ByteBuffer;
 
 void CrcInFilter::operator()(Session* session, ByteBuffer* message) const
 {
@@ -24,7 +22,7 @@ void CrcInFilter::operator()(Session* session, ByteBuffer* message) const
         
     // Peel off the crc bits from the packet data.
     uint32_t message_size = message->size() - crc_length;
-    vector<uint8_t> crc_bits(message->data() + message_size, message->data() + message->size());
+    std::vector<uint8_t> crc_bits(message->data() + message_size, message->data() + message->size());
     message->resize(message_size);
     
     uint32_t packet_crc = memcrc(message->data(), message->size(), session->crc_seed());
@@ -41,6 +39,6 @@ void CrcInFilter::operator()(Session* session, ByteBuffer* message) const
 
     if (test_crc != packet_crc) 
     {
-        throw runtime_error("Crc mismatch");
+        throw std::runtime_error("Crc mismatch");
     }
 }

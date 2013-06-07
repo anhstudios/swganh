@@ -5,6 +5,9 @@
 #include "swganh_core/simulation/simulation_service_interface.h"
 
 namespace swganh {
+namespace network {
+    class ServerInterface;
+}
 namespace object {
 	class ObjectManager;
 }
@@ -64,7 +67,8 @@ namespace simulation {
         std::shared_ptr<swganh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client);
-
+        
+        void StopControllingObject(uint64_t object_id);
         void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object);
         
         void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler);
@@ -92,7 +96,7 @@ namespace simulation {
     private:
 
         std::unique_ptr<SimulationServiceImpl> impl_;
-		std::shared_ptr<swganh::network::soe::ServerInterface> server_;
+		std::shared_ptr<swganh::network::ServerInterface> server_;
         swganh::app::SwganhKernel* kernel_;
     };
 

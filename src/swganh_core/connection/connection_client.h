@@ -19,7 +19,7 @@ public:
 	/**
 	* Creates a new instance
 	*/
-    ConnectionClient(swganh::network::soe::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint);
+    ConnectionClient(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint);
     
 	/**
 	* @return the current state of this remote client
@@ -57,7 +57,7 @@ private:
 
     void OnClose();
 
-   State state_;
+    State state_;
     uint32_t account_id_;
     uint64_t player_id_;
     std::shared_ptr<swganh::observer::ObserverInterface> controller_;

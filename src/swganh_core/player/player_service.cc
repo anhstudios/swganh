@@ -37,6 +37,30 @@ using namespace swganh::messages;
 
 PlayerService::PlayerService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
+{    
+    SetServiceDescription(ServiceDescription(
+        "PlayerService",
+        "player",
+        "0.1",
+        "127.0.0.1", 
+        0, 
+        0, 
+        0));
+}
+
+PlayerService::~PlayerService()
+{}
+
+void PlayerService::Initialize()
+{
+	simulation_service_ = kernel_->GetServiceManager()->
+		GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
+
+	equipment_service_ = kernel_->GetServiceManager()->
+		GetService<swganh::equipment::EquipmentService>("EquipmentService");
+}
+
+void PlayerService::Startup()
 {
 	kernel_->GetEventDispatcher()->Subscribe(
 		"ObjectReadyEvent",
@@ -76,38 +100,16 @@ PlayerService::PlayerService(swganh::app::SwganhKernel* kernel)
 		OnPlayerEnter(std::static_pointer_cast<Player>(equipment_service_->GetEquippedObject(creature, "ghost")));
 	});
 
-	player_removed_ = kernel_->GetEventDispatcher()->Subscribe(
-		"Connection::PlayerRemoved",
+	kernel_->GetEventDispatcher()->Subscribe(
+		"Connection::ControllerConnectionClosed",
 		[this] (shared_ptr<EventInterface> incoming_event)
 	{
-		const auto& player = static_pointer_cast<ValueEvent<shared_ptr<Player>>>(incoming_event)->Get();
-		OnPlayerExit(player);
+		auto object_id = static_pointer_cast<ValueEvent<uint64_t>>(incoming_event)->Get();
+        auto player = simulation_service_->GetObjectById<Player>(object_id + 1);
+
+        if(player) OnPlayerExit(player);
 	});
-    
-    SetServiceDescription(ServiceDescription(
-        "PlayerService",
-        "player",
-        "0.1",
-        "127.0.0.1", 
-        0, 
-        0, 
-        0));
 }
-
-PlayerService::~PlayerService()
-{}
-
-void PlayerService::Initialize()
-{
-	simulation_service_ = kernel_->GetServiceManager()->
-		GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
-
-	equipment_service_ = kernel_->GetServiceManager()->
-		GetService<swganh::equipment::EquipmentService>("EquipmentService");
-}
-
-void PlayerService::Startup()
-{}
 
 void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::Player> player)
 {

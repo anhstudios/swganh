@@ -13,10 +13,6 @@
 #include "swganh/event_dispatcher.h"
 
 #include "swganh/plugin/plugin_manager.h"
-
-#include "swganh/network/soe/session.h"
-#include "swganh/network/soe/server_interface.h"
-
 #include "swganh/service/service_manager.h"
 
 #include "swganh_core/login/login_service_interface.h"

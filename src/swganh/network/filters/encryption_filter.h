@@ -11,11 +11,8 @@ namespace swganh {
     class ByteBuffer;
 
 namespace network {
-namespace soe {
 
     class Session;
-
-namespace filters {
 
 class EncryptionFilter {
 public:
@@ -25,4 +22,4 @@ private:
 	void Encrypt_(char* buffer, uint32_t len, uint32_t seed) const;
 };
 
-}}}} // namespace swganh::network::soe::filters
+}} // namespace swganh::network

@@ -88,7 +88,7 @@ namespace object {
          * @param message The message to be delivered to the remote client.
 		 * @param callback SequencedCallback fired once acknowledgement is received.
          */
-		void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::soe::Session::SequencedCallback&& callback); 
+		void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::Session::SequencedCallback&& callback); 
         
     private:
 

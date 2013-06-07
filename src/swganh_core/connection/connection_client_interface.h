@@ -4,18 +4,17 @@
 
 #include <cstdint>
 
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
 namespace swganh {
 namespace observer {
 	class ObserverInterface;
-}
-}
+}}
 
 namespace swganh {
 namespace connection {
 
-class ConnectionClientInterface : public swganh::network::soe::Session
+class ConnectionClientInterface : public swganh::network::Session
 {
 public:
     enum State
@@ -26,11 +25,10 @@ public:
         DISCONNECTING
     };
    
-	ConnectionClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& cpu_pool, 
+	ConnectionClientInterface(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool, 
 									boost::asio::ip::udp::endpoint remote_endpoint) 
 		: Session(server, cpu_pool, remote_endpoint)
-	{
-	}
+	{}
 
     virtual State GetState() const = 0;
 

@@ -9,16 +9,12 @@
 
 #include <zlib.h>
 
+#include "swganh/byte_buffer.h"
+
 namespace swganh {
-
-    class ByteBuffer;
-
 namespace network {
-namespace soe {
 
     class Session;
-
-namespace filters {
 
     /**
      * @brief Decompresses packet data that is flagged as compressed.
@@ -34,13 +30,11 @@ namespace filters {
     
     private:
         DecompressionFilter();
-    
-    	void Decompress_(swganh::ByteBuffer* buffer);
         
         uint32_t max_message_size_;
         
         z_stream zstream_;
-        std::vector<uint8_t> decompression_output_;
+        ByteBuffer zbuffer_;
     };
 
-}}}} // namespace swganh::network::soe::filters
+}} // namespace swganh::network

@@ -8,14 +8,13 @@
 
 #include <boost/asio.hpp>
 
-#include "swganh/network/soe/server_interface.h"
+#include "swganh/network/server_interface.h"
 
 namespace swganh {
 
 class ByteBuffer;
 
 namespace network {
-namespace soe {
 
 // FORWARD DECLARATION
 class Session;
@@ -48,18 +47,8 @@ public:
      */
     void SendTo(const boost::asio::ip::udp::endpoint& endpoint, swganh::ByteBuffer buffer);
 
-    boost::asio::ip::udp::socket* socket();
-    
     uint32_t max_receive_size();
-
-    /**
-     * Resolves a hostname to its ip.
-     *
-     * \param hostname The hostname to resolve.
-     * \return The ip the hostname resolves to.
-     */
-    std::string Resolve(const std::string& hostname);
-    
+    const boost::asio::ip::udp::endpoint& listen_endpoint() const { return listen_endpoint_; }
 private:
     Server();
     
@@ -67,11 +56,12 @@ private:
     
     boost::asio::ip::udp::socket socket_;
     boost::asio::ip::udp::endpoint current_remote_endpoint_;
-    std::array<char, 496> recv_buffer_;
+    boost::asio::ip::udp::endpoint listen_endpoint_;
+    std::array<uint8_t, 496> recv_buffer_;
     
     uint64_t bytes_recv_;
     uint64_t bytes_sent_;
     uint32_t max_receive_size_;
 };
 
-}}} // namespace swganh::network::soe
+}} // namespace swganh::network

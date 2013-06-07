@@ -4,9 +4,8 @@
 #include "login_client.h"
 #include "swganh/observer/observer_interface.h"
 
-using namespace swganh::network::soe;
+using namespace swganh::network;
 using namespace std;
-using namespace swganh::login;
 using namespace swganh::login;
 
 LoginClient::LoginClient(

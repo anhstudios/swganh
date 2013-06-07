@@ -1,21 +1,14 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef ANH_NETWORK_SOE_MOCK_SERVER_H_
-#define ANH_NETWORK_SOE_MOCK_SERVER_H_
+#pragma once
 
 #include <turtle/mock.hpp>
 
-#include "swganh/network/soe/server.h"
+#include "server.h"
 
-namespace swganh{
-
-class ByteBuffer;
- 
+namespace swganh{ 
 namespace network {
-namespace soe {
-    
-class Session;
   
 MOCK_BASE_CLASS(MockServer, ServerInterface )
 {
@@ -28,10 +21,8 @@ MOCK_BASE_CLASS(MockServer, ServerInterface )
     MOCK_METHOD(CreateSession, 1);
     MOCK_METHOD(GetSession, 1);
 
-    MOCK_METHOD(socket, 0);
     MOCK_METHOD(max_receive_size, 0);
+    MOCK_METHOD(listen_endpoint, 0);
 };
     
-}}}  // namespace swganh::network::soe
-
-#endif  // ANH_NETWORK_SOE_MOCK_SERVER_H_
+}}  // namespace swganh::network

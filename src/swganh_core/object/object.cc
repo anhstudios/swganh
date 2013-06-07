@@ -78,12 +78,11 @@ void Object::SetController(const shared_ptr<ObserverInterface>& controller, boos
 void Object::ClearController() { ClearController(AcquireLock()); }
 void Object::ClearController(boost::unique_lock<boost::mutex>& lock)
 {
-    shared_ptr<ObserverInterface> controller;
+    for(auto& aware : aware_objects_) {
+        aware->Unsubscribe(controller_, lock);
+    }
 
-    controller = controller_;
     controller_.reset();
-
-    Unsubscribe(controller, lock);
 }
 
 void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> obj, int32_t arrangement_id)
@@ -532,9 +531,7 @@ bool Object::HasObservers(boost::unique_lock<boost::mutex>& lock)
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer) { Subscribe(observer, AcquireLock()); }
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer, boost::unique_lock<boost::mutex>& lock)
 {
-    auto find_iter = observers_.find(observer);
-
-    if (find_iter == observers_.end())
+    if (observers_.find(observer) == observers_.end())
     {
         observers_.insert(observer);
     }
@@ -543,12 +540,7 @@ void Object::Subscribe(const shared_ptr<ObserverInterface>& observer, boost::uni
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer) { Unsubscribe(observer, AcquireLock()); }
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer, boost::unique_lock<boost::mutex>& lock)
 {
-    auto find_iter = observers_.find(observer);
-
-    if (find_iter != observers_.end())
-    {
-        observers_.erase(find_iter);
-    }
+    observers_.erase(observer);
 }
 
 void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message) { NotifyObservers(message, AcquireLock()); }
