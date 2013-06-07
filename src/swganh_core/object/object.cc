@@ -78,12 +78,8 @@ void Object::SetController(const shared_ptr<ObserverInterface>& controller, boos
 void Object::ClearController() { ClearController(AcquireLock()); }
 void Object::ClearController(boost::unique_lock<boost::mutex>& lock)
 {
-    shared_ptr<ObserverInterface> controller;
-
-    controller = controller_;
+    Unsubscribe(controller_, lock);
     controller_.reset();
-
-    Unsubscribe(controller, lock);
 }
 
 void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> obj, int32_t arrangement_id)
