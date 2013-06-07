@@ -67,7 +67,8 @@ namespace simulation {
         std::shared_ptr<swganh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client);
-
+        
+        void StopControllingObject(uint64_t object_id);
         void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object);
         
         void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler);

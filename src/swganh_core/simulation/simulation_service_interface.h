@@ -125,6 +125,7 @@ namespace simulation {
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client) = 0;
 
+        virtual void StopControllingObject(uint64_t object_id) = 0;
         virtual void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
 
         template<typename MessageType>

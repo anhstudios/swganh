@@ -608,6 +608,13 @@ void SimulationService::StopControllingObject(const shared_ptr<Object>& object)
     impl_->StopControllingObject(object);
 }
 
+void SimulationService::StopControllingObject(uint64_t object_id)
+{
+    auto object = GetObjectById(object_id);
+
+    if (object) impl_->StopControllingObject(object);
+}
+
 void SimulationService::RegisterControllerHandler(
     uint32_t handler_id,
     swganh::object::ObjControllerHandler&& handler)
@@ -701,14 +708,6 @@ void SimulationService::Startup()
         {
             StartScene(scene);
         }
-	});
-    
-	kernel_->GetEventDispatcher()->Subscribe("Connection::ControllerConnectionClosed", [this] (shared_ptr<swganh::EventInterface> incoming_event)
-	{
-		auto object_id = static_pointer_cast<ValueEvent<uint64_t>>(incoming_event)->Get();
-        auto object = GetObjectById(object_id);
-
-        StopControllingObject(object);
 	});
 }
 
