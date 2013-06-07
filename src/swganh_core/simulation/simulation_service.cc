@@ -337,6 +337,9 @@ public:
             return;
         }
 
+        object->ClearController();
+
+        LOG(warning) << "Removing controlled object";
         controlled_objects_.unsafe_erase(find_iter);
     }
 
@@ -698,6 +701,14 @@ void SimulationService::Startup()
         {
             StartScene(scene);
         }
+	});
+    
+	kernel_->GetEventDispatcher()->Subscribe("Connection::ControllerConnectionClosed", [this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+		auto object_id = static_pointer_cast<ValueEvent<uint64_t>>(incoming_event)->Get();
+        auto object = GetObjectById(object_id);
+
+        StopControllingObject(object);
 	});
 }
 
