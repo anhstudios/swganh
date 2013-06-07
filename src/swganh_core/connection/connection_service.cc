@@ -134,8 +134,9 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
 
     auto connection_client = static_pointer_cast<ConnectionClient>(session);
 
-    if (auto controller = connection_client->GetController())
-    {
+    if (auto controller = connection_client->GetController()) {
+        simulation_service_->StopControllingObject(controller->GetId());
+
         kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<uint64_t>>("Connection::ControllerConnectionClosed", controller->GetId()));
 	}
 
