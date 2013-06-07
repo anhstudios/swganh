@@ -57,7 +57,7 @@ private:
 
     void OnClose();
 
-   State state_;
+    State state_;
     uint32_t account_id_;
     uint64_t player_id_;
     std::shared_ptr<swganh::observer::ObserverInterface> controller_;
