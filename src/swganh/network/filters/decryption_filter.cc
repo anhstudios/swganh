@@ -1,21 +1,19 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/network/soe/filters/decryption_filter.h"
+#include "decryption_filter.h"
 
 #include "swganh/byte_buffer.h"
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
-using namespace swganh;
-using namespace swganh::network::soe;
-using namespace filters;
-using namespace std;
+using namespace swganh::network;
+using swganh::ByteBuffer;
 
 void DecryptionFilter::operator()(Session* session, ByteBuffer* message) const
 {    
     if (message->size() <= 2)
     {
-        throw runtime_error("Invalid message size");
+        throw std::runtime_error("Invalid message size");
     }
 
     uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;

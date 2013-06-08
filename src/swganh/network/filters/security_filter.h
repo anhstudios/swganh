@@ -11,11 +11,8 @@ namespace swganh {
     class ByteBuffer;
 
 namespace network {
-namespace soe {
 
     class Session;
-
-namespace filters {
 
     /**
      * Performs basic checks for malformed packets.
@@ -36,4 +33,4 @@ namespace filters {
         uint32_t max_receive_size_;
     };
 
-}}}} // namespace swganh::network::soe::filters
+}} // namespace swganh::network

@@ -3,27 +3,18 @@
 
 #pragma once
 
-#include <cstdint>
-#include <memory>
-
 namespace swganh {
 
     class ByteBuffer;
 
 namespace network {
-namespace soe {
-
+    
     class Session;
 
-namespace filters {
-
-    class DecryptionFilter
+    struct CrcInFilter 
     {
     public:
         void operator()(Session* session, ByteBuffer* message) const;
-    
-    private:
-    	int Decrypt_(char* buffer, uint32_t len, uint32_t seed) const;
     };
 
-}}}} // namespace swganh::network::soe::filters
+}} // namespace swganh::network

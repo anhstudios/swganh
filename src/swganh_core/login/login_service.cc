@@ -11,8 +11,9 @@
 
 #include "swganh/event_dispatcher.h"
 
-#include "swganh/network/soe/session.h"
-#include "swganh/network/soe/server.h"
+#include "swganh/network/resolver.h"
+#include "swganh/network/session.h"
+#include "swganh/network/server.h"
 
 #include "swganh/service/service_directory_interface.h"
 #include "swganh/service/service_manager.h"
@@ -37,7 +38,7 @@ using namespace app;
 using namespace swganh::login;
 using namespace swganh::login;
 using namespace swganh::messages;
-using namespace network::soe;
+using namespace network;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::galaxy;
@@ -60,7 +61,7 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKe
         "Login Service",
         "login",
         "0.1",
-        Resolve(listen_address_),
+        swganh::network::resolve_to_string(listen_address_),
         0,
         listen_port_,
         0));

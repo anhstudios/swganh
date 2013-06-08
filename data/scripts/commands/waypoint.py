@@ -2,7 +2,6 @@ import re
 import swgpy
 from swgpy.object import *
 from swgpy.simulation import *
-from swgpy.waypoint import *
 from swgpy.utility import vector3
 from swgpy.command import BaseSwgCommand
 

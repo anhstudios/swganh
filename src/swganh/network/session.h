@@ -5,6 +5,7 @@
 #include <atomic>
 #include <list>
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #ifdef WIN32
@@ -21,16 +22,10 @@ namespace Concurrency {
 #include <boost/asio.hpp>
 #include <boost/optional.hpp>
 
-#include "swganh/network/soe/protocol_packets.h"
-#include "swganh/network/soe/server_interface.h"
+#include "swganh/network/protocol_packets.h"
+#include "swganh/network/server_interface.h"
 
-#include "swganh/network/soe/filters/crc_in_filter.h"
-#include "swganh/network/soe/filters/decryption_filter.h"
-#include "swganh/network/soe/filters/decompression_filter.h"
-#include "swganh/network/soe/filters/compression_filter.h"
-#include "swganh/network/soe/filters/crc_out_filter.h"
-#include "swganh/network/soe/filters/encryption_filter.h"
-#include "swganh/network/soe/filters/security_filter.h"
+#include "swganh/network/filters.h"
 
 namespace swganh {
 
@@ -38,7 +33,6 @@ namespace swganh {
 class ByteBuffer;
 
 namespace network {
-namespace soe {
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -53,7 +47,9 @@ public:
 
 	typedef std::function<void(uint16_t /* sequence */)> SequencedCallback;
 	typedef std::list<SequencedCallback> SequencedCallbacks;
-	typedef std::pair<ByteBuffer, boost::optional<SequencedCallback>> OutgoingMessage;
+    typedef std::list<std::tuple<uint16_t, ByteBuffer, SequencedCallbacks>> SequencedMessagesList;
+
+    uint32_t max_data_size() const { return receive_buffer_size_ - crc_length_ - 3; }
 
     /**
     * @return The current send sequence for the server.
@@ -85,14 +81,6 @@ public:
     uint32_t crc_seed() const;
 
     /**
-     * Get a list of all outgoing data channel messages that have not yet been acknowledged
-     * by the remote end.
-     *
-     * @return List of unacknowledged data channel messages.
-     */
-    std::vector<swganh::ByteBuffer> GetUnacknowledgedMessages() const;
-
-    /**
     * Sends a data channel message to the remote client.
     *
     * Increases the server sequence count by 1 for each individual packet sent to the
@@ -112,12 +100,20 @@ public:
     *
     * @param message The payload to send in the data channel message(s).
     */
+    void SendTo(ByteBuffer message, SequencedCallbacks callbacks);
+
+    /**
+    * Sends a data channel message to the remote client.
+    *
+    * Increases the server sequence count by 1 for each individual packet sent to the
+    * remote end. This call can result in multiple packets being generated depending on
+    * the size of the payload and whether or not it needs to be fragmented.
+    *
+    * @param message The payload to send in the data channel message(s).
+    */
     template<typename T>
     void SendTo(const T& message, boost::optional<SequencedCallback> callback = boost::optional<SequencedCallback>()) {
-        ByteBuffer message_buffer;
-        message.Serialize(message_buffer);
-
-        SendTo(message_buffer, callback);
+        SendTo(Serialize(message), callback);
     }
 
     void HandleMessage(swganh::ByteBuffer message);
@@ -135,14 +131,10 @@ public:
 
     boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
-    ServerInterface* server();
-
 private:
     typedef std::list<std::pair<uint16_t, swganh::ByteBuffer>> SequencedMessageMap;
 
     typedef swganh::ByteBuffer(*HeaderBuilder)(uint16_t);
-
-    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message, boost::optional<SequencedCallbacks> callbacks = boost::optional<SequencedCallbacks>());
 
     virtual void OnClose() {}
 
@@ -155,22 +147,19 @@ private:
     void handleDataFragA_(DataFragA packet);
     void handleAckA_(AckA packet);
     void handleOutOfOrderA_(OutOfOrderA packet);
-    void SendSoePacket_(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
-    void SendSoePacketInternal(swganh::ByteBuffer message, boost::optional<uint16_t> sequence = boost::optional<uint16_t>());
-    void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);
-    void HandleMessageInternal(swganh::ByteBuffer message);
+    void SendSoePacket_(swganh::ByteBuffer& message);
+    void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);    
+    void SendSequencedMessage_(uint16_t header, ByteBuffer message, SequencedCallbacks callbacks = SequencedCallbacks());
+
     void HandleProtocolMessageInternal(swganh::ByteBuffer message);
 
-    bool SequenceIsValid_(const uint16_t& sequence);
-    void AcknowledgeSequence_(const uint16_t& sequence);
-	void QueueSequencedCallback(uint16_t sequence, SequencedCallbacks);
-	void DequeueSequencedCallback(uint16_t sequence);
+    bool AcknowledgeSequence_(const uint16_t& sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     ServerInterface*					server_; // owner
     boost::asio::strand strand_;
 
-    SequencedMessageMap					sent_messages_;
+    SequencedMessagesList unacknowledged_messages_;
 
     bool								connected_;
 
@@ -189,22 +178,16 @@ private:
     // Net Stats
     NetStatsServer						server_net_stats_;
 
-    Concurrency::concurrent_queue<OutgoingMessage> outgoing_data_messages_;
+    uint16_t incoming_fragmented_total_len_;
+    ByteBuffer incoming_frag_;
 
-    std::list<swganh::ByteBuffer>			incoming_fragmented_messages_;
-
-    uint16_t							incoming_fragmented_total_len_;
-    uint16_t							incoming_fragmented_curr_len_;
-
-    filters::CompressionFilter compression_filter_;
-    filters::CrcInFilter crc_input_filter_;
-    filters::CrcOutFilter crc_output_filter_;
-    filters::DecompressionFilter decompression_filter_;
-    filters::DecryptionFilter decryption_filter_;
-    filters::EncryptionFilter encryption_filter_;
-    filters::SecurityFilter security_filter_;
-
-	std::map<uint16_t, SequencedCallbacks> acknowledgement_callbacks_;
+    CompressionFilter compression_filter_;
+    CrcInFilter crc_input_filter_;
+    CrcOutFilter crc_output_filter_;
+    DecompressionFilter decompression_filter_;
+    DecryptionFilter decryption_filter_;
+    EncryptionFilter encryption_filter_;
+    SecurityFilter security_filter_;
 };
 
-}}} // namespace swganh::network::soe
+}} // namespace swganh::network

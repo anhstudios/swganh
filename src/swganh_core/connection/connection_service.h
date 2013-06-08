@@ -39,14 +39,14 @@ public:
 	/**
 	* Removes a session (ie. ends)
 	*/
-    bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session);
+    bool RemoveSession(std::shared_ptr<swganh::network::Session> session);
 
 	/**
 	* Returns the session by endpoint (ie. ip address)
 	* @param endpoint the ip address to find
 	* @return the session associated with the ip or nullptr
 	*/
-    std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
     
 	/**
 	* Finds a connection client based on player id
@@ -76,7 +76,7 @@ public:
     uint16_t listen_port();
         
 private:        
-    std::shared_ptr<swganh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
     void HandleClientIdMsg_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 

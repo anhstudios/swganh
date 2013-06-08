@@ -22,7 +22,7 @@ public:
 	{}
 
 	void Notify(swganh::messages::BaseSwgMessage* message) {}
-	void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::soe::Session::SequencedCallback &&) {}
+	void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::Session::SequencedCallback &&) {}
 };
 }
 }

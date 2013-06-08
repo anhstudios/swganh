@@ -1,15 +1,13 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/network/soe/filters/security_filter.h"
+#include "security_filter.h"
 
 #include "swganh/byte_buffer.h"
-#include "swganh/network/soe/session.h"
+#include "swganh/network/session.h"
 
-using namespace swganh;
-using namespace network::soe;
-using namespace filters;
-using namespace std;
+using namespace swganh::network;
+using swganh::ByteBuffer;
 
 SecurityFilter::SecurityFilter(uint32_t max_receive_size)
     : max_receive_size_(max_receive_size)
@@ -24,7 +22,7 @@ void SecurityFilter::operator()(Session* session, ByteBuffer* message) const
         /// @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
         
-        throw runtime_error("Malformed message received: message larger than allowed size");
+        throw std::runtime_error("Malformed message received: message larger than allowed size");
     }
 
     
@@ -33,6 +31,6 @@ void SecurityFilter::operator()(Session* session, ByteBuffer* message) const
         /// @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
 
-        throw runtime_error("Malformed message received: message smaller than allowed size");
+        throw std::runtime_error("Malformed message received: message smaller than allowed size");
     }
 }

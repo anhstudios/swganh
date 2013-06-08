@@ -3,23 +3,21 @@
 
 #pragma once
 
+#include <zlib.h>
+#include "swganh/byte_buffer.h"
+
 namespace swganh {
-
-    class ByteBuffer;
-
 namespace network {
-namespace soe {
 
-    class Session;
-
-namespace filters {
+class Session;
 
 class CompressionFilter {
 public:    
     void operator()(Session* session, ByteBuffer* message);
 
 private:
-	void Compress_(ByteBuffer* message);
+    z_stream zstream_;
+    ByteBuffer zbuffer_;
 };
 
-}}}} // namespace swganh::network::soe::filters
+}} // namespace swganh::network
