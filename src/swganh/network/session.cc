@@ -242,7 +242,11 @@ void Session::handleSessionRequest_(SessionRequest packet)
 void Session::handleMultiPacket_(MultiPacket packet)
 {
     for(auto& message : packet.packets) {
-        HandleMessage(std::move(message));
+        if(message.peek<uint8_t>() != 0) {
+            server_->HandleMessage(shared_from_this(), std::move(message));
+        } else {
+            HandleMessage(std::move(message));
+        }
     }
 }
 
