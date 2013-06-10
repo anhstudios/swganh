@@ -13,7 +13,7 @@ namespace command {
     class BaseCombatCommand : public BaseSwgCommand, public std::enable_shared_from_this<BaseCombatCommand>
     {
     public:
-        virtual boost::optional<std::shared_ptr<CommandCallback>> Run();
+        virtual void Run();
 
 		std::shared_ptr<swganh::combat::CombatData> combat_data;
     };

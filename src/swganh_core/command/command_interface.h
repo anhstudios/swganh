@@ -20,39 +20,7 @@ namespace swganh {
 namespace command {
 
     struct CommandProperties;
-
-    /**
-     * A general delayed callback implementation.
-     */
-    class CommandCallback
-    {
-    public:
-        typedef std::function<boost::optional<std::shared_ptr<CommandCallback>> ()> CallbackFunc;
-
-        CommandCallback(CallbackFunc&& callback_func, uint64_t delay_time_ms)
-            : callback_func_(std::move(callback_func))
-            , delay_time_ms_(delay_time_ms)
-        {}
-
-        ~CommandCallback() {}
-
-        uint64_t GetDelayTimeInMs()
-        {
-            return delay_time_ms_;
-        }
-
-        boost::optional<std::shared_ptr<CommandCallback>> operator()() 
-        {
-            return callback_func_();
-        }
-
-    private:
-        CommandCallback();
-
-        CallbackFunc callback_func_;
-        uint64_t delay_time_ms_;
-    };
-
+    
     /**
      * A stateful handler that processes a command request.
      */
@@ -89,7 +57,7 @@ namespace command {
          *
          * @return Optional callback to be invoked after a given amount of time.
          */
-        virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;		
+        virtual void Run() = 0;		
 
 		/**
          * Executes the Post Run handler for the request

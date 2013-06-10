@@ -21,7 +21,6 @@ using swganh::app::SwganhKernel;
 using swganh::chat::ChatService;
 using swganh::chat::SpatialChatInternalCommand;
 using swganh::command::BaseSwgCommand;
-using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
@@ -46,7 +45,7 @@ void SpatialChatInternalCommand::Initialize(
     chat_service_ = kernel->GetServiceManager()->GetService<ChatService>("ChatService");
 }
 
-boost::optional<std::shared_ptr<CommandCallback>> SpatialChatInternalCommand::Run()
+void SpatialChatInternalCommand::Run()
 {
     // This regular expression searches for 5 numbers separated by spaces
     // followed by a string text message.
@@ -61,6 +60,4 @@ boost::optional<std::shared_ptr<CommandCallback>> SpatialChatInternalCommand::Ru
             std::stoi(m[2].str()), // Convert the string to an integer 
             std::stoi(m[3].str()));
     }
-
-    return boost::optional<std::shared_ptr<CommandCallback>>();
 }

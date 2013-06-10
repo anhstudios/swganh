@@ -20,7 +20,6 @@
 
 namespace bp = boost::python;
 using swganh::command::BaseSwgCommand;
-using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
 using swganh::command::CommandProperties;
 using swganh::scripting::ScopedGilLock;
@@ -76,28 +75,19 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
         return validated;
     }
 
-    boost::optional<std::shared_ptr<CommandCallback>> Run()
+    void Run()
     {
-        boost::optional<std::shared_ptr<CommandCallback>> callback;
-
-
         ScopedGilLock lock;
         try 
         {
-            bp::object result = this->get_override("run")();
-
-            if (!result.is_none())
-            {
-                CommandCallback* obj_pointer = bp::extract<CommandCallback*>(result);
-                callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));  
+            if (auto py_override = this->get_override("run")) {
+                py_override();
             }
         }
 		catch (bp::error_already_set&)
 		{
 			swganh::scripting::logPythonException();
 		}
-
-        return callback;
     }
 
 	void PostRun(bool success)
@@ -125,52 +115,9 @@ private:
     PyObject* self_;
 };
 
-class CommandCallbackWrapper : public CommandCallback, bp::wrapper<CommandCallback>
-{
-public:
-    CommandCallbackWrapper(
-        PyObject* obj,
-        boost::python::object function,
-        uint64_t delay_timer)
-        : CommandCallback([function] () -> boost::optional<std::shared_ptr<CommandCallback>>
-    {
-        boost::optional<std::shared_ptr<CommandCallback>> callback;
-
-        {
-            ScopedGilLock lock;
-            
-            try 
-            {
-                bp::object result = function();
-                
-                if (!result.is_none())
-                {
-                    CommandCallback* obj_pointer = bp::extract<CommandCallback*>(result);
-                    callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));  
-                }
-            }
-			catch (bp::error_already_set&)
-			{
-				swganh::scripting::logPythonException();
-			}
-        }
-
-        return callback;
-    }, delay_timer)
-    {    
-        ScopedGilLock lock;
-        bp::detail::initialize_wrapper(obj, this);
-    }
-};
 
 void swganh::command::ExportCommand()
 {
-    bp::class_<CommandCallback, std::shared_ptr<CommandCallbackWrapper>, boost::noncopyable>
-        ("Callback", bp::init<bp::object, uint64_t>())
-        .def("getDelayTimeInMs", &CommandCallbackWrapper::GetDelayTimeInMs)
-        .def("execute", &CommandCallbackWrapper::operator())
-    ;
-
     bp::class_<CommandInterface, boost::noncopyable>("CommandInterface", bp::no_init)
         .def("validate", bp::pure_virtual(&CommandInterface::Validate))
         .def("run", bp::pure_virtual(&CommandInterface::Run))

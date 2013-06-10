@@ -24,7 +24,6 @@ using swganh::app::SwganhKernel;
 using swganh::attributes::AttributesService;
 using swganh::attributes::GetAttributesBatchCommand;
 using swganh::command::BaseSwgCommand;
-using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;
 using swganh::simulation::SimulationServiceInterface;
 using swganh::messages::controllers::CommandQueueEnqueue;
@@ -41,7 +40,7 @@ void GetAttributesBatchCommand::Initialize(
 	simulation_service_ = kernel->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
-boost::optional<std::shared_ptr<CommandCallback>> GetAttributesBatchCommand::Run()
+void GetAttributesBatchCommand::Run()
 {
 	std::wstring command_str = GetCommandString();
 	std::vector<std::string> objects;
@@ -56,6 +55,4 @@ boost::optional<std::shared_ptr<CommandCallback>> GetAttributesBatchCommand::Run
 			attributes_service_->SendAttributesMessage(found, actor);
 		}
 	}
-
-    return boost::optional<std::shared_ptr<CommandCallback>>();
 }
