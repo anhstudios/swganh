@@ -71,8 +71,6 @@ namespace command {
         
         void Notify();
         
-        void HandleCallback(std::shared_ptr<swganh::command::CommandCallback> callback);
-
         std::shared_ptr<swganh::command::BaseSwgCommand> GetNextCommand();
 
         template<typename T>

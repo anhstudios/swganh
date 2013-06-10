@@ -16,7 +16,7 @@ namespace travel {
 	public:
         virtual std::string GetCommandName() const { return "purchaseticket"; }
 
-		virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
+		virtual void Run();
 
 	private:
 		TravelService* travel_;

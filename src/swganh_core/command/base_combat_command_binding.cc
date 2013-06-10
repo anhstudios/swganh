@@ -20,7 +20,6 @@
 
 namespace bp = boost::python;
 using swganh::command::BaseCombatCommand;
-using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
 using swganh::command::CommandProperties;
 using swganh::combat::CombatData;
@@ -59,23 +58,13 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
         return command;
     }
 
-    boost::optional<std::shared_ptr<CommandCallback>> Run()
+    void Run()
     {
-        boost::optional<std::shared_ptr<CommandCallback>> callback;
-
-
         ScopedGilLock lock;
         try 
         {
-            if (bp::override run = this->get_override("run"))
-            {
-                bp::object result = run();
-
-                if (!result.is_none())
-                {
-                    CommandCallback* obj_pointer = bp::extract<CommandCallback*>(result);
-                    callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));
-                }
+            if (auto py_override = this->get_override("run")) {
+                py_override();
             }
             
             BaseCombatCommand::Run();
@@ -84,8 +73,6 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
 		{
 			swganh::scripting::logPythonException();
 		}
-
-        return callback;
     }
 
 private:

@@ -35,7 +35,7 @@ namespace badge {
 		/**
 		* Runs this command
 		*/
-        virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
+        virtual void Run();
 
     private:
 		swganh::equipment::EquipmentService* equipment_service_;

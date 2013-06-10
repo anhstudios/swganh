@@ -17,7 +17,6 @@
 using swganh::app::SwganhKernel;
 using swganh::travel::PurchaseTicketCommand;
 using swganh::command::CommandProperties;
-using swganh::command::CommandCallback;
 
 using namespace swganh::service;
 using namespace swganh::app;
@@ -32,7 +31,7 @@ using boost::wsmatch;
 using boost::regex_match;
 #endif
 
-boost::optional<std::shared_ptr<CommandCallback>> PurchaseTicketCommand::Run()
+void PurchaseTicketCommand::Run()
 {
 	travel_ = GetKernel()->GetServiceManager()->GetService<TravelService>("TravelService");
 
@@ -54,5 +53,4 @@ boost::optional<std::shared_ptr<CommandCallback>> PurchaseTicketCommand::Run()
 			0,
 			std::stoi(m[5].str()) ? true : false);
 	}
-	return boost::optional<std::shared_ptr<CommandCallback>>();
 }

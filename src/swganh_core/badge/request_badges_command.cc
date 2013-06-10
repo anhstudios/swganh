@@ -15,7 +15,6 @@
 using swganh::app::SwganhKernel;
 using swganh::badge::RequestBadgesCommand;
 using swganh::command::CommandProperties;
-using swganh::command::CommandCallback;
 
 using namespace swganh::service;
 using namespace swganh::simulation;
@@ -38,7 +37,7 @@ void RequestBadgesCommand::Initialize(SwganhKernel* kernel, const CommandPropert
 	equipment_service_ = kernel->GetServiceManager()->GetService<EquipmentService>("EquipmentService");
 }
 
-boost::optional<std::shared_ptr<CommandCallback>> RequestBadgesCommand::Run()
+void RequestBadgesCommand::Run()
 {
 	// Find player object.
 	auto player = std::static_pointer_cast<swganh::object::Player>(equipment_service_->GetEquippedObject(GetActor(), "ghost"));
@@ -54,6 +53,4 @@ boost::optional<std::shared_ptr<CommandCallback>> RequestBadgesCommand::Run()
 	});
 
 	GetActor()->GetController()->Notify(&badges_response);
-
-	return boost::optional<std::shared_ptr<CommandCallback>>();
 }
