@@ -34,10 +34,11 @@ void CompressionFilter::operator()(Session* session, ByteBuffer* message)
 
     deflate(&zstream_, Z_FINISH);
 
-    zbuffer_.resize(zstream_.total_out);
+    zbuffer_.resize(zstream_.total_out + offset);
     
     deflateEnd(&zstream_);
 
     message->swap(zbuffer_);
+    message->write_position(message->size());
     message->write<uint8_t>(1);
 }
