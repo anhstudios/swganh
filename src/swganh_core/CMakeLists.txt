@@ -42,8 +42,6 @@ AddANHPlugin(swganh_core
         ${GLM_INCLUDE_DIR}
 		${PYTHON_INCLUDE_DIR}
         ${ZLIB_INCLUDE_DIR}
-    ADDITIONAL_LIBRARY_DIRS
-        ${Boost_LIBRARY_DIRS}
     DEBUG_LIBRARIES
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}

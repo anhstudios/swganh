@@ -3,7 +3,7 @@ include(ANHPythonBinding)
 AddANHPythonBinding(travel
 	PREFIX_NAME swgpy
     DEPENDS
-        swganh_lib		
+        swganh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
@@ -12,9 +12,7 @@ AddANHPythonBinding(travel
         ${PYTHON_INCLUDE_DIR}
         ${TBB_INCLUDE_DIRS}
         ${ZLIB_INCLUDE_DIR}
-    ADDITIONAL_LIBRARY_DIRS
-        ${Boost_LIBRARY_DIRS}
-    DEBUG_LIBRARIES 
+    DEBUG_LIBRARIES
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
         ${Boost_LOG_LIBRARY_DEBUG}
@@ -29,7 +27,7 @@ AddANHPythonBinding(travel
         ${PYTHON_LIBRARY}
         ${TBB_DEBUG_LIBRARIES}
         ${ZLIB_LIBRARY_DEBUG}
-    OPTIMIZED_LIBRARIES 
+    OPTIMIZED_LIBRARIES
         ${Boost_CHRONO_LIBRARY_RELEASE}
         ${Boost_DATE_TIME_LIBRARY_RELEASE}
         ${Boost_LOG_LIBRARY_RELEASE}
