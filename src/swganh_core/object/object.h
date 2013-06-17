@@ -199,7 +199,10 @@ public:
      * @param message Message containing the updated state of the observable object.
      */
 	template<typename T>
-	void NotifyObservers(swganh::messages::BaseBaselinesMessage* message) { NotifyObservers(message, AcquireLock()); }
+	void NotifyObservers(swganh::messages::BaseBaselinesMessage* message) {
+        auto lock = AcquireLock();
+        NotifyObservers(message, lock);
+    }
 
     template<typename T>
     void NotifyObservers(swganh::messages::BaseBaselinesMessage* message, boost::unique_lock<boost::mutex>& lock)
@@ -494,7 +497,7 @@ public:
 	 * @brief sends the update containment message for the given observer of this object
 	 */
 	virtual void SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent=true);
-	void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock, bool send_on_no_parent);
+	void SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock, bool send_on_no_parent);
 	
 	/**
 	 * @brief sends the destroy message for the given observer of this object
@@ -579,7 +582,10 @@ public:
 	 * @brief Gets an attribute as the specified T type
 	 */
 	template<typename T>
-	T GetAttribute(const std::string& name) { return GetAttribute<T>(name, AcquireLock()); }
+	T GetAttribute(const std::string& name) {
+        auto lock = AcquireLock();
+        return GetAttribute<T>(name, lock);
+    }
 	
 	template<typename T>
 	T GetAttribute(const std::string& name, boost::unique_lock<boost::mutex>& lock)
@@ -605,8 +611,8 @@ public:
 	void SetAttributeTemplateId(int8_t attribute_template_id);
 	void SetAttributeTemplateId(int8_t attribute_template_id, boost::unique_lock<boost::mutex>& lock);
 
-	void Object::AddDeltasUpdate(swganh::messages::DeltasMessage* message);
-	void Object::AddDeltasUpdate(swganh::messages::DeltasMessage* message, boost::unique_lock<boost::mutex>& lock);
+	void AddDeltasUpdate(swganh::messages::DeltasMessage* message);
+	void AddDeltasUpdate(swganh::messages::DeltasMessage* message, boost::unique_lock<boost::mutex>& lock);
 
 	//
 	// Spatial/Collision
