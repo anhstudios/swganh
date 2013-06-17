@@ -38,7 +38,7 @@ namespace attributes {
 		* Method that is called when the command is processed.
 		* @Override
 		*/
-        virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
+        virtual void Run();
 
     private:
         AttributesService* attributes_service_;
