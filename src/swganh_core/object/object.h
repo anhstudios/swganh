@@ -567,7 +567,10 @@ public:
 	 * @brief Sets an attribute of the specified type
 	 */
 	template<typename T>
-	void SetAttribute(const std::string& name, T attribute) { SetAttribute(name, attribute, AcquireLock()); }
+	void SetAttribute(const std::string& name, T attribute) {
+        auto lock = AcquireLock();
+        SetAttribute(name, attribute, lock);
+    }
 
 	template<typename T>
 	void SetAttribute(const std::string& name, T attribute, boost::unique_lock<boost::mutex>& lock)

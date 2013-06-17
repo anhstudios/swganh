@@ -11,7 +11,6 @@ CircleSpawnRegion::CircleSpawnRegion(std::shared_ptr<swganh::terrain::TerrainSer
 	: SpawnRegion(loot_group, density, timeout, rarity)
 	, factory_(type)
 	, center_(x, y)
-	, radius_(radius)
 {
 }
 	

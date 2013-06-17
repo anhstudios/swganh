@@ -10,9 +10,9 @@ RectangleSpawnRegion::RectangleSpawnRegion(std::shared_ptr<swganh::terrain::Terr
 		uint32_t density, uint32_t timeout, float rarity,
 		float topLeftX, float topLeftY, float bottomRightX, float bottomRightY, SpawnFactory type)
 		: SpawnRegion(loot_group, density, timeout, rarity)
-		, factory_(type)
 		, topLeft(topLeftX, topLeftY)
-		, bottomRight(bottomRightX, bottomRightY)
+        , bottomRight(bottomRightX, bottomRightY)
+        , factory_(type)
 {
 }
 	
