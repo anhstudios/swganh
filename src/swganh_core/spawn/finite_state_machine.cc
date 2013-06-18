@@ -12,10 +12,10 @@ using namespace swganh::spawn;
 
 FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, std::shared_ptr<FsmStateInterface> initial_state,
 	ControllerFactory controller_factory)
-	: kernel_(kernel)
-	, machine_cleaner_(kernel->GetCpuThreadPool())
-	, initial_state_(initial_state)
-	, controller_factory_(controller_factory)
+	: controller_factory_(controller_factory)
+    , initial_state_(initial_state)
+    , machine_cleaner_(kernel->GetCpuThreadPool())
+    , kernel_(kernel)
 {
 	machine_cleaner_.expires_from_now(boost::posix_time::milliseconds(20));
 	machine_cleaner_.async_wait(bind(&FiniteStateMachine::HandleDispatch, this, boost::asio::placeholders::error));

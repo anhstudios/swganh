@@ -21,7 +21,11 @@ Guild::~Guild()
 {
 }
 
-void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag) { AddGuildTag(guild_id, guild_tag, AcquireLock()); }
+void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag) {
+    auto lock = AcquireLock();
+    AddGuildTag(guild_id, guild_tag, lock);
+}
+
 void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag, boost::unique_lock<boost::mutex>& lock)
 {
     auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
@@ -35,7 +39,11 @@ void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag, boost::unique_
 	}
 }
 
-void Guild::RemoveGuildTag(uint32_t guild_id) { RemoveGuildTag(guild_id, AcquireLock()); }
+void Guild::RemoveGuildTag(uint32_t guild_id) {
+    auto lock = AcquireLock();
+    RemoveGuildTag(guild_id, lock);
+}
+
 void Guild::RemoveGuildTag(uint32_t guild_id, boost::unique_lock<boost::mutex>& lock)
 {
     auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
@@ -49,13 +57,21 @@ void Guild::RemoveGuildTag(uint32_t guild_id, boost::unique_lock<boost::mutex>& 
 	}
 }
     
-std::set<GuildTag> Guild::GetGuildList() { return GetGuildList(AcquireLock()); }
+std::set<GuildTag> Guild::GetGuildList() {
+    auto lock = AcquireLock();
+    return GetGuildList(lock);
+}
+
 std::set<GuildTag> Guild::GetGuildList(boost::unique_lock<boost::mutex>& lock)
 {
     return guild_list_.raw();
 }
 
-void Guild::SerializeGuildList(swganh::messages::BaseSwgMessage* message) { SerializeGuildList(message, AcquireLock()); }
+void Guild::SerializeGuildList(swganh::messages::BaseSwgMessage* message) {
+    auto lock = AcquireLock();
+    SerializeGuildList(message, lock);
+}
+
 void Guild::SerializeGuildList(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
 	guild_list_.Serialize(message);

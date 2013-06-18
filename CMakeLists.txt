@@ -105,7 +105,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_ALL -Wall)
-    #ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_WRITE_STRINGS -Wno-write-strings)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_WRITE_STRINGS -Wno-write-strings)
     ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_INVALID_OFFSETOF -Wno-invalid-offsetof)
     ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_CPP11_SUPPORT -std=c++11)
     ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_LIBCPP_SUPPORT -stdlib=libc++)
@@ -122,6 +122,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
     set(AdditionalBoostLibs chrono regex)
     add_definitions(-DBOOST_ASIO_DISABLE_MOVE)
+
+    if(CMAKE_GENERATOR STREQUAL Xcode)
+        set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+        set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+    endif()
 endif()
 
 if(MSVC)
@@ -154,9 +159,6 @@ if(MSVC)
     ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
     MESSAGE(STATUS "- BOOST: Enable dynamic linking")
 
-    add_definitions(/D BOOST_ALL_NO_LIB)
-    message(status "- BOOST: Disable automatic linking")
-
     ADD_DEFINITIONS (/D _HAS_ITERATOR_DEBUGGING=0)
     MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
 
@@ -168,6 +170,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_WARNINGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS}")
 
 # Use the static/multithreaded libraries.
+add_definitions(-DBOOST_ALL_NO_LIB)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 

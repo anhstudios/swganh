@@ -39,94 +39,150 @@ Tangible::Tangible(const std::string& customization, std::vector<uint32_t> compo
     });
 }
 
-void Tangible::AddCustomization(const std::string& customization) { AddCustomization(customization, AcquireLock()); }
+void Tangible::AddCustomization(const std::string& customization) {
+    auto lock = AcquireLock();
+    AddCustomization(customization, lock);
+}
+
 void Tangible::AddCustomization(const std::string& customization, boost::unique_lock<boost::mutex>& lock)
 {
     customization_.append(customization);
 	DISPATCH(Tangible, Customization);
 }
 
-std::string Tangible::GetCustomization() { return GetCustomization(AcquireLock()); }
+std::string Tangible::GetCustomization() {
+    auto lock = AcquireLock();
+    return GetCustomization(lock);
+}
+
 std::string Tangible::GetCustomization(boost::unique_lock<boost::mutex>& lock)
 {
     return customization_;
 }
 
-void Tangible::SetCustomization(const std::string& customization) { SetCustomization(customization, AcquireLock()); }
+void Tangible::SetCustomization(const std::string& customization) {
+    auto lock = AcquireLock();
+    SetCustomization(customization, lock);
+}
+
 void Tangible::SetCustomization(const std::string& customization, boost::unique_lock<boost::mutex>& lock)
 {
 	customization_ = customization;
     DISPATCH(Tangible, Customization);
 }
 
-void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints) { SetCustomizationFromInts(customization_ints, AcquireLock()); }
+void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints) {
+    auto lock = AcquireLock();
+    SetCustomizationFromInts(customization_ints, lock);
+}
+
 void Tangible::SetCustomizationFromInts(std::vector<int> customization_ints, boost::unique_lock<boost::mutex>& lock)
 {
 	customization_ = std::string(customization_ints.begin(), customization_ints.end());
 	DISPATCH(Tangible, Customization);
 }
 
-void Tangible::RemoveComponentCustomization(uint32_t customization) { RemoveComponentCustomization(customization, AcquireLock()); }
+void Tangible::RemoveComponentCustomization(uint32_t customization) {
+    auto lock = AcquireLock();
+    RemoveComponentCustomization(customization, lock);
+}
+
 void Tangible::RemoveComponentCustomization(uint32_t customization, boost::unique_lock<boost::mutex>& lock)
 {
     component_customization_list_.remove(customization);
     DISPATCH(Tangible, ComponentCustomization);
 }
 
-void Tangible::AddComponentCustomization(uint32_t customization) { AddComponentCustomization(customization, AcquireLock()); }
+void Tangible::AddComponentCustomization(uint32_t customization) {
+    auto lock = AcquireLock();
+    AddComponentCustomization(customization, lock);
+}
+
 void Tangible::AddComponentCustomization(uint32_t customization, boost::unique_lock<boost::mutex>& lock)
 {
 	component_customization_list_.add(customization);
     DISPATCH(Tangible, ComponentCustomization);
 }
 
-std::set<uint32_t> Tangible::GetComponentCustomization() { return GetComponentCustomization(AcquireLock()); }
+std::set<uint32_t> Tangible::GetComponentCustomization() {
+    auto lock = AcquireLock();
+    return GetComponentCustomization(lock);
+}
+
 std::set<uint32_t> Tangible::GetComponentCustomization(boost::unique_lock<boost::mutex>& lock)
 {
     return component_customization_list_.raw();
 }
 
-void Tangible::ClearComponentCustomization() { ClearComponentCustomization(AcquireLock()); }
+void Tangible::ClearComponentCustomization() {
+    auto lock = AcquireLock();
+    ClearComponentCustomization(lock);
+}
+
 void Tangible::ClearComponentCustomization(boost::unique_lock<boost::mutex>& lock)
 {
 	component_customization_list_.clear();
     DISPATCH(Tangible, ComponentCustomization);
 }
 
-void Tangible::SetOptionsMask(uint32_t options_mask) { SetOptionsMask(options_mask, AcquireLock()); }
+void Tangible::SetOptionsMask(uint32_t options_mask) {
+    auto lock = AcquireLock();
+    SetOptionsMask(options_mask, lock);
+}
+
 void Tangible::SetOptionsMask(uint32_t options_mask, boost::unique_lock<boost::mutex>& lock)
 {
     options_bitmask_ = options_mask;
 	DISPATCH(Tangible, OptionsMask);
 }
 
-void Tangible::ToggleOption(uint32_t option) { ToggleOption(option, AcquireLock()); }
+void Tangible::ToggleOption(uint32_t option) {
+    auto lock = AcquireLock();
+    ToggleOption(option, lock);
+}
+
 void Tangible::ToggleOption(uint32_t option, boost::unique_lock<boost::mutex>& lock)
 {
 	options_bitmask_ ^= option;
 	DISPATCH(Tangible, OptionsMask);
 }
 
-uint32_t Tangible::GetOptionsMask() { return GetOptionsMask(AcquireLock()); }
+uint32_t Tangible::GetOptionsMask() {
+    auto lock = AcquireLock();
+    return GetOptionsMask(lock);
+}
+
 uint32_t Tangible::GetOptionsMask(boost::unique_lock<boost::mutex>& lock)
 {
     return options_bitmask_;
 }
 
-void Tangible::SetCounter(uint32_t counter) { SetCounter(counter, AcquireLock()); }
+void Tangible::SetCounter(uint32_t counter) {
+    auto lock = AcquireLock();
+    SetCounter(counter, lock);
+}
+
 void Tangible::SetCounter(uint32_t counter, boost::unique_lock<boost::mutex>& lock)
 {
     counter_ = counter;
     DISPATCH(Tangible, Counter);
 }
 
-uint32_t Tangible::GetCounter() { return GetCounter(AcquireLock()); }
+uint32_t Tangible::GetCounter() {
+    auto lock = AcquireLock();
+    return GetCounter(lock);
+}
+
 uint32_t Tangible::GetCounter(boost::unique_lock<boost::mutex>& lock)
 {
     return counter_;
 }
 
-void Tangible::SetConditionDamage(uint32_t damage) { SetConditionDamage(damage, AcquireLock()); }
+void Tangible::SetConditionDamage(uint32_t damage) {
+    auto lock = AcquireLock();
+    SetConditionDamage(damage, lock);
+}
+
 void Tangible::SetConditionDamage(uint32_t damage, boost::unique_lock<boost::mutex>& lock)
 {
     condition_damage_ = damage;
@@ -134,13 +190,21 @@ void Tangible::SetConditionDamage(uint32_t damage, boost::unique_lock<boost::mut
 	DISPATCH(Tangible, UpdateAttribute);
 }
 
-uint32_t Tangible::GetCondition() { return GetCondition(AcquireLock()); }
+uint32_t Tangible::GetCondition() {
+    auto lock = AcquireLock();
+    return GetCondition(lock);
+}
+
 uint32_t Tangible::GetCondition(boost::unique_lock<boost::mutex>& lock)
 {
     return condition_damage_;
 }
 
-void Tangible::SetMaxCondition(uint32_t max_condition) { SetMaxCondition(max_condition, AcquireLock()); }
+void Tangible::SetMaxCondition(uint32_t max_condition) {
+    auto lock = AcquireLock();
+    SetMaxCondition(max_condition, lock);
+}
+
 void Tangible::SetMaxCondition(uint32_t max_condition, boost::unique_lock<boost::mutex>& lock)
 {
     max_condition_ = max_condition;
@@ -148,26 +212,42 @@ void Tangible::SetMaxCondition(uint32_t max_condition, boost::unique_lock<boost:
 	DISPATCH(Tangible, UpdateAttribute);
 }
 
-uint32_t Tangible::GetMaxCondition() { return GetMaxCondition(AcquireLock()); }
+uint32_t Tangible::GetMaxCondition() {
+    auto lock = AcquireLock();
+    return GetMaxCondition(lock);
+}
+
 uint32_t Tangible::GetMaxCondition(boost::unique_lock<boost::mutex>& lock)
 {
     return max_condition_;
 }
 
-void Tangible::SetStatic(bool is_static) { SetStatic(is_static, AcquireLock()); }
+void Tangible::SetStatic(bool is_static) {
+    auto lock = AcquireLock();
+    SetStatic(is_static, lock);
+}
+
 void Tangible::SetStatic(bool is_static, boost::unique_lock<boost::mutex>& lock)
 {
     is_static_ = is_static;
 	DISPATCH(Tangible, Static);
 }
 
-bool Tangible::IsStatic() { return IsStatic(AcquireLock()); }
+bool Tangible::IsStatic() {
+    auto lock = AcquireLock();
+    return IsStatic(lock);
+}
+
 bool Tangible::IsStatic(boost::unique_lock<boost::mutex>& lock)
 {
     return is_static_;
 }
 
-bool Tangible::IsDefending(uint64_t defender) { return IsDefending(defender, AcquireLock()); }
+bool Tangible::IsDefending(uint64_t defender) {
+    auto lock = AcquireLock();
+    return IsDefending(defender, lock);
+}
+
 bool Tangible::IsDefending(uint64_t defender, boost::unique_lock<boost::mutex>& lock)
 {
     for(uint32_t i=0; i < defender_list_.size(); ++i)
@@ -180,53 +260,85 @@ bool Tangible::IsDefending(uint64_t defender, boost::unique_lock<boost::mutex>& 
 	return false;
 }
 
-void Tangible::AddDefender(uint64_t defender) { AddDefender(defender, AcquireLock()); }
+void Tangible::AddDefender(uint64_t defender) {
+    auto lock = AcquireLock();
+    AddDefender(defender, lock);
+}
+
 void Tangible::AddDefender(uint64_t defender, boost::unique_lock<boost::mutex>& lock)
 {
 	defender_list_.add(defender);
 	DISPATCH(Tangible, Defenders);
 }
 
-void Tangible::RemoveDefender(uint64_t defender) { RemoveDefender(defender, AcquireLock()); }
+void Tangible::RemoveDefender(uint64_t defender) {
+    auto lock = AcquireLock();
+    RemoveDefender(defender, lock);
+}
+
 void Tangible::RemoveDefender(uint64_t defender, boost::unique_lock<boost::mutex>& lock)
 {
     defender_list_.erase(defender);
     DISPATCH(Tangible, Defenders);
 }
 
-void Tangible::ResetDefenders(std::vector<uint64_t> defenders) { ResetDefenders(defenders, AcquireLock()); }
+void Tangible::ResetDefenders(std::vector<uint64_t> defenders) {
+    auto lock = AcquireLock();
+    ResetDefenders(defenders, lock);
+}
+
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders, boost::unique_lock<boost::mutex>& lock)
 {
     defender_list_.reset(defenders);
     DISPATCH(Tangible, Defenders);
 }
 
-std::vector<uint64_t> Tangible::GetDefenders() { return GetDefenders(AcquireLock()); }
+std::vector<uint64_t> Tangible::GetDefenders() {
+    auto lock = AcquireLock();
+    return GetDefenders(lock);
+}
+
 std::vector<uint64_t> Tangible::GetDefenders(boost::unique_lock<boost::mutex>& lock)
 {
     return defender_list_.raw();
 }
 
-void Tangible::ClearDefenders() { ClearDefenders(AcquireLock()); }
+void Tangible::ClearDefenders() {
+    auto lock = AcquireLock();
+    ClearDefenders(lock);
+}
+
 void Tangible::ClearDefenders(boost::unique_lock<boost::mutex>& lock)
 {
     defender_list_.clear();
     DISPATCH(Tangible, Defenders);
 }
 
-void Tangible::ActivateAutoAttack() { ActivateAutoAttack(AcquireLock()); }
+void Tangible::ActivateAutoAttack() {
+    auto lock = AcquireLock();
+    ActivateAutoAttack(lock);
+}
+
 void Tangible::ActivateAutoAttack(boost::unique_lock<boost::mutex>& lock)
 {
     auto_attack_ = true;
 }
 
-void Tangible::ClearAutoAttack() { ClearAutoAttack(AcquireLock()); }
+void Tangible::ClearAutoAttack() {
+    auto lock = AcquireLock();
+    ClearAutoAttack(lock);
+}
+
 void Tangible::ClearAutoAttack(boost::unique_lock<boost::mutex>& lock)
 {
     auto_attack_ = false;
 }
 
-bool Tangible::IsAutoAttacking() { return IsAutoAttacking(AcquireLock()); }
+bool Tangible::IsAutoAttacking() {
+    auto lock = AcquireLock();
+    return IsAutoAttacking(lock);
+}
+
 bool Tangible::IsAutoAttacking(boost::unique_lock<boost::mutex>& lock)
 {
     return auto_attack_ == true;
@@ -241,13 +353,21 @@ void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterfa
 	}
 }
 
-void Tangible::SerializeComponentCustomization(swganh::messages::BaseSwgMessage* message) { SerializeComponentCustomization(message, AcquireLock()); }
+void Tangible::SerializeComponentCustomization(swganh::messages::BaseSwgMessage* message) {
+    auto lock = AcquireLock();
+    SerializeComponentCustomization(message, lock);
+}
+
 void Tangible::SerializeComponentCustomization(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
 	component_customization_list_.Serialize(message);
 }
 
-void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message) { SerializeDefenders(message, AcquireLock()); }
+void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message) {
+    auto lock = AcquireLock();
+    SerializeDefenders(message, lock);
+}
+
 void Tangible::SerializeDefenders(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
 	defender_list_.Serialize(message);

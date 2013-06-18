@@ -6,8 +6,7 @@
 using namespace swganh::spawn;
 
 LootItem::LootItem(float drop_percent, LootFactory factory)
-	: drop_percent_(drop_percent)
-	, factory_(factory)
+	: factory_(factory)
 {
 }
 

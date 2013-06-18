@@ -6,10 +6,10 @@
 using namespace swganh::spawn;
 
 SpawnRegion::SpawnRegion(std::shared_ptr<LootGroup> loot_group, uint32_t density, uint32_t timeout, float rarity)
-	: loot_group_(loot_group)
+	 /*loot_group_(loot_group)
 	, density_(density)
 	, timeout_(timeout)
-	, rarity_(rarity)
+	, rarity_(rarity)*/
 {
 }
 

@@ -47,9 +47,12 @@ public:
 	virtual glm::vec3 NextSpawnLocation(swganh::app::SwganhKernel* kernel) = 0;
 
 private:
-	uint32_t scene_id_, density_, timeout_;
+	uint32_t scene_id_;
+    /*
+    uint32_t density_, timeout_;
 	float rarity_;
 	std::shared_ptr<LootGroup> loot_group_;
+    */
 };
 
 }}

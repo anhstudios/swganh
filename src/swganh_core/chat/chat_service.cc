@@ -332,9 +332,9 @@ void ChatService::Startup()
 		if(find_itr != online_players_.end())
 		{
 			//Send friend list update message
-			controller->Notify(&ChatFriendsListUpdate(galaxy_name_, real_event.second, 1));
+            ChatFriendsListUpdate update(galaxy_name_, real_event.second, 1);
+			controller->Notify(&update);
 		}
-
 	});
 
 	//When a player is removed from a friend's list
@@ -577,7 +577,8 @@ void ChatService::HandleFriendsList(const std::shared_ptr<swganh::object::Creatu
 		for_each(find_itr->second.begin(), find_itr->second.end(), 
 		[&] (const std::shared_ptr<swganh::observer::ObserverInterface>& id) {
 			//Send friend list update message
-			id->Notify(&ChatFriendsListUpdate(galaxy_name_, std::string(custom_name.begin(), custom_name.end()), operation));
+            ChatFriendsListUpdate friends_list(galaxy_name_, std::string(custom_name.begin(), custom_name.end()), operation);
+			id->Notify(&friends_list);
 		});
 	}
 
@@ -608,7 +609,8 @@ void ChatService::HandleFriendsList(const std::shared_ptr<swganh::object::Creatu
 			if(find_itr != online_players_.end())
 			{
 				//Send friend list update message
-				controller->Notify(&ChatFriendsListUpdate(galaxy_name_, friend_name, 1));
+                ChatFriendsListUpdate update(galaxy_name_, friend_name, 1);
+				controller->Notify(&update);
 			}
 		}
 		else
@@ -964,7 +966,9 @@ void ChatService::_handleRequestRoomList(
 			}
 			room_list.data.writeAt<uint32_t>(offset, count);
 		}
-		controller->Notify(&ChatServerStatus(1));
+        
+        ChatServerStatus server_status(1);
+		controller->Notify(&server_status);
 		controller->Notify(&room_list);
 	}
 }
@@ -1034,7 +1038,8 @@ void ChatService::_handleSendToRoom(
 		}
 		
 		//Send Status Message
-		controller->Notify(&ChatOnSendRoomMessage(error_code, message->message_counter));
+        ChatOnSendRoomMessage send_room_msg(error_code, message->message_counter);
+		controller->Notify(&send_room_msg);
 		
 		if(error_code == 0)
 		{

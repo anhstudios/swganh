@@ -36,7 +36,6 @@ private:
 	std::shared_ptr<swganh::terrain::TerrainServiceInterface> terrain_;
 	SpawnFactory factory_;
 	Point center_;
-	float radius_;
 };
 
 }}
