@@ -21,7 +21,6 @@ Session::Session(ServerInterface* server, boost::asio::io_service& cpu_pool, boo
     , strand_(cpu_pool)
     , connected_(false)
     , crc_seed_(0xDEADBABE)
-    , last_acknowledged_sequence_(0)
     , next_client_sequence_(0)
     , current_client_sequence_(0)
     , server_sequence_()
@@ -66,7 +65,7 @@ uint32_t Session::crc_seed() const {
     return crc_seed_;
 }
 
-void Session::SendSoePacket_(swganh::ByteBuffer& message)
+swganh::ByteBuffer Session::SendSoePacket_(swganh::ByteBuffer message)
 {
 	LOG_NET << "S->C: " << server_->listen_endpoint() << " -> " << remote_endpoint() << "\n" << message;
     
@@ -76,6 +75,8 @@ void Session::SendSoePacket_(swganh::ByteBuffer& message)
 	
     // Store it for resending later if necessary
     server_->SendTo(remote_endpoint(), message);
+    
+    return message;
 }
 
 void Session::SendFragmentedPacket_(ByteBuffer message, SequencedCallbacks callbacks)

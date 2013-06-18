@@ -34,7 +34,7 @@ void FsmController::Cleanup(boost::posix_time::ptime current_time_)
 		boost::posix_time::ptime time = std::get<0>(timed.top());
 		while(time <= current_time_)
 		{
-			TimedType& type = timed.top();
+			TimedType type = timed.top();
 
 			//Call the handler
 			Transition& t = std::get<2>(type);

@@ -46,11 +46,11 @@ using namespace swganh::simulation;
 using namespace swganh::scripting;
 
 SpawnService::SpawnService(SwganhKernel* kernel) 
-	: kernel_(kernel)
-	, fsm_manager_(kernel->GetEventDispatcher())
-	, timer_(kernel->GetCpuThreadPool(), boost::posix_time::seconds(60))
-	, active_(kernel->GetCpuThreadPool())
-	, next_region_id_(0)
+	: fsm_manager_(kernel->GetEventDispatcher())
+, next_region_id_(0)
+, kernel_(kernel)
+, timer_(kernel->GetCpuThreadPool(), boost::posix_time::seconds(60))
+, active_(kernel->GetCpuThreadPool())
 {
 	//Static Objects
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)

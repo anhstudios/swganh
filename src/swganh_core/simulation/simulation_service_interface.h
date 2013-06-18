@@ -200,7 +200,7 @@ namespace simulation {
 		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, std::string scene_name, glm::vec3 position, float radius) = 0;
         
         template<typename T>
-        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
+        std::shared_ptr<T> CreateObjectFromTemplateAs(const std::string& template_name,
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0)
         {
             std::shared_ptr<swganh::object::Object> object = CreateObjectFromTemplate(template_name, type, is_persisted, object_id);

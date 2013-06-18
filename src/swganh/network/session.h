@@ -147,7 +147,7 @@ private:
     void handleDataFragA_(DataFragA packet);
     void handleAckA_(AckA packet);
     void handleOutOfOrderA_(OutOfOrderA packet);
-    void SendSoePacket_(swganh::ByteBuffer& message);
+    swganh::ByteBuffer SendSoePacket_(swganh::ByteBuffer message);
     void SendFragmentedPacket_(swganh::ByteBuffer message, SequencedCallbacks callbacks);    
     void SendSequencedMessage_(uint16_t header, ByteBuffer message, SequencedCallbacks callbacks = SequencedCallbacks());
 
@@ -170,7 +170,6 @@ private:
     uint32_t                            crc_seed_;
 
     // Sequences
-    uint16_t							last_acknowledged_sequence_;
     uint16_t							next_client_sequence_;
     uint16_t							current_client_sequence_;
     std::atomic<uint16_t>				server_sequence_;

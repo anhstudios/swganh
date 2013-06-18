@@ -33,7 +33,6 @@ public:
 private:
 
 	LootFactory factory_;
-	float drop_percent_;
 
 };
 

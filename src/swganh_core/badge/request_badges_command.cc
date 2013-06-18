@@ -49,7 +49,7 @@ void RequestBadgesCommand::Run()
 	std::for_each(badges.begin(), badges.end(), [=, &badges_response](const uint32_t id) {
         auto index = GetBadgeBitmaskIndexById2(id);
         auto bit = GetBadgeBitmaskBitById2(id);
-		badges_response.badge_flags[index].at(bit) = true;
+		badges_response.badge_flags[index][bit] = true;
 	});
 
 	GetActor()->GetController()->Notify(&badges_response);

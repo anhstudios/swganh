@@ -13,6 +13,7 @@ namespace chat
 class ChatUserProviderInterface
 {
 public:
+    virtual ~ChatUserProviderInterface() {}
 
 	/*!
 	* @param name the full name of the user

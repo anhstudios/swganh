@@ -14,13 +14,21 @@ Intangible::Intangible()
 {
 }
 
-uint32_t Intangible::GetGenericInt() { return GetGenericInt(AcquireLock()); }
+uint32_t Intangible::GetGenericInt() {
+    auto lock = AcquireLock();
+    return GetGenericInt(lock);
+}
+
 uint32_t Intangible::GetGenericInt(boost::unique_lock<boost::mutex>& lock)
 {
 	return generic_int_;
 }
 
-void Intangible::SetGenericInt(uint32_t generic_int) { SetGenericInt(generic_int, AcquireLock()); }
+void Intangible::SetGenericInt(uint32_t generic_int) {
+    auto lock = AcquireLock();
+    SetGenericInt(generic_int, lock);
+}
+
 void Intangible::SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::mutex>& lock)
 {
 	generic_int_ = generic_int;

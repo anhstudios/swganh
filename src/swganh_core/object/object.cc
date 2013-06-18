@@ -29,7 +29,9 @@ using namespace swganh::object;
 using namespace swganh::messages;
 
 Object::Object()
-    : object_id_(0)
+    : database_persisted_(true)
+    , in_snapshot_(false)
+    , object_id_(0)
     , scene_id_(0)
 	, instance_id_(0)
     , template_string_("")
@@ -47,8 +49,6 @@ Object::Object()
 	, collidable_(false)
 	, controller_(nullptr)
 	, event_dispatcher_(nullptr)
-	, database_persisted_(true)
-	, in_snapshot_(false)
 {
 }
 
@@ -56,26 +56,42 @@ Object::~Object()
 {
 }
 
-bool Object::HasController() { return HasController(AcquireLock()); }
+bool Object::HasController() {
+    auto lock = AcquireLock();
+    return HasController(lock);
+}
+
 bool Object::HasController(boost::unique_lock<boost::mutex>& lock)
 {
     return controller_ != nullptr;
 }
 
-shared_ptr<ObserverInterface> Object::GetController() { return GetController(AcquireLock()); }
+shared_ptr<ObserverInterface> Object::GetController() {
+    auto lock = AcquireLock();
+    return GetController(lock);
+}
+
 shared_ptr<ObserverInterface> Object::GetController(boost::unique_lock<boost::mutex>& lock)
 {
     return controller_;
 }
 
-void Object::SetController(const shared_ptr<ObserverInterface>& controller) { SetController(controller, AcquireLock()); }
+void Object::SetController(const shared_ptr<ObserverInterface>& controller) {
+    auto lock = AcquireLock();
+    SetController(controller, lock);
+}
+
 void Object::SetController(const shared_ptr<ObserverInterface>& controller, boost::unique_lock<boost::mutex>& lock)
 {
 	controller_ = controller;
     Subscribe(controller, lock);
 }
 
-void Object::ClearController() { ClearController(AcquireLock()); }
+void Object::ClearController() {
+    auto lock = AcquireLock();
+    ClearController(lock);
+}
+
 void Object::ClearController(boost::unique_lock<boost::mutex>& lock)
 {
     for(auto& aware : aware_objects_) {
@@ -470,65 +486,105 @@ void Object::__InternalGetAbsolutes(glm::vec3& pos, glm::quat& rot)
 	rot = rot * orientation_;
 }
 
-string Object::GetTemplate() { return GetTemplate(AcquireLock()); }
+string Object::GetTemplate() {
+    auto lock = AcquireLock();
+    return GetTemplate(lock);
+}
+
 string Object::GetTemplate(boost::unique_lock<boost::mutex>& lock)
 {
 	return template_string_;
 }
 
-void Object::SetTemplate(const string& template_string) { SetTemplate(template_string, AcquireLock()); }
+void Object::SetTemplate(const string& template_string) {
+    auto lock = AcquireLock();
+    SetTemplate(template_string, lock);
+}
+
 void Object::SetTemplate(const string& template_string, boost::unique_lock<boost::mutex>& lock)
 {
 	template_string_ = template_string;
 	DISPATCH(Object, Template);
 }
 
-void Object::SetObjectId(uint64_t object_id) { SetObjectId(object_id, AcquireLock()); }
+void Object::SetObjectId(uint64_t object_id) {
+    auto lock = AcquireLock();
+    SetObjectId(object_id, lock);
+}
+
 void Object::SetObjectId(uint64_t object_id, boost::unique_lock<boost::mutex>& lock)
 {
     object_id_ = object_id;
 }
 
-uint64_t Object::GetObjectId() { return GetObjectId(AcquireLock()); }
+uint64_t Object::GetObjectId() {
+    auto lock = AcquireLock();
+    return GetObjectId(lock);
+}
+
 uint64_t Object::GetObjectId(boost::unique_lock<boost::mutex>& lock)
 {
     return object_id_;
 }
 
-wstring Object::GetCustomName() { return GetCustomName(AcquireLock()); }
+wstring Object::GetCustomName() {
+    auto lock = AcquireLock();
+    return GetCustomName(lock);
+}
+
 wstring Object::GetCustomName(boost::unique_lock<boost::mutex>& lock)
 {
     return custom_name_;
 }
 
-void Object::SetCustomName(wstring custom_name) { SetCustomName(custom_name, AcquireLock()); }
+void Object::SetCustomName(wstring custom_name) {
+    auto lock = AcquireLock();
+    SetCustomName(custom_name, lock);
+}
+
 void Object::SetCustomName(wstring custom_name, boost::unique_lock<boost::mutex>& lock)
 {
     custom_name_ = custom_name;
     DISPATCH(Object, CustomName);
 }
 
-std::wstring Object::GetFirstName() const { return GetFirstName(AcquireLock()); }
+std::wstring Object::GetFirstName() const {
+    auto lock = AcquireLock();
+    return GetFirstName(lock);
+}
+
 std::wstring Object::GetFirstName(boost::unique_lock<boost::mutex>& lock) const
 {
     std::size_t pos = custom_name_.find(L" ");
     return custom_name_.substr(0, pos);
 }
 
-std::wstring Object::GetSurName() const { return GetSurName(AcquireLock()); }
+std::wstring Object::GetSurName() const {
+    auto lock = AcquireLock();
+    return GetSurName(lock);
+}
+
 std::wstring Object::GetSurName(boost::unique_lock<boost::mutex>& lock) const
 {
     std::size_t pos = custom_name_.find(L" ");
     return custom_name_.substr(pos, std::string::npos);
 }
 
-bool Object::HasObservers() { return HasObservers(AcquireLock()); }
+bool Object::HasObservers() {
+    auto lock = AcquireLock();
+    return HasObservers(lock);
+}
+
 bool Object::HasObservers(boost::unique_lock<boost::mutex>& lock)
 {
     return !observers_.empty();
 }
 
-void Object::Subscribe(const shared_ptr<ObserverInterface>& observer) { Subscribe(observer, AcquireLock()); }
+void Object::Subscribe(const shared_ptr<ObserverInterface>& observer) {
+    auto lock = AcquireLock();
+    Subscribe(observer, lock);
+}
+
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer, boost::unique_lock<boost::mutex>& lock)
 {
     if (observers_.find(observer) == observers_.end())
@@ -537,13 +593,21 @@ void Object::Subscribe(const shared_ptr<ObserverInterface>& observer, boost::uni
     }
 }
 
-void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer) { Unsubscribe(observer, AcquireLock()); }
+void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer) {
+    auto lock = AcquireLock();
+    Unsubscribe(observer, lock);
+}
+
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer, boost::unique_lock<boost::mutex>& lock)
 {
     observers_.erase(observer);
 }
 
-void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message) { NotifyObservers(message, AcquireLock()); }
+void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message) {
+    auto lock = AcquireLock();
+    NotifyObservers(message, lock);
+}
+
 void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
     std::for_each(
@@ -560,7 +624,11 @@ void Object::AddDeltasUpdate(DeltasMessage* message)
     NotifyObservers(message);
 }
 
-void Object::SetPosition(glm::vec3 position) { SetPosition(position, AcquireLock()); }
+void Object::SetPosition(glm::vec3 position) {
+    auto lock = AcquireLock();
+    SetPosition(position, lock);
+}
+
 void Object::SetPosition(glm::vec3 position, boost::unique_lock<boost::mutex>& lock)
 {
 	position_ = position;
@@ -577,7 +645,11 @@ void Object::UpdatePosition(const glm::vec3& new_position, const glm::quat& orie
 		("Object::UpdatePosition", parent, shared_from_this(), new_position));
 }
 
-glm::vec3 Object::GetPosition() { return GetPosition(AcquireLock()); }
+glm::vec3 Object::GetPosition() {
+    auto lock = AcquireLock();
+    return GetPosition(lock);
+}
+
 glm::vec3 Object::GetPosition(boost::unique_lock<boost::mutex>& lock)
 {
 	return position_;
@@ -597,14 +669,22 @@ float Object::RangeTo(glm::vec3 target)
 	return glm::distance(GetPosition(), target);
 }
 
-void Object::SetOrientation(glm::quat orientation) { SetOrientation(orientation, AcquireLock()); }
+void Object::SetOrientation(glm::quat orientation) {
+    auto lock = AcquireLock();
+    SetOrientation(orientation, lock);
+}
+
 void Object::SetOrientation(glm::quat orientation, boost::unique_lock<boost::mutex>& lock)
 {
 	orientation_ = orientation;
 	DISPATCH(Object, Orientation);
 }
 
-glm::quat Object::GetOrientation() { return GetOrientation(AcquireLock()); }
+glm::quat Object::GetOrientation() {
+    auto lock = AcquireLock();
+    return GetOrientation(lock);
+}
+
 glm::quat Object::GetOrientation(boost::unique_lock<boost::mutex>& lock)
 {
 	return orientation_;
@@ -618,7 +698,11 @@ void Object::FaceObject(const std::shared_ptr<Object>& object)
     }    
 }
 
-void Object::FacePosition(const glm::vec3& position) { FacePosition(position, AcquireLock()); }
+void Object::FacePosition(const glm::vec3& position) {
+    auto lock = AcquireLock();
+    FacePosition(position, lock);
+}
+
 void Object::FacePosition(const glm::vec3& position, boost::unique_lock<boost::mutex>& lock)
 {
 	
@@ -663,33 +747,53 @@ uint8_t Object::GetHeading(glm::quat orientation)
 	return static_cast<uint8_t>(heading);
 }
 
-void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container) { SetContainer(container, AcquireLock()); }
+void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container) {
+    auto lock = AcquireLock();
+    SetContainer(container, lock);
+}
+
 void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container, boost::unique_lock<boost::mutex>& lock)
 {
     container_ = container;		
 	DISPATCH(Object, Container);
 }
 
-shared_ptr<ContainerInterface> Object::GetContainer() { return GetContainer(AcquireLock()); }
+shared_ptr<ContainerInterface> Object::GetContainer() {
+    auto lock = AcquireLock();
+    return GetContainer(lock);
+}
+
 shared_ptr<ContainerInterface> Object::GetContainer(boost::unique_lock<boost::mutex>& lock)
 {
 	return container_;
 }
 
-void Object::SetComplexity(float complexity) { SetComplexity(complexity, AcquireLock()); }
+void Object::SetComplexity(float complexity) {
+    auto lock = AcquireLock();
+    SetComplexity(complexity, lock);
+}
+
 void Object::SetComplexity(float complexity, boost::unique_lock<boost::mutex>& lock)
 {
 	complexity_ = complexity;
 	DISPATCH(Object, Complexity);
 }
 
-float Object::GetComplexity() { return GetComplexity(AcquireLock()); }
+float Object::GetComplexity() {
+    auto lock = AcquireLock();
+    return GetComplexity(lock);
+}
+
 float Object::GetComplexity(boost::unique_lock<boost::mutex>& lock)
 {
 	return complexity_;
 }
 
-void Object::SetStfName(const string& stf_file_name, const string& stf_string) { SetStfName(stf_file_name, stf_string, AcquireLock()); }
+void Object::SetStfName(const string& stf_file_name, const string& stf_string) {
+    auto lock = AcquireLock();
+    SetStfName(stf_file_name, stf_string, lock);
+}
+
 void Object::SetStfName(const string& stf_file_name, const string& stf_string, boost::unique_lock<boost::mutex>& lock)
 {
     stf_name_file_ = stf_file_name;
@@ -697,51 +801,83 @@ void Object::SetStfName(const string& stf_file_name, const string& stf_string, b
 	DISPATCH(Object, StfName);
 }
 
-string Object::GetStfNameFile() { return GetStfNameFile(AcquireLock()); }
+string Object::GetStfNameFile() {
+    auto lock = AcquireLock();
+    return GetStfNameFile(lock);
+}
+
 string Object::GetStfNameFile(boost::unique_lock<boost::mutex>& lock)
 {
 	return stf_name_file_;
 }
 
-string Object::GetStfNameString() { return GetStfNameString(AcquireLock()); }
+string Object::GetStfNameString() {
+    auto lock = AcquireLock();
+    return GetStfNameString(lock);
+}
+
 string Object::GetStfNameString(boost::unique_lock<boost::mutex>& lock)
 {
 	return stf_name_string_;
 }
 
-void Object::SetVolume(uint32_t volume) { SetVolume(volume, AcquireLock()); }
+void Object::SetVolume(uint32_t volume) {
+    auto lock = AcquireLock();
+    SetVolume(volume, lock);
+}
+
 void Object::SetVolume(uint32_t volume, boost::unique_lock<boost::mutex>& lock)
 {
     volume_ = volume;
 	DISPATCH(Object, Volume);
 }
 
-uint32_t Object::GetVolume() { return GetVolume(AcquireLock()); }
+uint32_t Object::GetVolume() {
+    auto lock = AcquireLock();
+    return GetVolume(lock);
+}
+
 uint32_t Object::GetVolume(boost::unique_lock<boost::mutex>& lock)
 {
 	return volume_;
 }
 
-void Object::SetSceneId(uint32_t scene_id) { SetSceneId(scene_id, AcquireLock()); }
+void Object::SetSceneId(uint32_t scene_id) {
+    auto lock = AcquireLock();
+    SetSceneId(scene_id, lock);
+}
+
 void Object::SetSceneId(uint32_t scene_id, boost::unique_lock<boost::mutex>& lock)
 {
     scene_id_ = scene_id;
 	DISPATCH(Object, SceneId);
 }
 
-uint32_t Object::GetSceneId() { return GetSceneId(AcquireLock()); }
+uint32_t Object::GetSceneId() {
+    auto lock = AcquireLock();
+    return GetSceneId(lock);
+}
+
 uint32_t Object::GetSceneId(boost::unique_lock<boost::mutex>& lock)
 {
 	return scene_id_;
 }
 
-uint32_t Object::GetInstanceId() { return GetInstanceId(AcquireLock()); }
+uint32_t Object::GetInstanceId() {
+    auto lock = AcquireLock();
+    return GetInstanceId(lock);
+}
+
 uint32_t Object::GetInstanceId(boost::unique_lock<boost::mutex>& lock)
 {
 	return instance_id_;
 }
 
-void Object::SetInstanceId(uint32_t instance_id) { SetInstanceId(instance_id, AcquireLock()); }
+void Object::SetInstanceId(uint32_t instance_id) {
+    auto lock = AcquireLock();
+    SetInstanceId(instance_id, lock);
+}
+
 void Object::SetInstanceId(uint32_t instance_id, boost::unique_lock<boost::mutex>& lock)
 {
 	instance_id_ = instance_id;
@@ -777,7 +913,11 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 	}
 }
 
-void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) { SendCreateByCrc(observer, AcquireLock()); }
+void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) {
+    auto lock = AcquireLock();
+    SendCreateByCrc(observer, lock);
+}
+
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock) 
 {
 	//DLOG(info) << "SEND [" << GetObjectId() << "] (" << GetTemplate() <<") TO " << observer->GetId();
@@ -794,7 +934,11 @@ void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface
 	SendUpdateContainmentMessage(observer, lock, true);
 }
 
-void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent) { SendUpdateContainmentMessage(observer, AcquireLock(), send_on_no_parent); }
+void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, bool send_on_no_parent) {
+    auto lock = AcquireLock();
+    SendUpdateContainmentMessage(observer, lock, send_on_no_parent);
+}
+
 void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock, bool send_on_no_parent)
 {
 	if(observer == nullptr)
@@ -819,7 +963,11 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 	}
 }
 
-void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer) { SendDestroy(observer, AcquireLock()); }
+void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer) {
+    auto lock = AcquireLock();
+    SendDestroy(observer, lock);
+}
+
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock)
 {
 	//DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
@@ -830,19 +978,31 @@ void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> ob
 	observer->Notify(&scene_object);
 }
 
-void Object::SetFlag(std::string flag) { SetFlag(flag, AcquireLock()); }
+void Object::SetFlag(std::string flag) {
+    auto lock = AcquireLock();
+    SetFlag(flag, lock);
+}
+
 void Object::SetFlag(std::string flag, boost::unique_lock<boost::mutex>& lock)
 {
     flags_.insert(flag);
 }
 
-void Object::RemoveFlag(std::string flag) { return RemoveFlag(flag, AcquireLock()); }
+void Object::RemoveFlag(std::string flag) {
+    auto lock = AcquireLock();
+    return RemoveFlag(flag, lock);
+}
+
 void Object::RemoveFlag(std::string flag, boost::unique_lock<boost::mutex>& lock)
 {
     flags_.erase(flag);
 }
 
-bool Object::HasFlag(std::string flag) { return HasFlag(flag, AcquireLock()); }
+bool Object::HasFlag(std::string flag) {
+    auto lock = AcquireLock();
+    return HasFlag(flag, lock);
+}
+
 bool Object::HasFlag(std::string flag, boost::unique_lock<boost::mutex>& lock)
 {
     return flags_.find(flag) != flags_.end();
@@ -850,7 +1010,11 @@ bool Object::HasFlag(std::string flag, boost::unique_lock<boost::mutex>& lock)
 
 /// Slots
 
-void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements) { SetSlotInformation(slots, arrangements, AcquireLock()); }
+void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements) {
+    auto lock = AcquireLock();
+    SetSlotInformation(slots, arrangements, lock);
+}
+
 void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements, boost::unique_lock<boost::mutex>& lock)
 {
 	slot_descriptor_ = slots;
@@ -907,7 +1071,11 @@ ObjectArrangements Object::GetSlotArrangements()
 	return slot_arrangements_;
 }
 
-bool Object::ClearSlot(int32_t slot_id) { return ClearSlot(slot_id, AcquireLock()); }
+bool Object::ClearSlot(int32_t slot_id) {
+    auto lock = AcquireLock();
+    return ClearSlot(slot_id, lock);
+}
+
 bool Object::ClearSlot(int32_t slot_id, boost::unique_lock<boost::mutex>& lock)
 {
 	bool cleared = false;
@@ -927,7 +1095,11 @@ bool Object::ClearSlot(int32_t slot_id, boost::unique_lock<boost::mutex>& lock)
 	return cleared;
 }
 
-shared_ptr<Object> Object::GetSlotObject(int32_t slot_id) { return GetSlotObject(slot_id, AcquireLock()); }
+shared_ptr<Object> Object::GetSlotObject(int32_t slot_id) {
+    auto lock = AcquireLock();
+    return GetSlotObject(slot_id, lock);
+}
+
 shared_ptr<Object> Object::GetSlotObject(int32_t slot_id, boost::unique_lock<boost::mutex>& lock)
 {
 	shared_ptr<Object> found = nullptr;
@@ -942,37 +1114,61 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id, boost::unique_lock<boo
 	return found;
 }
 
-bool Object::IsDatabasePersisted() { return IsDatabasePersisted(AcquireLock()); }
+bool Object::IsDatabasePersisted() {
+    auto lock = AcquireLock();
+    return IsDatabasePersisted(lock);
+}
+
 bool Object::IsDatabasePersisted(boost::unique_lock<boost::mutex>& lock)
 {
 	return database_persisted_;
 }
 
-bool Object::IsInSnapshot() { return IsInSnapshot(AcquireLock()); }
+bool Object::IsInSnapshot() {
+    auto lock = AcquireLock();
+    return IsInSnapshot(lock);
+}
+
 bool Object::IsInSnapshot(boost::unique_lock<boost::mutex>& lock)
 {
 	return in_snapshot_;
 }
 
-void Object::SetDatabasePersisted(bool value) { SetDatabasePersisted(value, AcquireLock()); }
+void Object::SetDatabasePersisted(bool value) {
+    auto lock = AcquireLock();
+    SetDatabasePersisted(value, lock);
+}
+
 void Object::SetDatabasePersisted(bool value, boost::unique_lock<boost::mutex>& lock)
 {
 	database_persisted_ = value;
 }
 
-void Object::SetInSnapshot(bool value) { SetInSnapshot(value, AcquireLock()); }
+void Object::SetInSnapshot(bool value) {
+    auto lock = AcquireLock();
+    SetInSnapshot(value, lock);
+}
+
 void Object::SetInSnapshot(bool value, boost::unique_lock<boost::mutex>& lock)
 {
 	in_snapshot_ = value;
 }
 
-AttributesMap Object::GetAttributeMap() { return GetAttributeMap(AcquireLock()); }
+AttributesMap Object::GetAttributeMap() {
+    auto lock = AcquireLock();
+    return GetAttributeMap(lock);
+}
+
 AttributesMap Object::GetAttributeMap(boost::unique_lock<boost::mutex>& lock)
 {
 	return attributes_map_;
 }
 
-AttributeVariant Object::GetAttribute(const std::string& name) { return GetAttribute(name, AcquireLock()); }
+AttributeVariant Object::GetAttribute(const std::string& name) {
+    auto lock = AcquireLock();
+    return GetAttribute(name, lock);
+}
+
 AttributeVariant Object::GetAttribute(const std::string& name, boost::unique_lock<boost::mutex>& lock)
 {
 	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
@@ -988,7 +1184,11 @@ AttributeVariant Object::GetAttribute(const std::string& name, boost::unique_loc
 	return boost::blank();
 }
 
-std::wstring Object::GetAttributeAsString(const std::string& name) { return GetAttributeAsString(name, AcquireLock()); }
+std::wstring Object::GetAttributeAsString(const std::string& name) {
+    auto lock = AcquireLock();
+    return GetAttributeAsString(name, lock);
+}
+
 std::wstring Object::GetAttributeAsString(const std::string& name, boost::unique_lock<boost::mutex>& lock)
 {
 	try {
@@ -1013,13 +1213,21 @@ std::wstring Object::GetAttributeAsString(const std::string& name, boost::unique
 	return L"";
 }
 
-int8_t Object::GetAttributeTemplateId() { return GetAttributeTemplateId(AcquireLock()); }
+int8_t Object::GetAttributeTemplateId() {
+    auto lock = AcquireLock();
+    return GetAttributeTemplateId(lock);
+}
+
 int8_t Object::GetAttributeTemplateId(boost::unique_lock<boost::mutex>& lock)
 {
 	return attributes_template_id;
 }
 
-void Object::SetAttributeTemplateId(int8_t attribute_template_id) { SetAttributeTemplateId(attribute_template_id, AcquireLock()); }
+void Object::SetAttributeTemplateId(int8_t attribute_template_id) {
+    auto lock = AcquireLock();
+    SetAttributeTemplateId(attribute_template_id, lock);
+}
+
 void Object::SetAttributeTemplateId(int8_t attribute_template_id, boost::unique_lock<boost::mutex>& lock)
 {
 	attributes_template_id = attribute_template_id;
@@ -1053,20 +1261,32 @@ void Object::__InternalUpdateWorldCollisionBox()
 	}
 }
 
-bool Object::HasAttribute(const std::string& name) { return HasAttribute(name, AcquireLock()); }
+bool Object::HasAttribute(const std::string& name) {
+    auto lock = AcquireLock();
+    return HasAttribute(name, lock);
+}
+
 bool Object::HasAttribute(const std::string& name, boost::unique_lock<boost::mutex>& lock)
 {
 	return attributes_map_.find(name) != attributes_map_.end();
 }
 
-void Object::BuildSpatialProfile() { BuildSpatialProfile(AcquireLock()); }
+void Object::BuildSpatialProfile() {
+    auto lock = AcquireLock();
+    BuildSpatialProfile(lock);
+}
+
 void Object::BuildSpatialProfile(boost::unique_lock<boost::mutex>& lock)
 {
 	BuildCollisionBox(lock);
 	UpdateAABB(lock);
 }
 
-void Object::BuildCollisionBox() { BuildCollisionBox(AcquireLock()); }
+void Object::BuildCollisionBox() {
+    auto lock = AcquireLock();
+    BuildCollisionBox(lock);
+}
+
 void Object::BuildCollisionBox(boost::unique_lock<boost::mutex>& lock)
 {
 	__BuildCollisionBox();
@@ -1076,19 +1296,31 @@ void Object::BuildCollisionBox(boost::unique_lock<boost::mutex>& lock)
 	lock.lock();
 }
 
-void Object::UpdateAABB() { UpdateAABB(AcquireLock()); }
+void Object::UpdateAABB() {
+    auto lock = AcquireLock();
+    UpdateAABB(lock);
+}
+
 void Object::UpdateAABB(boost::unique_lock<boost::mutex>& lock) 
 { 
 	boost::geometry::envelope(world_collision_box_, aabb_);
 }
 
-const std::set<std::shared_ptr<Object>>& Object::GetCollidedObjects(void) const { return GetCollidedObjects(AcquireLock()); }
+const std::set<std::shared_ptr<Object>>& Object::GetCollidedObjects(void) const {
+    auto lock = AcquireLock();
+    return GetCollidedObjects(lock);
+}
+
 const std::set<std::shared_ptr<Object>>& Object::GetCollidedObjects(boost::unique_lock<boost::mutex>& lock) const 
 { 
 	return collided_objects_; 
 }
 
-void Object::AddCollidedObject(std::shared_ptr<Object> obj) { AddCollidedObject(obj, AcquireLock()); } 
+void Object::AddCollidedObject(std::shared_ptr<Object> obj) {
+    auto lock = AcquireLock();
+    AddCollidedObject(obj, lock);
+}
+
 void Object::AddCollidedObject(std::shared_ptr<Object> obj, boost::unique_lock<boost::mutex>& lock)
 {
 	if(collided_objects_.insert(obj).second)
@@ -1097,7 +1329,11 @@ void Object::AddCollidedObject(std::shared_ptr<Object> obj, boost::unique_lock<b
     }
 }
 
-void Object::RemoveCollidedObject(std::shared_ptr<Object> obj) { RemoveCollidedObject(obj, AcquireLock()); }
+void Object::RemoveCollidedObject(std::shared_ptr<Object> obj) {
+    auto lock = AcquireLock();
+    RemoveCollidedObject(obj, lock);
+}
+
 void Object::RemoveCollidedObject(std::shared_ptr<Object> obj, boost::unique_lock<boost::mutex>& lock)
 {
 	if(collided_objects_.erase(obj) > 0)
@@ -1106,38 +1342,62 @@ void Object::RemoveCollidedObject(std::shared_ptr<Object> obj, boost::unique_loc
     }
 }
 
-const CollisionBox& Object::GetLocalCollisionBox(void) const { return GetLocalCollisionBox(AcquireLock()); }
+const CollisionBox& Object::GetLocalCollisionBox(void) const {
+    auto lock = AcquireLock();
+    return GetLocalCollisionBox(lock);
+}
+
 const CollisionBox& Object::GetLocalCollisionBox(boost::unique_lock<boost::mutex>& lock) const 
 { 
 	return local_collision_box_; 
 }
 
-const CollisionBox& Object::GetWorldCollisionBox(void) const { return GetWorldCollisionBox(AcquireLock()); }
+const CollisionBox& Object::GetWorldCollisionBox(void) const {
+    auto lock = AcquireLock();
+    return GetWorldCollisionBox(lock);
+}
+
 const CollisionBox& Object::GetWorldCollisionBox(boost::unique_lock<boost::mutex>& lock) const 
 { 
 	return world_collision_box_; 
 }
 
-const AABB& Object::GetAABB(void) const { return GetAABB(AcquireLock()); }
+const AABB& Object::GetAABB(void) const {
+    auto lock = AcquireLock();
+    return GetAABB(lock);
+}
+
 const AABB& Object::GetAABB(boost::unique_lock<boost::mutex>& lock) const 
 { 
 	return aabb_; 
 }
 
-void Object::SetCollisionBoxSize(float length, float height) { SetCollisionBoxSize(length, height, AcquireLock()); }
+void Object::SetCollisionBoxSize(float length, float height) {
+    auto lock = AcquireLock();
+    SetCollisionBoxSize(length, height, lock);
+}
+
 void Object::SetCollisionBoxSize(float length, float height, boost::unique_lock<boost::mutex>& lock)
 {
 	collision_length_ = length;
 	collision_height_ = height;
 }
 
-void Object::SetCollidable(bool collidable) { SetCollidable(collidable, AcquireLock()); }
+void Object::SetCollidable(bool collidable) {
+    auto lock = AcquireLock();
+    SetCollidable(collidable, lock);
+}
+
 void Object::SetCollidable(bool collidable, boost::unique_lock<boost::mutex>& lock) 
 { 
 	collidable_ = collidable; 
 }
 
-bool Object::IsCollidable() const { return IsCollidable(AcquireLock()); }
+bool Object::IsCollidable() const {
+    auto lock = AcquireLock();
+    return IsCollidable(lock);
+}
+
 bool Object::IsCollidable(boost::unique_lock<boost::mutex>& lock) const 
 { 
 	return collidable_; 

@@ -29,8 +29,8 @@ ObjectController::ObjectController(
     shared_ptr<Object> object,
     shared_ptr<ConnectionClientInterface> client)
     : object_(object)
+    , object_id_(object->GetObjectId())
     , client_(client)
-	, object_id_(object->GetObjectId())
 {
 }
 
