@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "intangible.h"
+#include "swganh_core/object/object_events.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -13,17 +14,31 @@ Intangible::Intangible()
 {
 }
 
-uint32_t Intangible::GetGenericInt()
+uint32_t Intangible::GetGenericInt() {
+    auto lock = AcquireLock();
+    return GetGenericInt(lock);
+}
+
+uint32_t Intangible::GetGenericInt(boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return generic_int_;
 }
 
-void Intangible::SetGenericInt(uint32_t generic_int)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		generic_int_ = generic_int;
-	}
+void Intangible::SetGenericInt(uint32_t generic_int) {
+    auto lock = AcquireLock();
+    SetGenericInt(generic_int, lock);
+}
 
+void Intangible::SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::mutex>& lock)
+{
+	generic_int_ = generic_int;
+}
+
+void Intangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
+{
+	if (auto dispatch = GetEventDispatcher())
+	{
+		dispatch->Dispatch(make_shared<ObserverEvent>
+			("Intangible::Baselines", shared_from_this(), observer));
+	}
 }

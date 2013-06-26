@@ -1,0 +1,18 @@
+insert into object_attributes (object_id)
+select o.id
+from object o
+    inner join swganh_static.iff_templates iffs on (o.id = iffs.id)
+	 where iffs.iff_template like 'object/weapon/%pistol%'
+    ;
+update object_attributes oa
+    inner join object o on o.id = oa.object_id
+    inner join swganh_static.iff_templates iffs on o.id = iffs.id
+    set attribute_id = 1268, attribute_value = 6
+	 where iffs.iff_template like 'object/weapon/%pistol%'
+	 and oa.attribute_id is NULL and oa.attribute_value = ''
+	 
+ delete oa from object_attributes oa
+	inner join object o on o.id = oa.object_id
+    inner join swganh_static.iff_templates iffs on o.id = iffs.id
+	 where iffs.iff_template like '%lightsaber%'
+	 and oa.attribute_id = 1268 and oa.attribute_value <> '14'

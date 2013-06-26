@@ -27,11 +27,16 @@ namespace app {
 struct AppConfig {
 	std::string server_mode;
     std::vector<std::string> plugins;
+    std::vector<std::string> scenes;
     std::string plugin_directory;
     std::string script_directory;
     std::string galaxy_name;
     std::string tre_config;
     uint32_t resource_cache_size;
+    
+	uint32_t io_threads;
+	uint32_t cpu_threads;
+	uint32_t db_threads;
 
     /*!
     * @Brief Contains information about the database config"
@@ -67,7 +72,7 @@ struct AppConfig {
     
 class SwganhKernel : public swganh::app::KernelInterface {
 public:
-    explicit SwganhKernel(boost::asio::io_service& io_service);
+    explicit SwganhKernel(boost::asio::io_service& io_pool, boost::asio::io_service& cpu_pool);
     virtual ~SwganhKernel();
 
 	void Shutdown();
@@ -76,7 +81,7 @@ public:
 
     AppConfig& GetAppConfig();
 
-    swganh::database::DatabaseManagerInterface* GetDatabaseManager();
+    swganh::database::DatabaseManager* GetDatabaseManager();
     
     swganh::EventDispatcher* GetEventDispatcher();
 
@@ -86,7 +91,9 @@ public:
     
     swganh::service::ServiceDirectoryInterface* GetServiceDirectory();
     
-    boost::asio::io_service& GetIoService();
+    boost::asio::io_service& GetIoThreadPool();
+
+	boost::asio::io_service& GetCpuThreadPool();
 
     swganh::tre::ResourceManager* GetResourceManager();
 
@@ -95,14 +102,14 @@ private:
     swganh::app::Version version_;
     swganh::app::AppConfig app_config_;
     
-    std::unique_ptr<swganh::database::DatabaseManagerInterface> database_manager_;
+    std::unique_ptr<swganh::database::DatabaseManager> database_manager_;
     std::unique_ptr<swganh::EventDispatcher> event_dispatcher_;
     std::unique_ptr<swganh::plugin::PluginManager> plugin_manager_;
     std::unique_ptr<swganh::service::ServiceManager> service_manager_;
     std::unique_ptr<swganh::service::ServiceDirectoryInterface> service_directory_;
     std::unique_ptr<swganh::tre::ResourceManager> resource_manager_;
 
-    boost::asio::io_service& io_service_;
+    boost::asio::io_service &io_pool_, &cpu_pool_;
 };
 
 }}  // namespace swganh::app

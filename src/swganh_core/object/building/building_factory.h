@@ -18,11 +18,14 @@ namespace object {
     public:
 		typedef Building ObjectType;
 
-        BuildingFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        BuildingFactory(swganh::app::SwganhKernel* kernel);
 		
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+
 		virtual void PersistChangedObjects(){}
 		virtual void RegisterEventHandlers(){}
+
+		std::shared_ptr<swganh::object::Object> CreateObject();
 
     };
 

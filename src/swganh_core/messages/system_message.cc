@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #include "system_message.h"
 #include "out_of_band.h"
-#include "chat_system_message.h"
+#include "chat/chat_system_message.h"
 #include "play_client_effect_loc_message.h"
 #include "play_client_effect_object_message.h"
 #include "play_client_effect_object_with_transform_message.h"
@@ -12,7 +12,7 @@
 
 #include "swganh_core/object/object.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>

@@ -9,9 +9,13 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object;
 
-WeaponFactory::WeaponFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
-	: TangibleFactory(db_manager, event_dispatcher)
+WeaponFactory::WeaponFactory(swganh::app::SwganhKernel* kernel)
+	: TangibleFactory(kernel)
+{}
+
+void WeaponFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
+    TangibleFactory::LoadFromStorage(connection, object, lock);
 }
 
 void WeaponFactory::PersistChangedObjects()
@@ -23,13 +27,17 @@ void WeaponFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
-uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
-	return 1;
+	return TangibleFactory::PersistObject(object, lock, persist_inherited);
 }
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
@@ -37,13 +45,7 @@ void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 	ObjectFactory::DeleteObjectFromStorage(object);
 }
 
-shared_ptr<Object> WeaponFactory::CreateObjectFromStorage(uint64_t object_id)
+shared_ptr<Object> WeaponFactory::CreateObject()
 {
-    return make_shared<Weapon>();
-}
-
-shared_ptr<Object> WeaponFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
-{
-	//@TODO: Create me with help from db
     return make_shared<Weapon>();
 }

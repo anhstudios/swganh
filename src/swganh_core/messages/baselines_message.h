@@ -12,8 +12,10 @@ namespace messages {
     
     struct BaselinesMessage : public BaseBaselinesMessage
     {
+		const static uint32_t opcode = 0x68A75F0C;
+
         uint16_t Opcount() const { return 5; }
-        uint32_t Opcode() const { return 0x68A75F0C; }
+        uint32_t Opcode() const { return opcode; }
     };
     
 }}  // namespace swganh::messages

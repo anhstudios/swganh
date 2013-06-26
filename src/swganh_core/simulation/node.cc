@@ -5,6 +5,14 @@
 
 #include "swganh_core/object/object.h"
 
+std::stringstream current_collision_points;
+
+template <typename Point>
+void GetCollisionBoxPoints(Point const& p)
+{
+	current_collision_points << " " << p.x() << "," << p.y();
+}
+
 namespace quadtree
 {
 
@@ -14,6 +22,7 @@ Node::Node(NodeQuadrant quadrant, Region region, uint32_t level, uint32_t max_le
 	, level_(level)
 	, max_level_(max_level)
 	, state_(LEAF)
+	, leaf_nodes_()
 	, parent_(parent)
 {
 	// If this is the root node, we need to do an initial split.
@@ -27,6 +36,8 @@ Node::~Node(void)
 
 void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 {
+	obj->BuildSpatialProfile();
+
 	// If the amount of objects contained is equal to or exceeds (in the case of objects not fitting
 	// completely into one node), and we havn't reached the "maximum level" count, and we are a LEAF
 	// node, Split().
@@ -35,7 +46,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 		Split();
 	}
 
-	// Flipped to true if a child node of proper side was found to
+	// Flipped to true if a child node of proper size was found to
 	// contain the object. Otherwise, the object will be added to 
 	// this node.
 	bool success = false;
@@ -44,7 +55,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 	{
 		std::for_each(leaf_nodes_.begin(), leaf_nodes_.end(), [=, &obj, &success](std::shared_ptr<Node> node){
 			// If we can fit within the node, traverse.
-			if(boost::geometry::within( Point(obj->GetPosition().x, obj->GetPosition().z) , node->GetRegion()))
+			if(boost::geometry::within( obj->GetAABB(), node->GetRegion() ))
 			{
 				node->InsertObject(obj);
 				success = true;
@@ -56,10 +67,11 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 	if(success)
 		return;
 
+
 	objects_.insert(obj);
 }
 
-void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
+bool Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 {
 	// Search this node for the object by id, if it it found
 	// we can return;
@@ -68,7 +80,7 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 		if(obj->GetObjectId() == (*i)->GetObjectId())
 		{
 			i = objects_.erase(i);
-			return;
+			return true;
 		}
 		i++;
 	}
@@ -77,18 +89,33 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 	// each leaf node if we are a BRANCH.
 	if(state_ == BRANCH)
 	{
-		Point obj_point(obj->GetPosition().x, obj->GetPosition().z);
+		auto bounding_volume = obj->GetAABB();
+		std::set<std::shared_ptr<Node>> checked_nodes_;
+
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// If we can actually fit inside the node, traverse farther.
-			if(boost::geometry::within(obj_point, node->GetRegion()))
+			if(boost::geometry::within(bounding_volume, node->GetRegion()))
 			{
-				node->RemoveObject(obj);
-				return;
+				checked_nodes_.insert(node);
+				if(node->RemoveObject(obj)) {
+					return true;
+				}
+			}
+		}
+
+		//Clearly we're still in there somewhere...we just don't know where anymore.
+		//Position must've been mucked with before removal.
+		bool output = false;
+		for(auto node : leaf_nodes_) {
+			if(checked_nodes_.find(node) != checked_nodes_.end()) {
+				if(node->RemoveObject(obj)) {
+					return true;
+				}
 			}
 		}
 	}
-
+	return false;
 }
 
 void Node::Split()
@@ -112,10 +139,11 @@ void Node::Split()
 	for(auto i = objects_.begin(); i != objects_.end();)
 	{
 		auto obj = (*i);
+		auto bounding_volume = obj->GetAABB();
 		bool success = false;
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().z) , node->GetRegion()))
+			if(boost::geometry::within(bounding_volume , node->GetRegion()))
 			{
 				i = objects_.erase(i);
 				node->InsertObject(std::move(obj));
@@ -129,13 +157,13 @@ void Node::Split()
 	}
 }
 
-std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box)
+std::set<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box)
 {
-	std::list<std::shared_ptr<swganh::object::Object>> return_list;
+	std::set<std::shared_ptr<swganh::object::Object>> return_list;
 
 	std::for_each(objects_.begin(), objects_.end(), [=,& return_list](std::shared_ptr<swganh::object::Object> obj) {
-		if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().z), query_box))
-			return_list.push_back(obj);
+		if(boost::geometry::intersects(obj->GetAABB(), query_box))
+			return_list.insert(obj);
 	});
 
 	if(state_ == BRANCH)
@@ -145,21 +173,24 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_bo
 			// Node is within Query Box.
 			if(boost::geometry::within(node->GetRegion(), query_box))
 			{
-				return_list.splice(return_list.end(), node->GetContainedObjects());
+				auto sub_objects = node->GetContainedObjects();
+				return_list.insert(sub_objects.begin(), sub_objects.end());
 				continue;
 			}
 			
 			// Query Box is within node.
 			if(boost::geometry::within(query_box, node->GetRegion()))
 			{
-				return_list.splice( return_list.end(), node->Query(query_box) );
+				auto sub_objects = node->Query(query_box);
+				return_list.insert(sub_objects.begin(), sub_objects.end());
 				break;
 			}
 
 			// Query Box intersects with node.
 			if(boost::geometry::intersects(query_box, node->GetRegion()))
 			{
-				return_list.splice( return_list.end(), node->Query(query_box) );
+				auto sub_objects = node->Query(query_box);
+				return_list.insert( sub_objects.begin(), sub_objects.end() );
 			}
 		}
 	}
@@ -167,37 +198,35 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_bo
 	return return_list;
 }
 
-std::list<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(void)
+std::set<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(void)
 {
-	std::list<std::shared_ptr<swganh::object::Object>> objs(objects_.begin(), objects_.end());
+	std::set<std::shared_ptr<swganh::object::Object>> objs(objects_.begin(), objects_.end());
 	if(state_ == BRANCH)
 	{
 		for(const std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			objs.splice(objs.end(), node->GetContainedObjects());
+			auto sub_objects = node->GetContainedObjects();
+			objs.insert(sub_objects.begin(), sub_objects.end());
 		}
 	}
 	return objs;
 }
 
-void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position)
+void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume)
 {
-	Point old_position_point(old_position.x, old_position.z);
-	Point new_position_point(new_position.x, new_position.z);
-
 	// Check the objects of this node.
 	for(auto i = objects_.begin(); i != objects_.end(); i++) {
 		auto node_obj = (*i);
 		if(node_obj->GetObjectId() == obj->GetObjectId())
 		{
 			// If we are in the same node, we don't need to do anything.
-			if(boost::geometry::within(new_position_point, region_))
+			if(boost::geometry::within(new_bounding_volume, region_))
 			{
 				return;
 			}
 
 			// Move our object from this node to a new node.
-			std::shared_ptr<Node> node = GetRootNode_()->GetNodeWithinPoint_(new_position_point);
+			std::shared_ptr<Node> node = GetRootNode_()->GetNodeContainingVolume_(new_bounding_volume);
 			objects_.erase(i);
 			node->InsertObject(obj);
 			return;
@@ -209,19 +238,19 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// Go further into the tree if our point is within our child node.
-			if(boost::geometry::within(old_position_point, node->GetRegion()))
+			if(boost::geometry::within(old_bounding_volume, node->GetRegion()))
 			{
-				node->UpdateObject(obj, old_position, new_position);
+				node->UpdateObject(obj, old_bounding_volume, new_bounding_volume);
 				return;
 			}
 		}
 	}
 }
 
-std::shared_ptr<Node> Node::GetNodeWithinPoint_(Point point)
+std::shared_ptr<Node> Node::GetNodeContainingVolume_(swganh::object::AABB volumn)
 {
 	// If we don't within the actual Spatial Indexing area, bail.
-	if(!boost::geometry::within(point, region_))
+	if(!boost::geometry::within(volumn, region_))
 		throw new std::runtime_error("Quadtree: Object position out of bounds.");
 
 	if(state_ == BRANCH)
@@ -229,15 +258,123 @@ std::shared_ptr<Node> Node::GetNodeWithinPoint_(Point point)
 		// See if we can fit inside leaf_nodes_
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			if(boost::geometry::within(point, node->GetRegion()))
+			if(boost::geometry::within(volumn, node->GetRegion()))
 			{
-				return node->GetNodeWithinPoint_(point);
+				return node->GetNodeContainingVolume_(volumn);
 			}
 		}
 	}
 
 	// If not, we are between or in this node.
 	return std::shared_ptr<Node>(shared_from_this());
+}
+
+void Node::SvgDump(std::string fname)
+{
+	std::ofstream file;
+	file.open(fname);
+	file << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1440\" height=\"900\" version=\"1.1\" viewBox=\"-8300 -8300 16600 16600\" overflow=\"visible\">\n";
+	
+	file << "<g>\n";
+	SvgDumpRegions(file);
+	file << "<" << '/' << "g>\n";
+	
+	file << "<g>\n";
+	SvgDumpObjects(file);
+	file << "<" << '/' << "g>\n";
+
+	file << "<" << '/' << "svg>";
+	file.close();
+}
+
+void Node::SvgDumpRegions(std::ofstream& file)
+{
+	std::stringstream region_points;
+	boost::geometry::box_view<Region> box_view(region_);
+	for(boost::range_iterator<boost::geometry::box_view<Region> const>::type it = boost::begin(box_view); it != boost::end(box_view); ++it)
+	{
+		region_points << " " << (float)(*it).x() << "," << (float)(*it).y() * -1.0f;
+	}
+
+	file << "<polygon points=\"" << region_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:green;stroke-width:5px\"" << '/' << "> \n";
+
+	if(state_ == BRANCH)
+	{
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			if(node != nullptr)
+				node->SvgDumpRegions(file);
+		}
+	}
+}
+
+void Node::SvgDumpObjects(std::ofstream& file)
+{
+
+	for(std::shared_ptr<swganh::object::Object> obj : objects_)
+	{
+		std::stringstream bounding_volume_points;
+
+		auto bounding_volume = obj->GetAABB();
+		auto collision_box = obj->GetWorldCollisionBox();
+
+                current_collision_points.str("");
+                current_collision_points.clear();
+                
+		boost::geometry::for_each_point(collision_box, GetCollisionBoxPoints<Point>);
+		
+		boost::geometry::box_view<swganh::object::AABB> bounding_volume_view(bounding_volume);
+		for(boost::range_iterator<boost::geometry::box_view<swganh::object::AABB>>::type it = boost::begin(bounding_volume_view); it != boost::end(bounding_volume_view); ++it) 
+		{
+			bounding_volume_points << " " << (*it).x() << "," << (*it).y() * -1.0f;
+		}
+
+		auto name = obj->GetCustomName();
+		file << "<text x=\"" << obj->GetPosition().x << "\" y=\"" << obj->GetPosition().z * -1.0f << "\" fill=\"black\" style=\"text-anchor: middle;\" font-size=\"8px\">" << std::string(name.begin(), name.end()) << "<" << '/' << "text>\n";
+		file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
+		file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";
+
+		obj->ViewObjects(obj, 0, true, [=, &file](std::shared_ptr<swganh::object::Object> object) {
+			if(object->GetCustomName().size() > 0)
+			{
+				std::cout << "Printing internal object of ";
+				std::wcout << obj->GetCustomName() << " : ";
+				std::wcout << object->GetCustomName() << std::endl;
+			}
+			std::stringstream bounding_volume_points;
+
+			auto bounding_volume = object->GetAABB();
+			auto collision_box = object->GetWorldCollisionBox();
+
+                        current_collision_points.str("");
+                        current_collision_points.clear();
+                
+			boost::geometry::for_each_point(collision_box, GetCollisionBoxPoints<Point>);
+		
+			boost::geometry::box_view<swganh::object::AABB> bounding_volume_view(bounding_volume);
+			for(boost::range_iterator<boost::geometry::box_view<swganh::object::AABB>>::type it = boost::begin(bounding_volume_view); it != boost::end(bounding_volume_view); ++it) 
+			{
+				bounding_volume_points << " " << (*it).x() << "," << (*it).y() * -1.0f;
+			}
+
+			auto name = object->GetCustomName();
+			auto abs_position = glm::vec3();
+                        auto abs_orientation = glm::quat();
+			object->GetAbsolutes(abs_position, abs_orientation);
+			file << "<text x=\"" << abs_position.x << "\" y=\"" << abs_position.z * -1.0f << "\" fill=\"black\" style=\"text-anchor: middle;\" font-size=\"8px\">" << std::string(name.begin(), name.end()) << " * <" << '/' << "text>\n";
+			file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
+			file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";
+		});
+	}
+
+	if(state_ == BRANCH)
+	{
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			if(node != nullptr)
+				node->SvgDumpObjects(file);
+		}
+	}
 }
 
 } // namespace quadtree

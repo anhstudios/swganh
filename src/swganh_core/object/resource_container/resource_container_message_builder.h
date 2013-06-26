@@ -22,8 +22,6 @@ public:
     {
         RegisterEventHandlers();
     }
-    virtual void RegisterEventHandlers();
-    virtual void SendBaselines(const std::shared_ptr<ResourceContainer>& resource_container, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
     // deltas
     static void BuildCurrentUnitsDelta(const std::shared_ptr<ResourceContainer>& resource_container);
@@ -33,10 +31,12 @@ public:
 	static void BuildVariationNameDelta(const std::shared_ptr<ResourceContainer>& resource_container);
 
     // baselines
-    static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<ResourceContainer>& resource_container);
-    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<ResourceContainer>& resource_container);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<ResourceContainer>& resource_container, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<ResourceContainer>& resource_container, boost::unique_lock<boost::mutex>& lock);
 private:
     typedef swganh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
+
+    void RegisterEventHandlers();
 };
 
 }} // swganh::object

@@ -10,18 +10,18 @@
 #include <glm/glm.hpp>
 #include "swganh_core/messages/server_weather_message.h"
 #include "swganh_core/object/object.h"
-#include "swganh/weather/weather_service_interface.h"
+#include "swganh_core/weather/weather_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/weather/weather_data.h"
+#include "swganh_core/weather/weather_data.h"
 #include "swganh/event_dispatcher.h"
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
-#include "swganh/galaxy/galaxy_service_interface.h"
+#include "swganh_core/galaxy/galaxy_service_interface.h"
 #include "swganh/scripting/python_script.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/observer/observer_interface.h"
-#include "swganh/player/player_service_interface.h"
+#include "swganh_core/player/player_service_interface.h"
 
 
 namespace swganh {
@@ -47,23 +47,23 @@ namespace weather {
         explicit WeatherService(swganh::app::SwganhKernel* kernel);
     
         ~WeatherService();
+        
+        virtual void Initialize();
+		virtual void Startup();
+		virtual void Shutdown();
 
-        swganh::service::ServiceDescription GetServiceDescription();
-		
 		swganh::weather::Weather GetSceneWeather(uint32_t scene_id);
-		void SetSceneWeather(uint32_t scene_id,  std::vector<swganh::weather::WeatherEvent> weather_sequence_);
-		void swganh::weather::WeatherService::RunWeatherSequence();
-		void Startup();
-		void Shutdown();
+		void SetSceneWeather(uint32_t scene_id, std::vector<swganh::weather::WeatherEvent> weather_sequence_);
+		void RunWeatherSequence();
 
     private:
-		void WeatherService::tickPlanetWeather_();
-		void WeatherService::WeatherScript();
-		void WeatherService::RemoveWeatherScene(uint32_t scene_);
+		void tickPlanetWeather_();
+		void WeatherScript();
+		void RemoveWeatherScene(uint32_t scene_);
 		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<swganh::observer::ObserverInterface> obj_controller);
 		void SendServerWeatherMessageAll_(swganh::weather::Weather weather_type, glm::vec3 cloud_vector, uint32_t scene_id);
 		void OnPlayerEnter(std::shared_ptr<swganh::object::Object> player_obj);
-		void swganh::weather::WeatherService::RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
+		void RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
 
 		swganh::app::SwganhKernel* kernel_;
 		swganh::scripting::PythonScript script_;

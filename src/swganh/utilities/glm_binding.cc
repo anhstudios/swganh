@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include <swganh/utility_python.h>
+#include <swganh/scripting/utility_python.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -28,7 +28,7 @@ std::string pretty_print_quat(glm::quat quaternion)
 void define_class_glm_vec3()
 {
 	class_<glm::vec3>("vector3",
-		"Stores a direction vector in three-dimensional space", no_init)
+		"Stores a direction vector in three-dimensional space")
 		.def(init<glm::float_t, glm::float_t, glm::float_t>())
 		.def(init<const glm::vec3&>())
         .def_readwrite("x", &glm::vec3::x)
@@ -53,7 +53,7 @@ void define_class_glm_vec3()
 void define_class_glm_quat() 
 {
     class_<glm::quat>("quat",
-		"Stores a quaternion", no_init)
+		"Stores a quaternion")
 		.def(init<glm::float_t, glm::float_t, glm::float_t, glm::float_t>())
 		.def(init<const glm::quat&>())
         .def_readwrite("x", &glm::quat::x)

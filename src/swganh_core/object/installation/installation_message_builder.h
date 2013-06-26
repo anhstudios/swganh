@@ -19,10 +19,10 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
-        // deltas
+		
+		virtual ~InstallationMessageBuilder() {}
 
+        // deltas
         static void BuildActiveDelta(const std::shared_ptr<Installation>& installation);
 		static void BuildPowerReserveDelta(const std::shared_ptr<Installation>& installation);
         static void BuildPowerCostDelta(const std::shared_ptr<Installation>& installation);
@@ -38,11 +38,13 @@ namespace object {
 		static void BuildConditionPercentDelta(const std::shared_ptr<Installation>& installation);
 
         // baselines
-        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Installation>& installation);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Installation>& installation);
-        static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<Installation>& installation);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<Installation>& installation, boost::unique_lock<boost::mutex>& lock);
     private:
         typedef swganh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
+        
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

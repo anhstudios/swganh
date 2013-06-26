@@ -53,15 +53,15 @@ public:
 
         for(auto& entry : services_)
         {
-            swganh::service::ServiceDescription description = entry.second.second->GetServiceDescription();
+            swganh::service::ServiceDescription description = entry.second->GetServiceDescription();
 
             if (description.type().compare(type_name) == 0) 
 
             {
 #ifdef _DEBUG
-                tmp = dynamic_cast<T>(entry.second.second.get());
+                tmp = dynamic_cast<T>(entry.second.get());
 #else
-                tmp = static_cast<T>(entry.second.second.get());
+                tmp = static_cast<T>(entry.second.get());
 #endif
                 services.push_back(tmp);
             }
@@ -75,10 +75,7 @@ public:
     void Stop();
 
 private:
-    typedef std::map<std::string, std::pair<
-        std::shared_ptr<ServiceDescription>, 
-        std::shared_ptr<ServiceInterface>>
-    > ServiceMap;
+    typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
     ServiceMap services_;
 
     ServiceDirectoryInterface* service_directory_;

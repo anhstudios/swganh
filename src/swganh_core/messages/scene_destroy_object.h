@@ -11,8 +11,15 @@ namespace messages {
     
     struct SceneDestroyObject : public BaseSwgMessage
     {
+		SceneDestroyObject() {}
+		SceneDestroyObject(SceneDestroyObject* other)
+		{
+			this->object_id = other->object_id;
+		}
+
+		const static uint32_t opcode = 0x4D45D504;
         uint16_t Opcount() const { return 3; }
-        uint32_t Opcode() const { return 0x4D45D504; }
+        uint32_t Opcode() const { return opcode; }
         
         uint64_t object_id;
 

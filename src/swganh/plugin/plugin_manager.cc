@@ -24,9 +24,7 @@ typedef swganh::plugin::platform::Win32Library DynamicLibrary;
 typedef swganh::plugin::platform::PosixLibrary DynamicLibrary;
 #endif
 
-#if defined(__APPLE__)
-  static std::string library_extension(".dylib");
-#elif defined(WIN32)
+#if defined(WIN32)
   static std::string library_extension(".dll");
 #else
   static std::string library_extension(".so");

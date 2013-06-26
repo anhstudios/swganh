@@ -23,17 +23,17 @@ namespace object {
     public:
 		typedef Static ObjectType;
 
-		 StaticFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+		StaticFactory(swganh::app::SwganhKernel* kernel);
 
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+        
 		virtual void PersistChangedObjects(){}
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
-
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+        std::shared_ptr<swganh::object::Object> CreateObject();
     };
 
 }}  // namespace swganh::object

@@ -5,9 +5,9 @@
 
 #include "swganh_core/messages/obj_controller_message.h"
 #include "swganh_core/messages/out_of_band.h"
-#include "swganh_core/messages/chat_system_message.h"
+#include "swganh_core/messages/chat/chat_system_message.h"
 #include "swganh_core/messages/controllers/show_fly_text.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/object/object.h"
 
 #ifndef WIN32
@@ -29,6 +29,7 @@ ObjectController::ObjectController(
     shared_ptr<Object> object,
     shared_ptr<ConnectionClientInterface> client)
     : object_(object)
+    , object_id_(object->GetObjectId())
     , client_(client)
 {
 }
@@ -40,12 +41,7 @@ ObjectController::~ObjectController()
 
 uint64_t ObjectController::GetId() const
 {
-    if (!object_)
-    {
-        return 0;
-    }
-
-    return object_->GetObjectId();
+    return object_id_;
 }
 
 shared_ptr<Object> ObjectController::GetObject() const
@@ -67,6 +63,14 @@ void ObjectController::Notify(BaseSwgMessage* message)
 {
 	swganh::ByteBuffer buffer;
 	message->SetObserverId(GetId());
-	message->Serialize(buffer);	
-    client_->SendTo(buffer);
+	message->Serialize(buffer);
+	client_->SendTo(buffer, boost::optional<swganh::network::Session::SequencedCallback>());
+}
+
+void ObjectController::Notify(BaseSwgMessage* message, swganh::network::Session::SequencedCallback&& callback)
+{
+	swganh::ByteBuffer buffer;
+	message->SetObserverId(GetId());
+	message->Serialize(buffer);
+    client_->SendTo(buffer, move(callback));
 }

@@ -3,7 +3,7 @@
 
 #include "login_enum_cluster.h"
 
-#include "swganh/login/login_client_interface.h"
+#include "swganh_core/login/login_client_interface.h"
 
 using namespace swganh::login;
 using namespace swganh::messages;

@@ -11,15 +11,16 @@
 
 #include "swganh/event_dispatcher.h"
 
-#include "swganh/network/soe/session.h"
-#include "swganh/network/soe/server.h"
+#include "swganh/network/resolver.h"
+#include "swganh/network/session.h"
+#include "swganh/network/server.h"
 
 #include "swganh/service/service_directory_interface.h"
 #include "swganh/service/service_manager.h"
 #include "swganh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 
 #include "swganh_core/messages/enumerate_character_id.h"
 #include "swganh_core/messages/error_message.h"
@@ -29,15 +30,15 @@
 
 #include "authentication_manager.h"
 #include "login_client.h"
-#include "swganh/login/providers/account_provider_interface.h"
-#include "swganh/login/encoders/encoder_interface.h"
+#include "swganh_core/login/providers/account_provider_interface.h"
+#include "swganh_core/login/encoders/encoder_interface.h"
 
 using namespace swganh;
 using namespace app;
 using namespace swganh::login;
 using namespace swganh::login;
 using namespace swganh::messages;
-using namespace network::soe;
+using namespace network;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::galaxy;
@@ -49,40 +50,26 @@ using boost::asio::ip::udp;
 using swganh::app::SwganhKernel;
 
 LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKernel* kernel)
-    : swganh::login::LoginServiceInterface(kernel->GetIoService())
+    : swganh::login::LoginServiceInterface(kernel->GetCpuThreadPool())
     , kernel_(kernel)
-    , galaxy_status_timer_(kernel->GetIoService())
+	, galaxy_status_timer_(kernel->GetCpuThreadPool())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
-    , active_(kernel->GetIoService())
+	, active_(kernel->GetCpuThreadPool())
 {
-    account_provider_ = kernel->GetPluginManager()->CreateObject<swganh::login::providers::AccountProviderInterface>("Login::AccountProvider");
-    
-    shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("Login::Encoder");
-
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
-
-    authentication_manager_ = make_shared<AuthenticationManager>(encoder);
+    SetServiceDescription(service::ServiceDescription(
+        "Login Service",
+        "login",
+        "0.1",
+        swganh::network::resolve_to_string(listen_address_),
+        0,
+        listen_port_,
+        0));
 }
 
 LoginService::~LoginService() {
     session_timer_->cancel();
     session_timer_.reset();
-}
-
-service::ServiceDescription LoginService::GetServiceDescription() {
-    auto listen_address = Resolve(listen_address_);
-
-    service::ServiceDescription service_description(
-        "Login Service",
-        "login",
-        "0.1",
-        listen_address,
-        0,
-        listen_port_,
-        0);
-
-    return service_description;
 }
 
 shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
@@ -93,7 +80,7 @@ shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<LoginClient>(this, kernel_->GetIoService(), endpoint);
+            session = make_shared<LoginClient>(this, kernel_->GetCpuThreadPool(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
         }
     }
@@ -124,10 +111,19 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
     return CreateSession(endpoint);
 }
 
-void LoginService::Startup() {
+void LoginService::Initialize()
+{
+    account_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::login::providers::AccountProviderInterface>("Login::AccountProvider");
+    shared_ptr<encoders::EncoderInterface> encoder = kernel_->GetPluginManager()->CreateObject<encoders::EncoderInterface>("Login::Encoder");
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
+    authentication_manager_ = std::make_shared<AuthenticationManager>(encoder);
+
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
 	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
-    
+}
+
+void LoginService::Startup() 
+{    
     RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
 
     auto event_dispatcher = kernel_->GetEventDispatcher();
@@ -139,27 +135,16 @@ void LoginService::Startup() {
         UpdateGalaxyStatus_();
     });
 
-    Server::Startup(listen_port_);
+    StartListening(listen_port_);
 
     UpdateGalaxyStatus_();
-
-    session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-        for_each(
-            begin(session_map_),
-            end(session_map_),
-            [=] (SessionMap::value_type& type)
-        {
-            type.second->Update();
-        });
-    });
 }
 
 void LoginService::Shutdown()
 {
     // Remove all the sessions
     account_provider_->EndSessions();
-    Server::Shutdown();
+    StopListening();
 }
 
 int LoginService::galaxy_status_check_duration_secs() const
@@ -274,7 +259,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterfa
 
         login_client->SendTo(error);
 
-        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)

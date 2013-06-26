@@ -17,12 +17,17 @@ public:
     * Gets the next random number in the generator
     */
     int Rand();
+	float Randf();
     // generates a random number between the start and end
     // Closed set,meaning it can be the start and end numbers
     int Rand(int start, int end);
-    int LastRand();
+    float Randf(float start, float end);
+	
+	int LastRand();
+	float LastRandf();
 private:
     int last_random;
+	float last_randomf;
     // Mersenne Twister Generator
     boost::random::mt19937 generator;
     boost::random::uniform_int_distribution<> distribution_;

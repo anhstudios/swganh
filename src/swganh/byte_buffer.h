@@ -186,6 +186,7 @@ public:
     size_t capacity() const;
 
     /*! @return Returns the raw ByteBuffer data */
+    unsigned char* data();
     const unsigned char* data() const;
 
     /*! @return Returns the raw ByteBuffer data */
@@ -217,6 +218,47 @@ inline bool operator==(const ByteBuffer& lhs, const ByteBuffer& rhs) {
 
 inline bool operator!=(const ByteBuffer& lhs, const ByteBuffer& rhs) {
     return !(lhs == rhs);
+}
+
+/*! This helper function provides support for streaming ByteBuffer instances
+* to out output stream (most generally for debugging).
+*
+* @param stream Reference to the output stream to write the ByteBuffer to.
+* @param buffer Reference to a ByteBuffer instance.
+*
+* @return Reference to the output stream.
+*/
+std::ostream& operator<<(std::ostream& message, const ByteBuffer& buffer);
+
+/* Helper function for generating a serialized ByteBuffer from a type
+*/
+template<typename T>
+ByteBuffer Serialize(T& val)
+{
+    ByteBuffer serialize_buffer;
+    val.Serialize(serialize_buffer);
+
+    return serialize_buffer;
+}
+
+/* Helper function for generating a type from a serialized ByteBuffer
+*/
+template<typename T>
+T Deserialize(ByteBuffer& buffer)
+{
+    T val;
+    Deserialize(buffer, val);
+    return val;
+}
+
+
+/* Helper function for reading into an existing instance of a type from a 
+* serialized ByteBuffer.
+*/
+template<typename T>
+void Deserialize(ByteBuffer& buffer, T& val)
+{
+    val.Deserialize(buffer);
 }
 
 }  // namespace swganh

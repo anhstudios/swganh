@@ -7,9 +7,9 @@
 # Dumping structure for procedure galaxy.sp_PersistIntangible
 DROP PROCEDURE IF EXISTS `sp_PersistIntangible`;
 DELIMITER //
-CREATE PROCEDURE `sp_PersistIntangible`(IN `file` VARCHAR(50), IN `string` VARCHAR(50))
+CREATE PROCEDURE `sp_PersistIntangible`(IN `object_id` BIGINT, IN `file` VARCHAR(50), IN `string` VARCHAR(50), IN in_generic_int INT)
 BEGIN
-UPDATE intangible i set i.stf_detail_file = file, i.stf_detail_string = string;
+REPLACE INTO intangible set id = object_id, stf_detail_file = file, stf_detail_string = string, generic_int = in_generic_int;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

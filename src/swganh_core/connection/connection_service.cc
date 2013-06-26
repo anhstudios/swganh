@@ -10,25 +10,26 @@
 
 #include "swganh/crc.h"
 #include "swganh/event_dispatcher.h"
-#include "swganh/network/soe/server.h"
+#include "swganh/network/resolver.h"
+#include "swganh/network/server.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh/service/service_directory_interface.h"
 #include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/character/character_service_interface.h"
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_service_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 #include "ping_server.h"
 #include "connection_client.h"
-#include "swganh/connection/providers/session_provider_interface.h"
+#include "swganh_core/connection/providers/session_provider_interface.h"
 
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/player/player.h"
 
 using namespace swganh::app;
 using namespace swganh::event_dispatcher;
-using namespace swganh::network::soe;
+using namespace swganh::network;
 using namespace swganh::service;
 using namespace swganh::character;
 using namespace swganh::connection;
@@ -53,15 +54,19 @@ ConnectionService::ConnectionService(
     : ConnectionServiceInterface(kernel)
     , kernel_(kernel)
     , ping_server_(nullptr)
-    , active_(kernel->GetIoService())
+	, active_(kernel->GetIoThreadPool())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , ping_port_(ping_port)
-{
-
-    session_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::connection::providers::SessionProviderInterface>("Login::SessionProvider");
-
-    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
+{    
+    SetServiceDescription(ServiceDescription(
+        "Connection Service",
+        "connection",
+        "0.1",
+        swganh::network::resolve_to_string(listen_address_),
+        0,
+        listen_port_,
+        ping_port_));
 }
 
 ConnectionService::~ConnectionService()
@@ -69,23 +74,18 @@ ConnectionService::~ConnectionService()
     session_timer_->cancel();
 }
 
-ServiceDescription ConnectionService::GetServiceDescription() {
-    auto listen_address = Resolve(listen_address_);
+void ConnectionService::Initialize()
+{
+    session_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::connection::providers::SessionProviderInterface>("Login::SessionProvider");
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 
-    ServiceDescription service_description(
-        "Connection Service",
-        "connection",
-        "0.1",
-        listen_address,
-        0,
-        listen_port(),
-        ping_port_);
-
-    return service_description;
+    character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
+    login_service_ = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
 void ConnectionService::Startup() {
-    ping_server_ = make_shared<PingServer>(kernel_->GetIoService(), ping_port_);
+	ping_server_ = make_shared<PingServer>(kernel_->GetIoThreadPool(), ping_port_);
 
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
     login_service_ = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
@@ -94,22 +94,11 @@ void ConnectionService::Startup() {
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
     RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
 
-    Server::Startup(listen_port_);
-
-    session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-        for_each(
-            begin(session_map_),
-            end(session_map_),
-            [=] (SessionMap::value_type& type)
-        {
-            type.second->Update();
-        });
-    });
+    StartListening(listen_port_);
 }
 
 void ConnectionService::Shutdown() {
-    BaseSwgServer::Shutdown();
+    StopListening();
 }
 
 const string& ConnectionService::listen_address() {
@@ -128,7 +117,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<ConnectionClient>(this, kernel_->GetIoService(), endpoint);
+            session = make_shared<ConnectionClient>(this, kernel_->GetCpuThreadPool(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
 			LOG(info) << "Created Connection Service Session for " << endpoint.address().to_string();
         }
@@ -145,15 +134,10 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
 
     auto connection_client = static_pointer_cast<ConnectionClient>(session);
 
-    auto controller = connection_client->GetController();
-    if (controller)
-    {
-		auto player = simulation_service_->GetObjectById<swganh::object::Player>(controller->GetId() + 1);
-		if (player)
-		{
-			kernel_->GetEventDispatcher()->Dispatch
-				(make_shared<swganh::ValueEvent<shared_ptr<swganh::object::Player>>>("Connection::PlayerRemoved", player));		
-		}
+    if (auto controller = connection_client->GetController()) {
+        simulation_service_->StopControllingObject(controller->GetId());
+
+        kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<uint64_t>>("Connection::ControllerConnectionClosed", controller->GetId()));
 	}
 
     LOG(info) << "Removing disconnected client";

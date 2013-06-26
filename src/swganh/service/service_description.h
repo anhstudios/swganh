@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <string>
 
+#include "galaxy.h"
+
 namespace swganh {
 namespace service {
 

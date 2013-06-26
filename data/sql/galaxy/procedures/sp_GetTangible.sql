@@ -9,10 +9,9 @@ DROP PROCEDURE IF EXISTS `sp_GetTangible`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetTangible`(IN `object_id` BIGINT)
 BEGIN
-    call sp_GetObject(object_id);
-    select t.customization, t.options_bitmask, t.incap_timer, 
-        t.condition_damage, t.max_condition, t.is_static 
-    from tangible t 
+    select t.customization, t.options_bitmask, t.incap_timer,
+        t.condition_damage, t.max_condition, t.is_static
+    from tangible t
     where t.id = object_id;
 END//
 DELIMITER ;
