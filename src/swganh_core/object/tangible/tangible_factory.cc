@@ -15,7 +15,7 @@
 #include "swganh/database/database_manager.h"
 #include "swganh_core/object/tangible/tangible.h"
 #include "swganh_core/object/exception.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace swganh::database;
@@ -23,24 +23,53 @@ using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
- TangibleFactory::TangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, event_dispatcher)
+TangibleFactory::TangibleFactory(swganh::app::SwganhKernel* kernel)
+    : ObjectFactory(kernel)
 {	
 }
 
- void TangibleFactory::RegisterEventHandlers()
- {
-	event_dispatcher_->Subscribe("Tangible::Customization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::ComponentCustomization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::OptionsMask", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::IncapTimer", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::ConditionDamage", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::UpdateAttribute", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::MaxCondition", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::Static", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Tangible::Defenders", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
- }
+void TangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
+{
+    ObjectFactory::LoadFromStorage(connection, object, lock);
+
+    auto tangible = std::dynamic_pointer_cast<Tangible>(object);
+    if(!tangible)
+    {
+        throw InvalidObject("Object requested for loading is not Intangible");
+    }
+
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetTangible(?);"));
+    
+    statement->setUInt64(1, tangible->GetObjectId(lock));
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {
+        while (result->next())
+        {        
+            tangible->SetCustomization(result->getString("customization"), lock);
+            tangible->SetOptionsMask(result->getUInt("options_bitmask"), lock);
+            tangible->SetCounter(result->getUInt("incap_timer"), lock);
+            tangible->SetConditionDamage(result->getUInt("condition_damage"), lock);
+            tangible->SetMaxCondition(result->getUInt("max_condition"), lock);
+            tangible->SetStatic(result->getBoolean("is_static"), lock);
+        }
+    } while(statement->getMoreResults());
+}
+
+void TangibleFactory::RegisterEventHandlers()
+{
+	GetEventDispatcher()->Subscribe("Tangible::Customization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::ComponentCustomization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::OptionsMask", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::Counter", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::ConditionDamage", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::UpdateAttribute", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::MaxCondition", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::Static", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Tangible::Defenders", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+}
 
  
 void TangibleFactory::PersistChangedObjects()
@@ -52,29 +81,35 @@ void TangibleFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
-uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
+
+	ObjectFactory::PersistObject(object, lock, persist_inherited);
+
     try 
     {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?);"));
         // cast to tangible
         auto tangible = static_pointer_cast<Tangible>(object);
-		statement->setUInt64(counter++, tangible->GetObjectId());
-        statement->setString(counter++, tangible->GetCustomization());
-        statement->setInt(counter++, tangible->GetOptionsMask());
-        statement->setInt(counter++, tangible->GetIncapTimer());
-        statement->setInt(counter++, tangible->GetCondition());
-        statement->setInt(counter++, tangible->GetMaxCondition());
-        statement->setBoolean(counter++, tangible->IsStatic());
-        statement->executeUpdate();
-		
+		statement->setUInt64(counter++, tangible->GetObjectId(lock));
+        statement->setString(counter++, tangible->GetCustomization(lock));
+        statement->setInt(counter++, tangible->GetOptionsMask(lock));
+        statement->setInt(counter++, tangible->GetCounter(lock));
+        statement->setInt(counter++, tangible->GetCondition(lock));
+        statement->setInt(counter++, tangible->GetMaxCondition(lock));
+        statement->setBoolean(counter++, tangible->IsStatic(lock));
+        statement->executeUpdate();		
     }
     catch(sql::SQLException &e)
     {
@@ -88,63 +123,8 @@ void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
 	ObjectFactory::DeleteObjectFromStorage(object);
 }
-void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
-{
-    try {
-        auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-        CreateBaseObjectFromStorage(tangible, result);
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-            while (result->next())
-            {
-                tangible->SetCustomization(result->getString("customization"));
-                tangible->SetOptionsMask(result->getUInt("options_bitmask"));
-                tangible->SetIncapTimer(result->getUInt("incap_timer"));
-                tangible->SetConditionDamage(result->getUInt("condition_damage"));
-                tangible->SetMaxCondition(result->getUInt("max_condition"));
-                tangible->SetStatic(result->getBoolean("is_static"));
-            }
-        }
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    auto tangible = make_shared<Tangible>();
-    tangible->SetObjectId(object_id);
-    try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        
-        stringstream ss;
-        ss << "CALL sp_GetTangible(" << object_id << ");";   
 
-        statement->execute(ss.str());
-        CreateTangible(tangible, statement);  
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-    return tangible;
-}
-
-shared_ptr<Object> TangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> TangibleFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//@TODO: Create me with help from db
-		return make_shared<Tangible>();
-	}
-	else
-	{
-		return make_shared<Tangible>();
-	}
-
+	return make_shared<Tangible>();
 }

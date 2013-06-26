@@ -11,7 +11,7 @@
 
 namespace swganh {
 namespace database {
-    class DatabaseManagerInterface;
+    class DatabaseManager;
 }}  // namespace swganh::database
 
 namespace swganh {
@@ -60,9 +60,11 @@ public:
 
     virtual swganh::service::ServiceDirectoryInterface* GetServiceDirectory() = 0;
 
-    virtual swganh::database::DatabaseManagerInterface* GetDatabaseManager() = 0;
+    virtual swganh::database::DatabaseManager* GetDatabaseManager() = 0;
     
-    virtual boost::asio::io_service& GetIoService() = 0;
+    virtual boost::asio::io_service& GetIoThreadPool() = 0;
+
+	virtual boost::asio::io_service& GetCpuThreadPool() = 0;
 
     // also add entity manager, blah blah.
 };

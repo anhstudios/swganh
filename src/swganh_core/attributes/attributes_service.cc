@@ -1,19 +1,15 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "attributes_service.h"
-// Templates
-#include "armor_attribute_template.h"
-#include "crafting_tool_attribute_template.h"
-#include "deed_attribute_template.h"
-#include "droid_attribute_template.h"
-#include "factory_crate_attribute_template.h"
-#include "food_attribute_template.h"
-#include "furniture_attribute_template.h"
-#include "meds_attribute_template.h"
-#include "ship_attribute_template.h"
-#include "weapon_attribute_template.h"
-#include "wearable_attribute_template.h"
+
+#include <boost/python.hpp>
+
+#include "swganh/scripting/utilities.h"
 //
 #include "attributes_get_batch_command.h"
 
@@ -24,61 +20,66 @@
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/object/creature/creature.h"
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/command/command_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
+#include "swganh_core/command/command_service_interface.h"
 
 #include "swganh_core/connection/connection_client.h"
 #include "swganh_core/messages/attribute_list_message.h"
 
+#include "swganh/scripting/python_script.h"
 
+
+namespace bp = boost::python;
+using swganh::scripting::ScopedGilLock;
 using swganh::app::SwganhKernel;
 using namespace swganh::app;
 using namespace swganh::attributes;
 using namespace swganh::connection;
-using namespace swganh::attributes;
+using namespace swganh::database;
 using namespace sql;
 using namespace std;
-using namespace swganh::database;
+
+const std::string python_init = "AttributeTemplateInit.py";
 
 AttributesService::AttributesService(SwganhKernel* kernel)
-    : kernel_(kernel)
+    : kernel_(kernel)	
 {
-}
-
-swganh::service::ServiceDescription AttributesService::GetServiceDescription()
-{
-	swganh::service::ServiceDescription service_description(
+    SetServiceDescription(swganh::service::ServiceDescription(
         "Attributes Service",
         "attributes",
         "0.1",
         "127.0.0.1",
         0,
         0,
-        0);
-
-    return service_description;
+        0));
 }
-void AttributesService::Startup()
+
+AttributesService::~AttributesService()
+{}
+
+void AttributesService::Initialize()
 {
 	simulation_service_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
-	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+}
 
-    command_service->AddCommandCreator("getattributesbatch", [] (
-        swganh::app::SwganhKernel* kernel,
-        const swganh::command::CommandProperties& properties)
-    {
-        return std::make_shared<GetAttributesBatchCommand>(kernel, properties);
-    });	
+void AttributesService::Startup()
+{
+	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+    command_service->AddCommandCreator<GetAttributesBatchCommand>("getattributesbatch");	
 
 	LoadAttributeTemplates_();
 }
 
-bool AttributesService::HasAttributeTemplate(AttributeTemplateId template_id)
+bool AttributesService::HasAttributeTemplate(int8_t template_id)
 {
-	auto found = find_if(begin(attribute_templates_), end(attribute_templates_), [&template_id](AttributeTemplates::value_type entry)
+// if in debug we want to reload the template each time so it's not stale...
+#ifdef _DEBUG
+	return python_attribute_templates_.size() >= static_cast<uint16_t>(template_id);
+#endif
+	auto found = find_if(begin(attribute_templates_), end(attribute_templates_), [&template_id](AttributeTemplateMap::value_type entry)
 	{
 		return entry.first == template_id;
 	});
@@ -89,14 +90,14 @@ bool AttributesService::HasAttributeTemplate(AttributeTemplateId template_id)
 	return false;
 }
 
-std::shared_ptr<swganh::attributes::AttributeTemplateInterface> AttributesService::GetAttributeTemplate(swganh::attributes::AttributeTemplateId template_id)
+std::shared_ptr<swganh::attributes::AttributeTemplateInterface> AttributesService::GetAttributeTemplate(int8_t template_id)
 {
 	if (HasAttributeTemplate(template_id))
 		return attribute_templates_[template_id];
 	DLOG(warning) << "Attribute template not found with id " << template_id;
 	return nullptr;
 }
-void AttributesService::SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, swganh::attributes::AttributeTemplateId template_id)
+void AttributesService::SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, int8_t template_id)
 {
 	if (!HasAttributeTemplate(template_id))
 	{
@@ -110,10 +111,17 @@ void AttributesService::SetAttributeTemplate(const std::shared_ptr<swganh::attri
 
 void AttributesService::SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor)
 {
-	AttributeTemplateId template_id = static_cast<AttributeTemplateId>(object->GetAttributeTemplateId());
-	if (HasAttributeTemplate(template_id))
+	if (HasAttributeTemplate(object->GetAttributeTemplateId()))
 	{
-		auto message = attribute_templates_[template_id]->BuildAttributeTemplate(object);
+		swganh::messages::AttributeListMessage message;
+// if in debug we want to reload the template each time so it's not stale...
+#ifdef _DEBUG
+		auto debug_template = GetPythonAttributeTemplate(python_attribute_templates_[object->GetAttributeTemplateId()]);
+		message = debug_template->BuildAttributeTemplate(object);
+#else
+		message = attribute_templates_[object->GetAttributeTemplateId()]->BuildAttributeTemplate(object);
+#endif
+		
 		// Append Pups
 		// Append Slicing
 		actor->NotifyObservers(&message);
@@ -135,15 +143,25 @@ void AttributesService::SendAttributesMessage(const std::shared_ptr<swganh::obje
 }
 void AttributesService::LoadAttributeTemplates_()
 {
-	SetAttributeTemplate(make_shared<ArmorAttributeTemplate>(kernel_->GetEventDispatcher()), ARMOR);
-	SetAttributeTemplate(make_shared<CraftingToolAttributeTemplate>(kernel_->GetEventDispatcher()), CRAFTING_TOOL);
-	SetAttributeTemplate(make_shared<DeedAttributeTemplate>(kernel_->GetEventDispatcher()), DEED);
-	SetAttributeTemplate(make_shared<DroidAttributeTemplate>(kernel_->GetEventDispatcher()), DROID);
-	SetAttributeTemplate(make_shared<FactoryCrateAttributeTemplate>(kernel_->GetEventDispatcher()), FACTORY_CRATE);
-	SetAttributeTemplate(make_shared<FoodAttributeTemplate>(kernel_->GetEventDispatcher()), FOOD);
-	SetAttributeTemplate(make_shared<FurnitureAttributeTemplate>(kernel_->GetEventDispatcher()), FURNITURE);
-	SetAttributeTemplate(make_shared<MedsAttributeTemplate>(kernel_->GetEventDispatcher()), MEDS);
-	SetAttributeTemplate(make_shared<ShipAttributeTemplate>(kernel_->GetEventDispatcher()), SHIP);
-	SetAttributeTemplate(make_shared<WeaponAttributeTemplate>(kernel_->GetEventDispatcher()), WEAPON);
-	SetAttributeTemplate(make_shared<WearableAttributeTemplate>(kernel_->GetEventDispatcher()), WEARABLE);
+    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/attributes/AttributeTemplateInit.py");
+
+    python_attribute_templates_ = script.GetGlobalAs<std::vector<std::string>>("attributeTemplates");
+
+	// If Not debug load these up here and not again
+#ifndef _DEBUG
+	int template_id = 0;
+	for (auto& attr_template :  python_attribute_templates_)
+	{
+		attribute_templates_[template_id++] = GetPythonAttributeTemplate(attr_template);
+	}
+#endif
+}
+std::shared_ptr<AttributeTemplateInterface> AttributesService::GetPythonAttributeTemplate(std::string filename)
+{
+    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/attributes/" + filename + ".py");
+
+    auto attribute_template_creator = script.CreateInstance<AttributeTemplateInterface>(filename);
+    attribute_template_creator->SetKernel(kernel_);
+
+	return attribute_template_creator;
 }

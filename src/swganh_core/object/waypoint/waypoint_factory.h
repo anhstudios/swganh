@@ -2,37 +2,32 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh_core/object/intangible/intangible_factory.h"
-#include <unordered_map>
+#include <glm/glm.hpp>
 
-namespace swganh {
-namespace database {
-class DatabaseManagerInterface;
-}} // swganh::database
+#include "swganh_core/object/waypoint/waypoint.h"
+#include "swganh_core/object/intangible/intangible_factory.h"
 
 namespace swganh {
 namespace object {
-	class Player; 
     class Waypoint;
     class WaypointFactory : public swganh::object::IntangibleFactory
     {
     public:
 		typedef Waypoint ObjectType;
 
-        WaypointFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        WaypointFactory(swganh::app::SwganhKernel* kernel);
+        
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
-		void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
-		virtual void PersistChangedObjects();
-        std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
+		
+        void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
+		
+        virtual void PersistChangedObjects();
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
-
-        void LoadWaypoints(const std::shared_ptr<swganh::object::Player>& player, const std::shared_ptr<sql::ResultSet> result_set);
+        std::shared_ptr<swganh::object::Object> CreateObject();        
 
         virtual void RegisterEventHandlers();
-    private:
     };
 
 }}  // namespace swganh::object

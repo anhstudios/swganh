@@ -11,277 +11,348 @@ using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::object;
 
-uint32_t Mission::GetDifficultyLevel() const
+uint32_t Mission::GetDifficultyLevel() const {
+    auto lock = AcquireLock();
+    return GetDifficultyLevel(lock);
+}
+
+uint32_t Mission::GetDifficultyLevel(boost::unique_lock<boost::mutex>& lock) const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return difficulty_level_;
 }
 
-void Mission::SetDifficultyLevel(uint32_t difficulty_level)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		difficulty_level_ = difficulty_level;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::DifficultyLevel", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetDifficultyLevel(uint32_t difficulty_level) {
+    auto lock = AcquireLock();
+    SetDifficultyLevel(difficulty_level, lock);
 }
 
-vec3 Mission::GetStartingPosition() const
+void Mission::SetDifficultyLevel(uint32_t difficulty_level, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	difficulty_level_ = difficulty_level;
+	DISPATCH(Mission, DifficultyLevel);
+}
+
+vec3 Mission::GetStartingPosition() const {
+    auto lock = AcquireLock();
+    return GetStartingPosition(lock);
+}
+
+vec3 Mission::GetStartingPosition(boost::unique_lock<boost::mutex>& lock) const
+{
     return starting_position_;
 }
 
-void Mission::SetStartingPosition(vec3 starting_position)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		starting_position_ = starting_position;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::StartLocation", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetStartingPosition(vec3 starting_position) {
+    auto lock = AcquireLock();
+    SetStartingPosition(starting_position, lock);
 }
 
-uint32_t Mission::GetStartingSceneCrc() const
+void Mission::SetStartingPosition(vec3 starting_position, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	starting_position_ = starting_position;
+	DISPATCH(Mission, StartLocation);
+}
+
+uint32_t Mission::GetStartingSceneCrc() const {
+    auto lock = AcquireLock();
+    return GetStartingSceneCrc(lock);
+}
+
+uint32_t Mission::GetStartingSceneCrc(boost::unique_lock<boost::mutex>& lock) const
+{
     return starting_scene_;
 }
 
-void Mission::SetStartingSceneCrc(uint32_t scene_crc)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		starting_scene_ = scene_crc;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::StartLocation", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetStartingSceneCrc(uint32_t scene_crc) {
+    auto lock = AcquireLock();
+    SetStartingSceneCrc(scene_crc, lock);
 }
 
-wstring Mission::GetMissionCreator() const
+void Mission::SetStartingSceneCrc(uint32_t scene_crc, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	starting_scene_ = scene_crc;
+	DISPATCH(Mission, StartLocation);
+}
+
+wstring Mission::GetMissionCreator() const {
+    auto lock = AcquireLock();
+    return GetMissionCreator(lock);
+}
+
+wstring Mission::GetMissionCreator(boost::unique_lock<boost::mutex>& lock) const
+{
     return creator_;
 }
 
-void Mission::SetMissionCreator(wstring mission_creator)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		creator_ = mission_creator;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::CreatorName", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetMissionCreator(wstring mission_creator) {
+    auto lock = AcquireLock();
+    SetMissionCreator(mission_creator, lock);
 }
 
-uint32_t Mission::GetMissionReward() const
+void Mission::SetMissionCreator(wstring mission_creator, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	creator_ = mission_creator;
+	DISPATCH(Mission, CreatorName);
+}
+
+uint32_t Mission::GetMissionReward() const {
+    auto lock = AcquireLock();
+    return GetMissionReward(lock);
+}
+
+uint32_t Mission::GetMissionReward(boost::unique_lock<boost::mutex>& lock) const
+{
     return reward_;
 }
 
-void Mission::SetMissionReward(uint32_t mission_reward)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		reward_ = mission_reward;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::CreditReward", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetMissionReward(uint32_t mission_reward) {
+    auto lock = AcquireLock();
+    SetMissionReward(mission_reward, lock);
 }
 
-vec3 Mission::GetDestinationPosition() const
+void Mission::SetMissionReward(uint32_t mission_reward, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	reward_ = mission_reward;
+	DISPATCH(Mission, CreditReward);
+}
+vec3 Mission::GetDestinationPosition() const {
+    auto lock = AcquireLock();
+    return GetDestinationPosition(lock);
+}
+
+vec3 Mission::GetDestinationPosition(boost::unique_lock<boost::mutex>& lock) const
+{
     return destination_position_;
 }
 
-void Mission::SetDestinationPosition(vec3 destination_position)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		destination_position_ = destination_position;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::DestinationLocation", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetDestinationPosition(vec3 destination_position) {
+    auto lock = AcquireLock();
+    SetDestinationPosition(destination_position, lock);
 }
 
-uint32_t Mission::GetDestinationSceneCrc() const
+void Mission::SetDestinationPosition(vec3 destination_position, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	destination_position_ = destination_position;
+	DISPATCH(Mission, DestinationLocation);
+}
+
+uint32_t Mission::GetDestinationSceneCrc() const {
+    auto lock = AcquireLock();
+    return GetDestinationSceneCrc(lock);
+}
+
+uint32_t Mission::GetDestinationSceneCrc(boost::unique_lock<boost::mutex>& lock) const
+{
     return destination_scene_;
 }
 
-void Mission::SetDestinationSceneCrc(uint32_t scene_crc)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		destination_scene_ = scene_crc;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::DestinationLocation", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetDestinationSceneCrc(uint32_t scene_crc) {
+    auto lock = AcquireLock();
+    SetDestinationSceneCrc(scene_crc, lock);
 }
 
-std::string Mission::GetTargetObjectTemplate() const
+void Mission::SetDestinationSceneCrc(uint32_t scene_crc, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	destination_scene_ = scene_crc;
+	DISPATCH(Mission, DestinationLocation);
+}
+
+std::string Mission::GetTargetObjectTemplate() const {
+    auto lock = AcquireLock();
+    return GetTargetObjectTemplate(lock);
+}
+
+std::string Mission::GetTargetObjectTemplate(boost::unique_lock<boost::mutex>& lock) const
+{
     return target_object_template_;
 }
 
-uint32_t Mission::GetTargetObjectTemplateCrc() const
+uint32_t Mission::GetTargetObjectTemplateCrc() const {
+    auto lock = AcquireLock();
+    return GetTargetObjectTemplateCrc(lock);
+}
+
+uint32_t Mission::GetTargetObjectTemplateCrc(boost::unique_lock<boost::mutex>& lock) const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return swganh::memcrc(target_object_template_);
 }
 
-void Mission::SetTargetObjectTemplate(std::string object_template)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		target_object_template_ = object_template;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::TargetIff", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetTargetObjectTemplate(std::string object_template) {
+    auto lock = AcquireLock();
+    SetTargetObjectTemplate(object_template, lock);
 }
 
-std::string Mission::GetMissionDescriptionStfFile() const
+void Mission::SetTargetObjectTemplate(std::string object_template, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	target_object_template_ = object_template;
+	DISPATCH(Mission, TargetIff);
+}
+
+std::string Mission::GetMissionDescriptionStfFile() const {
+    auto lock = AcquireLock();
+    return GetMissionDescriptionStfFile(lock);
+}
+
+std::string Mission::GetMissionDescriptionStfFile(boost::unique_lock<boost::mutex>& lock) const
+{
     return mission_description_stf_file_;
 }
 
-std::string Mission::GetMissionDescriptionStfName() const
+std::string Mission::GetMissionDescriptionStfName() const {
+    auto lock = AcquireLock();
+    return GetMissionDescriptionStfName(lock);
+}
+
+std::string Mission::GetMissionDescriptionStfName(boost::unique_lock<boost::mutex>& lock) const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return mission_description_stf_name_;
 }
 
-void Mission::SetMissionDescription(const std::string& stf_file_name, const std::string& stf_string)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		mission_description_stf_file_ = stf_file_name;
-		mission_description_stf_name_ = stf_string;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::MissionDescription", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetMissionDescription(const std::string& stf_file_name, const std::string& stf_string) {
+    auto lock = AcquireLock();
+    SetMissionDescription(stf_file_name, stf_string, lock);
 }
 
-std::string Mission::GetMissionTitleStfFile() const
+void Mission::SetMissionDescription(const std::string& stf_file_name, const std::string& stf_string, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	mission_description_stf_file_ = stf_file_name;
+	mission_description_stf_name_ = stf_string;
+	DISPATCH(Mission, MissionDescription);
+}
+
+std::string Mission::GetMissionTitleStfFile() const {
+    auto lock = AcquireLock();
+    return GetMissionTitleStfFile(lock);
+}
+
+std::string Mission::GetMissionTitleStfFile(boost::unique_lock<boost::mutex>& lock) const
+{
     return mission_title_stf_file_;
 }
 
-std::string Mission::GetMissionTitleStfName() const
+std::string Mission::GetMissionTitleStfName() const {
+    auto lock = AcquireLock();
+    return GetMissionTitleStfName(lock);
+}
+
+std::string Mission::GetMissionTitleStfName(boost::unique_lock<boost::mutex>& lock) const
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return mission_title_stf_name_;
 }
 
-void Mission::SetMissionTitle(const std::string& stf_file_name, const std::string& stf_string)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		mission_title_stf_file_ = stf_file_name;
-		mission_title_stf_name_ = stf_string;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::MissionTitle", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetMissionTitle(const std::string& stf_file_name, const std::string& stf_string) {
+    auto lock = AcquireLock();
+    SetMissionTitle(stf_file_name, stf_string, lock);
 }
 
-uint32_t Mission::GetRepeatCounter() const
+void Mission::SetMissionTitle(const std::string& stf_file_name, const std::string& stf_string, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	mission_title_stf_file_ = stf_file_name;
+	mission_title_stf_name_ = stf_string;
+	DISPATCH(Mission, MissionTitle);
+}
+
+uint32_t Mission::GetRepeatCounter() const {
+    auto lock = AcquireLock();
+    return GetRepeatCounter(lock);
+}
+
+uint32_t Mission::GetRepeatCounter(boost::unique_lock<boost::mutex>& lock) const
+{
     return repeat_counter_;
 }
 
-void Mission::IncrementRepeatCounter()
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		++repeat_counter_;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::RepeatCounter", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::IncrementRepeatCounter() {
+    auto lock = AcquireLock();
+    IncrementRepeatCounter(lock);
 }
 
-void Mission::SetRepeatCounter(uint32_t counter)
+void Mission::IncrementRepeatCounter(boost::unique_lock<boost::mutex>& lock)
 {
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		repeat_counter_ = counter;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::RepeatCounter", static_pointer_cast<Mission>(shared_from_this())));
+	++repeat_counter_;
+	DISPATCH(Mission, RepeatCounter);
 }
 
-std::string Mission::GetMissionType()
+void Mission::SetRepeatCounter(uint32_t counter) {
+    auto lock = AcquireLock();
+    SetRepeatCounter(counter, lock);
+}
+
+void Mission::SetRepeatCounter(uint32_t counter, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	repeat_counter_ = counter;
+	DISPATCH(Mission, RepeatCounter);
+}
+
+std::string Mission::GetMissionType() {
+    auto lock = AcquireLock();
+    return GetMissionType(lock);
+}
+
+std::string Mission::GetMissionType(boost::unique_lock<boost::mutex>& lock)
+{
     return mission_type_;
 }
 
-uint32_t Mission::GetMissionTypeCrc()
+uint32_t Mission::GetMissionTypeCrc() {
+    auto lock = AcquireLock();
+    return GetMissionTypeCrc(lock);
+}
+
+uint32_t Mission::GetMissionTypeCrc(boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return swganh::memcrc(mission_type_);
 }
 
-void Mission::SetMissionType(std::string mission_type)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		mission_type_ = mission_type;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::MissionType", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetMissionType(std::string mission_type) {
+    auto lock = AcquireLock();
+    SetMissionType(mission_type, lock);
 }
 
-std::string Mission::GetTargetName() const
+void Mission::SetMissionType(std::string mission_type, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	mission_type_ = mission_type;
+	DISPATCH(Mission, MissionType);
+}
+
+std::string Mission::GetTargetName() const {
+    auto lock = AcquireLock();
+    return GetTargetName(lock);
+}
+
+std::string Mission::GetTargetName(boost::unique_lock<boost::mutex>& lock) const
+{
     return target_name_;
 }
 
-void Mission::SetTargetName(std::string target_name)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		target_name_ = target_name;
-	}
-
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::TargetName", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetTargetName(std::string target_name) {
+    auto lock = AcquireLock();
+    SetTargetName(target_name, lock);
 }
 
-std::shared_ptr<swganh::object::Waypoint> Mission::GetMissionWaypoint()
+void Mission::SetTargetName(std::string target_name, boost::unique_lock<boost::mutex>& lock)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	target_name_ = target_name;
+	DISPATCH(Mission, TargetName);
+}
+
+std::shared_ptr<swganh::object::Waypoint> Mission::GetMissionWaypoint() {
+    auto lock = AcquireLock();
+    return GetMissionWaypoint(lock);
+}
+
+std::shared_ptr<swganh::object::Waypoint> Mission::GetMissionWaypoint(boost::unique_lock<boost::mutex>& lock)
+{
 	return waypoint_;
 }
 
-void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypoint)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		waypoint_ = waypoint;
-	}
+void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypoint) {
+    auto lock = AcquireLock();
+    SetMissionWaypoint(waypoint, lock);
+}
 
-	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
-        ("Mission::Waypoint", static_pointer_cast<Mission>(shared_from_this())));
+void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypoint, boost::unique_lock<boost::mutex>& lock)
+{
+	waypoint_ = waypoint;
+	DISPATCH(Mission, Waypoint);
 }

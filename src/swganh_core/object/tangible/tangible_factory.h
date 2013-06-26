@@ -25,19 +25,20 @@ namespace object {
     public:
         typedef Tangible ObjectType;
 
-        TangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        TangibleFactory(swganh::app::SwganhKernel* kernel);
+		virtual ~TangibleFactory() {}
+		
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
-		virtual void PersistChangedObjects();
-        std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
-        void CreateTangible(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+		virtual void PersistChangedObjects();
+
+        std::shared_ptr<swganh::object::Object> CreateObject();
         
         virtual void RegisterEventHandlers();
-    private:
     };
 
 }}  // namespace swganh::object

@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include <swganh/equipment/equipment_service_interface.h>
+#include <swganh_core/equipment/equipment_service_interface.h>
 
 namespace swganh
 {
@@ -29,10 +29,9 @@ public:
 	*/
 	EquipmentService(swganh::tre::ResourceManager* resourceManager);
 
-	/**
-	* @return the service description for this service
-	*/
-	swganh::service::ServiceDescription GetServiceDescription();
+    ~EquipmentService();
+
+    virtual void Initialize();
 
 	/**
 	* @return the id of a slot by name

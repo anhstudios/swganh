@@ -4,12 +4,6 @@
 #include "mysql_session_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <cppconn/exception.h>
-#include <cppconn/connection.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/sqlstring.h>
 
 #include "swganh/logger.h"
 
@@ -20,7 +14,7 @@ using namespace swganh::connection;
 using namespace swganh::login;
 using namespace std;
 
-MysqlSessionProvider::MysqlSessionProvider(swganh::database::DatabaseManagerInterface* db_manager)
+MysqlSessionProvider::MysqlSessionProvider(swganh::database::DatabaseManager* db_manager)
     : SessionProviderInterface()
     , db_manager_(db_manager) {}
 

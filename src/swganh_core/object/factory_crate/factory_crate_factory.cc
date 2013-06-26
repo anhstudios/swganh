@@ -7,9 +7,17 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object;
 
-FactoryCrateFactory::FactoryCrateFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
-	: TangibleFactory(db_manager, event_dispatcher)
+FactoryCrateFactory::FactoryCrateFactory(swganh::app::SwganhKernel* kernel)
+	: TangibleFactory(kernel)
+{}
+
+void FactoryCrateFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
+    TangibleFactory::LoadFromStorage(connection, object, lock);
+}
+
+std::shared_ptr<swganh::object::Object> FactoryCrateFactory::CreateObject()
+{
+	return make_shared<FactoryCrate>();
 }

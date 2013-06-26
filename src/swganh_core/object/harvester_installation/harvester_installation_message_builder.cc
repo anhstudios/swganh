@@ -16,41 +16,26 @@ using namespace swganh::object;
 using namespace swganh::messages;
 
 void HarvesterInstallationMessageBuilder::RegisterEventHandlers()
-{
-}
-
-void HarvesterInstallationMessageBuilder::SendBaselines(const shared_ptr<HarvesterInstallation>& harvester_installation, const shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-    harvester_installation->AddBaselineToCache(&BuildBaseline3(harvester_installation));
-    harvester_installation->AddBaselineToCache(&BuildBaseline6(harvester_installation));
-	harvester_installation->AddBaselineToCache(&BuildBaseline7(harvester_installation));
-
-    for (auto& baseline : harvester_installation->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
-    SendEndBaselines(harvester_installation, observer);
-}
+{}
 
 // baselines
-BaselinesMessage HarvesterInstallationMessageBuilder::BuildBaseline3(const shared_ptr<HarvesterInstallation>& harvester_installation)
+boost::optional<BaselinesMessage> HarvesterInstallationMessageBuilder::BuildBaseline3(const shared_ptr<HarvesterInstallation>& harvester_installation, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(harvester_installation, Object::VIEW_3, 11);
-    message.data.append(InstallationMessageBuilder::BuildBaseline3(harvester_installation).data);
+    auto message = CreateBaselinesMessage(harvester_installation, lock, Object::VIEW_3, 11);
+    message.data.append((*InstallationMessageBuilder::BuildBaseline3(harvester_installation, lock)).data);
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage HarvesterInstallationMessageBuilder::BuildBaseline6(const shared_ptr<HarvesterInstallation>& harvester_installation)
+boost::optional<BaselinesMessage> HarvesterInstallationMessageBuilder::BuildBaseline6(const shared_ptr<HarvesterInstallation>& harvester_installation, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(harvester_installation, Object::VIEW_6, 2);
-    message.data.append(InstallationMessageBuilder::BuildBaseline6(harvester_installation).data);
+    auto message = CreateBaselinesMessage(harvester_installation, lock, Object::VIEW_6, 2);
+    message.data.append((*InstallationMessageBuilder::BuildBaseline6(harvester_installation, lock)).data);
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage HarvesterInstallationMessageBuilder::BuildBaseline7(const shared_ptr<HarvesterInstallation>& harvester_installation)
+boost::optional<BaselinesMessage> HarvesterInstallationMessageBuilder::BuildBaseline7(const shared_ptr<HarvesterInstallation>& harvester_installation, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(harvester_installation, Object::VIEW_7, 16);
-	message.data.append(InstallationMessageBuilder::BuildBaseline7(harvester_installation).data);
+	auto message = CreateBaselinesMessage(harvester_installation, lock, Object::VIEW_7, 16);
+	message.data.append((*InstallationMessageBuilder::BuildBaseline7(harvester_installation, lock)).data);
 	return BaselinesMessage(std::move(message));
 }

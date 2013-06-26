@@ -22,6 +22,8 @@ namespace tre
 	class Layer
 	{
 	public:
+        
+        virtual ~Layer() {}
 
 		virtual void SetData(swganh::ByteBuffer& buffer)
 		{

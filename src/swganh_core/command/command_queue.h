@@ -12,8 +12,8 @@
 
 #include "swganh/active_object.h"
 
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_queue_interface.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_queue_interface.h"
 
 namespace swganh {
 namespace app {
@@ -71,8 +71,6 @@ namespace command {
         
         void Notify();
         
-        void HandleCallback(std::shared_ptr<swganh::command::CommandCallback> callback);
-
         std::shared_ptr<swganh::command::BaseSwgCommand> GetNextCommand();
 
         template<typename T>
@@ -91,7 +89,6 @@ namespace command {
             CommandComparator<std::shared_ptr<swganh::command::BaseSwgCommand>>
         > ProcessQueue;
 
-        swganh::app::SwganhKernel* kernel_;
         swganh::command::CommandServiceInterface* command_service_;
 
         boost::asio::deadline_timer	timer_;

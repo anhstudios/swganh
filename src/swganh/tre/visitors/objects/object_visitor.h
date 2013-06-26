@@ -79,7 +79,9 @@ namespace tre
 			@return a boost::any casted shared_ptr<T> that was requested
 		*/
 		template <class T> T attribute(const std::string& key);
-				
+		
+		bool has_attribute(const std::string& key);
+
 		std::uint32_t attribute_uint32(std::string& key);
 		float attribute_float(std::string& key);
 		bool attribute_bool(std::string& key);

@@ -15,7 +15,6 @@ ServiceDirectory::ServiceDirectory(
     shared_ptr<DatastoreInterface> datastore,
     swganh::EventDispatcher* event_dispatcher) 
     : datastore_(datastore)
-    , event_dispatcher_(event_dispatcher)
 {}
 
 ServiceDirectory::ServiceDirectory(
@@ -25,7 +24,6 @@ ServiceDirectory::ServiceDirectory(
     const string& version , 
     bool create_galaxy) 
     : datastore_(datastore)
-    , event_dispatcher_(event_dispatcher)
 {
     joinGalaxy(galaxy_name, version, create_galaxy);
 }

@@ -21,17 +21,25 @@ public:
     typedef IntangibleMessageBuilder MessageBuilderType;
 
 	Intangible();
-
+	virtual ~Intangible() {}
+	
     // ITNO
     /**
      * @return The type of this object instance.
      */
     virtual uint32_t GetType() const { return Intangible::type; }
-    const static uint32_t type = 0x494E534F;
+    const static uint32_t type = 0x49544e4f;
+	
 	uint32_t GetGenericInt();
+	uint32_t GetGenericInt(boost::unique_lock<boost::mutex>& lock);
+	
 	void SetGenericInt(uint32_t generic_int);
+	void SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::mutex>& lock);
+
+    void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
+    
 protected:
-	std::atomic<uint32_t> generic_int_;
+	uint32_t generic_int_;
 };
     
 }}  // namespace swganh::object

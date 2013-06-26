@@ -10,13 +10,22 @@ using namespace swganh::object;
 using namespace swganh::messages;
 
 void Cell::SetCell(uint32_t cell_number) {
-	generic_int_ = cell_number;
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-		("Cell::Cell",shared_from_this()));
-
+    auto lock = AcquireLock();
+    SetCell(cell_number, lock);
 }
 
-uint32_t Cell::GetCell()
+void Cell::SetCell(uint32_t cell_number, boost::unique_lock<boost::mutex>& lock) 
+{
+	generic_int_ = cell_number;
+	DISPATCH(Cell, Cell);
+}
+
+uint32_t Cell::GetCell() {
+    auto lock = AcquireLock();
+    return GetCell(lock);
+}
+
+uint32_t Cell::GetCell(boost::unique_lock<boost::mutex>& lock)
 {
 	return generic_int_;
 }

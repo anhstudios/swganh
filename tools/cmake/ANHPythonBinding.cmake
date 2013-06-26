@@ -112,25 +112,27 @@ FUNCTION(AddANHPythonBinding name)
         LINK_DIRECTORIES(${ANHPYTHONLIB_ADDITIONAL_LIBRARY_DIRS})
     ENDIF()
 
+    # Create the Common library
+    ADD_LIBRARY(${name} MODULE ${ANHPYTHONLIB_SOURCES})
+
     if(WIN32)
-        set(BINDING_POSTFIX .pyd)
-		set(BINDING_PREFIX ../)
+        SET_TARGET_PROPERTIES(${name}
+            PROPERTIES OUTPUT_NAME py_${base_name}
+            LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/swgpy/${base_name}
+            LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/swgpy/${base_name}
+            PREFIX "../"
+            SUFFIX ".pyd"
+            FOLDER "python_bindings"
+        )
     else()
-        set(BINDING_POSTFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
-		set(BINDING_PREFIX "")
+        SET_TARGET_PROPERTIES(${name}
+            PROPERTIES OUTPUT_NAME py_${base_name}
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/swgpy/${base_name}
+            PREFIX ""
+            FOLDER "python_bindings"
+        )
     endif()
 	
-    # Create the Common library
-	ADD_LIBRARY(${name} SHARED ${ANHPYTHONLIB_SOURCES})
-	SET_TARGET_PROPERTIES(${name}
-		PROPERTIES OUTPUT_NAME py_${base_name}
-		LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/swgpy/${base_name}/
-		RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/swgpy/${base_name}
-		RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/swgpy/${base_name}
-		PREFIX "${BINDING_PREFIX}"
-		SUFFIX "${BINDING_POSTFIX}"
-		FOLDER "python_bindings"
-    )
     list(APPEND ANH_PYTHON_BINDINGS ${name})
 	
     IF(_project_deps_list_length GREATER 0)

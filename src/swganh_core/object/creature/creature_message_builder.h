@@ -22,9 +22,9 @@ public:
     {
         RegisterEventHandlers();
     }
+
     virtual void RegisterEventHandlers();
-    virtual void SendBaselines(const std::shared_ptr<Creature>& creature, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
-private:
+
     // deltas
     static void BuildBankCreditsDelta(const std::shared_ptr<Creature>& creature);
     static void BuildCashCreditsDelta(const std::shared_ptr<Creature>& creature);
@@ -70,11 +70,12 @@ private:
     static void BuildUpdatePvpStatusMessage(const std::shared_ptr<Creature>& object);
 
     // baselines
-    static swganh::messages::BaselinesMessage BuildBaseline1(const std::shared_ptr<Creature>& creature);
-    static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Creature>& creature);
-    static swganh::messages::BaselinesMessage BuildBaseline4(const std::shared_ptr<Creature>& creature);
-    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Creature>& creature);
-
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline1(const std::shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(const std::shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock);
+    
+private:
     typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 };
 

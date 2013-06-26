@@ -2,35 +2,8 @@
 set(ANH_PYTHON_BINDINGS "")
 
 add_subdirectory(app)
-add_subdirectory(command)
-add_subdirectory(combat)
-add_subdirectory(equipment)
-add_subdirectory(object)
-add_subdirectory(social)
-add_subdirectory(simulation)
-add_subdirectory(static)
-add_subdirectory(sui)
-add_subdirectory(terrain)
 add_subdirectory(utilities)
-add_subdirectory(weather)
 
-add_custom_target(
-    swgpy ALL
-    DEPENDS
-        swgpy_app swgpy_command swgpy_combat swgpy_object swgpy_social swgpy_simulation swgpy_utility
-    COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
-    VERBATIM
-)
-set_target_properties(swgpy
-	PROPERTIES
-	FOLDER "cmake_targets"
-)
-
-set_target_properties(swgpy
-	PROPERTIES
-	FOLDER "cmake_targets"
-)
 include(ANHExecutable)
 
 AddANHExecutable(swganh
@@ -44,9 +17,8 @@ AddANHExecutable(swganh
         ${PYTHON_INCLUDE_DIR}
         ${TBB_INCLUDE_DIRS}
         ${ZLIB_INCLUDE_DIR}
-    ADDITIONAL_LIBRARY_DIRS
-        ${Boost_LIBRARY_DIRS}	
     DEBUG_LIBRARIES
+        ${PYTHON_LIBRARY}
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
         ${Boost_LOG_LIBRARY_DEBUG}
@@ -58,12 +30,13 @@ AddANHExecutable(swganh
         ${Boost_SYSTEM_LIBRARY_DEBUG}
         ${Boost_THREAD_LIBRARY_DEBUG}
 		${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_DEBUG}
-        ${MYSQL_LIBRARY_DEBUG}		
+        ${MYSQL_LIBRARY_DEBUG}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
-        ${PYTHON_LIBRARY}
-        ${TBB_DEBUG_LIBRARIES}
+        ${TBB_LIBRARIES}
         ${ZLIB_LIBRARY_DEBUG}
+        ${DL_LIBRARY}
     OPTIMIZED_LIBRARIES
+        ${PYTHON_LIBRARY}
         ${Boost_CHRONO_LIBRARY_RELEASE}
         ${Boost_DATE_TIME_LIBRARY_RELEASE}
         ${Boost_LOG_LIBRARY_RELEASE}
@@ -77,7 +50,7 @@ AddANHExecutable(swganh
 		${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_RELEASE}
         ${MYSQL_LIBRARY_RELEASE}
         ${MYSQLCONNECTORCPP_LIBRARY_RELEASE}
-        ${PYTHON_LIBRARY}
         ${TBB_LIBRARIES}
         ${ZLIB_LIBRARY_RELEASE}
+        ${DL_LIBRARY}
 )

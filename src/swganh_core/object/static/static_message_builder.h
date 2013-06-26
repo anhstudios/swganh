@@ -26,15 +26,15 @@ public:
     {
         RegisterEventHandlers();
     }
-    virtual void RegisterEventHandlers();
-
-	virtual void SendBaselines(const std::shared_ptr<Static>& static_object, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
     // baselines
-    static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Static>& static_object);
-    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Static>& static_object);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Static>& static_object, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Static>& static_object, boost::unique_lock<boost::mutex>& lock);
+
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Static>> StaticEvent;
+    
+    void RegisterEventHandlers();
 };
 
 }} // swganh::object

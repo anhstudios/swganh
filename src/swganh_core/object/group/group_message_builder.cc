@@ -24,11 +24,9 @@ void GroupMessageBuilder::BuildMemberListDelta(const shared_ptr<Group>& group)
     if(group->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(group, Object::VIEW_6, 1);
-        group->GetGroupMembers().Serialize(message);
+        group->SerializeGroupMembers(&message);
         group->AddDeltasUpdate(&message);
     }
-    else
-        group->GetGroupMembers().ClearDeltas();
 }
 
 void GroupMessageBuilder::BuildLootModeDelta(const shared_ptr<Group>& group)
@@ -61,31 +59,18 @@ void GroupMessageBuilder::BuildLootMasterDelta(const shared_ptr<Group>& group)
     }
 }
 
-void GroupMessageBuilder::SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
+boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline3(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock)
 {
-	group->AddBaselineToCache(&BuildBaseline3(group));
-    group->AddBaselineToCache(&BuildBaseline6(group));
-
-	for (auto& baseline : group->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
-    SendEndBaselines(group, observer);
-}
-
-BaselinesMessage GroupMessageBuilder::BuildBaseline3(const std::shared_ptr<Group>& group)
-{
-	auto message = CreateBaselinesMessage(group, Object::VIEW_3, 8);
-	message.data.append(ObjectMessageBuilder::BuildBaseline3(group).data);
+	auto message = CreateBaselinesMessage(group, lock, Object::VIEW_3, 8);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline3(group, lock)).data);
 	return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group>& group)
+boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(group, Object::VIEW_6, 6);
-	message.data.append(ObjectMessageBuilder::BuildBaseline6(group).data);
-    group->GetGroupMembers().Serialize(message);
+	auto message = CreateBaselinesMessage(group, lock, Object::VIEW_6, 6);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline6(group, lock)).data);
+    group->SerializeGroupMembers(&message, lock);
 	
 	//Unknown List
 	message.data.write<uint32_t>(0);
@@ -94,10 +79,10 @@ BaselinesMessage GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group
 	//Unknown String
 	message.data.write<std::string>("");
 
-    message.data.write<uint16_t>(group->GetDifficulty());
+    message.data.write<uint16_t>(group->GetDifficulty(lock));
 	message.data.write<uint32_t>(4); //Unknown Int
-    message.data.write<uint64_t>(group->GetLootMaster());
-    message.data.write<uint32_t>(group->GetLootMode());
+    message.data.write<uint64_t>(group->GetLootMaster(lock));
+    message.data.write<uint32_t>(group->GetLootMode(lock));
 	return BaselinesMessage(std::move(message));
 }
 

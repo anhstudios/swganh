@@ -3,9 +3,9 @@
 
 #include "command_filter.h"
 
-#include "swganh/command/base_swg_command.h"
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_properties.h"
+#include "swganh_core/command/base_swg_command.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_properties.h"
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
 #include "swganh_core/object/player/player.h"
@@ -26,17 +26,22 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandIn
 	uint32_t error = 0;
 	uint32_t action = 0;
 	// does command require target?
-    if (swg_command->GetTarget() != nullptr)
+    if (swg_command->GetTargetRequiredType() == 1 )
     {
-        // range check
-        if (swg_command->GetMaxRangeToTarget() <= 0.0f || swg_command->GetActor()->InRange(swg_command->GetTarget()->GetPosition(), swg_command->GetMaxRangeToTarget()))
+		if (swg_command->GetTarget() != nullptr)
 		{
-			check_passed = true;
+			// range check
+			if (swg_command->GetMaxRangeToTarget() <= 0.0f || swg_command->GetActor()->InRange(swg_command->GetTarget()->GetPosition(), swg_command->GetMaxRangeToTarget()))
+			{
+				check_passed = true;
+			}
+			else
+			{
+				error = OUT_OF_RANGE;
+			}
 		}
 		else
-		{
-			error = OUT_OF_RANGE;
-		}
+			error = INVALID_TARGET;
     }
 	// for now if no target return true
 	else
@@ -48,21 +53,27 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandIn
 
 std::tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(CommandInterface* command)
 {
-    //BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
-
+    BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
+	std::shared_ptr<Creature> creature;
+	if (swg_command->GetActor()->GetType() == Creature::type)
+		creature = std::static_pointer_cast<Creature>(swg_command->GetActor());
+	
 	bool check_passed = true;
 	uint32_t error = 0;
 	uint32_t action = 0;
-	//uint32_t current_posture = actor->GetPosture();
-	//if ((current_posture & command_properties.allow_in_posture) == current_posture)
-	//{
-	//	check_passed = true;
-	//}
-	//else
-	//{
-	//	error = CANNOT_WHILE_IN_POSTURE;
-	//	action = current_posture;
-	//}
+	if (creature)
+	{
+		uint32_t current_posture = creature->GetPosture();
+		if ((current_posture & swg_command->GetAllowedLocomotionBitmask()) == current_posture)
+		{
+			check_passed = true;
+		}
+		else
+		{
+			error = CANNOT_WHILE_IN_POSTURE;
+			action = current_posture;
+		}
+	}
 	return std::tie (check_passed, error, action);
 }
 
@@ -130,7 +141,6 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(Com
 	uint32_t action = 0;
 
     auto target = swg_command->GetTarget();
-    
     if (swg_command->GetCommandGroup() != 0 && target != nullptr) 
     {
         if (target->GetType() == Creature::type)

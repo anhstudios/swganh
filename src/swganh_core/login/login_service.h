@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/login/login_service_interface.h"
+#include "swganh_core/login/login_service_interface.h"
 
 namespace swganh {
 namespace login {
@@ -29,22 +29,17 @@ public:
 	~LoginService();
     
 	/**
-	* @return the service description for this service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
-    
-	/**
 	* Removes a session from this service.
 	* @param session the session to remove
 	* @return true if success
 	*/
-    bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session);
+    bool RemoveSession(std::shared_ptr<swganh::network::Session> session);
 
 	/**
 	* @param endpoint the ip of the session to fetch
 	* @return the session for a given ip
 	*/
-    std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
 
 	/**
 	* @param session_key the key of the session to fetch the account id for
@@ -88,6 +83,7 @@ public:
 	/**
 	* Called on startup
 	*/
+    void Initialize();
     void Startup();
 
 	/**
@@ -98,7 +94,7 @@ public:
 private:
     LoginService();
     
-    std::shared_ptr<swganh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
         
     void HandleLoginClientId_(const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, swganh::messages::LoginClientId* message);
 

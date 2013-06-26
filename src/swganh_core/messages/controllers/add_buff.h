@@ -13,16 +13,16 @@ namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class AddBuff : public ObjControllerMessage
+    class AddBuffMessage : public ObjControllerMessage
     {
     public:
-        explicit AddBuff(uint32_t controller_type = 0x0000000B)
+        explicit AddBuffMessage(uint32_t controller_type = 0x0000001B)
             : ObjControllerMessage(controller_type, message_type())
             , buff("")
-            , duration(0.0f)
+            , duration(0)
         {}
 
-		AddBuff(const ObjControllerMessage& base)
+		AddBuffMessage(const ObjControllerMessage& base)
 			: ObjControllerMessage(base)
 		{
 		}
@@ -35,8 +35,8 @@ namespace controllers {
 
         void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
-            buffer.write(buff);
-            buffer.write(duration);
+            buffer.write<uint32_t>(buff);
+            buffer.write<float>(duration);
         }
 
         void OnControllerDeserialize(swganh::ByteBuffer& buffer)

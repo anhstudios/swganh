@@ -17,34 +17,39 @@ namespace sql {
 namespace swganh {
 namespace object {
 
-
     class Creature;
     class CreatureFactory : public swganh::object::TangibleFactory
     {
     public:
 		typedef Creature ObjectType;
 
-        CreatureFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        CreatureFactory(swganh::app::SwganhKernel* kernel);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 		virtual void PersistChangedObjects();
 		virtual void RegisterEventHandlers();
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+        std::shared_ptr<swganh::object::Object> CreateObject();
         
     private:
-        void LoadSkills_(const std::shared_ptr<Creature>& creature, 
-            const std::shared_ptr<sql::Statement>& statement);
+        
+        void LoadSkills_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature, 
+			boost::unique_lock<boost::mutex>& lock);
 
-        void LoadSkillMods_(const std::shared_ptr<Creature>& creature, 
-            const std::shared_ptr<sql::Statement>& statement);
+        void LoadSkillMods_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature, 
+			boost::unique_lock<boost::mutex>& lock);
 
-        void LoadSkillCommands_(const std::shared_ptr<Creature>& creature, 
-            const std::shared_ptr<sql::Statement>& statement);
+        void LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature, 
+			boost::unique_lock<boost::mutex>& lock);
+
+		void LoadBuffs_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<swganh::object::Creature>& creature, 
+			boost::unique_lock<boost::mutex>& lock);
+
     };
 
 }}  // namespace swganh::object

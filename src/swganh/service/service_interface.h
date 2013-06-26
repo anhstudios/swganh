@@ -12,7 +12,15 @@ class ServiceInterface {
 public:
     virtual ~ServiceInterface() {}
 
-    virtual ServiceDescription GetServiceDescription() = 0;
+    virtual ServiceDescription& GetServiceDescription() = 0;
+
+    virtual void SetStatus(Galaxy::StatusType status) = 0;
+
+    /**
+     * @brief Initializes all internal state. Only requests for other
+     * services and internal plugin implentations should go here.
+     */
+    virtual void Initialize() {}
 
     /*
     * @brief Starts up the service, sets running_ to true
@@ -23,6 +31,21 @@ public:
     */
     virtual void Shutdown() {}
 
+};
+
+class BaseService : public ServiceInterface
+{
+public:
+    virtual ~BaseService() {}
+
+    virtual ServiceDescription& GetServiceDescription() { return service_description_; }
+    void SetServiceDescription(ServiceDescription service_description) { service_description_ = service_description; }
+    void SetStatus(Galaxy::StatusType status) {
+        service_description_.status(status);
+    }
+
+private:
+    ServiceDescription service_description_;
 };
 
 }}  // namespace swganh::service

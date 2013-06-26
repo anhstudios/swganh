@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "event_dispatcher.h"
+#include "logger.h"
 
 #include <algorithm>
 
@@ -42,7 +43,7 @@ CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callb
 {
     auto handler_id = GenerateCallbackId();
 
-    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+    boost::upgrade_lock<boost::shared_mutex> lg(event_handlers_mutex_);
 
     auto find_iter = event_handlers_.find(type);
 
@@ -58,7 +59,7 @@ CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callb
 
 void EventDispatcher::Unsubscribe(EventType type, CallbackId identifier)
 {
-    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+    boost::upgrade_lock<boost::shared_mutex> lg(event_handlers_mutex_);
 
     auto event_type_iter = event_handlers_.find(type);
     
@@ -105,7 +106,14 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
             end(event_type_iter->second), 
             [&dispatch_event] (const EventHandlerList::value_type& handler) 
         {
-            handler.second(dispatch_event);
+            try
+            {
+                handler.second(dispatch_event);
+            }
+            catch(...)
+            {
+            	DLOG(warning) << "A handler callback caused an exception.";
+            }
         });
     }
 }

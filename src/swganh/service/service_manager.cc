@@ -31,24 +31,25 @@ ServiceManager::ServiceManager(ServiceDirectoryInterface* service_directory)
 
 ServiceManager::~ServiceManager()
 {
-    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {            
-        service_directory_->removeService(*entry.second.first);
-    });
-
-    services_.clear();
+    for(auto& service : services_)
+    {
+        service_directory_->removeService(service.second->GetServiceDescription());
+    }
 }
 
-ServiceInterface* ServiceManager::GetService(string name) {
+ServiceInterface* ServiceManager::GetService(string name)
+{
     auto it = services_.find(name);
 
     if (it == services_.end()) {
         return nullptr;
     }
 
-    return it->second.second.get();
+    return it->second.get();
 }
 
-void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> service) {
+void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> service)
+{
     auto current_service = GetService(name);
 
     if (current_service) {
@@ -57,7 +58,7 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
         return;
     }
 
-    auto service_description = service->GetServiceDescription();
+    auto& service_description = service->GetServiceDescription();
     if (!service_directory_->registerService(service_description)) 
     {
         throw std::runtime_error("Unable to register service " + service_description.name());
@@ -67,26 +68,43 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
     service_description.status(swganh::service::Galaxy::LOADING);
     service_directory_->updateService(service_description);
 
-    services_[name] = make_pair(make_shared<ServiceDescription>(service_description), service);
+    services_[name] = service;
 }
 
-void ServiceManager::Start() {
-    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
-        if (entry.second.second) {
-            entry.second.second->Startup();
-			LOG(info) << "Started " << entry.second.first->name();
-			entry.second.first->status(swganh::service::Galaxy::ONLINE);
-            service_directory_->updateService(*entry.second.first);
-        } 
-    });    
+void ServiceManager::Start()
+{
+    // First pass initialization
+    for (auto& service_entry : services_)
+    {
+        auto& service = service_entry.second;
+        service->Initialize();
+    }
+
+    // After all resources are acquired services can be started
+    for (auto& service_entry : services_)
+    {
+        auto& service = service_entry.second;
+
+        service->Startup();
+        service->SetStatus(Galaxy::ONLINE);
+        
+        auto service_description = service->GetServiceDescription();
+        service_directory_->updateService(service_description);
+        LOG(info) << "Started " << service_description.name();
+    }
 }
 
-void ServiceManager::Stop() {
-    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
-        if (entry.second.second) {
-            entry.second.second->Shutdown();
-            entry.second.first->status(swganh::service::Galaxy::OFFLINE);
-            service_directory_->updateService(*entry.second.first);
-        } 
-    });
+void ServiceManager::Stop()
+{
+    for (auto& service_entry : services_)
+    {
+        auto& service = service_entry.second;
+
+        service->Shutdown();
+        service->SetStatus(Galaxy::OFFLINE);
+        
+        auto service_description = service->GetServiceDescription();
+        service_directory_->updateService(service_description);
+        LOG(info) << "Stopped " << service_description.name();
+    }
 }
