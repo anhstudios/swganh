@@ -3,8 +3,8 @@
 
 #include "authentication_manager.h"
 
-#include "swganh/login/account.h"
-#include "swganh/login/login_client_interface.h"
+#include "swganh_core/login/account.h"
+#include "swganh_core/login/login_client_interface.h"
 
 using namespace swganh::login;
 using namespace swganh::login;

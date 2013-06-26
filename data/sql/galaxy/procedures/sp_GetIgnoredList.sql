@@ -10,7 +10,7 @@ DROP PROCEDURE IF EXISTS `sp_GetIgnoredList`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetIgnoredList`(IN `object_id` BIGINT)
 BEGIN
-    select o.custom_name, o.id from ignore_list i, object o where i.player_id = object_id and i.ignored_player_id = o.id;
+    select o.custom_name from ignore_list i, object o where i.player_id = object_id and i.ignored_player_id = o.id;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

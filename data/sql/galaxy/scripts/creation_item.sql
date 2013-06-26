@@ -1,439 +1,445 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               5.1.63-community - MySQL Community Server (GPL)
+-- Server OS:                    Win64
+-- HeidiSQL version:             7.0.0.4053
+-- Date/time:                    2012-10-14 17:58:57
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
-CREATE TABLE IF NOT EXISTS  `creation_item` (
-  `id` int(11) NOT NULL auto_increment,
+-- Dumping structure for table galaxy.creation_item
+DROP TABLE IF EXISTS `creation_item`;
+CREATE TABLE IF NOT EXISTS `creation_item` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `profession_id` int(11) NOT NULL,
   `species_id` int(11) NOT NULL,
   `gender` tinyint(3) NOT NULL,
   `template` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
-  CONSTRAINT `FK_98197A65BF469374` FOREIGN KEY (`profession_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `FK_98197A65BF080238` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=415 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`),
+  KEY `FK_98197A65BF469374` (`profession_id`),
+  KEY `FK_98197A65BF080238` (`species_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=415 DEFAULT CHARSET=utf8;
 
-DELETE FROM `creation_item`;
-    
+-- Dumping data for table galaxy.creation_item: 414 rows
 /*!40000 ALTER TABLE `creation_item` DISABLE KEYS */;
-INSERT INTO `creation_item` VALUES ('1', 90, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('2', 90, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('3', 90, 1, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('4', 90, 1, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('5', 90, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('6', 90, 1, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('7', 90, 1, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('8', 90, 1, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('9', 90, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('10', 90, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('11', 90, 8, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('12', 90, 8, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('13', 90, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('14', 90, 8, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('15', 90, 8, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('16', 90, 8, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('17', 90, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('18', 90, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('19', 90, 6, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('20', 90, 6, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('21', 90, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('22', 90, 6, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('23', 90, 6, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('24', 90, 6, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('25', 90, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('26', 90, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('27', 90, 4, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('28', 90, 4, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('29', 90, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('30', 90, 4, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('31', 90, 4, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('32', 90, 4, 1, 'object/tangible/wearables/gloves/shared_gloves_s02.iff');
-INSERT INTO `creation_item` VALUES ('33', 90, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('34', 90, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('35', 90, 2, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('36', 90, 2, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('37', 90, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('38', 90, 2, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('39', 90, 2, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('40', 90, 2, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('41', 90, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('42', 90, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('43', 90, 7, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('44', 90, 7, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('45', 90, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('46', 90, 7, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('47', 90, 7, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('48', 90, 7, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('49', 90, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('50', 90, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('51', 90, 3, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('52', 90, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('53', 90, 3, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('54', 90, 3, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('55', 90, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s02.iff');
-INSERT INTO `creation_item` VALUES ('56', 90, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('57', 90, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('58', 90, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s02.iff');
-INSERT INTO `creation_item` VALUES ('59', 90, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('60', 90, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_gloves_s01.iff');
-INSERT INTO `creation_item` VALUES ('61', 90, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('62', 90, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('63', 90, 10, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('64', 90, 10, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('65', 90, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('66', 90, 10, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('67', 90, 10, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('68', 90, 10, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('69', 109, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('70', 109, 1, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('71', 109, 1, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff');
-INSERT INTO `creation_item` VALUES ('72', 109, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('73', 109, 1, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('74', 109, 1, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('75', 109, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('76', 109, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('77', 109, 8, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('78', 109, 8, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff');
-INSERT INTO `creation_item` VALUES ('79', 109, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('80', 109, 8, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('81', 109, 8, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('82', 109, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('83', 109, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('84', 109, 6, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('85', 109, 6, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff');
-INSERT INTO `creation_item` VALUES ('86', 109, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('87', 109, 6, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('88', 109, 6, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('89', 109, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('90', 109, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('91', 109, 4, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('92', 109, 4, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff');
-INSERT INTO `creation_item` VALUES ('93', 109, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('94', 109, 4, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('95', 109, 4, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('96', 109, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('97', 109, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('98', 109, 2, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('99', 109, 2, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff');
-INSERT INTO `creation_item` VALUES ('100', 109, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('101', 109, 2, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('102', 109, 2, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('103', 109, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('104', 109, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('105', 109, 7, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('106', 109, 7, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff');
-INSERT INTO `creation_item` VALUES ('107', 109, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('108', 109, 7, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('109', 109, 7, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('110', 109, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('111', 109, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('112', 109, 3, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('113', 109, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('114', 109, 3, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('115', 109, 3, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('116', 109, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s02.iff');
-INSERT INTO `creation_item` VALUES ('117', 109, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('118', 109, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s05.iff');
-INSERT INTO `creation_item` VALUES ('119', 109, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('120', 109, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s05.iff');
-INSERT INTO `creation_item` VALUES ('121', 109, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('122', 109, 10, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff');
-INSERT INTO `creation_item` VALUES ('123', 109, 10, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff');
-INSERT INTO `creation_item` VALUES ('124', 109, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff');
-INSERT INTO `creation_item` VALUES ('125', 109, 10, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff');
-INSERT INTO `creation_item` VALUES ('126', 109, 10, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff');
-INSERT INTO `creation_item` VALUES ('127', 109, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('128', 70, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('129', 70, 1, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('130', 70, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('131', 70, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('132', 70, 1, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('133', 70, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff');
-INSERT INTO `creation_item` VALUES ('134', 70, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('135', 70, 8, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('136', 70, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('137', 70, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('138', 70, 8, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('139', 70, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff');
-INSERT INTO `creation_item` VALUES ('140', 70, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('141', 70, 6, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('142', 70, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('143', 70, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('144', 70, 6, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('145', 70, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff');
-INSERT INTO `creation_item` VALUES ('146', 70, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('147', 70, 4, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('148', 70, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('149', 70, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('150', 70, 4, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('151', 70, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff');
-INSERT INTO `creation_item` VALUES ('152', 70, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('153', 70, 2, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('154', 70, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('155', 70, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('156', 70, 2, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('157', 70, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff');
-INSERT INTO `creation_item` VALUES ('158', 70, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('159', 70, 7, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('160', 70, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('161', 70, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('162', 70, 7, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('163', 70, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff');
-INSERT INTO `creation_item` VALUES ('164', 70, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('165', 70, 3, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('166', 70, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('167', 70, 3, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('168', 70, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('169', 70, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s06.iff');
-INSERT INTO `creation_item` VALUES ('170', 70, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_vest_s02.iff');
-INSERT INTO `creation_item` VALUES ('171', 70, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s05.iff');
-INSERT INTO `creation_item` VALUES ('172', 70, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s06.iff');
-INSERT INTO `creation_item` VALUES ('173', 70, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_vest_s02.iff');
-INSERT INTO `creation_item` VALUES ('174', 70, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff');
-INSERT INTO `creation_item` VALUES ('175', 70, 10, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff');
-INSERT INTO `creation_item` VALUES ('176', 70, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('177', 70, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff');
-INSERT INTO `creation_item` VALUES ('178', 70, 10, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('179', 70, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff');
-INSERT INTO `creation_item` VALUES ('180', 686, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('181', 686, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('182', 686, 1, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('183', 686, 1, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('184', 686, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('185', 686, 1, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('186', 686, 1, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('187', 686, 1, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('188', 686, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('189', 686, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('190', 686, 8, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('191', 686, 8, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('192', 686, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('193', 686, 8, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('194', 686, 8, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('195', 686, 8, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('196', 686, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('197', 686, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('198', 686, 6, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('199', 686, 6, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('200', 686, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('201', 686, 6, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('202', 686, 6, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('203', 686, 6, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('204', 686, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('205', 686, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('206', 686, 4, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('207', 686, 4, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('208', 686, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('209', 686, 4, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('210', 686, 4, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('211', 686, 4, 1, 'object/tangible/wearables/gloves/shared_gloves_s02.iff');
-INSERT INTO `creation_item` VALUES ('212', 686, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('213', 686, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('214', 686, 2, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('215', 686, 2, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('216', 686, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('217', 686, 2, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('218', 686, 2, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('219', 686, 2, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('220', 686, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('221', 686, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('222', 686, 7, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('223', 686, 7, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('224', 686, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('225', 686, 7, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('226', 686, 7, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('227', 686, 7, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('228', 686, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('229', 686, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('230', 686, 3, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('231', 686, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('232', 686, 3, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('233', 686, 3, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('234', 686, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('235', 686, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('236', 686, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('237', 686, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('238', 686, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('239', 686, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('240', 686, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
-INSERT INTO `creation_item` VALUES ('241', 686, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
-INSERT INTO `creation_item` VALUES ('242', 686, 10, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
-INSERT INTO `creation_item` VALUES ('243', 686, 10, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('244', 686, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff');
-INSERT INTO `creation_item` VALUES ('245', 686, 10, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff');
-INSERT INTO `creation_item` VALUES ('246', 686, 10, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff');
-INSERT INTO `creation_item` VALUES ('247', 686, 10, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff');
-INSERT INTO `creation_item` VALUES ('248', 30, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('249', 30, 1, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('250', 30, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('251', 30, 1, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('252', 30, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('253', 30, 1, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('254', 30, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('255', 30, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('256', 30, 8, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('257', 30, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('258', 30, 8, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('259', 30, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('260', 30, 8, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('261', 30, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('262', 30, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('263', 30, 6, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('264', 30, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('265', 30, 6, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('266', 30, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('267', 30, 6, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('268', 30, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('269', 30, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('270', 30, 4, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('271', 30, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('272', 30, 4, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('273', 30, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('274', 30, 4, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('275', 30, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('276', 30, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('277', 30, 2, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('278', 30, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('279', 30, 2, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('280', 30, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('281', 30, 2, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('282', 30, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('283', 30, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('284', 30, 7, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('285', 30, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('286', 30, 7, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('287', 30, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('288', 30, 7, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('289', 30, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('290', 30, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('291', 30, 3, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('292', 30, 3, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('293', 30, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('294', 30, 3, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('295', 30, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s04.iff');
-INSERT INTO `creation_item` VALUES ('296', 30, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('297', 30, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s04.iff');
-INSERT INTO `creation_item` VALUES ('298', 30, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('299', 30, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff');
-INSERT INTO `creation_item` VALUES ('300', 30, 10, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('301', 30, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('302', 30, 10, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff');
-INSERT INTO `creation_item` VALUES ('303', 30, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff');
-INSERT INTO `creation_item` VALUES ('304', 30, 10, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff');
-INSERT INTO `creation_item` VALUES ('305', 30, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('306', 50, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('307', 50, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('308', 50, 1, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('309', 50, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('310', 50, 1, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('311', 50, 1, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('312', 50, 1, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff');
-INSERT INTO `creation_item` VALUES ('313', 50, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('314', 50, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('315', 50, 8, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('316', 50, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('317', 50, 8, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('318', 50, 8, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('319', 50, 8, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff');
-INSERT INTO `creation_item` VALUES ('320', 50, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('321', 50, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('322', 50, 6, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('323', 50, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('324', 50, 6, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('325', 50, 6, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('326', 50, 6, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff');
-INSERT INTO `creation_item` VALUES ('327', 50, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('328', 50, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('329', 50, 4, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('330', 50, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('331', 50, 4, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('332', 50, 4, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('333', 50, 4, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff');
-INSERT INTO `creation_item` VALUES ('334', 50, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('335', 50, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('336', 50, 2, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('337', 50, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('338', 50, 2, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('339', 50, 2, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('340', 50, 2, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff');
-INSERT INTO `creation_item` VALUES ('341', 50, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('342', 50, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('343', 50, 7, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('344', 50, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('345', 50, 7, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('346', 50, 7, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('347', 50, 7, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff');
-INSERT INTO `creation_item` VALUES ('348', 50, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('349', 50, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('350', 50, 3, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('351', 50, 3, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('352', 50, 3, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('353', 50, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s05.iff');
-INSERT INTO `creation_item` VALUES ('354', 50, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s05.iff');
-INSERT INTO `creation_item` VALUES ('355', 50, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('356', 50, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s01.iff');
-INSERT INTO `creation_item` VALUES ('357', 50, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s03.iff');
-INSERT INTO `creation_item` VALUES ('358', 50, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('359', 50, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff');
-INSERT INTO `creation_item` VALUES ('360', 50, 10, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff');
-INSERT INTO `creation_item` VALUES ('361', 50, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff');
-INSERT INTO `creation_item` VALUES ('362', 50, 10, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff');
-INSERT INTO `creation_item` VALUES ('363', 50, 10, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff');
-INSERT INTO `creation_item` VALUES ('364', 50, 10, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff');
-INSERT INTO `creation_item` VALUES ('365', 10, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('366', 10, 1, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('367', 10, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('368', 10, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('369', 10, 1, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('370', 10, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
-INSERT INTO `creation_item` VALUES ('371', 10, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('372', 10, 8, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('373', 10, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('374', 10, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('375', 10, 8, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('376', 10, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
-INSERT INTO `creation_item` VALUES ('377', 10, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('378', 10, 6, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('379', 10, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('380', 10, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('381', 10, 6, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('382', 10, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
-INSERT INTO `creation_item` VALUES ('383', 10, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('384', 10, 4, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('385', 10, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('386', 10, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('387', 10, 4, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('388', 10, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
-INSERT INTO `creation_item` VALUES ('389', 10, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('390', 10, 2, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('391', 10, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('392', 10, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('393', 10, 2, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('394', 10, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
-INSERT INTO `creation_item` VALUES ('395', 10, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('396', 10, 7, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('397', 10, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('398', 10, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('399', 10, 7, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('400', 10, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
-INSERT INTO `creation_item` VALUES ('401', 10, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('402', 10, 3, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('403', 10, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('404', 10, 3, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('405', 10, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s03.iff');
-INSERT INTO `creation_item` VALUES ('406', 10, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('407', 10, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s09.iff');
-INSERT INTO `creation_item` VALUES ('408', 10, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s10.iff');
-INSERT INTO `creation_item` VALUES ('409', 10, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff');
-INSERT INTO `creation_item` VALUES ('410', 10, 10, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff');
-INSERT INTO `creation_item` VALUES ('411', 10, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff');
-INSERT INTO `creation_item` VALUES ('412', 10, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
-INSERT INTO `creation_item` VALUES ('413', 10, 10, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
-INSERT INTO `creation_item` VALUES ('414', 10, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
+INSERT INTO `creation_item` (`id`, `profession_id`, `species_id`, `gender`, `template`) VALUES
+	(1, 90, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(2, 90, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(3, 90, 1, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(4, 90, 1, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(5, 90, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(6, 90, 1, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(7, 90, 1, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(8, 90, 1, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(9, 90, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(10, 90, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(11, 90, 8, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(12, 90, 8, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(13, 90, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(14, 90, 8, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(15, 90, 8, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(16, 90, 8, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(17, 90, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(18, 90, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(19, 90, 6, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(20, 90, 6, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(21, 90, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(22, 90, 6, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(23, 90, 6, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(24, 90, 6, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(25, 90, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(26, 90, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(27, 90, 4, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(28, 90, 4, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(29, 90, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(30, 90, 4, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(31, 90, 4, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(32, 90, 4, 1, 'object/tangible/wearables/gloves/shared_gloves_s02.iff'),
+	(33, 90, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(34, 90, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(35, 90, 2, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(36, 90, 2, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(37, 90, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(38, 90, 2, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(39, 90, 2, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(40, 90, 2, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(41, 90, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(42, 90, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(43, 90, 7, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(44, 90, 7, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(45, 90, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(46, 90, 7, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(47, 90, 7, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(48, 90, 7, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(49, 90, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(50, 90, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(51, 90, 3, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(52, 90, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(53, 90, 3, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(54, 90, 3, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(55, 90, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s02.iff'),
+	(56, 90, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s16.iff'),
+	(57, 90, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s04.iff'),
+	(58, 90, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s02.iff'),
+	(59, 90, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s07.iff'),
+	(60, 90, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_gloves_s01.iff'),
+	(61, 90, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(62, 90, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(63, 90, 10, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(64, 90, 10, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(65, 90, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(66, 90, 10, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(67, 90, 10, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(68, 90, 10, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(69, 109, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(70, 109, 1, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(71, 109, 1, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff'),
+	(72, 109, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(73, 109, 1, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(74, 109, 1, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(75, 109, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(76, 109, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(77, 109, 8, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(78, 109, 8, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff'),
+	(79, 109, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(80, 109, 8, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(81, 109, 8, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(82, 109, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(83, 109, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(84, 109, 6, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(85, 109, 6, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff'),
+	(86, 109, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(87, 109, 6, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(88, 109, 6, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(89, 109, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(90, 109, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(91, 109, 4, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(92, 109, 4, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff'),
+	(93, 109, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(94, 109, 4, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(95, 109, 4, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(96, 109, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(97, 109, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(98, 109, 2, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(99, 109, 2, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff'),
+	(100, 109, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(101, 109, 2, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(102, 109, 2, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(103, 109, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(104, 109, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(105, 109, 7, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(106, 109, 7, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff'),
+	(107, 109, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(108, 109, 7, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(109, 109, 7, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(110, 109, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(111, 109, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(112, 109, 3, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(113, 109, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(114, 109, 3, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(115, 109, 3, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(116, 109, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s02.iff'),
+	(117, 109, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s12.iff'),
+	(118, 109, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s05.iff'),
+	(119, 109, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s12.iff'),
+	(120, 109, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s05.iff'),
+	(121, 109, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s05.iff'),
+	(122, 109, 10, 0, 'object/tangible/wearables/pants/shared_pants_s04.iff'),
+	(123, 109, 10, 0, 'object/tangible/wearables/boots/shared_boots_s21.iff'),
+	(124, 109, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s24.iff'),
+	(125, 109, 10, 1, 'object/tangible/wearables/pants/shared_pants_s24.iff'),
+	(126, 109, 10, 1, 'object/tangible/wearables/vest/shared_vest_s10.iff'),
+	(127, 109, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(128, 70, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(129, 70, 1, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(130, 70, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(131, 70, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(132, 70, 1, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(133, 70, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff'),
+	(134, 70, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(135, 70, 8, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(136, 70, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(137, 70, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(138, 70, 8, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(139, 70, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff'),
+	(140, 70, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(141, 70, 6, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(142, 70, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(143, 70, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(144, 70, 6, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(145, 70, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff'),
+	(146, 70, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(147, 70, 4, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(148, 70, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(149, 70, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(150, 70, 4, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(151, 70, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff'),
+	(152, 70, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(153, 70, 2, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(154, 70, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(155, 70, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(156, 70, 2, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(157, 70, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff'),
+	(158, 70, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(159, 70, 7, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(160, 70, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(161, 70, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(162, 70, 7, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(163, 70, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff'),
+	(164, 70, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(165, 70, 3, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(166, 70, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(167, 70, 3, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(168, 70, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s10.iff'),
+	(169, 70, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s06.iff'),
+	(170, 70, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_vest_s02.iff'),
+	(171, 70, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s05.iff'),
+	(172, 70, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s06.iff'),
+	(173, 70, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_vest_s02.iff'),
+	(174, 70, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s34.iff'),
+	(175, 70, 10, 0, 'object/tangible/wearables/pants/shared_pants_s29.iff'),
+	(176, 70, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(177, 70, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s12.iff'),
+	(178, 70, 10, 1, 'object/tangible/wearables/skirt/shared_skirt_s10.iff'),
+	(179, 70, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s07.iff'),
+	(180, 686, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(181, 686, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(182, 686, 1, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(183, 686, 1, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(184, 686, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(185, 686, 1, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(186, 686, 1, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(187, 686, 1, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(188, 686, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(189, 686, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(190, 686, 8, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(191, 686, 8, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(192, 686, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(193, 686, 8, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(194, 686, 8, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(195, 686, 8, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(196, 686, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(197, 686, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(198, 686, 6, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(199, 686, 6, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(200, 686, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(201, 686, 6, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(202, 686, 6, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(203, 686, 6, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(204, 686, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(205, 686, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(206, 686, 4, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(207, 686, 4, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(208, 686, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(209, 686, 4, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(210, 686, 4, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(211, 686, 4, 1, 'object/tangible/wearables/gloves/shared_gloves_s02.iff'),
+	(212, 686, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(213, 686, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(214, 686, 2, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(215, 686, 2, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(216, 686, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(217, 686, 2, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(218, 686, 2, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(219, 686, 2, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(220, 686, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(221, 686, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(222, 686, 7, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(223, 686, 7, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(224, 686, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(225, 686, 7, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(226, 686, 7, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(227, 686, 7, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(228, 686, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(229, 686, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(230, 686, 3, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(231, 686, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(232, 686, 3, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(233, 686, 3, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(234, 686, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s14.iff'),
+	(235, 686, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s16.iff'),
+	(236, 686, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s14.iff'),
+	(237, 686, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s27.iff'),
+	(238, 686, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s07.iff'),
+	(239, 686, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_gloves_s03.iff'),
+	(240, 686, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff'),
+	(241, 686, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff'),
+	(242, 686, 10, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff'),
+	(243, 686, 10, 0, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(244, 686, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s27.iff'),
+	(245, 686, 10, 1, 'object/tangible/wearables/pants/shared_pants_s07.iff'),
+	(246, 686, 10, 1, 'object/tangible/wearables/boots/shared_boots_s05.iff'),
+	(247, 686, 10, 1, 'object/tangible/wearables/gloves/shared_gloves_s03.iff'),
+	(248, 30, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(249, 30, 1, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(250, 30, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(251, 30, 1, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(252, 30, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(253, 30, 1, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(254, 30, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(255, 30, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(256, 30, 8, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(257, 30, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(258, 30, 8, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(259, 30, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(260, 30, 8, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(261, 30, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(262, 30, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(263, 30, 6, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(264, 30, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(265, 30, 6, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(266, 30, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(267, 30, 6, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(268, 30, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(269, 30, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(270, 30, 4, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(271, 30, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(272, 30, 4, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(273, 30, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(274, 30, 4, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(275, 30, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(276, 30, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(277, 30, 2, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(278, 30, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(279, 30, 2, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(280, 30, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(281, 30, 2, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(282, 30, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(283, 30, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(284, 30, 7, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(285, 30, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(286, 30, 7, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(287, 30, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(288, 30, 7, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(289, 30, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(290, 30, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(291, 30, 3, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(292, 30, 3, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(293, 30, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(294, 30, 3, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(295, 30, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s04.iff'),
+	(296, 30, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s21.iff'),
+	(297, 30, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s04.iff'),
+	(298, 30, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s21.iff'),
+	(299, 30, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s16.iff'),
+	(300, 30, 10, 0, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(301, 30, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(302, 30, 10, 0, 'object/tangible/wearables/vest/shared_vest_s09.iff'),
+	(303, 30, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s26.iff'),
+	(304, 30, 10, 1, 'object/tangible/wearables/pants/shared_pants_s21.iff'),
+	(305, 30, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(306, 50, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(307, 50, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(308, 50, 1, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(309, 50, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(310, 50, 1, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(311, 50, 1, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(312, 50, 1, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff'),
+	(313, 50, 8, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(314, 50, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(315, 50, 8, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(316, 50, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(317, 50, 8, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(318, 50, 8, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(319, 50, 8, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff'),
+	(320, 50, 6, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(321, 50, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(322, 50, 6, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(323, 50, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(324, 50, 6, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(325, 50, 6, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(326, 50, 6, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff'),
+	(327, 50, 4, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(328, 50, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(329, 50, 4, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(330, 50, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(331, 50, 4, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(332, 50, 4, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(333, 50, 4, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff'),
+	(334, 50, 2, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(335, 50, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(336, 50, 2, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(337, 50, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(338, 50, 2, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(339, 50, 2, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(340, 50, 2, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff'),
+	(341, 50, 7, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(342, 50, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(343, 50, 7, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(344, 50, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(345, 50, 7, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(346, 50, 7, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(347, 50, 7, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff'),
+	(348, 50, 3, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(349, 50, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(350, 50, 3, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(351, 50, 3, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(352, 50, 3, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(353, 50, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_jacket_s05.iff'),
+	(354, 50, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s05.iff'),
+	(355, 50, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s12.iff'),
+	(356, 50, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s01.iff'),
+	(357, 50, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s03.iff'),
+	(358, 50, 10, 0, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(359, 50, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s10.iff'),
+	(360, 50, 10, 0, 'object/tangible/wearables/pants/shared_pants_s12.iff'),
+	(361, 50, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s02.iff'),
+	(362, 50, 10, 1, 'object/tangible/wearables/bodysuit/shared_bodysuit_s13.iff'),
+	(363, 50, 10, 1, 'object/tangible/wearables/jacket/shared_jacket_s24.iff'),
+	(364, 50, 10, 1, 'object/tangible/wearables/boots/shared_boots_s04.iff'),
+	(365, 10, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(366, 10, 1, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(367, 10, 1, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(368, 10, 1, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(369, 10, 1, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(370, 10, 1, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff'),
+	(371, 10, 8, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(372, 10, 8, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(373, 10, 8, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(374, 10, 8, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(375, 10, 8, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(376, 10, 8, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff'),
+	(377, 10, 6, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(378, 10, 6, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(379, 10, 6, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(380, 10, 6, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(381, 10, 6, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(382, 10, 6, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff'),
+	(383, 10, 4, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(384, 10, 4, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(385, 10, 4, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(386, 10, 4, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(387, 10, 4, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(388, 10, 4, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff'),
+	(389, 10, 2, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(390, 10, 2, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(391, 10, 2, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(392, 10, 2, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(393, 10, 2, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(394, 10, 2, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff'),
+	(395, 10, 7, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(396, 10, 7, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(397, 10, 7, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(398, 10, 7, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(399, 10, 7, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(400, 10, 7, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff'),
+	(401, 10, 3, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(402, 10, 3, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(403, 10, 3, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(404, 10, 3, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(405, 10, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_shirt_s03.iff'),
+	(406, 10, 9, 0, 'object/tangible/wearables/ithorian/shared_ith_pants_s08.iff'),
+	(407, 10, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_shirt_s09.iff'),
+	(408, 10, 9, 1, 'object/tangible/wearables/ithorian/shared_ith_pants_s10.iff'),
+	(409, 10, 10, 0, 'object/tangible/wearables/shirt/shared_shirt_s42.iff'),
+	(410, 10, 10, 0, 'object/tangible/wearables/pants/shared_pants_s08.iff'),
+	(411, 10, 10, 0, 'object/tangible/wearables/shoes/shared_shoes_s01.iff'),
+	(412, 10, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff'),
+	(413, 10, 10, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff'),
+	(414, 10, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
 /*!40000 ALTER TABLE `creation_item` ENABLE KEYS */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

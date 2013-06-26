@@ -21,37 +21,22 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
     if(guild->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(guild, Object::VIEW_3, 4);
-        guild->GetGuildList().Serialize(message);
+        guild->SerializeGuildList(&message);
         guild->AddDeltasUpdate(&message);
     }
-    else
-        guild->GetGuildList().ClearDeltas();
 }
 
-void GuildMessageBuilder::SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild, boost::unique_lock<boost::mutex>& lock)
 {
-	guild->AddBaselineToCache(&BuildBaseline3(guild));
-    guild->AddBaselineToCache(&BuildBaseline6(guild));
-
-    for (auto& baseline : guild->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
-    SendEndBaselines(guild, observer);
-}
-
-BaselinesMessage GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild)
-{
-    auto message = CreateBaselinesMessage(guild, Object::VIEW_3, 5);
-    message.data.append(ObjectMessageBuilder::BuildBaseline3(guild).data);
-    guild->GetGuildList().Serialize(message);
+    auto message = CreateBaselinesMessage(guild, lock, Object::VIEW_3, 5);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline3(guild, lock)).data);
+    guild->SerializeGuildList(&message, lock);
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage GuildMessageBuilder::BuildBaseline6(const shared_ptr<Guild>& guild)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline6(const shared_ptr<Guild>& guild, boost::unique_lock<boost::mutex>& lock)
 {
-    auto message = CreateBaselinesMessage(guild, Object::VIEW_6, 5);
-    message.data.append(ObjectMessageBuilder::BuildBaseline6(guild).data);
+    auto message = CreateBaselinesMessage(guild, lock, Object::VIEW_6, 5);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline6(guild, lock)).data);
     return BaselinesMessage(std::move(message));
 }

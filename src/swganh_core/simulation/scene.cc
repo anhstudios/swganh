@@ -34,10 +34,11 @@ public:
 		
     {
 		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
-		tmp->SetThis(tmp);
+		tmp->SetSceneName(description.name);
+		tmp->SetSceneId(description.id);
 		spatial_index_ = tmp;
 
-		movement_manager_ = make_shared<MovementManager>(kernel);
+		movement_manager_ = make_shared<MovementManager>(kernel, description.name);
 		movement_manager_->SetSpatialProvider(spatial_index_);
 	}
 
@@ -54,7 +55,12 @@ public:
     void AddObject(shared_ptr<Object> object)
     {
 		InsertObject(object);
-
+		// Set Scene Id for all sub objects as well
+		object->SetSceneId(description_.id);
+		object->ViewObjects(object, 1, true, [=] (shared_ptr<Object> contained){
+			if (contained->GetSceneId() != description_.id)
+				contained->SetSceneId(description_.id);
+		});
 		spatial_index_->AddObject(nullptr, object);
     }
     
@@ -68,6 +74,8 @@ public:
 		EraseObject(object);             
 
 		spatial_index_->RemoveObject(nullptr, object);
+
+		movement_manager_->ResetMovementCounter(object);
     }
 
 	void InsertObject(const shared_ptr<Object>& object)
@@ -191,4 +199,22 @@ void Scene::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, b
 void Scene::ViewObjects(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func)
 {
 	impl_->GetSpatialIndex()->ViewObjectsInRange(position, radius, max_depth, topDown, func);
+}
+
+void Scene::HandleDataTransformServer(const std::shared_ptr<swganh::object::Object>& object, const glm::vec3& new_position)
+{
+	impl_->GetMovementManager()->HandleDataTransformServer(object, new_position);
+}
+
+void Scene::HandleDataTransformWithParentServer(
+	const std::shared_ptr<swganh::object::Object>& parent, 
+	const std::shared_ptr<swganh::object::Object>& object,
+	const glm::vec3& new_position)
+{
+	impl_->GetMovementManager()->HandleDataTransformWithParentServer(parent, object, new_position);
+}
+
+std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> Scene::FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range)
+{
+	return impl_->GetSpatialIndex()->FindObjectsInRangeByTag(requester, tag, range);
 }

@@ -1,9 +1,13 @@
 # ignore directories created for the build process
 bin/
 build/
+build-*/
+build-deps/
 vendor/
 docs/
 nbproject/
+
+#Ignore compiled python scripts
 __pycache__/
 
 # ignore configuration files
@@ -20,3 +24,5 @@ data/docs/generated
 /nbproject/private/
 
 data/docs/doxygen
+
+swganh*deps*.*

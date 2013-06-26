@@ -10,26 +10,23 @@
 #include <iomanip>
 
 #include "swganh/crc.h"
+#include "swganh/event_dispatcher.h"
 
 #include "swganh/plugin/plugin_manager.h"
-
-#include "swganh/network/soe/session.h"
-#include "swganh/network/soe/server_interface.h"
-
 #include "swganh/service/service_manager.h"
 
-#include "swganh/login/login_service_interface.h"
-#include "swganh/login/login_client_interface.h"
-#include "swganh/login/account.h"
+#include "swganh_core/login/login_service_interface.h"
+#include "swganh_core/login/login_client_interface.h"
+#include "swganh_core/login/account.h"
 
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
 
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/messages/heart_beat.h"
 
 #include "swganh_core/messages/delete_character_reply_message.h"
-#include "swganh/character/character_data.h"
+#include "swganh_core/character/character_data.h"
 #include "swganh_core/messages/client_create_character_success.h"
 #include "swganh_core/messages/client_create_character_failed.h"
 #include "swganh_core/messages/client_random_name_response.h"
@@ -51,20 +48,22 @@ using swganh::app::SwganhKernel;
 CharacterService::CharacterService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
-}
-
-service::ServiceDescription CharacterService::GetServiceDescription() {
-    service::ServiceDescription service_description(
+    SetServiceDescription(service::ServiceDescription(
         "Character Service",
         "character",
         "0.1",
         "127.0.0.1",
         0,
         0,
-        0);
+        0));
+}
 
-    return service_description;
+CharacterService::~CharacterService()
+{}
+
+void CharacterService::Initialize()
+{
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
 
 void CharacterService::Startup() {
@@ -104,7 +103,7 @@ void CharacterService::HandleClientCreateCharacter_(
 	}
 
     tie(character_id, error_code) = character_provider_->CreateCharacter(*message, client->GetAccountId());
-
+	
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
     client->SendTo(heartbeat);
@@ -118,6 +117,10 @@ void CharacterService::HandleClientCreateCharacter_(
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
         client->SendTo(success);
+
+		//Send an event to all interested parties
+		kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<std::pair<uint64_t, std::string>>>(
+			"Character::NewCharacter", std::make_pair(character_id, name)));
     }
 }
 

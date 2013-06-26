@@ -1,6 +1,10 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "weather_service.h"
 
 #include <algorithm>
@@ -13,10 +17,10 @@
 #include "swganh_core/messages/server_weather_message.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/out_of_band.h"
-#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/object/player/player.h"
 #include "swganh_core/object/object_controller.h"
-#include "swganh/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
 #include "swganh_core/object/object.h"
 
 using namespace std;
@@ -39,7 +43,7 @@ using swganh::simulation::SimulationServiceInterface;
 
 
 WeatherService::WeatherService(SwganhKernel* kernel)
-	: kernel_(kernel), script_(kernel_->GetAppConfig().script_directory + "/weather/weather.py")
+	: kernel_(kernel), script_(kernel_->GetAppConfig().script_directory + "/weather/weather.py", true)
 {
 	player_selected_callback_ = kernel_->GetEventDispatcher()->Subscribe(
 		"ObjectReadyEvent",
@@ -48,11 +52,38 @@ WeatherService::WeatherService(SwganhKernel* kernel)
 			const auto& player_obj = static_pointer_cast<ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
 			OnPlayerEnter(player_obj);
 		});
+    
+    SetServiceDescription(ServiceDescription(
+        "WeatherService",
+        "weather",
+        "0.1",
+        "127.0.0.1",
+        0,
+        0,
+        0));
 }
 
 WeatherService::~WeatherService()
 {
 	weather_timer_->cancel();
+}
+
+void WeatherService::Initialize()
+{
+	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
+}
+
+void WeatherService::Startup() 
+{
+	weatherScriptTimer=0;
+	RunWeatherSequence();
+}
+
+void WeatherService::Shutdown()
+{
+	sceneLookup_.clear();
+	weather_sequence_.clear();
+	weather_timer_->cancel();	
 }
 
 void WeatherService::OnPlayerEnter(shared_ptr<Object> player_obj)
@@ -66,20 +97,6 @@ void WeatherService::OnPlayerEnter(shared_ptr<Object> player_obj)
 	else
 	{
 	}
-}
-
-ServiceDescription WeatherService::GetServiceDescription()
-{
-    ServiceDescription service_description(
-        "WeatherService",
-        "weather",
-        "0.1",
-        "127.0.0.1",
-        0,
-        0,
-        0);
-
-    return service_description;
 }
 
 Weather WeatherService::GetSceneWeather(uint32_t scene_id)
@@ -172,7 +189,7 @@ void WeatherService::tickPlanetWeather_()
 
 void WeatherService::RunWeatherSequence()
 {		
-	weather_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
+	weather_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(10));
 	weather_timer_->async_wait(boost::bind(&WeatherService::RunWeatherSequenceTimer, this, boost::asio::placeholders::error, 10 ));
 }
 
@@ -188,7 +205,7 @@ void WeatherService::WeatherScript()
 {
 	try
     {
-        script_.SetContext("kernel", boost::python::ptr(kernel_));
+        script_.SetGlobal("kernel", boost::python::ptr(kernel_));
         script_.Run();
     }
     catch (std::exception& e)
@@ -196,18 +213,3 @@ void WeatherService::WeatherScript()
         LOG(fatal) << e.what();
 	}
 }
-
-void WeatherService::Startup() 
-{
-	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
-	weatherScriptTimer=0;
-	RunWeatherSequence();
-}
-
-void WeatherService::Shutdown()
-{
-	sceneLookup_.clear();
-	weather_sequence_.clear();
-	weather_timer_->cancel();	
-}
-

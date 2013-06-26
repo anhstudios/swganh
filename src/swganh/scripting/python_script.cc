@@ -15,110 +15,96 @@
 
 #include "swganh/scripting/utilities.h"
 
-using namespace boost::python;
-using namespace std;
 using namespace swganh::scripting;
+namespace bp = boost::python;
 
-PythonScript::PythonScript(const string& filename)
+PythonScript::PythonScript(const std::string& filename, bool delay_execution)
         : filename_(filename)
 {
-    ReadFileContents();
-    swganh::scripting::ScopedGilLock lock;
+    ReadFileContents_();
+    PreparePythonEnvironment_();
 
-	try
+    if (!delay_execution)
     {
-        PyRun_SimpleString("import sys; sys.path.append('.');");
-
-		boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
-			PyImport_AddModule("__main__")
-		)));
-
-        globals_ = main.attr("__dict__");
-        globals_["swgpy"] = boost::python::import("swgpy");
-        globals_["context"] = dict();
-    }
-    catch (error_already_set &)
-    {
-		ScopedGilLock lock;
-        PyErr_Print();
+        Run();
     }
 }
 
 void PythonScript::Run()
 {
-	swganh::scripting::ScopedGilLock lock;
-	try
+    ScopedGilLock lock;
+
+    try
     {
 #ifdef _DEBUG
-        ReadFileContents();
+        ReadFileContents_();
 #endif
-        LOG(info) << "Executing script: " << filename_;
-        file_object_ = exec(filecontents_.c_str(), globals_, globals_);
+
+        file_object_.reset(
+            new bp::object(bp::exec(filecontents_.c_str(), *globals_, *globals_)));
     }
-    catch (error_already_set &)
+    catch (bp::error_already_set&)
     {
-        GetPythonException();
+        logPythonException();
     }
 }
 
-void PythonScript::ReadFileContents()
-{
-    ifstream filestream(filename_);
-    filestream >> noskipws;
 
-    filecontents_ = string(
-        (istreambuf_iterator<char>(filestream)),
-        istreambuf_iterator<char>());
+std::shared_ptr<boost::python::object> PythonScript::GetGlobal(const std::string& name)
+{
+    std::shared_ptr<bp::object> instance = nullptr;
+
+    ScopedGilLock lock;
+
+    try
+    {
+        instance = std::shared_ptr<bp::object>(
+            new bp::object((*globals_)[name.c_str()]),
+            PythonObjectDeleter());
+    }
+    catch(bp::error_already_set&)
+    {
+        logPythonException();
+    }
+
+    return instance;
 }
 
-void PythonScript::GetPythonException()
+bp::dict PythonScript::GetGlobals()
 {
-    swganh::scripting::ScopedGilLock lock;
+    ScopedGilLock lock;
+    return bp::extract<bp::dict>(*globals_);
+}
 
-    std::ostringstream os;
-    os << "Python error:\n  " << std::flush;
+void PythonScript::PreparePythonEnvironment_()
+{
+    ScopedGilLock lock;
 
-    PyObject *type = 0, *val = 0, *tb = 0;
-    PyErr_Fetch(&type, &val, &tb);
-    handle<> e_val(val), e_type(type), e_tb(allow_null(tb));
+    try
+    {
+        main_.reset(
+            new bp::object(bp::handle<>(bp::borrowed(
+            PyImport_AddModule("__main__")))));
 
-    try {
-        object t = extract<object>(e_type.get());
-        object t_name = t.attr("__name__");
-        std::string typestr = extract<std::string>(t_name);
+        globals_.reset(new bp::object(main_->attr("__dict__")));
 
-        os << typestr << std::flush;
-    } catch (error_already_set const &) {
-        os << "Internal error getting error type:\n";
-        PyErr_Print();
+        bp::dict tmp;
+        tmp["__builtins__"] = (*globals_)["__builtins__"];
+
+        *globals_ = tmp;
     }
-
-    os << ": ";
-
-    try {
-        object v = extract<object>(e_val.get());
-        std::string valuestr = extract<std::string>(v.attr("__str__")());
-        os  << valuestr << std::flush;
-    } catch (error_already_set const &) {
-        os << "Internal error getting value type:\n";
-        PyErr_Print();
+    catch (bp::error_already_set&)
+    {
+        logPythonException();
     }
+}
 
-    if (tb) {
-        try {
-            object tb_list = import("traceback").attr("format_tb")(e_tb);
-            object tb_str = str("").attr("join")(tb_list);
-            std::string str = extract<std::string>(tb_str);
+void PythonScript::ReadFileContents_()
+{
+    std::ifstream filestream(filename_);
+    filestream >> std::noskipws;
 
-            os << "\nTraceback (recent call last):\n" << str;
-        } catch (error_already_set const &) {
-            os << "Internal error getting traceback:\n";
-            PyErr_Print();
-        }
-    } else {
-        os << std::endl;
-    }
-    PyErr_Clear();
-    std::cerr << os.str() << endl;
-    LOG(warning) << os.str();
+    filecontents_ = std::string(
+        (std::istreambuf_iterator<char>(filestream)),
+        std::istreambuf_iterator<char>());
 }

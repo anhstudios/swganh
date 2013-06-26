@@ -23,6 +23,7 @@ void WaypointMessageBuilder::RegisterEventHandlers()
         auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
         SendBaselines(static_pointer_cast<Waypoint>(controller_event->object), controller_event->observer);
     });
+
     event_dispatcher->Subscribe("Waypoint::Activated", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<WaypointEvent>(incoming_event);
@@ -83,45 +84,32 @@ void WaypointMessageBuilder::BuildColorDelta(const shared_ptr<Waypoint>& object)
 	if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 11);
-        message.data.write<uint8_t>(object->GetColorByte());
+        message.data.write<uint8_t>(object->GetColor());
     
         object->AddDeltasUpdate(&message);    
     }
 }
 
-void WaypointMessageBuilder::SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
+boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock)
 {
-	waypoint->AddBaselineToCache(&BuildBaseline3(waypoint));
-    waypoint->AddBaselineToCache(&BuildBaseline6(waypoint));
-
-    for (auto& baseline : waypoint->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
-    SendEndBaselines(waypoint, observer);
-}
-
-BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object)
-{
-    auto message = CreateBaselinesMessage(object, Object::VIEW_3, 12);
-	message.data.append(IntangibleMessageBuilder::BuildBaseline3(object).data);
-    auto coords = object->GetCoordinates();
+    auto message = CreateBaselinesMessage(object, lock, Object::VIEW_3, 12);
+	message.data.append((*IntangibleMessageBuilder::BuildBaseline3(object, lock)).data);
+    auto coords = object->GetCoordinates(lock);
     message.data.write(coords.x);
     message.data.write(coords.z);
     message.data.write(coords.y);
-    message.data.write<uint8_t>(object->GetActiveFlag());
-    message.data.write<uint64_t>(object->GetLocationNetworkId());
-    message.data.write(object->GetPlanet());
-    message.data.write(object->GetName());
+    message.data.write<uint8_t>(object->GetActiveFlag(lock));
+    message.data.write<uint64_t>(object->GetLocationNetworkId(lock));
+    message.data.write(object->GetPlanet(lock));
+    message.data.write(object->GetName(lock));
     message.data.write<uint8_t>(0);
-    message.data.write(object->GetColor());
+    message.data.write(object->GetColor(lock));
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage WaypointMessageBuilder::BuildBaseline6(const std::shared_ptr<Waypoint>& object)
+boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline6(const std::shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(object, Object::VIEW_6, 5);
-	message.data.append(IntangibleMessageBuilder::BuildBaseline6(object).data);
+	auto message = CreateBaselinesMessage(object, lock, Object::VIEW_6, 5);
+	message.data.append((*IntangibleMessageBuilder::BuildBaseline6(object, lock)).data);
 	return message;
 }

@@ -6,7 +6,7 @@
 #include <tuple>
 #include <vector>
 
-#include "swganh/character/character_service_interface.h"
+#include "swganh_core/character/character_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/delete_character_message.h"
@@ -43,16 +43,10 @@ public:
 	* Creates a new instance
 	*/
 	explicit CharacterService(swganh::app::SwganhKernel* kernel);
-    
-	/**
-	* @return the service description for this service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
+    virtual ~CharacterService();
 
-	/**
-	* Called on startup of the server
-	*/
-    void Startup();
+    virtual void Initialize();
+    virtual void Startup();
 
 private:
 

@@ -21,7 +21,7 @@ using namespace swganh::service;
 using namespace boost::posix_time;
 using namespace std;
 
-Datastore::Datastore(shared_ptr<sql::Connection> connection) 
+Datastore::Datastore(shared_ptr<sql::Connection> connection)
     : connection_(connection)
 {}
 
@@ -40,7 +40,7 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyByName(const std::string& name) con
 
         // if no results are found return a nullptr
         if (!result->next()) {
-	    statement->getMoreResults();
+			statement->getMoreResults();
             return nullptr;
         }
 
@@ -52,7 +52,7 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyByName(const std::string& name) con
             static_cast<Galaxy::StatusType>(result->getInt("status")),
             result->getString("created_at"),
             result->getString("updated_at"));
-		
+
 		while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
@@ -64,7 +64,7 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyByName(const std::string& name) con
 
 std::shared_ptr<Galaxy> Datastore::createGalaxy(
     const std::string& name,
-    const std::string& version) const 
+    const std::string& version) const
 {
     shared_ptr<Galaxy> galaxy = nullptr;
 
@@ -79,14 +79,18 @@ std::shared_ptr<Galaxy> Datastore::createGalaxy(
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
 
         if (!result->next()) {
+<<<<<<< HEAD
 	    statement->getMoreResults();
+=======
+			statement->getMoreResults();
+>>>>>>> develop
             return nullptr;
         }
 
         galaxy = make_shared<Galaxy>(
             result->getUInt("id"),
             result->getUInt("primary_id"),
-            result->getString("name"),    
+            result->getString("name"),
             result->getString("version"),
             static_cast<Galaxy::StatusType>(result->getInt("status")),
             result->getString("created_at"),
@@ -123,7 +127,7 @@ bool Datastore::createService(const Galaxy& galaxy, ServiceDescription& descript
     try {
         std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
             "CALL sp_CreateService(?,?,?,?,?,?,?,?,?);"));
-        
+
         uint32_t galaxy_id = galaxy.id();
 
         statement->setInt(1, galaxy_id);
@@ -135,13 +139,13 @@ bool Datastore::createService(const Galaxy& galaxy, ServiceDescription& descript
         statement->setUInt(7, static_cast<uint32_t>(description.udp_port()));
         statement->setUInt(8, static_cast<uint32_t>(description.ping_port()));
         statement->setInt(9, static_cast<int32_t>(-1));
-        
+
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
-        
+
         if (!result->next()) {
             return false;
         }
-    
+
         description.id(result->getUInt("id"));
         description.status(result->getInt("status"));
         description.last_pulse(result->getString("last_pulse_timestamp"));
@@ -160,7 +164,7 @@ void Datastore::saveService(const ServiceDescription& service) const {
     try {
         std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
             "CALL sp_SaveService(?,?,?,?,?,?,?);"));
-        
+
         statement->setString(1, service.address());
         statement->setUInt(2, service.tcp_port());
         statement->setUInt(3, service.udp_port());
@@ -188,7 +192,8 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyById(uint32_t id) const {
 
         // if the statement fails to service return a nullptr
         if (!result->next()) {
-			while(statement->getMoreResults());
+			while(statement->getMoreResults())
+                ;
             return nullptr;
         }
 
@@ -222,7 +227,7 @@ std::shared_ptr<ServiceDescription> Datastore::findServiceById(uint32_t id) cons
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
 
         // if the statement fails to service return a nullptr
-        if (result->next()) {                
+        if (result->next()) {
             service = make_shared<ServiceDescription>(
                 result->getUInt("id"),
                 result->getUInt("galaxy_id"),
@@ -269,7 +274,7 @@ bool Datastore::deleteServiceById(uint32_t id) const {
 
 list<Galaxy> Datastore::getGalaxyList() const {
     std::list<Galaxy> galaxy_list;
-    
+
     try {
         std::unique_ptr<sql::Statement> statement(connection_->createStatement());
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery(
@@ -294,7 +299,7 @@ list<Galaxy> Datastore::getGalaxyList() const {
     return galaxy_list;
 }
 
-list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const { 
+list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const {
     std::list<ServiceDescription> service_list;
 
     try {
@@ -302,9 +307,9 @@ list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const {
             "CALL sp_GetServiceList(?);"));
 
         statement->setUInt(1, galaxy_id);
-        
+
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
-                   
+
         // Loop through the results and create a map entry for each.
         while (result->next()) {
             ServiceDescription service(
@@ -319,7 +324,7 @@ list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const {
                 result->getUInt("ping_port"));
             service.status(result->getInt("status"));
             service.last_pulse(result->getString("last_pulse_timestamp"));
-            
+
             service_list.push_back(move(service));
         } while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
@@ -330,16 +335,16 @@ list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const {
     return service_list;
 }
 
-std::string Datastore::prepareTimestampForStorage(const std::string& timestamp) const {    
+std::string Datastore::prepareTimestampForStorage(const std::string& timestamp) const {
     std::stringstream ss;
-    
+
     ss.imbue(std::locale(ss.getloc(), new boost::posix_time::time_facet("%Y%m%d%H%M%S%F")));
-    
+
     static boost::mutex mutex;
 
     boost::lock_guard<boost::mutex> lk(mutex);
 
     ss << boost::posix_time::time_from_string(timestamp);
-    
+
     return ss.str();
 }

@@ -16,7 +16,6 @@
 #include "swganh_core/object/player/player_events.h"
 #include "swganh_core/object/player/player.h"
 #include "swganh_core/object/exception.h"
-#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh_core/messages/containers/network_map.h"
 
 using namespace std;
@@ -24,19 +23,58 @@ using namespace swganh;
 using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::object;
-using namespace swganh::simulation;
-using namespace swganh::messages::containers;
+using namespace swganh::containers;
 
-WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
-                                 EventDispatcher* event_dispatcher)
-    : IntangibleFactory(db_manager, event_dispatcher)
+WaypointFactory::WaypointFactory(swganh::app::SwganhKernel* kernel)
+    : IntangibleFactory(kernel)
 {
     RegisterEventHandlers();
 }
+
+void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
+{
+    IntangibleFactory::LoadFromStorage(connection, object, lock);
+
+    auto waypoint = std::dynamic_pointer_cast<Waypoint>(object);
+    if(!waypoint)
+    {
+        throw InvalidObject("Object requested for loading is not Waypoint");
+    }
+
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+        (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
+    
+    statement->setUInt64(1, waypoint->GetObjectId(lock));
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {
+        while (result->next())
+        {
+            waypoint->SetCoordinates( glm::vec3(
+                result->getDouble("x_coordinate"),
+                result->getDouble("y_coordinate"),
+                result->getDouble("z_coordinate")), lock);
+            //waypoint->SetLocationNetworkId(result->getUInt("scene_id"));
+            string custom_string = result->getString("name");
+            waypoint->SetName(wstring(begin(custom_string), end(custom_string)), lock);
+            waypoint->SetPlanet(result->getString("planet"), lock);
+
+            result->getUInt("is_active") == 0 ? waypoint->DeActivate(lock) : waypoint->Activate(lock);
+            waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")), lock);
+        }
+    } while(statement->getMoreResults());
+}
+
 void WaypointFactory::RegisterEventHandlers()
 {
-	event_dispatcher_->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    auto event_dispatcher = GetEventDispatcher();
+    event_dispatcher->Subscribe("Waypoint::Activated", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Waypoint::DeActivated", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Waypoint::Coordinates", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Waypoint::Name", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
 }
+
 void WaypointFactory::PersistChangedObjects()
 {
 	std::set<shared_ptr<Object>> persisted;
@@ -46,61 +84,41 @@ void WaypointFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
-void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shared_ptr<sql::ResultSet> result_set)
-{
-    while (result_set->next())
-    {
-        auto waypoint = make_shared<Waypoint>();
-        waypoint->SetObjectId(result_set->getUInt64("id"));
-        waypoint->SetCoordinates( glm::vec3(
-            result_set->getDouble("x_position"),
-            result_set->getDouble("y_position"), 
-            result_set->getDouble("z_position"))
-            );
-        waypoint->SetLocationNetworkId(result_set->getUInt("scene_id"));
-        string custom_string = result_set->getString("custom_name");
-        waypoint->SetName(wstring(begin(custom_string), end(custom_string)));
-        uint16_t activated = result_set->getUInt("active");
-        activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
-        waypoint->SetColorByte(result_set->getUInt("color"));
-            
-        player->AddWaypoint(move(PlayerWaypointSerializer(waypoint)));
-    }
-}
-
-uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	uint32_t counter = 1;
-    if (object)
+	
+    if (object) 
     {
+        IntangibleFactory::PersistObject(object, lock, persist_inherited);
+
         try 
         {			
             auto waypoint = static_pointer_cast<Waypoint>(object);
-            auto conn = db_manager_->getConnection("galaxy");
-            auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?,?,?,?,?);");
-            statement->setDouble(counter++,waypoint->GetComplexity());
-            statement->setString(counter++, waypoint->GetStfNameFile());
-            statement->setString(counter++, waypoint->GetStfNameString());
+            auto conn = GetDatabaseManager()->getConnection("galaxy");
+            auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?);");
 
-            auto custom_name = waypoint->GetCustomName();
-            statement->setString(counter++, string(begin(custom_name), end(custom_name)));
+            auto container = waypoint->GetContainer(lock);
 
-            statement->setUInt(counter++, waypoint->GetVolume());
-
-            auto coords = waypoint->GetCoordinates();
+            statement->setUInt64(counter++, waypoint->GetObjectId(lock));
+            statement->setUInt64(counter++, container->GetObjectId());
+            auto coords = waypoint->GetCoordinates(lock);
             statement->setDouble(counter++, coords.x);
             statement->setDouble(counter++, coords.y);
             statement->setDouble(counter++, coords.z);
-            statement->setUInt(counter++, waypoint->GetActiveFlag());
-            statement->setString(counter++, waypoint->GetPlanet());
-            statement->setString(counter++, waypoint->GetNameStandard());
-            statement->setString(counter++, waypoint->GetColor());
-            statement->execute();
-						
+            statement->setUInt(counter++, waypoint->GetActiveFlag(lock));
+            statement->setString(counter++, waypoint->GetPlanet(lock));
+            statement->setString(counter++, waypoint->GetNameStandard(lock));
+            statement->setUInt(counter++, waypoint->GetColor(lock));
+            statement->execute();						
         }
             catch(sql::SQLException &e)
         {
@@ -116,38 +134,8 @@ void WaypointFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 	ObjectFactory::DeleteObjectFromStorage(object);
 }
 
-shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
+shared_ptr<Object> WaypointFactory::CreateObject()
 {
-    auto waypoint = make_shared<Waypoint>();
-    waypoint->SetObjectId(object_id);
-    try{
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        stringstream ss;
-        ss << "CALL sp_GetWaypoint(" << object_id << ");";
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
-        CreateBaseObjectFromStorage(waypoint, result);
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-            while (result->next())
-            {
-			    uint16_t activated = result->getUInt("active");
-                activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
-                waypoint->SetColor(result->getString("color"));
-            }
-        }
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-    return waypoint;
-}
-
-shared_ptr<Object> WaypointFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
-{
-	//@TODO: Create me with help from db
 	return make_shared<Waypoint>();
 }
+

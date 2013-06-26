@@ -2,10 +2,10 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/connection/providers/session_provider_interface.h"
+#include "swganh_core/connection/providers/session_provider_interface.h"
 #include <memory>
 
-namespace swganh { namespace database { class DatabaseManagerInterface; 
+namespace swganh { namespace database { class DatabaseManager; 
 }}  // swganh::database
 
 namespace swganh {
@@ -19,7 +19,7 @@ public:
 	/**
 	* Creates a new instance
 	*/
-    explicit MysqlSessionProvider(swganh::database::DatabaseManagerInterface* db_manager);
+    explicit MysqlSessionProvider(swganh::database::DatabaseManager* db_manager);
 
 	/**
 	* Returns the id of a player based on account_id
@@ -41,7 +41,7 @@ public:
 	*/
 	virtual void EndGameSession(uint64_t player_id);
 private:
-    swganh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManager* db_manager_;
 };
 
 }}  // namespace swganh::login

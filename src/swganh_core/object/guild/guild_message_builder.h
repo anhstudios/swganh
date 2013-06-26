@@ -17,8 +17,6 @@ namespace object {
     // Forward Declarations
     class Tangible;
 
-
-
 class Guild;
 class GuildMessageBuilder : public ObjectMessageBuilder
 {
@@ -28,17 +26,18 @@ public:
     {
         RegisterEventHandlers();
     }
-    virtual void RegisterEventHandlers();
+
     // deltas
     static void BuildGuildTagsDelta(const std::shared_ptr<Guild>& guild);
 
-	virtual void SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
-
     // baselines
-    static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Guild>& guild);
-    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Guild>& guild);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Guild>& guild, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Guild>& guild, boost::unique_lock<boost::mutex>& lock);
+
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
+
+    void RegisterEventHandlers();
 };
 
 }} // swganh::object

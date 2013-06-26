@@ -13,6 +13,8 @@ namespace messages {
       
     struct BaseSwgMessage 
     {
+		virtual ~BaseSwgMessage() {}
+	
 		virtual uint16_t Opcount() const = 0;
 		virtual uint32_t Opcode() const = 0;
 		virtual void OnSerialize(swganh::ByteBuffer& buffer) const = 0;
@@ -37,7 +39,7 @@ namespace messages {
     
             if (opcount != Opcount() && opcode != Opcode())
             {
-                assert(true && "Opcodes don't match, expected: " + Opcode());
+                assert(true && "Opcodes don't match");
                 return;
             }
             

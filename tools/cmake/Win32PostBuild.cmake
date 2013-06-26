@@ -17,7 +17,7 @@ add_custom_command(
     TARGET DEPS
     POST_BUILD
     COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*-gd-*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\Debug" /D /I /Y /s
-    COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*-mt-1*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\Release" /D /I /Y /s    
+    COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*-mt-1*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\Release" /D /I /Y /s
     VERBATIM
 )
 
@@ -26,8 +26,7 @@ string(REPLACE "/" "\\" MYSQL_CONNECTOR_C_DLL_PATH "${MYSQL_CONNECTOR_C_DLL_PATH
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\Debug\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
-    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\opt\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\$\(Configuration\)\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
     VERBATIM
 )
 
@@ -56,9 +55,9 @@ add_custom_command(
     POST_BUILD
     COMMAND xcopy "${ZLIB_DLL_PATH}\\$\(Configuration\)\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
     VERBATIM
-)    
+)
 
-foreach(configuration ${CMAKE_CONFIGURATION_TYPES})    
+foreach(configuration ${CMAKE_CONFIGURATION_TYPES})
     if(NOT EXISTS "${PROJECT_BINARY_DIR}/bin/${configuration}/config/swganh.cfg")
     configure_file(
         "${PROJECT_SOURCE_DIR}/data/config/swganh.cfg.in"

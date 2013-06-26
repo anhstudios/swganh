@@ -23,8 +23,7 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void SendBaselines(const std::shared_ptr<Player>& player, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
-        virtual void RegisterEventHandlers();
+
         // deltas
         static void BuildStatusBitmaskDelta(const std::shared_ptr<Player>& object);
         static void BuildProfileBitmaskDelta(const std::shared_ptr<Player>& object);
@@ -54,13 +53,17 @@ namespace object {
         static void BuildCurrentDrinkDelta(const std::shared_ptr<Player>& object);
         static void BuildMaxDrinkDelta(const std::shared_ptr<Player>& object);
         static void BuildJediStateDelta(const std::shared_ptr<Player>& object);
-        // baselines
-        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Player>& object);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Player>& object);
-        static swganh::messages::BaselinesMessage BuildBaseline8(const std::shared_ptr<Player>& object);
-        static swganh::messages::BaselinesMessage BuildBaseline9(const std::shared_ptr<Player>& object);
 
+        // baselines
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline8(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline9(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+    
+    private:
         typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
+        
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

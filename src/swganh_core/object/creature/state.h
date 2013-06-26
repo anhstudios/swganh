@@ -1,0 +1,53 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
+
+namespace swganh
+{
+namespace object
+{
+
+/**
+ *
+ */
+enum State : int64_t
+{
+	NONE = 0x00,
+    COVER = 0x01,
+    COMBAT = 0x02,
+    PEACE = 0x04,
+    AIMING = 0x08,
+    ALERT = 0x10,
+    BERSERK = 0x20,
+    FEIGN_DEATH = 0x40,
+    COMBAT_ATTITUDE_EVASIVE = 0x80,
+    COMBAT_ATTITUDE_NORMAL = 0x100,
+    COMBAT_ATTITUDE_AGGRESSIVE = 0x200,
+    TUMBLING = 0x400,
+    RALLIED = 0x800,
+    STUNNED = 0x1000,
+    BLINDED = 0x2000,
+    DIZZY = 0x4000,
+    INTIMIDATED = 0x8000,
+    IMMOBILIZED = 0x10000,
+    FROZEN = 0x20000,
+    SWIMMING = 0x40000,
+    SITTING_ON_CHAIR = 0x80000,
+    CRAFTING = 0x100000,
+    GLOWING_JEDI = 0x200000,
+    MASK_SCENT = 0x400000,
+    POISONED = 0x800000,
+    BLEEDING = 0x1000000,
+    DISEASED = 0x2000000,
+    ON_FIRE = 0x4000000,
+    RIDING_MOUNT = 0x8000000,
+    MOUNTED_CREATURE = 0x10000000,
+    PILOTING_SHIP = 0x20000000,
+    SHIP_OPERATIONS = 0x40000000,
+    SHIP_GUNNER = 0x80000000,
+    SHIP_INTERIOR = 0x100000000,
+    PILOTING_POB_SHIP = 0x200000000
+};
+
+}
+}

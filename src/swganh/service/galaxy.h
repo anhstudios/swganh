@@ -16,8 +16,7 @@ public:
         ONLINE = 2,
         LOCKED = 3
     };
-    
-public:
+
     Galaxy();
 
     /*! This overloaded constructor is used when creating an instance from

@@ -17,15 +17,16 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<HarvesterInstallation>& harvester_installation, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
-        
+
         // baselines
-        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<HarvesterInstallation>& harvester_installation);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<HarvesterInstallation>& harvester_installation);
-		static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<HarvesterInstallation>& harvester_installation);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<HarvesterInstallation>& harvester_installation, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<HarvesterInstallation>& harvester_installation, boost::unique_lock<boost::mutex>& lock);
+		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<HarvesterInstallation>& harvester_installation, boost::unique_lock<boost::mutex>& lock);
+
     private:
         typedef swganh::ValueEvent<std::shared_ptr<HarvesterInstallation>> HarvesterInstallationEvent;
+
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

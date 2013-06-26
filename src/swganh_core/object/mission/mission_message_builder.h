@@ -25,8 +25,7 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
-        virtual void RegisterEventHandlers();
+
 		//deltas
 		static void BuildDifficultyLevelDelta(const std::shared_ptr<Mission>& mission);
 		static void BuildStartingLocationDelta(const std::shared_ptr<Mission>& mission);
@@ -42,10 +41,13 @@ namespace object {
 		static void BuildMissionWaypointDelta(const std::shared_ptr<Mission>& mission);
 
         // baselines
-        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Mission>& object);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Mission>& object);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Mission>& object, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Mission>& object, boost::unique_lock<boost::mutex>& lock);
+
 	private:
 		typedef swganh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
+        
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

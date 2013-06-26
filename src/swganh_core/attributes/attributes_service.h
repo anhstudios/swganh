@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "swganh/hash_string.h"
-#include "swganh/attributes/attributes_service_interface.h"
-#include "swganh/attributes/attribute_template_interface.h"
+#include "swganh/scripting/python_script.h"
+#include "swganh_core/attributes/attributes_service_interface.h"
+#include "swganh_core/attributes/attribute_template_interface.h"
 
 #include "swganh_core/messages/controllers/get_attributes_batch.h"
 
@@ -32,10 +33,6 @@ namespace object {
 
 namespace swganh {
 namespace attributes {
-	typedef std::map<
-		swganh::attributes::AttributeTemplateId, 
-		std::shared_ptr<swganh::attributes::AttributeTemplateInterface>
-	> AttributeTemplates;
 	
 	/*!
 	* Service that pushes attribute listings to the clients
@@ -44,35 +41,32 @@ namespace attributes {
     class AttributesService: public swganh::attributes::AttributesServiceInterface
     {
     public:
-
+		typedef std::map<int8_t, std::shared_ptr<AttributeTemplateInterface>> AttributeTemplateMap;
 		/*!
 		* Creates a new instance
 		*/
         explicit AttributesService(swganh::app::SwganhKernel* kernel);
-        
-		/*!
-		* Returns the service description for this service
-		*/
-		swganh::service::ServiceDescription GetServiceDescription();
+
+        virtual ~AttributesService();
 		
 		/*!
 		* @param template_id the attribute to fetch
 		* @return the attribute template associated with a particular id
 		*/
-		std::shared_ptr<swganh::attributes::AttributeTemplateInterface> GetAttributeTemplate(swganh::attributes::AttributeTemplateId template_id);
+		std::shared_ptr<swganh::attributes::AttributeTemplateInterface> GetAttributeTemplate(int8_t template_id);
         
 		/*!
 		* Adds an attribute to the lookup with the given id
 		* @param template_ the new template
 		* @param template_id_ the new template's id
 		*/
-		void SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, swganh::attributes::AttributeTemplateId template_id); 
+		void SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, int8_t template_id); 
 		
 		/*!
 		* Returns true if the given template id is bound to a template
 		* @param template_id the id to check
 		*/
-		bool HasAttributeTemplate(swganh::attributes::AttributeTemplateId template_id);
+		bool HasAttributeTemplate(int8_t template_id);
         
 		/*!
 		* Send the attributes list message for object to actor
@@ -80,7 +74,11 @@ namespace attributes {
 		* @param actor the object to send the attribute list to
 		*/
 		void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor);
+
+		std::shared_ptr<AttributeTemplateInterface> GetPythonAttributeTemplate(std::string filename);
 		
+        void Initialize();
+
 		/*!
 		* Method called on the service at start up.
 		*/
@@ -89,14 +87,13 @@ namespace attributes {
     private:		
 
 		/*!
-		* Loads a static list of attribute templates
+		* Loads a static list of attribute templates from python
 		*/
 		void LoadAttributeTemplates_();
-		
-		AttributeTemplates attribute_templates_;
-		
+		AttributeTemplateMap attribute_templates_;
+		std::vector<std::string> python_attribute_templates_;
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
-		swganh::app::SwganhKernel* kernel_;
+		swganh::app::SwganhKernel* kernel_;	
     };
 
 }}  // namespace swganh::attributes

@@ -7,20 +7,16 @@
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
-using namespace swganh::object;
-using namespace swganh::object;
 
 Group::Group()
-    : member_list_(5)
-    , difficulty_(0)
+    : difficulty_(0)
     , loot_master_(0)
     , loot_mode_(FREE_LOOT)
 {
 }
 
 Group::Group(uint32_t max_member_size)
-    : member_list_(max_member_size)
-    , difficulty_(0)
+    : difficulty_(0)
     , loot_master_(0)
     , loot_mode_(FREE_LOOT)
 {
@@ -30,91 +26,127 @@ Group::~Group()
 {
 }
 
-void Group::AddGroupMember(uint64_t member, std::string name)
-{
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		member_list_.Add(Member(member, name));
-	}
-    
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
+void Group::AddGroupMember(uint64_t member, std::string name) {
+    auto lock = AcquireLock();
+    AddGroupMember(member, name, lock);
 }
 
-void Group::RemoveGroupMember(uint64_t member)
+void Group::AddGroupMember(uint64_t member, std::string name, boost::unique_lock<boost::mutex>& lock)
 {
-	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
-			return member == x.object_id;
-		});
+	member_list_.add(Member(member, name));
+    DISPATCH(Group, Member);
+}
 
-		if(iter == end(member_list_))
-		{
-			return;
-		}
+void Group::RemoveGroupMember(uint64_t member) {
+    auto lock = AcquireLock();
+    RemoveGroupMember(member, lock);
+}
+
+void Group::RemoveGroupMember(uint64_t member, boost::unique_lock<boost::mutex>& lock)
+{
+	auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
+		return member == x.object_id;
+	});
+
+	if(iter == end(member_list_))
+	{
+		return;
+	}
         
-		member_list_.Remove(iter);
-	}
-    
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
+	member_list_.remove(iter);
+    DISPATCH(Group, Member);
 }
     
-swganh::messages::containers::NetworkSortedVector<Member> Group::GetGroupMembers()
-{
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return member_list_;
+std::vector<Member> Group::GetGroupMembers() {
+    auto lock = AcquireLock();
+    return GetGroupMembers(lock);
 }
 
-void Group::SetLootMode(LootMode loot_mode)
+std::vector<Member> Group::GetGroupMembers(boost::unique_lock<boost::mutex>& lock)
+{
+    return member_list_.raw();
+}
+
+void Group::SerializeGroupMembers(swganh::messages::BaseSwgMessage* message) {
+    auto lock = AcquireLock();
+    SerializeGroupMembers(message, lock);
+}
+
+void Group::SerializeGroupMembers(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+{
+	member_list_.Serialize(message);
+}
+
+void Group::SetLootMode(LootMode loot_mode) {
+    auto lock = AcquireLock();
+    SetLootMode(loot_mode, lock);
+}
+
+void Group::SetLootMode(LootMode loot_mode, boost::unique_lock<boost::mutex>& lock)
 {
     loot_mode_ = loot_mode;
-
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::LootMode",static_pointer_cast<Group>(shared_from_this())));
+	DISPATCH(Group, LootMode);
 }
 
-LootMode Group::GetLootMode(void)
+LootMode Group::GetLootMode() {
+    auto lock = AcquireLock();
+    return GetLootMode(lock);
+}
+
+LootMode Group::GetLootMode(boost::unique_lock<boost::mutex>& lock)
 {
     uint32_t loot_mode = loot_mode_;
     return (LootMode)loot_mode;
 }
 
-void Group::SetDifficulty(uint16_t difficulty)
-{
-    difficulty_ = difficulty;
-
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::Difficulty",static_pointer_cast<Group>(shared_from_this())));
+void Group::SetDifficulty(uint16_t difficulty) {
+    auto lock = AcquireLock();
+    SetDifficulty(difficulty, lock);
 }
 
-uint16_t Group::GetDifficulty(void)
+void Group::SetDifficulty(uint16_t difficulty, boost::unique_lock<boost::mutex>& lock)
+{
+    difficulty_ = difficulty;
+	DISPATCH(Group, Difficulty);
+}
+
+uint16_t Group::GetDifficulty() {
+    auto lock = AcquireLock();
+    return GetDifficulty(lock);
+}
+
+uint16_t Group::GetDifficulty(boost::unique_lock<boost::mutex>& lock)
 {
     return difficulty_;
 }
 
-void Group::SetLootMaster(uint64_t loot_master)
-{
-    loot_master_ = loot_master;
-
-    GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
-        ("Group::LootMaster",static_pointer_cast<Group>(shared_from_this())));
+void Group::SetLootMaster(uint64_t loot_master) {
+    auto lock = AcquireLock();
+    SetLootMaster(loot_master, lock);
 }
 
-uint64_t Group::GetLootMaster(void)
+void Group::SetLootMaster(uint64_t loot_master, boost::unique_lock<boost::mutex>& lock)
+{
+    loot_master_ = loot_master;
+	DISPATCH(Group, LootMaster);
+}
+
+uint64_t Group::GetLootMaster() {
+    auto lock = AcquireLock();
+    return GetLootMaster(lock);
+}
+
+uint64_t Group::GetLootMaster(boost::unique_lock<boost::mutex>& lock)
 {
     return loot_master_;
 }
 
-uint16_t Group::GetCapacity(void)
-{
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return member_list_.Capacity();
+uint16_t Group::GetSize() {
+    auto lock = AcquireLock();
+    return GetSize(lock);
 }
 
-uint16_t Group::GetSize(void)
+uint16_t Group::GetSize(boost::unique_lock<boost::mutex>& lock)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return member_list_.Size();
+    return member_list_.size();
 }

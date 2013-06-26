@@ -1,22 +1,32 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "object_manager.h"
 
 #include <boost/asio.hpp>
+#include <boost/python.hpp>
 
 #include "swganh/logger.h"
 
+#include <bitset>
+#include <sstream>
+
 #include "object_factory.h"
 #include "swganh/event_dispatcher.h"
+#include "swganh/scripting/python_script.h"
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 #include "swganh/tre/visitors/slots/slot_arrangement_visitor.h"
 #include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
 #include "swganh_core/object/slot_exclusive.h"
 #include "swganh_core/object/slot_container.h"
+#include "swganh_core/object/template_interface.h"
 
-#include "swganh/database/database_manager_interface.h"
+#include "swganh/database/database_manager.h"
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -31,12 +41,16 @@
 #include "permissions/creature_container_permission.h"
 #include "permissions/ridable_permission.h"
 #include "permissions/world_cell_permission.h"
+#include "permissions/no_view_permission.h"
+
+#include "collision_data.h"
 
 using namespace std;
 using namespace swganh;
 using namespace swganh::tre;
 using namespace swganh::object;
 using namespace swganh::messages;
+namespace bp = boost::python;
 
 #define DYNAMIC_ID_START 17596481011712
 
@@ -57,25 +71,22 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 	AddContainerPermissionType_(CREATURE_PERMISSION, new CreaturePermission());
 	AddContainerPermissionType_(CREATURE_CONTAINER_PERMISSION, new CreatureContainerPermission());
 	AddContainerPermissionType_(RIDEABLE_PERMISSION, new RideablePermission());
+	AddContainerPermissionType_(NO_VIEW_PERMISSION, new NoViewPermission());
 
 	//Load slot definitions
 	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 
-	//Load Object Templates
-	auto conn = kernel->GetDatabaseManager()->getConnection("swganh_static");
-    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-    statement->execute("SELECT i.iff_template, i.object_type FROM iff_templates i WHERE i.object_type != 0;");
-	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
-
-	while(result->next())
-	{
-		std::string key = result->getString("iff_template");
-		uint32_t value = result->getUInt("object_type");
-		type_lookup_.insert(make_pair(key, value));
-	}
-
-	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
+	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(30));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
+
+	// Load the highest object_id from the db
+	unique_ptr<sql::Statement> statement(kernel_->GetDatabaseManager()->getConnection("galaxy")->createStatement());
+	auto result = unique_ptr<sql::ResultSet>(statement->executeQuery("CALL sp_GetHighestObjectId();"));
+	if (result->next())
+		next_persistent_id_ = result->getUInt64(1);
+	while(statement->getMoreResults());
+
+	LoadPythonObjectTemplates();
 }
 
 ObjectManager::~ObjectManager()
@@ -83,21 +94,23 @@ ObjectManager::~ObjectManager()
 
 void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<ObjectFactoryInterface>& factory)
 {
-    auto find_iter = factories_.find(object_type);
+	{
+		boost::lock_guard<boost::shared_mutex> lock(object_factories_mutex_);
+		auto find_iter = factories_.find(object_type);
+		if (find_iter != factories_.end())
+		{
+			throw InvalidObjectType("A factory for the specified object type already exists.");
+		}
+		factories_.insert(make_pair(object_type, factory));
+	}
 
-    if (find_iter != factories_.end())
-    {
-        throw InvalidObjectType("A factory for the specified object type already exists.");
-    }
-
-    factories_.insert(make_pair(object_type, factory));
 	factory->RegisterEventHandlers();
 }
 
 void ObjectManager::UnregisterObjectType(uint32_t object_type)
 {
+	boost::lock_guard<boost::shared_mutex> lock(object_factories_mutex_);
     auto find_iter = factories_.find(object_type);
-
     if (find_iter == factories_.end())
     {
         throw InvalidObjectType("Cannot remove a factory for an object type that has not been registered.");
@@ -107,10 +120,10 @@ void ObjectManager::UnregisterObjectType(uint32_t object_type)
 }
 void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder)
 {
+	boost::lock_guard<boost::shared_mutex> lock(object_factories_mutex_);
     auto find_iter = message_builders_.find(object_type);
     if (find_iter != end(message_builders_))
         throw InvalidObjectType("A message builder for the specified type already exists.");
-    
     message_builders_.insert(make_pair(object_type, message_builder));	
 }
 void ObjectManager::InsertObject(std::shared_ptr<swganh::object::Object> object)
@@ -123,11 +136,12 @@ void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)
 {
 	if (!e)
 	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
 		for (auto& factory : factories_)
 		{
 			factory.second->PersistChangedObjects();
 		}
-		persist_timer_->expires_from_now(boost::posix_time::minutes(5));
+		persist_timer_->expires_from_now(boost::posix_time::seconds(30));
 		persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 	}
 	else
@@ -145,8 +159,6 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
     {
         object = CreateObjectFromStorage(object_id);
 
-       
-		
 		LoadContainedObjects(object);
     }
 
@@ -196,13 +208,35 @@ void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)
 {
+    auto check_name = custom_name;
+    std::transform(std::begin(check_name), std::end(check_name), std::begin(check_name), ::towlower);
+
     boost::shared_lock<boost::shared_mutex> lock(object_map_mutex_);
 	auto find_iter = std::find_if(
         std::begin(object_map_), 
         std::end(object_map_),
-        [custom_name] (pair<uint64_t, shared_ptr<Object>> key_value)
+        [&check_name] (pair<uint64_t, shared_ptr<Object>> key_value) -> bool
     {
-		return key_value.second->GetCustomName().compare(custom_name) == 0;
+        // Names are case insensitive, normalize by converting to lowercase before comparison checks
+        auto custom_name = key_value.second->GetCustomName();
+        std::transform(std::begin(custom_name), std::end(custom_name), std::begin(custom_name), ::towlower);
+
+        if (custom_name.compare(check_name) == 0)
+        {
+            return true;
+        }
+
+        // Only first names are unique, if a complete match fails then
+        // attempt to match the first name only.
+        std::size_t pos = custom_name.find(L" ");
+        std::wstring firstname = custom_name.substr(0, pos);
+
+        if (firstname.compare(check_name) == 0)
+        {
+            return true;
+        }
+
+        return false;
 	});
 
 	if (find_iter == object_map_.end())
@@ -215,38 +249,44 @@ shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_na
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
 {
-    shared_ptr<Object> object;
+    uint32_t object_type = 0;
     
-    if (factories_.size() == 0)
-        return object;
-    
-    // lookup the type
-    uint32_t object_type = factories_[0]->LookupType(object_id);
-    auto find_iter = factories_.find(object_type);
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		object_type = factories_[0]->LookupType(object_id);
+	}
 
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot create object for an unregistered type.");
-    }
-    object = find_iter->second->CreateObjectFromStorage(object_id);
-	
-	return object;
+	return CreateObjectFromStorage(object_id, object_type);
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, uint32_t object_type)
 {
-    auto find_iter = factories_.find(object_type);
+	std::shared_ptr<ObjectFactoryInterface> factory;
 
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot create object for an unregistered type.");
-    }
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		
+        auto find_iter = factories_.find(object_type);
+		if (find_iter == factories_.end())
+		{
+			throw InvalidObjectType("Cannot create object for an unregistered type.");
+		}
 
-    return find_iter->second->CreateObjectFromStorage(object_id);
+		factory = find_iter->second;
+	}
+
+    auto object = factory->LoadFromStorage(object_id).get();
+
+    LoadSlotsForObject(object);
+    LoadCollisionInfoForObject(object);
+
+    factory->LoadContainedObjects(object);
+
+    return object;
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& template_name, 
-			PermissionType type, bool is_persisted, bool is_initialized, uint64_t object_id)
+			PermissionType type, bool is_persisted, uint64_t object_id)
 {
 	//First find the container permission
 	auto permission_itr = permissions_objects_.find(type);
@@ -258,101 +298,116 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 
 	//Then make sure we actually can create an object of this type
 	shared_ptr<Object> created_object;
-    auto template_itr = type_lookup_.find(template_name);
-	if(template_itr != type_lookup_.end())
+
+	// Call python To get Object
 	{
-		//Find that type's facory
-		auto factory_itr = factories_.find(template_itr->second);
-		if(factory_itr != factories_.end())
+		swganh::scripting::ScopedGilLock lock;
 		{
-			//Create the object with that factory
-			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
-			if(created_object != nullptr)
+			boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+			auto template_iter = object_templates_.find(template_name);
+			if (template_iter == object_templates_.end())
 			{
-				//Set the required stuff
-				created_object->SetPermissions(permission_itr->second);
-				created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
-				created_object->SetTemplate(template_name);
-				created_object->SetDatabasePersisted(is_persisted);
-				LoadSlotsForObject(created_object);
-
-				//Set the ID based on the inputs
-				if(!is_persisted)
-				{
-					if(object_id == 0)
-						created_object->SetObjectId(next_dynamic_id_++);
-					else
-						created_object->SetObjectId(object_id);
-				}
-
-				//Insert it into the object map
-				InsertObject(created_object);
+				return nullptr;	
 			}
+			created_object = bp::call<std::shared_ptr<Object>>(template_iter->second.ptr(), boost::python::ptr(kernel_));
 		}
-	}	
+	}
+
+	if(created_object != nullptr)
+	{
+		//Set the required stuff
+		created_object->SetPermissions(permission_itr->second);
+		created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
+		created_object->SetDatabasePersisted(is_persisted);
+		LoadSlotsForObject(created_object);
+		LoadCollisionInfoForObject(created_object);
+
+		//Set the ID based on the inputs
+		if(is_persisted)
+		{
+			created_object->SetObjectId(next_persistent_id_++);
+		}
+		else if(object_id == 0)
+		{
+			created_object->SetObjectId(next_dynamic_id_++);
+		}
+		else 
+		{
+			created_object->SetObjectId(object_id);
+		}
+
+		//Insert it into the object map
+		InsertObject(created_object);
+	}
 	return created_object;
 }
 
 void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)
 {
-    auto find_iter = factories_.find(object->GetType());
+	std::shared_ptr<ObjectFactoryInterface> factory;
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		auto find_iter = factories_.find(object->GetType());
+		if (find_iter == factories_.end())
+		{
+			throw InvalidObjectType("Cannot delete object from storage for an unregistered type.");
+		}
+		factory = find_iter->second;
+	}
 
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot delete object from storage for an unregistered type.");
-    }
-
-    return find_iter->second->DeleteObjectFromStorage(object);
+    return factory->DeleteObjectFromStorage(object);
 }
 
-void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
+void ObjectManager::PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited)
 {
-    auto find_iter = factories_.find(object->GetType());
+	std::shared_ptr<ObjectFactoryInterface> factory;
+	{
+		boost::shared_lock<boost::shared_mutex> lock(object_factories_mutex_);
+		auto find_iter = factories_.find(object->GetType());
+		if (find_iter == factories_.end())
+		{
+			throw InvalidObjectType("Cannot delete object from storage for an unregistered type.");
+		}
+		factory = find_iter->second;
+	}
 
-    if (find_iter == factories_.end())
+	auto lock = object->AcquireLock();
+	if(object->IsDatabasePersisted(lock))
     {
-        throw InvalidObjectType("Cannot persist object to storage for an unregistered type.");
-    }
-
-	if(object->IsDatabasePersisted())
-    {
-		find_iter->second->PersistObject(object);
+		factory->PersistObject(object, lock, persist_inherited);
 	}
 }
 
-void ObjectManager::PersistObject(uint64_t object_id)
+void ObjectManager::PersistObject(uint64_t object_id, bool persist_inherited)
 {
     auto object = GetObjectById(object_id);
-
     if (object)
     {
-        PersistObject(object);
+        PersistObject(object, persist_inherited);
     }
 }
 
-void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
+void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object, bool persist_inherited)
 {
-	
     if (object)
     {
 		// first persist the parent object
-        PersistObject(object);
+        PersistObject(object, persist_inherited);
 
 		// Now related objects
 		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> contained)
 		{
-			PersistObject(contained);
+			PersistObject(contained, persist_inherited);
 		});
     }
 }
 	
-void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id)
+void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited)
 {
     auto object = GetObjectById(parent_object_id);
-
     if (object)
     {
-        PersistRelatedObjects(object);
+        PersistRelatedObjects(object, persist_inherited);
     }
 }
 
@@ -362,54 +417,77 @@ std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefin
 	return slot_definition_;
 }
 
+void ObjectManager::LoadCollisionInfoForObject(std::shared_ptr<Object> obj)
+{
+    if(auto obj_visitor = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(obj->GetTemplate()))
+    {
+		obj_visitor->load_aggregate_data(kernel_->GetResourceManager());
+
+		if(obj_visitor->has_attribute("collisionLength") && obj_visitor->has_attribute("collisionHeight"))
+		{
+			obj->SetCollisionBoxSize(obj_visitor->attribute<float>("collisionLength") / 2.0f, obj_visitor->attribute<float>("collisionLength") / 2.0f);
+			obj->SetCollidable(true);
+		}
+		else
+			obj->SetCollidable(false);
+    }
+}
+
 void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 {
 	auto oiff = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(object->GetTemplate());
+	if(oiff == nullptr)
+		return;
+
 	oiff->load_aggregate_data(kernel_->GetResourceManager());
 
-	auto arrangmentDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotArrangementVisitor>(
-		oiff->attribute<std::string>("arrangementDescriptorFilename"));
+	if(oiff->has_attribute("arrangementDescriptorFilename") &&
+		oiff->has_attribute("slotDescriptorFilename"))
+	{
+		auto arrangmentDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotArrangementVisitor>(
+			oiff->attribute<std::string>("arrangementDescriptorFilename"));
 
-	auto slotDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotDescriptorVisitor>(
-		oiff->attribute<std::string>("slotDescriptorFilename"));
+		auto slotDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotDescriptorVisitor>(
+			oiff->attribute<std::string>("slotDescriptorFilename"));
 
-	ObjectArrangements arrangements;
+		ObjectArrangements arrangements;
 		
-	// arrangements
-	if (arrangmentDescriptor != nullptr)
-	{
-		for_each(arrangmentDescriptor->begin(), arrangmentDescriptor->end(), [&](std::vector<std::string> arrangement)
-		{			
-			std::vector<int32_t> arr;
-			for (auto& str : arrangement)
-			{
-				arr.push_back(slot_definition_->findSlotByName(str));				
-			}
-			arrangements.push_back(arr);
-		});
-	}
-	ObjectSlots descriptors;
-
-	// Globals
-	//
-	descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));
-
-	// Descriptors
-	if (slotDescriptor != nullptr)
-	{
-		for ( size_t j = 0; j < slotDescriptor->available_count(); ++j)
+		// arrangements
+		if (arrangmentDescriptor != nullptr)
 		{
-			auto descriptor = slotDescriptor->slot(j);
-			size_t id = slot_definition_->findSlotByName(descriptor);
-			auto entry = slot_definition_->entry(id);
-			if(entry.exclusive)
-				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));
-			else
-				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotContainer>(new SlotContainer())));
+			for_each(arrangmentDescriptor->begin(), arrangmentDescriptor->end(), [&](std::vector<std::string> arrangement)
+			{			
+				std::vector<int32_t> arr;
+				for (auto& str : arrangement)
+				{
+					arr.push_back(slot_definition_->findSlotByName(str));				
+				}
+				arrangements.push_back(arr);
+			});
 		}
-	}
+		ObjectSlots descriptors;
+
+		// Globals
+		//
+		descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));
+
+		// Descriptors
+		if (slotDescriptor != nullptr)
+		{
+			for ( size_t j = 0; j < slotDescriptor->available_count(); ++j)
+			{
+				auto descriptor = slotDescriptor->slot(j);
+				size_t id = slot_definition_->findSlotByName(descriptor);
+				auto entry = slot_definition_->entry(id);
+				if(entry.exclusive)
+					descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));
+				else
+					descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotContainer>(new SlotContainer())));
+			}
+		}
 	
-	object->SetSlotInformation(descriptors, arrangements);
+		object->SetSlotInformation(descriptors, arrangements);
+	}
 }
 
 PermissionsObjectMap& ObjectManager::GetPermissionsMap()
@@ -421,4 +499,15 @@ void ObjectManager::PrepareToAccomodate(uint32_t delta)
 {
 	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
 	object_map_.reserve(object_map_.size() + delta);
+}
+
+void ObjectManager::LoadPythonObjectTemplates()
+{
+    LOG(info) << "Loading Template Objects";
+    swganh::scripting::PythonScript script(kernel_->GetAppConfig().script_directory + "/load_objects.py", true);
+    
+    script.SetGlobal("kernel", bp::ptr(kernel_));
+    script.Run();
+
+    object_templates_ = script.GetGlobalAs<PythonTemplateMap>("templates");
 }

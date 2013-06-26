@@ -4,14 +4,17 @@
 #ifndef SWGANH_OBJECT_OBJECT_FACTORY_H_
 #define SWGANH_OBJECT_OBJECT_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh_core/object/object_factory_interface.h"
 #include "swganh/event_dispatcher.h"
+#include "swganh/app/swganh_kernel.h"
+
 #include <set>
+#include <boost/optional.hpp>
 #include <boost/thread/mutex.hpp>
 
 namespace swganh {
 namespace database {
-class DatabaseManagerInterface;
+class DatabaseManager;
 }} // swganh::database
 
 namespace sql {
@@ -39,41 +42,50 @@ namespace object {
     class ObjectFactory : public ObjectFactoryInterface
     {
     public:
-        ObjectFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        ObjectFactory(swganh::app::SwganhKernel* kernel);
         virtual ~ObjectFactory() {}
 
         void SetObjectManager(ObjectManager* object_manager) { object_manager_ = object_manager; }
 
-        /**
-         * Loads in base values from a result set
-         *
-         * @param the object which to load values into
-         * @param the result set from which to load the values from
-         */
-        void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
-        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object);
+        virtual std::future<std::shared_ptr<Object>> LoadFromStorage(uint64_t object_id);
+
+        virtual std::shared_ptr<Object> LoadDataFromStorage(const std::shared_ptr<sql::Connection>& connection, uint64_t object_id);
+
+        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+
+        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
         
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
-        virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
-        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted, bool db_initialized) { return nullptr; }
-        uint32_t LookupType(uint64_t object_id) const;
-		void LoadAttributes(std::shared_ptr<Object> object);
-		void PersistAttributes(std::shared_ptr<Object> object);
+
+		virtual std::shared_ptr<Object> CreateObject() { return nullptr; }
+        uint32_t LookupType(uint64_t object_id);
+        void LoadAttributes(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+		void PersistAttributes(std::shared_ptr<Object> object, boost::unique_lock<boost::mutex>& lock);
 
 		virtual void PersistChangedObjects();
 		void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
         virtual void RegisterEventHandlers();
-        void SetTreArchive(swganh::tre::TreArchive* tre_archive);
+
+		// Fiils in missing data for the object from the client file...
+		void GetClientData(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+        
+        void LoadContainedObjects(const std::shared_ptr<Object>& object);
+
+		swganh::database::DatabaseManager* GetDatabaseManager() { return kernel_->GetDatabaseManager(); }
+		swganh::EventDispatcher* GetEventDispatcher() { return kernel_->GetEventDispatcher(); }
     protected:
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
         
+        void LoadContainedObjects(const std::shared_ptr<Object>& object, const std::unique_ptr<sql::ResultSet>& result);
+
+        boost::optional<float> IsFloat(const std::string& value) const;
+        boost::optional<int64_t> IsInteger(const std::string& value) const;
+
         ObjectManager* object_manager_;
 		boost::mutex persisted_objects_mutex_;
-        swganh::database::DatabaseManagerInterface* db_manager_;   
-        swganh::EventDispatcher* event_dispatcher_;
-		std::set<std::shared_ptr<Object>> persisted_objects_;
+		swganh::app::SwganhKernel* kernel_;         
+        std::set<std::shared_ptr<Object>> persisted_objects_;
     };
 
 }}  // namespace swganh::object

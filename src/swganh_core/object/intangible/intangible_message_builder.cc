@@ -5,6 +5,7 @@
 
 #include <cstdint>
 
+#include "swganh_core/object/object_events.h"
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/intangible/intangible.h"
 
@@ -14,33 +15,24 @@ using namespace swganh::object;
 
 void IntangibleMessageBuilder::RegisterEventHandlers()
 {
-    // TODO: Register Event Handlers for Intangible
-}
-
-void IntangibleMessageBuilder::SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
-{
-	intangible->AddBaselineToCache(&BuildBaseline3(intangible));
-    intangible->AddBaselineToCache(&BuildBaseline6(intangible));
-
-	for (auto& baseline : intangible->GetBaselines())
+    event_dispatcher->Subscribe("Intangible::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
-        observer->Notify(&baseline);
-    }
-        
-    SendEndBaselines(intangible, observer);
+        auto observer_event = static_pointer_cast<ObserverEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Intangible>(observer_event->object), observer_event->observer);
+    });
 }
 
-BaselinesMessage IntangibleMessageBuilder::BuildBaseline3(const std::shared_ptr<Intangible>& intangible)
+boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline3(const std::shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(intangible, intangible->Object::VIEW_3, 5);
-	message.data.append(ObjectMessageBuilder::BuildBaseline3(intangible).data);
-	message.data.write(intangible->GetGenericInt()); 
+	auto message = CreateBaselinesMessage(intangible, lock, intangible->Object::VIEW_3, 5);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline3(intangible, lock)).data);
+	message.data.write(intangible->GetGenericInt(lock)); 
 	return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& intangible)
+boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(intangible, intangible->Object::VIEW_6, 1);
-	message.data.append(ObjectMessageBuilder::BuildBaseline6(intangible).data);
+	auto message = CreateBaselinesMessage(intangible, lock, intangible->Object::VIEW_6, 1);
+	message.data.append((*ObjectMessageBuilder::BuildBaseline6(intangible,lock)).data);
     return BaselinesMessage(std::move(message));
 }

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 #include <boost/thread/mutex.hpp>
 
@@ -19,6 +20,15 @@ namespace swganh {
 
 namespace swganh {
 namespace tre {
+
+	struct name_comp
+	{
+		bool operator()(const char* a, const char* b) const
+		{
+			return std::strcmp(a, b) < 0;
+		}
+	};
+	typedef std::map<const char*, size_t, name_comp> ResourceLookup;
 
     /**
      * TreReader is a utility class used for reading data from a single 
@@ -33,7 +43,7 @@ namespace tre {
          *
          * \param filename The filename of the archive file to be loaded.
          */
-        explicit TreReader(const std::string& filename);
+        explicit TreReader(const std::string& filename, ResourceLookup& lookup_, uint32_t index);
         ~TreReader();
 
         /**
@@ -84,26 +94,15 @@ namespace tre {
         swganh::ByteBuffer GetResource(const std::string& resource_name);
 
         void GetResource(const std::string& resource_name, swganh::ByteBuffer& buffer);
-
-        /**
-         * Returns the md5 hash of the requested resource.
-         *
-         * \param resource_name The name of the resource.
-         * \return The md5 hash of the requseted resource.
-         */
-        std::string GetMd5Hash(const std::string& resource_name) const;
     
     private:
         TreReader();
 
         void ReadHeader();
-        void ReadIndex();
+        void ReadIndex(ResourceLookup& lookup_, uint32_t index);
                 
         std::vector<TreResourceInfo> ReadResourceBlock();
         std::vector<char> ReadNameBlock();
-
-        typedef std::array<char, 16> Md5Sum;
-        std::vector<Md5Sum> ReadMd5SumBlock();
         
         void ValidateFileType(std::string file_type) const;
         void ValidateFileVersion(std::string file_version) const;
@@ -124,9 +123,8 @@ namespace tre {
 
         boost::mutex mutex_;
 
-        std::vector<TreResourceInfo> resource_block_;
+        std::map<const char*, TreResourceInfo, name_comp> resource_lookup_;
         std::vector<char> name_block_;
-        std::vector<Md5Sum> md5sum_block_;
     };
 
 }}  // namespace swganh::tre

@@ -1,12 +1,17 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "sui_service.h"
 #include "sui_window.h"
 
 #include <algorithm>
 
 #include "swganh/observer/observer_interface.h"
+#include "swganh/scripting/python_instance_creator.h"
 
 #include "swganh_core/messages/sui_create_page_message.h"
 #include "swganh_core/messages/sui_event_notification.h"
@@ -16,16 +21,14 @@
 #include "swganh_core/messages/controllers/object_menu_request.h"
 #include "swganh_core/messages/controllers/object_menu_response.h"
 
-#include "swganh/connection/connection_client_interface.h"
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/sui/sui_window_interface.h"
-#include "swganh/sui/radial_interface.h"
+#include "swganh_core/connection/connection_client_interface.h"
+#include "swganh_core/connection/connection_service_interface.h"
+#include "swganh_core/sui/sui_window_interface.h"
+#include "swganh_core/sui/radial_interface.h"
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/player/player.h"
 
-#include "swganh/simulation/simulation_service_interface.h"
-
-#include "swganh/sui/python_radial_creator.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/scripting/utilities.h"
@@ -45,11 +48,29 @@ using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::simulation;
 
+using swganh::scripting::PythonInstanceCreator;
+
 SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 	, script_directory_(kernel->GetAppConfig().script_directory + "/radials/")
 	, window_id_counter_(0)
 {
+    SetServiceDescription(ServiceDescription(
+		"SuiService",
+		"sui",
+		"0.1",
+		"127.0.0.1",
+		0,
+		0,
+		0));
+}
+
+SUIService::~SUIService()
+{}
+
+void SUIService::Initialize()
+{
+	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
 void SUIService::Startup()
@@ -60,7 +81,6 @@ void SUIService::Startup()
 	connection_service->RegisterMessageHandler(&SUIService::_handleObjectMenuSelection, this);
 	
 	// Register Radial Events
-	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 	simulation_service_->RegisterControllerHandler(&SUIService::_handleObjectMenuRequest, this);
 
 	//Subscribe to player logouts
@@ -72,6 +92,7 @@ void SUIService::Startup()
 		const auto& player = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Player>>>(incoming_event)->Get();
 		if(player != nullptr)
 		{
+			boost::lock_guard<boost::mutex> lock(sui_mutex_);
 			WindowMapRange range = window_lookup_.equal_range(player->GetObjectId());
 			window_lookup_.erase(range.first, range.second);
 		}
@@ -81,19 +102,46 @@ void SUIService::Startup()
 void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification* message)
 {
 	auto owner = client->GetController()->GetId();
-	WindowMapRange range = window_lookup_.equal_range(owner);
-	std::shared_ptr<SUIWindowInterface> result = nullptr;
-	for(auto itr=range.first; itr != range.second; ++itr)
+	std::shared_ptr<Object> owner_obj;
+
+	WindowCallbackFunction func = nullptr;
+
+	//First find the functor and the object
 	{
-		if(itr->second->GetWindowId() == message->window_id)
+		boost::lock_guard<boost::mutex> lock(sui_mutex_);
+		WindowMapRange range = window_lookup_.equal_range(owner);
+		std::shared_ptr<SUIWindowInterface> result = nullptr;
+		for(auto itr=range.first; itr != range.second; ++itr)
 		{
-			if(itr->second->GetFunctionById(message->event_type)(itr->second->GetOwner(), message->event_type, message->returnList))
+			if(itr->second->GetWindowId() == message->window_id)
 			{
-				window_lookup_.erase(itr);
+				func = itr->second->GetFunctionById(message->event_type);
+				owner_obj = itr->second->GetOwner();
+				break;
 			}
-			break;
+		};
+	}
+
+	//Now use the callback 
+	if(func != nullptr)
+	{
+		bool result = func(owner_obj, message->event_type, message->returnList);
+		
+		//If it returned true then we need to go back in and try to delete the window.
+		if(result)
+		{
+			boost::lock_guard<boost::mutex> lock(sui_mutex_);
+			WindowMapRange range = window_lookup_.equal_range(owner);
+			for(auto itr=range.first; itr != range.second; ++itr)
+			{
+				if(itr->second->GetWindowId() == message->window_id)
+				{
+					window_lookup_.erase(itr);
+					break;
+				}
+			};
 		}
-	};
+	}
 }
 
 std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::shared_ptr<Object> target)
@@ -103,11 +151,13 @@ std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::sh
 	if(target->HasAttribute("radial_filename"))
 	{
 		std::wstring filenames = target->GetAttribute<std::wstring>("radial_filename");
+
 		radial_filename.insert(radial_filename.end(), filenames.begin(), filenames.end());
+        radial_filename = kernel_->GetAppConfig().script_directory + "/" + radial_filename;
 	}
 	else
 	{
-		radial_filename.insert(0, "radials.default_radial");
+        radial_filename.insert(0, kernel_->GetAppConfig().script_directory + "/radials/default_radial.py");
 	}
 
 	//Find or build the appropriate creator
@@ -115,13 +165,15 @@ std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::sh
 	auto find_itr = radial_menus_.find(radial_filename);
 	if(find_itr == radial_menus_.end())
 	{
-		auto creator = std::make_shared<PythonRadialCreator>(radial_filename, "PyRadialMenu");
-		radial_creator = (*creator)(kernel_);
+		auto creator = std::make_shared<PythonInstanceCreator<RadialInterface>>(radial_filename, "PyRadialMenu");
+		radial_creator = (*creator)();
+        radial_creator->Initialize(kernel_);
 		radial_menus_.insert(std::make_pair(radial_filename, creator));
 	} 
 	else 
 	{
-		radial_creator = (*find_itr->second)(kernel_);
+		radial_creator = (*find_itr->second)();
+        radial_creator->Initialize(kernel_);
 	}
 	return radial_creator;
 }
@@ -136,7 +188,15 @@ void SUIService::_handleObjectMenuRequest(
 	
 	// Fill it in
 	ObjectMenuResponse response;
-	response.radial_options = GetRadialInterfaceForObject(target)->BuildRadial(controller, target, message->radial_options);
+	std::shared_ptr<RadialInterface> radial_interface;
+	{
+		boost::lock_guard<boost::mutex> lock(sui_mutex_);
+		radial_interface = GetRadialInterfaceForObject(target);
+	}
+	if (radial_interface)
+		response.radial_options = radial_interface->BuildRadial(controller, target, message->radial_options);
+	else
+		response.radial_options = message->radial_options;
 	response.owner_id = message->owner_id;
 	response.target_id = message->target_id;
 	response.response_count = message->response_count;
@@ -157,21 +217,12 @@ void SUIService::_handleObjectMenuSelection(const std::shared_ptr<swganh::connec
 	auto target = simulation_service->GetObjectById(message->object_id);
 
 	//Handle the radial.
-	GetRadialInterfaceForObject(target)->HandleRadial(requester, target, message->radial_choice);
-}
-
-ServiceDescription SUIService::GetServiceDescription()
-{
-	ServiceDescription service_description(
-		"SuiService",
-		"sui",
-		"0.1",
-		"127.0.0.1",
-		0,
-		0,
-		0);
-
-	return service_description;
+	std::shared_ptr<RadialInterface> radial_interface;
+	{
+		boost::lock_guard<boost::mutex> lock(sui_mutex_);
+		radial_interface = GetRadialInterfaceForObject(target);
+	}
+	radial_interface->HandleRadial(requester, target, message->radial_choice);
 }
 
 std::shared_ptr<SUIWindowInterface> SUIService::CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
@@ -187,10 +238,13 @@ int32_t SUIService::OpenSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 	auto owner = window->GetOwner()->GetController();
 	if(owner != nullptr)
 	{
-		window_id = window_id_counter_++;
-		window->SetWindowId(window_id);
-		window_lookup_.insert(WindowMap::value_type(window->GetOwner()->GetObjectId(), window));
-		
+		{
+			boost::lock_guard<boost::mutex> lock(sui_mutex_);
+			window_id = window_id_counter_++;
+			window->SetWindowId(window_id);
+			window_lookup_.insert(WindowMap::value_type(window->GetOwner()->GetObjectId(), window));
+		}
+
 		//Send Create to controller
 		SUICreatePageMessage create_page;
 		create_page.window_id = window_id;
@@ -243,6 +297,7 @@ int32_t SUIService::UpdateSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 //Get Window
 std::shared_ptr<SUIWindowInterface> SUIService::GetSUIWindowById(std::shared_ptr<swganh::object::Object> owner, int32_t windowId)
 {
+	boost::lock_guard<boost::mutex> lock(sui_mutex_);
 	WindowMapRange range = window_lookup_.equal_range(owner->GetObjectId());
 	std::shared_ptr<SUIWindowInterface> result = nullptr;
 	std::find_if(range.first, range.second, [&] (WindowMap::value_type& element) -> bool {
@@ -256,20 +311,39 @@ std::shared_ptr<SUIWindowInterface> SUIService::GetSUIWindowById(std::shared_ptr
 	return result;
 }
 
+std::shared_ptr<SUIWindowInterface> SUIService::GetSUIWindowByScriptName(std::shared_ptr<swganh::object::Object> owner, std::string script)
+{
+	boost::lock_guard<boost::mutex> lock(sui_mutex_);
+	WindowMapRange range = window_lookup_.equal_range(owner->GetObjectId());
+	std::shared_ptr<SUIWindowInterface> result = nullptr;
+	std::find_if(range.first, range.second, [&] (WindowMap::value_type& element) -> bool {
+		if(element.second->GetScriptName().compare(script) == 0)
+		{
+			result = element.second;
+			return true;
+		}
+		return false;
+	});
+	return result;
+}
+
 //Forcefully closes a previously opened page.
 void SUIService::CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId)
 {
-	WindowMapRange range = window_lookup_.equal_range(owner->GetObjectId());
 	std::shared_ptr<SUIWindowInterface> result = nullptr;
-	for(auto itr=range.first; itr != range.second; ++itr)
 	{
-		if(itr->second->GetWindowId() == windowId)
+		boost::lock_guard<boost::mutex> lock(sui_mutex_);
+		WindowMapRange range = window_lookup_.equal_range(owner->GetObjectId());
+		for(auto itr=range.first; itr != range.second; ++itr)
 		{
-			result = itr->second;
-			window_lookup_.erase(itr);
-			break;
-		}
-	};
+			if(itr->second->GetWindowId() == windowId)
+			{
+				result = itr->second;
+				window_lookup_.erase(itr);
+				break;
+			}
+		};
+	}
 
 	if(result != nullptr)
 	{

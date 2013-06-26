@@ -17,15 +17,18 @@
 using namespace std;
 using namespace swganh::object;
 
-CellFactory::CellFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher)
-			: IntangibleFactory(db_manager, event_dispatcher)
+CellFactory::CellFactory(swganh::app::SwganhKernel* kernel)
+    : IntangibleFactory(kernel)
+{}
+
+void CellFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
 {
+    IntangibleFactory::LoadFromStorage(connection, object, lock);
 }
 
 void CellFactory::RegisterEventHandlers()
 {
-	event_dispatcher_->Subscribe("Cell::Cell", std::bind(&CellFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Cell::Cell", std::bind(&CellFactory::PersistHandler, this, std::placeholders::_1));
 }
 
 
@@ -38,23 +41,29 @@ void CellFactory::PersistChangedObjects()
 	}
 	for (auto& object : persisted)
 	{
-		PersistObject(object);
+		auto lock = object->AcquireLock();
+		if(object->IsDatabasePersisted(lock))
+		{
+			PersistObject(object, lock);
+		}
 	}
 }
 
-uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
 	// Persist Intangible and Base Object First
     uint32_t counter = 1;
-	IntangibleFactory::PersistObject(object);
+	
+    IntangibleFactory::PersistObject(object, lock, persist_inherited);
+
 	try 
     {
-		auto conn = db_manager_->getConnection("galaxy");
+		auto conn = GetDatabaseManager()->getConnection("galaxy");
 		auto statement = shared_ptr<sql::PreparedStatement>
 			(conn->prepareStatement("CALL sp_PersistCell(?);"));
 		
 		auto cell = static_pointer_cast<Cell>(object);
-		statement->setInt(counter++, cell->GetCell());
+		statement->setInt(counter++, cell->GetCell(lock));
 		statement->executeUpdate();
 	}
 	catch(sql::SQLException &e)
@@ -70,21 +79,7 @@ void CellFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 	ObjectFactory::DeleteObjectFromStorage(object);
 }
 
-shared_ptr<Object> CellFactory::CreateObjectFromStorage(uint64_t object_id)
+shared_ptr<Object> CellFactory::CreateObject()
 {
-	//TODO: Use the db to fetch me
-    return make_shared<Cell>();
-}
-
-shared_ptr<Object> CellFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
-{
-	if(db_persisted || db_initialized)
-	{
-		//TODO: Have to hit the db to make this
-		return make_shared<Cell>();
-	}
-	else
-	{
-		return make_shared<Cell>();
-	}
+	return make_shared<Cell>();
 }

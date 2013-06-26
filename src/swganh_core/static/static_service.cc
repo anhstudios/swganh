@@ -19,20 +19,27 @@
 #include <cppconn/sqlstring.h>
 
 #include "swganh/service/service_manager.h"
-#include "swganh/object/permissions/permission_type.h"
+#include "swganh_core/object/permissions/permission_type.h"
 
-#include "swganh_core/simulation/simulation_service.h"
+#include "swganh_core/simulation/simulation_service_interface.h"
 #include "swganh_core/simulation/scene_events.h"
 #include "swganh_core/object/object.h"
 
+#include "swganh_core/spawn/spawn_service_interface.h"
+
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
+
+#include <swganh/tre/resource_manager.h>
+#include <swganh/tre/visitors/portals/pob_visitor.h>
+#include <swganh/tre/visitors/objects/object_visitor.h>
 
 using namespace swganh::object;
 using namespace swganh::statics;
 using namespace swganh::service;
 using namespace swganh::app;
 using namespace swganh::simulation;
+using namespace swganh::spawn;
 
 enum PERSISTENT_NPC_TYPE
 {
@@ -46,109 +53,152 @@ enum PERSISTENT_NPC_TYPE
 
 StaticService::StaticService(SwganhKernel* kernel)
 	: kernel_(kernel)
+    , active_(kernel->GetCpuThreadPool())
 {
 	//Static Objects
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
-		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
+        active_.Async([=] () {
+            auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
 
-		auto database_manager = kernel_->GetDatabaseManager();
-		auto conn = database_manager->getConnection("swganh_static");
+            auto database_manager = kernel_->GetDatabaseManager();
+            auto conn = database_manager->getConnection("swganh_static");
 
-		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+            auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+            auto spawn_service = kernel_->GetServiceManager()->GetService<SpawnServiceInterface>("SpawnService");
 
-		try {
+            try {
+            	std::stringstream ss;
+            	ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
 
-		std::stringstream ss;
-		ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
+            	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+            	statement->execute(ss.str());
 
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-		statement->execute(ss.str());
+            	std::unique_ptr<sql::ResultSet> result;
 
-		std::unique_ptr<sql::ResultSet> result;
+            	LOG(warning) << "Loading static data for: " << real_event->scene_label;
+            	_loadBuildings(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
 
-		LOG(warning) << "Loading static data for: " << real_event->scene_label;
-		_loadBuildings(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
+            	statement->getMoreResults();
+            	_loadCells(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
 
-		statement->getMoreResults();
-		_loadCells(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadCloneLocations(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadTerminals(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadElevatorData(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadContainers(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadTicketCollectors(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadNPCS(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-		
-		statement->getMoreResults();
-		_loadShuttles(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
+            	statement->getMoreResults();
+            	_loadCloneLocations(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
 
-		} catch(std::exception& e) {
-			LOG(warning) << e.what();
-		}
+            	statement->getMoreResults();
+            	_loadTerminals(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+
+            	statement->getMoreResults();
+            	_loadElevatorData(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+
+            	statement->getMoreResults();
+            	_loadContainers(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+
+            	statement->getMoreResults();
+            	_loadTicketCollectors(simulation_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            		real_event->scene_id, real_event->scene_label);
+
+                statement->getMoreResults();
+                _loadNPCS(simulation_service, spawn_service,  std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+                    real_event->scene_id, real_event->scene_label);
+
+                statement->getMoreResults();
+                _loadShuttles(simulation_service, spawn_service, std::unique_ptr<sql::ResultSet>(statement->getResultSet()),
+            	real_event->scene_id, real_event->scene_label);
+
+            } catch(std::exception& e) {
+            	LOG(warning) << e.what();
+            }
+
+			//@todo: remove this hardcoded spawn
+            if (real_event->scene_id-1 == 0)
+            {
+            	// Create a combat dummy
+            	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+            	auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_r2d2.iff", CREATURE_PERMISSION, false, true);
+            	if (combat_dummy)
+            	{
+            		auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
+            		creature_dummy->SetCustomName(L"R2 D2 Combat Trainer");
+            		creature_dummy->SetPvPStatus(PvPStatus_Attackable);
+            		creature_dummy->SetAllStats(50000);
+            		creature_dummy->SetPosition(glm::vec3(-146.0f, 28.0f, -4702.0f));
+            		creature_dummy->SetOrientation(glm::quat(0.0f, 1.0f, 0.0f, -0.0016f));
+            		creature_dummy->SetScale(3);
+            		simulation_service->AddObjectToScene(combat_dummy, "corellia");
+            	}
+            }
+		});
 	});
-}
 
-StaticService::~StaticService()
-{
-}
-
-ServiceDescription StaticService::GetServiceDescription()
-{
-	ServiceDescription service_description(
+    SetServiceDescription(ServiceDescription(
         "StaticService",
         "static",
         "0.1",
         "127.0.0.1",
         0,
         0,
-        0);
+        0));
+}
 
-    return service_description;
+void StaticService::Initialize()
+{}
+
+void StaticService::Startup()
+{
+	auto database_manager = kernel_->GetDatabaseManager();
+	auto conn = database_manager->getConnection("swganh_static");
+
+	std::stringstream ss;
+	ss << "CALL sp_GetStaticData();";
+
+	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+	statement->execute(ss.str());
+
+	skill_mod_manager_.Start(statement);
+}
+
+StaticService::~StaticService()
+{
 }
 
 void StaticService::_loadBuildings(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
 	simulation_service->PrepareToAccomodate(result->rowsCount());
-
+	auto file_manager = kernel_->GetResourceManager();
 	while (result->next())
 	{
 		//Load Building Row
-		auto object = simulation_service->CreateObjectFromTemplate(result->getString(9), 
-			STATIC_CONTAINER_PERMISSION, false, false, result->getInt64(1));
-			
+
+		std::string building_name = result->getString(9);
+
+		auto object = simulation_service->CreateObjectFromTemplate(building_name,
+			STATIC_CONTAINER_PERMISSION, false, result->getInt64(1));
+
+		if(object == nullptr)
+			continue;
+
+        // Note: oW and oY are currently switched because
+        // the extracted worldsnapshot data is erroneous.
 		object->SetOrientation(glm::quat(
-			static_cast<float>(result->getDouble(5)),
-			static_cast<float>(result->getDouble(2)),
 			static_cast<float>(result->getDouble(3)),
+            static_cast<float>(result->getDouble(2)),
+            static_cast<float>(result->getDouble(5)),
 			static_cast<float>(result->getDouble(4))));
 
 		object->SetPosition(glm::vec3(result->getDouble(6), result->getDouble(7), result->getDouble(8)));
 		object->SetStfName(result->getString(12), result->getString(13));
 		object->SetSceneId(scene_id);
-		object->SetInSnapshot(true);		
-			
+		object->SetInSnapshot(true);
+		object->SetDatabasePersisted(false);
+
 		//Put it into the scene
 		simulation_service->AddObjectToScene(object, scene_name);
 	}
@@ -161,11 +211,15 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
 	{
 		//Load Cells
 		auto object = simulation_service->CreateObjectFromTemplate("object/cell/shared_cell.iff",
-			WORLD_CELL_PERMISSION, false, false, result->getInt64(1));
+			WORLD_CELL_PERMISSION, false, result->getInt64(1));
+
+		if(object == nullptr)
+			continue;
 
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(true);
-		
+		object->SetDatabasePersisted(false);
+
 		auto parent = simulation_service->GetObjectById(result->getInt64(2));
 		if(parent != nullptr)
 		{
@@ -192,7 +246,10 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(11),
-			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
+
+		if(object == nullptr)
+			continue;
 
 		object->SetOrientation(glm::quat(
 			static_cast<float>(result->getDouble(6)),
@@ -202,13 +259,18 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 
 		object->SetPosition(glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9)));
 
-		object->SetStfName(result->getString(13), result->getString(12)); 
+		object->SetStfName(result->getString(13), result->getString(12));
+
+		auto location_descriptor = result->getString(14).asStdString();
+		object->SetAttribute("location_descriptor", std::wstring(location_descriptor.begin(), location_descriptor.end()));
 
 		std::string name = result->getString(16);
 		object->SetCustomName(std::wstring(name.begin(), name.end()));
 
 		if(object->GetObjectId() < 4294967297)
 			object->SetInSnapshot(true);
+
+		object->SetDatabasePersisted(false);
 
 		//Put it into the scene
 		uint64_t parent_id = result->getUInt64(2);
@@ -236,7 +298,8 @@ void StaticService::_loadElevatorData(SimulationServiceInterface* simulation_ser
 
 		uint64_t terminal_id = result->getUInt64(1);
 		auto terminal = simulation_service->GetObjectById(terminal_id);
-		terminal->SetAttribute<std::wstring>("radial_filename", L"radials.elevator");
+		if(terminal == nullptr)
+			continue;
 
 		elevator_data->dst_cell = result->getUInt64(2);
 		elevator_data->dst_orientation = glm::quat(
@@ -247,11 +310,6 @@ void StaticService::_loadElevatorData(SimulationServiceInterface* simulation_ser
 		elevator_data->dst_position = glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9));
 		elevator_data->effect_id = result->getUInt(10);
 		elevator_data->going_down = result->getUInt(11) != 0;
-
-		if(elevator_data->going_down)
-			terminal->SetAttribute<int32_t>("elevator_can_go_down", 0);
-		else
-			terminal->SetAttribute<int32_t>("elevator_can_go_up", 0);
 
 		auto find_itr = elevator_lookup_.find(terminal_id);
 		if(find_itr == elevator_lookup_.end())
@@ -277,7 +335,10 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(3),
-			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
+
+		if(object == nullptr)
+			continue;
 
 		object->SetOrientation(glm::quat(
 			static_cast<float>(result->getDouble(7)),
@@ -288,6 +349,8 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 		object->SetPosition(glm::vec3(result->getDouble(8),result->getDouble(9),result->getDouble(10)));
 
 		object->SetStfName(result->getString(13), result->getString(12));
+
+		object->SetDatabasePersisted(false);
 
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
@@ -302,10 +365,15 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		auto travel_point = result->getString(14).asStdString();
+		object->SetAttribute("travel_point", std::wstring(travel_point.begin(), travel_point.end()));
+		object->SetFlag("ticket_collector");
+		object->SetAttribute("radial_filename", L"radials/ticket_collector.py");
 	}
 }
 
-void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, SpawnServiceInterface* spawn_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
 	simulation_service->PrepareToAccomodate(result->rowsCount());
@@ -314,7 +382,10 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 	{
 		//Load NPCS
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(15),
-			CREATURE_PERMISSION, false, false, result->getUInt64(1)));
+			CREATURE_PERMISSION, false, result->getUInt64(1)));
+
+		if(object == nullptr)
+			continue;
 
 		std::string firstname = result->getString(3).asStdString(), lastname = result->getString(4).asStdString();
 
@@ -336,6 +407,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 			static_cast<float>(result->getDouble(10))));
 
 		object->SetPosition(glm::vec3(result->getDouble(12),result->getDouble(13),result->getDouble(14)));
+
 		object->SetMoodId(result->getUInt(19));
 		object->SetScale(static_cast<float>(result->getDouble(21)));
 
@@ -360,7 +432,8 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(false);
-		
+		object->SetDatabasePersisted(false);
+
 		//Put it into the scene
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
@@ -378,7 +451,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 	}
 }
 
-void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service, SpawnServiceInterface* spawn_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
 	simulation_service->PrepareToAccomodate(result->rowsCount());
@@ -386,7 +459,10 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(12),
-			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+			DEFAULT_PERMISSION, false, result->getInt64(1)));
+
+		if(object == nullptr)
+			continue;
 
 		object->SetOrientation(glm::quat(
 			static_cast<float>(result->getDouble(8)),
@@ -404,7 +480,9 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 
 		object->SetPvPStatus(PvPStatus_None);
 		object->SetOptionsMask(OPTION_NO_HAM);
-		
+
+		object->SetDatabasePersisted(false);
+
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
 		{
@@ -418,6 +496,10 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		object->SetFlag("shuttle");
+
+		spawn_service->StartManagingObject(object, L"shuttle");
 	}
 }
 
@@ -429,4 +511,14 @@ std::vector<std::shared_ptr<ElevatorData>> StaticService::GetElevatorDataForObje
 		return find_itr->second;
 	}
 	return std::vector<std::shared_ptr<ElevatorData>>();
+}
+
+std::pair<uint32_t, uint32_t> StaticService::GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+{
+	return skill_mod_manager_.GetSkillMod(creature, skill_mod_name);
+}
+
+std::map<std::string, std::pair<uint32_t, uint32_t>> StaticService::GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature)
+{
+	return skill_mod_manager_.GetSkillMods(creature);
 }

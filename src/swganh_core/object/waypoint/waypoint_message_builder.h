@@ -23,18 +23,19 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void RegisterEventHandlers();
+
 		static void BuildActivateDelta(const std::shared_ptr<Waypoint>& object);
 		static void BuildPlanetDelta(const std::shared_ptr<Waypoint>& object);
 		static void BuildCoordinatesDelta(const std::shared_ptr<Waypoint>& object);
 		static void BuildColorDelta(const std::shared_ptr<Waypoint>& object);
 
-		virtual void SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock);
+		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock);
 
-        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Waypoint>& object);
-		static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Waypoint>& object);
 	private:
 		typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
+        
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "swganh/command/command_validator_interface.h"
+#include "swganh_core/command/command_validator_interface.h"
 
 namespace swganh {
 namespace command {

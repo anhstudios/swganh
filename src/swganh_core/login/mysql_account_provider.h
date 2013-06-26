@@ -2,9 +2,9 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/login/providers/account_provider_interface.h"
+#include "swganh_core/login/providers/account_provider_interface.h"
 
-namespace swganh { namespace database { class DatabaseManagerInterface; 
+namespace swganh { namespace database { class DatabaseManager; 
 }}  // swganh::database
 
 namespace swganh {
@@ -19,7 +19,7 @@ public:
 	/**
 	* Create new instance
 	*/
-    explicit MysqlAccountProvider(swganh::database::DatabaseManagerInterface* db_manager);
+    explicit MysqlAccountProvider(swganh::database::DatabaseManager* db_manager);
 
 	/**
 	* Finds and populates an account by username
@@ -52,7 +52,7 @@ public:
 	virtual bool CreatePlayerAccount(uint64_t account_id);
 	
 private:
-    swganh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManager* db_manager_;
 };
 
 }}  // namespace swganh::login

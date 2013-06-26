@@ -3,9 +3,10 @@
 
 #pragma once
 
+#include <boost/thread/mutex.hpp>
 #include <map>
 
-#include "swganh/sui/sui_service_interface.h"
+#include "swganh_core/sui/sui_service_interface.h"
 
 namespace swganh
 {
@@ -31,6 +32,7 @@ namespace object
 {
 	class Object;
 }
+
 namespace simulation
 {
 	class SimulationServiceInterface;
@@ -38,8 +40,14 @@ namespace simulation
 
 namespace sui
 {
+	class RadialInterface;
 	class SUIWindowInterface;
-	class PythonRadialCreator;
+}
+
+namespace scripting
+{
+    template<typename T>
+    class PythonInstanceCreator;
 }
 
 namespace messages
@@ -58,9 +66,6 @@ namespace swganh
 {
 namespace sui
 {
-	
-	class RadialInterface;
-
 	typedef std::multimap<uint64_t,std::shared_ptr<swganh::sui::SUIWindowInterface>> WindowMap;
 	typedef std::pair<WindowMap::iterator, WindowMap::iterator> WindowMapRange;
 
@@ -69,8 +74,10 @@ namespace sui
 	public:
 		
 		SUIService(swganh::app::SwganhKernel* kernel);
-
-		swganh::service::ServiceDescription GetServiceDescription();
+        virtual ~SUIService();
+        
+        virtual void Initialize();
+		virtual void Startup();
 
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
 							std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
@@ -83,6 +90,8 @@ namespace sui
 
 		//Get Window
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> GetSUIWindowById(std::shared_ptr<swganh::object::Object> owner, int32_t windowId);
+
+		virtual std::shared_ptr<SUIWindowInterface> GetSUIWindowByScriptName(std::shared_ptr<swganh::object::Object> owner, std::string script);
 
 		//Forcefully closes a previously opened window.
 		virtual void CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId);
@@ -99,9 +108,7 @@ namespace sui
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateInputBox(swganh::sui::InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
 			uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
-
-		void Startup();
-
+        
 	private:
 		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification* message);
 		void _handleObjectMenuSelection(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::RadialMenuSelection* message);
@@ -112,13 +119,15 @@ namespace sui
 		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ObjectMenuRequest* message);
 		void _handlePlayerLogoutEvent();
 
-		std::map<std::string, std::shared_ptr<PythonRadialCreator>> radial_menus_;
+		std::map<std::string, std::shared_ptr<swganh::scripting::PythonInstanceCreator<RadialInterface>>> radial_menus_;
 
 		swganh::app::SwganhKernel* kernel_;
 		std::string script_directory_;
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		WindowMap window_lookup_;
 		int32_t window_id_counter_;
+
+		boost::mutex sui_mutex_;
 	};
 
 }

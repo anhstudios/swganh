@@ -22,7 +22,7 @@ namespace messages {
     	uint8_t type_displayAsCategory;
     	uint8_t type_displayAsSubcategory;
     	uint8_t type_displayAsActive;
-    }
+    };
 
     struct GetMapLocationsResponseMessage : public BaseSwgMessage
     {
@@ -48,7 +48,7 @@ namespace messages {
     			buffer.write(location.type_displayAsActive);
     		});
     		// unclear why the following lists are needed; locations will be displayed no matter the list
-    		buffer.write(blank_list1.size());
+			buffer.write(blank_list1.size());
     		std::for_each(blank_list1.begin(), blank_list1.end(), [&buffer] (MapLocation location) {
     			buffer.write(location.id);
     			buffer.write(location.name);
@@ -68,6 +68,9 @@ namespace messages {
     			buffer.write(location.type_displayAsSubcategory);
     			buffer.write(location.type_displayAsActive);
     		});
+			buffer.write<uint32_t>(0);
+			buffer.write<uint32_t>(0);
+			buffer.write<uint32_t>(0);
     	}
 
     	void OnDeserialize(swganh::ByteBuffer& buffer)

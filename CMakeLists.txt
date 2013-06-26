@@ -1,21 +1,41 @@
+# This file is part of SWGANH which is released under the MIT license.
+# See file LICENSE or go to http://swganh.com/LICENSE
 
-if(WIN32)
-    cmake_minimum_required(VERSION 2.8.7)
-else()
-    cmake_minimum_required(VERSION 2.8.5)
+# Prevent in-source builds unless they are forced. In-source builds tend to
+# pollute the source directories with generated cmake and other build related
+# files.
+
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    if(NOT DEFINED WITH_IN_SOURCE_BUILD)
+        message(FATAL_ERROR
+            "\n CMake generation for swganh is not allowed within the source directory!"
+            "\n Remove the CMakeCache.txt file and CMakeFiles directory and try again"
+            "\n from another folder, e.g.:"
+            "\n "
+            "\n    rm CMakeCache.txt"
+            "\n    rm -rf CMakeFiles"
+            "\n    mkdir build"
+            "\n    cd build"
+            "\n    cmake .."
+            "\n "
+        )
+    endif()
 endif()
+
+cmake_minimum_required(VERSION 2.8.7)
 
 project(swganh CXX)
 
 # current version
 set(swganh_VERSION_MAJOR 0)
-set(swganh_VERSION_MINOR 5)
-set(swganh_VERSION_PATCH 1)
+set(swganh_VERSION_MINOR 6)
+set(swganh_VERSION_PATCH 0)
 set(swganh_VERSION
-	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
+    ${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 
 # set the path for custom cmake scripts
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
+include(${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake/macros.cmake)
 
 #-----------------------------------------------------------------------------
 # Redirect output files
@@ -50,7 +70,7 @@ option(BUILD_DOCS
 
 option(BUILD_EXAMPLES
     "Explicitly force building of examples" OFF)
-    
+
 option(TREAT_WARNINGS_AS_ERRORS
     "Treat all warnings as errors" ON)
 
@@ -65,30 +85,48 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake_targets")
 include(CheckCXXCompilerFlag)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-    CHECK_CXX_COMPILER_FLAG(-Wno-invalid-offsetof HAS_NO_INVALID_OFFSETOF)
-    if(HAS_NO_INVALID_OFFSETOF)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
-    endif()
-
-    CHECK_CXX_COMPILER_FLAG(-Wno-write-strings HAS_NO_WRITE_STRINGS)
-    if(HAS_NO_WRITE_STRINGS)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
-    endif()
-
-    CHECK_CXX_COMPILER_FLAG(-std=c++0x HAS_CPP0X_SUPPORT)
-    IF(HAS_CPP0X_SUPPORT)
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    ENDIF()
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_ALL -Wall)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_INVALID_OFFSETOF -Wno-invalid-offsetof)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_WRITE_STRINGS -Wno-write-strings)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_CPP11_SUPPORT -Wno-invalid-offsetof)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_CPP11_SUPPORT -std=c++11)
 
     if(TREAT_WARNINGS_AS_ERRORS)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -pedantic-errors")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic-errors")
-        message(STATUS "- Treating all warnings as errors")
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_AS_ERROR -Werror)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_PEDANTIC_ERRORS -pedantic-errors)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_NO_UNUSED_ERRORS -Wno-unused-variable)
     endif()
 
     set(AdditionalBoostLibs chrono regex)
-
+    add_definitions(-DBOOST_ASIO_DISABLE_MOVE)
     find_library(PTHREAD_LIBRARY NAMES pthread)
+    find_library(DL_LIBRARY NAMES dl)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_ALL -Wall)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_WRITE_STRINGS -Wno-write-strings)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_INVALID_OFFSETOF -Wno-invalid-offsetof)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_CPP11_SUPPORT -std=c++11)
+    ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_NO_LIBCPP_SUPPORT -stdlib=libc++)
+
+    if(TREAT_WARNINGS_AS_ERRORS)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_WARN_AS_ERROR -Werror)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_PEDANTIC_ERRORS -pedantic-errors)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_NO_UNUSED_ERRORS -Wno-unused-variable)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_NO_UNNEEDED_ERRORS -Wno-unneeded-internal-declaration)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_NO_GNU_ERRORS -Wno-gnu)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_NO_ARRAY_BOUNDS_ERRORS -Wno-array-bounds)
+        ANH_CHECK_CXX_COMPILER_FLAG(CXX_WARNINGS CXX_NO_UNUSED_FUNCTION_ERRORS -Wno-unused-function)
+    endif()
+
+    set(AdditionalBoostLibs chrono regex)
+    add_definitions(-DBOOST_ASIO_DISABLE_MOVE)
+
+    if(CMAKE_GENERATOR STREQUAL Xcode)
+        set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+        set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+    endif()
 endif()
 
 if(MSVC)
@@ -111,25 +149,28 @@ if(MSVC)
     MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with dependencies")
 
     if(TREAT_WARNINGS_AS_ERRORS)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /WX")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /WX")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
         message(STATUS "- MSVC: Treating all warnings as errors")
-	endif()
+    endif()
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
 
     ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
     MESSAGE(STATUS "- BOOST: Enable dynamic linking")
-    
-    add_definitions(/D BOOST_ALL_NO_LIB)
-    message(status "- BOOST: Disable automatic linking")
-    
+
     ADD_DEFINITIONS (/D _HAS_ITERATOR_DEBUGGING=0)
     MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
-    
+
     ADD_DEFINITIONS (/D _SECURE_SCL=0)
     MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
 endif()
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_WARNINGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_WARNINGS}")
+
 # Use the static/multithreaded libraries.
+add_definitions(-DBOOST_ALL_NO_LIB)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 
@@ -144,20 +185,20 @@ if(NOT DEFINED VENDOR_PREFIX)
 endif()
 
 if(DEFINED VENDOR_PREFIX)
-    set(BOOST_ROOT ${VENDOR_PREFIX}/boost)
-    set(GLM_ROOT ${VENDOR_PREFIX}/glm)
-	set(ENV{MYSQL_DIR} ${VENDOR_PREFIX}/mysql-connector-c)
-    set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
-    set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
-    set(TURTLE_ROOT ${VENDOR_PREFIX}/turtle)
-    set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
+    set(BOOST_ROOT ${VENDOR_PREFIX})
+    set(GLM_ROOT ${VENDOR_PREFIX})
+    set(ENV{MYSQL_DIR} ${VENDOR_PREFIX})
+    set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX})
+    set(PYTHON_ROOT ${VENDOR_PREFIX})
+    set(TURTLE_ROOT ${VENDOR_PREFIX})
+    set(ZLIB_ROOT ${VENDOR_PREFIX})
 endif()
 
 if (NOT WIN32)
     find_package(TBB REQUIRED)
 endif()
 
-find_package(Boost 1.51.0 COMPONENTS date_time filesystem log log_setup program_options python3 system thread unit_test_framework ${AdditionalBoostLibs} REQUIRED)
+find_package(Boost 1.53.0 COMPONENTS date_time filesystem log_setup log program_options python3 system thread unit_test_framework ${AdditionalBoostLibs} REQUIRED)
 find_package(Glm REQUIRED)
 find_package(MysqlConnectorC REQUIRED)
 find_package(MysqlConnectorCpp REQUIRED)
@@ -179,6 +220,6 @@ if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
-if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs AND BUILD_DOCS)
     add_subdirectory(docs)
 endif()

@@ -20,8 +20,7 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void SendBaselines(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
-        virtual void RegisterEventHandlers();
+
 		//deltas
 		static void BuildSchematicQuantityDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
 		static void BuildPropertyDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
@@ -38,9 +37,12 @@ namespace object {
 		static void BuildCustomizationDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);		
 
         // baselines
-        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);		
-		static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);		
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock);		
+		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, boost::unique_lock<boost::mutex>& lock);
+
+    private:
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

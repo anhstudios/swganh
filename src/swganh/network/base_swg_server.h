@@ -19,7 +19,7 @@ namespace Concurrency {
 
 #include "swganh/byte_buffer.h"
 #include "swganh/hash_string.h"
-#include "swganh/network/soe/server.h"
+#include "swganh/network/server.h"
 
 namespace swganh {
 
@@ -31,7 +31,7 @@ namespace swganh {
 namespace swganh {
 namespace network {
 
-    class BaseSwgServer : public swganh::network::soe::Server
+    class BaseSwgServer : public Server
     {
     public:
         BaseSwgServer(boost::asio::io_service& io_service);
@@ -45,7 +45,7 @@ namespace network {
         };
 
         typedef std::function<void (
-            const std::shared_ptr<swganh::network::soe::Session>&,
+            const std::shared_ptr<Session>&,
             swganh::ByteBuffer message)
         > SwgMessageHandler;
 
@@ -54,7 +54,7 @@ namespace network {
         typedef std::runtime_error ValidClientRequired;
 
         void HandleMessage(
-            const std::shared_ptr<swganh::network::soe::Session>& connection,
+            const std::shared_ptr<Session>& connection,
             swganh::ByteBuffer message);
 
         /**
@@ -91,7 +91,7 @@ namespace network {
             auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType*>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
-                const std::shared_ptr<swganh::network::soe::Session>& client,
+                const std::shared_ptr<Session>& client,
                 swganh::ByteBuffer message)
             {
                 MessageType tmp;

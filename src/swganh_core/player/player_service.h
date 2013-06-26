@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/player/player_service_interface.h"
+#include "swganh_core/player/player_service_interface.h"
 
 #include <boost/asio.hpp>
 
@@ -10,8 +10,11 @@
 #include "swganh/event_dispatcher.h"
 
 namespace swganh {
+namespace equipment {
+	class EquipmentService;
+}
 namespace object {
-	class ObjectController;
+	class ObjectController;	
 } // object
 namespace simulation {
 	class SimulationServiceInterface;
@@ -31,15 +34,10 @@ public:
 	*/
 	PlayerService(swganh::app::SwganhKernel* kernel);
 		
-	/**
-	* Called on startup
-	*/
-	void Startup();
+    ~PlayerService();
 
-	/**
-	* @return the service description for this service
-	*/
-	swganh::service::ServiceDescription GetServiceDescription();
+	void Initialize();
+	void Startup();
 
 	/**
 	* Called when a player enters the game
@@ -50,6 +48,23 @@ public:
 	* Called when a player exits the game
 	*/
 	void OnPlayerExit(std::shared_ptr<swganh::object::Player> player);
+
+	/**
+	 *  Send Tip
+	 */
+	void SendTip(const std::shared_ptr<swganh::object::Creature>& from, const std::shared_ptr<swganh::object::Creature>& to, uint32_t amount, bool bank = false);
+
+	/**
+	 *  Open Container
+	 */
+	virtual void OpenContainer(const std::shared_ptr<swganh::object::Creature>& owner, std::shared_ptr<swganh::object::Object> object);
+
+	virtual bool HasCalledMount(std::shared_ptr<swganh::object::Creature> owner);
+
+	virtual void StoreAllCalledMounts(std::shared_ptr<swganh::object::Creature> owner);
+	
+	virtual void StoreAllCalledObjects(std::shared_ptr<swganh::object::Creature> owner);
+
 private:
 	void RemoveClientTimerHandler_(
 		const boost::system::error_code& e, 
@@ -58,9 +73,8 @@ private:
 		std::shared_ptr<swganh::object::ObjectController> controller);
 
 	swganh::app::SwganhKernel* kernel_;
+	swganh::equipment::EquipmentService* equipment_service_;
 	swganh::simulation::SimulationServiceInterface* simulation_service_;
-	swganh::CallbackId player_selected_callback_;
-	swganh::CallbackId player_removed_;
 };
 
 }} // swganh::player

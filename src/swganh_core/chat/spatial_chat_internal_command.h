@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "swganh/command/base_swg_command.h"
+#include "swganh_core/command/base_swg_command.h"
 
 namespace swganh {
 namespace chat {
@@ -18,17 +18,19 @@ namespace chat {
     {
     public:
 
+        virtual std::string GetCommandName() const { return "spatialchatinternal"; }
+
 		/**
 			Creates a new instance
 		*/
-        SpatialChatInternalCommand(
+        virtual void Initialize(
             swganh::app::SwganhKernel* kernel,
             const swganh::command::CommandProperties& properties);
 
 		/**
 		* Runs this command
 		*/
-        virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
+        virtual void Run();
 
     private:
         ChatService* chat_service_;

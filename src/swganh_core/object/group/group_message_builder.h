@@ -30,19 +30,20 @@ public:
     {
         RegisterEventHandlers();
     }
+
     // deltas
-    virtual void RegisterEventHandlers();
     static void BuildMemberListDelta(const std::shared_ptr<Group>& group);
     static void BuildLootModeDelta(const std::shared_ptr<Group>& group);
     static void BuildDifficultyDelta(const std::shared_ptr<Group>& group);
     static void BuildLootMasterDelta(const std::shared_ptr<Group>& group);
 
-    virtual void SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
+	static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock);
 
-	static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Group>& group);
-    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Group>& group);
 private:
 	typedef swganh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
+    
+    void RegisterEventHandlers();
 };
 
 }} // swganh::object

@@ -22,7 +22,7 @@
 #include <boost/program_options.hpp>
 
 #include "swganh/logger.h"
-#include "swganh/database/database_manager_interface.h"
+#include "swganh/database/database_manager.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh/plugin/plugin_manager.h"
 #include "swganh/service/datastore.h"
@@ -30,12 +30,6 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/combat/combat_service_interface.h"
-#include "swganh/chat/chat_service_interface.h"
-#include "swganh/character/character_service_interface.h"
-#include "swganh/login/login_service_interface.h"
-#include "swganh/connection/connection_service_interface.h"
-#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/scripting/utilities.h"
 
 #include "version.h"
@@ -45,12 +39,6 @@ using namespace boost::program_options;
 using namespace std;
 using namespace swganh;
 using namespace swganh::app;
-using namespace swganh::chat;
-using namespace swganh::login;
-using namespace swganh::character;
-using namespace swganh::connection;
-using namespace swganh::simulation;
-using namespace swganh::galaxy;
 
 using swganh::plugin::RegistrationMap;
 
@@ -70,8 +58,8 @@ options_description AppConfig::BuildConfigDescription() {
     desc.add_options()
         ("help,h", "Display help message and config options")
 
-		("server_mode", boost::program_options::value<std::string>(&server_mode)->default_value("all"),
-			"Specifies the service configuration mode to run the server in.")
+        ("server_mode", boost::program_options::value<std::string>(&server_mode)->default_value("all"),
+            "Specifies the service configuration mode to run the server in.")
 
         ("plugin,p", boost::program_options::value<std::vector<std::string>>(&plugins),
             "Only used when single_server_mode is disabled, loads a module of the specified name")
@@ -89,6 +77,18 @@ options_description AppConfig::BuildConfigDescription() {
             
         ("resource_cache_size", boost::program_options::value<uint32_t>(&resource_cache_size),
             "Available cache size for the resource manager (in Megabytes)")
+       
+		("io_threads", value<uint32_t>(&io_threads)->default_value(boost::thread::hardware_concurrency()),
+			"Total number of threads to allocate for io management.")
+
+        ("db_threads", value<uint32_t>(&db_threads)->default_value(2),
+            "Total number of threads to allocate for database management")
+
+        ("io_threads", value<uint32_t>(&io_threads)->default_value(2),
+            "Total number of threads to allocate for pulling threads off the wire")
+
+        ("cpu_threads", value<uint32_t>(&cpu_threads)->default_value(boost::thread::hardware_concurrency()),
+            "Total number of threads to allocate for processing.")
 
         ("db.galaxy_manager.host", boost::program_options::value<std::string>(&galaxy_manager_db.host),
             "Host address for the galaxy_manager datastore")
@@ -139,16 +139,22 @@ options_description AppConfig::BuildConfigDescription() {
             "The port the connection service will listen for incoming client connections on")
         ("service.connection.address", boost::program_options::value<string>(&connection_config.listen_address),
             "The public address the connection service will listen for incoming client connections on")
+
+            
+        ("service.simulation.scene", boost::program_options::value<std::vector<std::string>>(&scenes),
+            "Loads the specified scene, can have multiple scenes")
     ;
 
     return desc;
 }
 
 SwganhApp::SwganhApp(int argc, char* argv[])
-    : io_service_()
-    , io_work_(new boost::asio::io_service::work(io_service_))
+    : io_pool_()
+	, cpu_pool_()
+    , io_work_(new boost::asio::io_service::work(io_pool_))
+	, cpu_work_(new boost::asio::io_service::work(cpu_pool_))
 {
-    kernel_ = make_shared<SwganhKernel>(io_service_);
+    kernel_ = make_shared<SwganhKernel>(io_pool_, cpu_pool_);
     running_ = false;
     initialized_ = false;
 
@@ -163,9 +169,11 @@ SwganhApp::~SwganhApp()
 	kernel_->Shutdown();
 
 	io_work_.reset();
+	cpu_work_.reset();
 	
 	// join the threadpool threads until each one has exited.
-	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&std::thread::join));
+	for_each(cpu_threads_.begin(), cpu_threads_.end(), std::mem_fn(&std::thread::join));
 
 	kernel_.reset();
 }
@@ -184,7 +192,7 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 	std::cout << "      \"888 88888P Y88888 888    888   d88P   888 888  Y88888 888    888 " << std::endl;
 	std::cout << "Y88b  d88P 8888P   Y8888 Y88b  d88P  d8888888888 888   Y8888 888    888 " << std::endl;
 	std::cout << " \"Y8888P\"  888P     Y888  \"Y8888P88 d88P     888 888    Y888 888    888 " << std::endl << std::endl;
-	std::cout << "                             Release 0.5.1 "<< std::endl << std::endl << std::endl;
+	std::cout << "                             Release " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << " "<< std::endl << std::endl << std::endl;
  
     
     // Load the configuration    
@@ -237,7 +245,8 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     // Load core services
     LoadCoreServices_();
-    
+   
+
     initialized_ = true;
 }
 
@@ -248,28 +257,55 @@ void SwganhApp::Start() {
 
     running_ = true;
 
-    // Start up a threadpool for running io_service based tasks/active objects
-    // The increment starts at 2 because the main thread of execution already counts
-    // as thread in use as does the console thread.
-    for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
-        boost::thread t([this] () {
-            io_service_.run();
-        });
-        
-#ifdef _WIN32
-        SetPriorityClass(t.native_handle(), REALTIME_PRIORITY_CLASS);
-#endif
+	//Create a number of threads to pull packets off the wire.
+	for (uint32_t i = 0; i < kernel_->GetAppConfig().io_threads; ++i) 
+    {
+        io_threads_.emplace_back([this] () 
+        {
+			//Continue looping despite errors.
+			//If we successfully leave the run method we return.
+			while(true)
+			{
+				try
+				{
+					io_pool_.run();
+					return;
+				} 
+				catch(...) 
+				{
+					LOG(severity_level::error) << "A near fatal exception has occurred.";
+				}
+			}
+		});
+    }
 
-        io_threads_.push_back(move(t));
+	for (uint32_t i = 0; i < kernel_->GetAppConfig().cpu_threads; ++i) {
+        cpu_threads_.emplace_back([this] () {
+			//Continue looping despite errors.
+			//If we successfully leave the run method we return.
+			while(true)
+			{
+				try
+				{
+					cpu_pool_.run();
+					return;
+				} 
+				catch(...) 
+				{
+					LOG(severity_level::error) << "A near fatal exception has occurred.";
+				}
+			}
+		});
     }
     
     kernel_->GetServiceManager()->Start();
 
+    kernel_->GetEventDispatcher()->Dispatch(std::make_shared<BaseEvent>("Core::ApplicationInitComplete"));
 	//Now that services are started, start the scenes.
-	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	//auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 	
 	//Ground Zones
-	simulation_service->StartScene("corellia");
+	//simulation_service->StartScene("corellia");
 	//simulation_service->StartScene("dantooine");
 	//simulation_service->StartScene("dathomir");
 	//simulation_service->StartScene("endor");
@@ -410,8 +446,6 @@ void SwganhApp::LoadCoreServices_()
 			LOG(info) << "Loaded Service " << name;
         }
     });
-
-    auto app_config = kernel_->GetAppConfig();
 }
 
 void SwganhApp::SetupLogging_()

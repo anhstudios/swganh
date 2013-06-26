@@ -2,7 +2,12 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #include "filter_slope.h"
 
+#include <cmath>
+
+#ifndef M_PI
 #define M_PI 3.14159265358979323846
+#endif
+
 #define MODIFIER 0.005555555690079927
 
 using namespace swganh::tre;
@@ -31,14 +36,14 @@ void SlopeFilter::SetMinAngle(float new_angle)
 	if (new_angle >= 0) {
 		if (new_angle <= default_value) {
 			min_angle = new_angle;
-			max = sin(default_value - new_angle);
+			max = std::sin(default_value - new_angle);
 		} else {
 			min_angle = default_value;
 			max = 0;
 		}
 	} else {
 		min_angle = 0;
-		max = sin(default_value);
+		max = std::sin(default_value);
 	}
 }
 
@@ -47,14 +52,14 @@ void SlopeFilter::SetMaxAngle(float new_angle)
 	if (new_angle >= 0) {
 		if (new_angle <= default_value) {
 			max_angle = new_angle;
-			min = sin(default_value - new_angle);
+			min = std::sin(default_value - new_angle);
 		} else {
 			max_angle = default_value;
 			min = 0;
 		}
 	} else {
 		max_angle = 0;
-		min = sin(default_value);
+		min = std::sin(default_value);
 	}
 }
 

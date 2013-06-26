@@ -38,5 +38,5 @@ def handleElevatorAction(self, target, owner, expected_elevator_action, effect_n
 			#Move the player
 			destination_cell = simulation_service.findObjectById(data.dst_cell)
 			new_position = vector3(owner.position.x, data.dst_position.y, owner.position.z)
-			owner.updatePosition(destination_cell, new_position, owner.orientation)
+			owner.updatePosition(new_position, owner.orientation, destination_cell)
 			SystemMessage.sendEffect(owner, effect_name, data.dst_orientation, data.dst_position)

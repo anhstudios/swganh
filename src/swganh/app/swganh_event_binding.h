@@ -8,7 +8,7 @@
 
 #include "swganh_kernel.h"
 
-#include "swganh/python_shared_ptr.h"
+#include "swganh/scripting/python_shared_ptr.h"
 
 #include "swganh/scripting/python_event.h"
 

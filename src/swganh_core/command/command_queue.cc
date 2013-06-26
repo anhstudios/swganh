@@ -9,9 +9,9 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/command/base_swg_command.h"
-#include "swganh/command/command_interface.h"
-#include "swganh/command/command_service_interface.h"
+#include "swganh_core/command/base_swg_command.h"
+#include "swganh_core/command/command_interface.h"
+#include "swganh_core/command/command_service_interface.h"
 
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
@@ -22,18 +22,16 @@
 using swganh::command::CommandQueue;
 using swganh::command::CommandService;
 using swganh::command::BaseSwgCommand;
-using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
 
 using swganh::object::Tangible;
 
 CommandQueue::CommandQueue(
     swganh::app::SwganhKernel* kernel)
-    : kernel_(kernel)
-    , timer_(kernel->GetIoService())
+    : timer_(kernel->GetCpuThreadPool())
     , processing_(false)
     , default_command_(nullptr)
-    , active_(kernel->GetIoService())
+    , active_(kernel->GetCpuThreadPool())
 {
     command_service_ = kernel->GetServiceManager()->GetService<CommandService>("CommandService");
 }
@@ -105,17 +103,20 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
         {
             if (command->Validate())
             {
-		        auto callback = command->Run();
-                if (callback)
-                {
-                    HandleCallback(*callback);
-                }
+		        command->Run();
+				command->PostRun(true);
             }
             else
             {
+                LOG(warning) << "Invalid Command: " <<  command->GetCommandName();
                 action = 1; // indicates a general error
+				command->PostRun(false);
             }
         }
+		else
+		{
+			command->PostRun(false);
+		}
 
         command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
     } catch(const std::exception& e) {
@@ -136,7 +137,8 @@ void CommandQueue::Notify()
             ProcessCommand(command);
 
 			std::shared_ptr<swganh::object::Creature> actor = std::static_pointer_cast<swganh::object::Creature>(command->GetActor());
-            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>((actor->HasState(swganh::object::COMBAT)) ? command->GetDefaultTime() * 1000 : 0)));
+			uint64_t default_time = actor->HasState(swganh::object::COMBAT) ? static_cast<uint64_t>(command->GetDefaultTime() * 1000) : 0;
+			timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(default_time)));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
                 if (!ec && this)
@@ -156,19 +158,6 @@ void CommandQueue::Notify()
             processing_ = false;
         }
     }		
-}
-
-void CommandQueue::HandleCallback(std::shared_ptr<CommandCallback> callback)
-{    
-    active_.AsyncDelayed(boost::posix_time::milliseconds(callback->GetDelayTimeInMs()),
-        [this, callback] ()
-    {
-        auto new_callback = (*callback)();
-        if (new_callback)
-        {
-            HandleCallback(*new_callback);
-        }
-    });
 }
 
 std::shared_ptr<swganh::command::BaseSwgCommand> CommandQueue::GetNextCommand()

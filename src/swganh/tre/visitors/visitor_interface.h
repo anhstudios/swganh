@@ -20,6 +20,8 @@ namespace tre
 	{
 	public:
 
+		virtual ~VisitorInterface() {}
+
 		/**
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.

@@ -2,11 +2,12 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/character/character_provider_interface.h"
+#include "swganh_core/character/character_provider_interface.h"
+#include "character_create.h"
 
 namespace swganh {
 namespace app {
-class KernelInterface;
+class SwganhKernel;
 }}  // namespace swganh::app
 
 namespace swganh {
@@ -17,7 +18,7 @@ namespace character {
 */
 class MysqlCharacterProvider : public swganh::character::CharacterProviderInterface{
 public:
-    explicit MysqlCharacterProvider(swganh::app::KernelInterface* kernel);
+    explicit MysqlCharacterProvider(swganh::app::SwganhKernel* kernel);
     ~MysqlCharacterProvider(){};
 
 	/**
@@ -54,6 +55,11 @@ public:
 	*   On failure, it returns the 0 and the string of the error that occurred
 	*/
     virtual std::tuple<uint64_t, std::string> CreateCharacter(const swganh::messages::ClientCreateCharacter& character_info, uint32_t account_id);
+
+	/**
+	 * 
+	 *
+	 */
 	
 	/**
 	* Checks if a particular name is allowed to be used
@@ -67,7 +73,7 @@ public:
 	/**
 	* Returns the object_id of the character with the given name
 	* @param name the name to search for
-	* @return the id of the character or 0 of not found
+	* @return the id of the character or 0 if not found
 	*/
     virtual uint64_t GetCharacterIdByName(const std::string& name);
 
@@ -77,8 +83,9 @@ private:
 	* @returns the string for the given mysql implementation-specific bad name error code
 	*/
     std::string getCharacterCreateErrorCode_(uint32_t error_code);
-	
-    swganh::app::KernelInterface* kernel_;
+
+    swganh::app::SwganhKernel* kernel_;
+	PyCharacterCreate py_character_create_;
 	std::vector<std::string> reserved_names_;
 	std::vector<std::string> developer_names_;
 	std::vector<std::string> profane_names_;

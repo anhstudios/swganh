@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/galaxy/galaxy_service_interface.h"
+#include "swganh_core/galaxy/galaxy_service_interface.h"
 
 namespace swganh {
 namespace galaxy {
@@ -33,15 +33,11 @@ public:
 	* @return the current time of the galaxy since galaxy birth
 	*/
 	uint64_t GetGalaxyTimeInMilliseconds();
-
-	/**
-	* @return the description of the service
-	*/
-    swganh::service::ServiceDescription GetServiceDescription();
         
 	/**
 	* Called on server startup
 	*/
+    void Initialize();
     void Startup();
 
 private:

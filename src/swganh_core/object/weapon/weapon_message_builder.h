@@ -19,14 +19,15 @@ namespace object {
         {
             RegisterEventHandlers();
         }
-        virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<Weapon>& weapon, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
-        
+
         // baselines
-        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Weapon>& weapon);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Weapon>& weapon);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Weapon>& weapon, boost::unique_lock<boost::mutex>& lock);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Weapon>& weapon, boost::unique_lock<boost::mutex>& lock);
+
     private:
         typedef swganh::ValueEvent<std::shared_ptr<Weapon>> WeaponEvent;
+        
+        void RegisterEventHandlers();
     };
 
 }}  // swganh::object

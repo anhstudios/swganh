@@ -1,13 +1,34 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
 #pragma once
 
+#include "swganh_core/spawn/finite_state_machine_interface.h"
+
+#include <atomic>
 #include <map>
-#include <swganh/event_dispatcher.h>
+#include <set>
+#include <thread>
+#include <boost/thread/mutex.hpp>
+
+#include <boost/asio.hpp>
+
+namespace boost
+{
+namespace asio
+{
+class io_service;
+}
+
+class thread;
+}
 
 namespace swganh
 {
+namespace app
+{
+	class SwganhKernel;
+}
+
 namespace object
 {
 	class Object;
@@ -15,37 +36,43 @@ namespace object
 
 namespace spawn
 {
-	typedef std::function<void(std::shared_ptr<EventInterface>,std::shared_ptr<swganh::object::Object>)> TransitionHandler;
-
+	class FsmBundleInterface;
 	class FsmStateInterface;
-	
-	struct StateTransition
-	{
-		std::shared_ptr<FsmStateInterface> start_state_;
-		TransitionHandler handler_;
-		std::shared_ptr<FsmStateInterface> end_state_;
-	};
+	class FsmController;
 
-	class FiniteStateMachine
+	typedef std::function<std::shared_ptr<FsmController>(FiniteStateMachineInterface*, std::shared_ptr<swganh::object::Object>, 
+						std::shared_ptr<FsmStateInterface>)> ControllerFactory;
+
+	class FiniteStateMachine : public FiniteStateMachineInterface
 	{
 	public:
-		FiniteStateMachine(swganh::EventDispatcher* dispatch);
-		
+	
+		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, 
+			std::shared_ptr<FsmStateInterface> initial_state,
+			ControllerFactory controller_factory);
+
+		~FiniteStateMachine();
+
 		void StartManagingObject(std::shared_ptr<swganh::object::Object> object);
-		
 		void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
-		
-		void AddTransition(std::shared_ptr<FsmStateInterface> start_state, 
-			EventType event_type, TransitionHandler handler, std::shared_ptr<FsmStateInterface> end_state);
-	
+
+		void MarkDirty(std::shared_ptr<FsmController> controller_);
+
+		swganh::app::SwganhKernel* GetKernel() { return kernel_; }
+
 	private:
-		void HandleEvent_(const std::shared_ptr<EventInterface>& event);
-	
-		swganh::EventDispatcher* dispatch_;
+
+		void HandleDispatch(const boost::system::error_code& error);
+		
+		boost::mutex mutex_;
+
+		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;
+
+		ControllerFactory controller_factory_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
-	
-		std::multi_map<EventType, StateTransition> transitionLookup_;
-		std::multi_map<std::shared_ptr<FsmStateInterface>, std::shared_ptr<swganh::object::Object>> managed_objects_;
+
+		boost::asio::deadline_timer machine_cleaner_;
+		swganh::app::SwganhKernel* kernel_;
 	};
 }
 }

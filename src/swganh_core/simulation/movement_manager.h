@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/simulation/movement_manager_interface.h"
+#include "swganh_core/simulation/movement_manager_interface.h"
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -36,8 +36,10 @@ public:
 	/*
 	* Creates a new instance
 	*/
-	explicit MovementManager(swganh::app::SwganhKernel* kernel);
+	explicit MovementManager(swganh::app::SwganhKernel* kernel, std::string scene_name);
 
+    virtual ~MovementManager() {}
+    
 	/*
 	* Handles the normal data transform (used while outside).
 	*/
@@ -56,15 +58,11 @@ public:
 	* Used internally for server movements (ie: NPCS)
 	*/
 	void HandleDataTransformServer(
-		const std::shared_ptr<swganh::object::Object>& contained_object,
         const std::shared_ptr<swganh::object::Object>& object,
 		const glm::vec3& new_position);
 
-	/**
-	* Used internally for server movements (ie: NPCS)
-	*/
     void HandleDataTransformWithParentServer(
-        const std::shared_ptr<swganh::object::Object>& contained_object, 
+        const std::shared_ptr<swganh::object::Object>& parent, 
         const std::shared_ptr<swganh::object::Object>& object,
 		const glm::vec3& new_position);
       
@@ -78,6 +76,7 @@ public:
 
 	void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider);
 
+	void ResetMovementCounter(std::shared_ptr<swganh::object::Object> object);
 private:
     void RegisterEvents(swganh::EventDispatcher* event_dispatcher);
 
@@ -87,6 +86,7 @@ private:
         uint64_t, uint32_t
     > UpdateCounterMap;
 
+	std::string scene_name_;
     UpdateCounterMap counter_map_;
 	std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider_;
 	swganh::simulation::SimulationServiceInterface* simulation_service_;

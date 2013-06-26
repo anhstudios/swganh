@@ -20,11 +20,6 @@ using namespace swganh::messages;
 
 void MissionMessageBuilder::RegisterEventHandlers()
 {
-	event_dispatcher->Subscribe("Mission::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
-    {
-        auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
-        SendBaselines(static_pointer_cast<Mission>(controller_event->object), controller_event->observer);
-    });
 	event_dispatcher->Subscribe("Mission::DifficultyLevel", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
@@ -227,74 +222,61 @@ void MissionMessageBuilder::BuildMissionWaypointDelta(const std::shared_ptr<Miss
 		message.data.write(mission->GetStartingSceneCrc());
 		message.data.write(waypoint->GetName());
 		message.data.write(waypoint->GetObjectId());
-		message.data.write(waypoint->GetColorByte());
+		message.data.write(waypoint->GetColor());
 		message.data.write(waypoint->GetActiveFlag());
 
 		mission->AddDeltasUpdate(&message);
 	}
 }
 
-void MissionMessageBuilder::SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
+boost::optional<BaselinesMessage> MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mission>& mission, boost::unique_lock<boost::mutex>& lock)
 {
-	mission->AddBaselineToCache(&BuildBaseline3(mission));
-    mission->AddBaselineToCache(&BuildBaseline6(mission));
-    
-    for (auto& baseline : mission->GetBaselines())
-    {
-        observer->Notify(&baseline);
-    }
-        
-    SendEndBaselines(mission, observer);
-}
-
-BaselinesMessage MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mission>& mission)
-{
-	auto message = CreateBaselinesMessage(mission, Object::VIEW_3, 17);
-	auto waypoint = mission->GetMissionWaypoint();
-	auto start_location = mission->GetStartingPosition();
-	auto end_location = mission->GetDestinationPosition();
-	auto waypoint_location = waypoint->GetCoordinates();
+	auto message = CreateBaselinesMessage(mission, lock, Object::VIEW_3, 17);
+	auto waypoint = mission->GetMissionWaypoint(lock);
+	auto start_location = mission->GetStartingPosition(lock);
+	auto end_location = mission->GetDestinationPosition(lock);
+	auto waypoint_location = waypoint->GetCoordinates(lock);
 	
-	message.data.append(IntangibleMessageBuilder::BuildBaseline3(mission).data);
-	message.data.write(mission->GetDifficultyLevel());
+	message.data.append((*IntangibleMessageBuilder::BuildBaseline3(mission, lock)).data);
+	message.data.write(mission->GetDifficultyLevel(lock));
 	message.data.write(start_location.x);
 	message.data.write(start_location.y);
 	message.data.write(start_location.z);
 	message.data.write<uint64_t>(0L);
-	message.data.write(mission->GetStartingSceneCrc());
-	message.data.write(mission->GetMissionCreator());
-	message.data.write(mission->GetMissionReward());
+	message.data.write(mission->GetStartingSceneCrc(lock));
+	message.data.write(mission->GetMissionCreator(lock));
+	message.data.write(mission->GetMissionReward(lock));
 	message.data.write(end_location.x);
 	message.data.write(end_location.y);
 	message.data.write(end_location.z);
 	message.data.write<uint64_t>(0L);
-	message.data.write(mission->GetDestinationSceneCrc());
-	message.data.write(mission->GetTargetObjectTemplateCrc());
-	message.data.write(mission->GetMissionDescriptionStfFile());
+	message.data.write(mission->GetDestinationSceneCrc(lock));
+	message.data.write(mission->GetTargetObjectTemplateCrc(lock));
+	message.data.write(mission->GetMissionDescriptionStfFile(lock));
 	message.data.write<uint32_t>(0);
-	message.data.write(mission->GetMissionDescriptionStfName());
-	message.data.write(mission->GetMissionTitleStfFile());
+	message.data.write(mission->GetMissionDescriptionStfName(lock));
+	message.data.write(mission->GetMissionTitleStfFile(lock));
 	message.data.write<uint32_t>(0);
-	message.data.write(mission->GetMissionTitleStfName());
-	message.data.write(mission->GetRepeatCounter());
-	message.data.write(mission->GetMissionTypeCrc());
-	message.data.write(mission->GetTargetName());
+	message.data.write(mission->GetMissionTitleStfName(lock));
+	message.data.write(mission->GetRepeatCounter(lock));
+	message.data.write(mission->GetMissionTypeCrc(lock));
+	message.data.write(mission->GetTargetName(lock));
 	message.data.write<uint32_t>(0); //Unknown
 	message.data.write(waypoint_location.x);
 	message.data.write(waypoint_location.y);
 	message.data.write(waypoint_location.z);
 	message.data.write(0);
-	message.data.write(mission->GetStartingSceneCrc());
-	message.data.write(waypoint->GetName());
-	message.data.write(waypoint->GetObjectId());
-	message.data.write(waypoint->GetColorByte());
-	message.data.write(waypoint->GetActiveFlag());
+	message.data.write(mission->GetStartingSceneCrc(lock));
+	message.data.write(waypoint->GetName(lock));
+	message.data.write(waypoint->GetObjectId(lock));
+	message.data.write(waypoint->GetColor(lock));
+	message.data.write(waypoint->GetActiveFlag(lock));
 	return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage MissionMessageBuilder::BuildBaseline6(const std::shared_ptr<Mission>& mission)
+boost::optional<BaselinesMessage> MissionMessageBuilder::BuildBaseline6(const std::shared_ptr<Mission>& mission, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(mission, Object::VIEW_6, 1);
-    message.data.append(IntangibleMessageBuilder::BuildBaseline6(mission).data);
+	auto message = CreateBaselinesMessage(mission, lock, Object::VIEW_6, 1);
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline6(mission, lock)).data);
     return BaselinesMessage(move(message));
 }

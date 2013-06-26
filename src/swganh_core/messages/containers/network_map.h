@@ -3,224 +3,154 @@
 #pragma once
 
 #include <map>
-#include <list>
+#include <queue>
+#include <functional>
 
-#include "swganh/byte_buffer.h"
+#include "swganh_core/messages/baselines_message.h"
+#include "swganh_core/messages/deltas_message.h"
 
-namespace swganh {
-namespace messages {
-namespace containers {
+#include "default_serializer.h"
 
-/**
- * Expandable: Yes
- * Random Access: Yes
- * Mutable: Yes
- */
-template <typename I, typename T>
+namespace swganh
+{
+namespace containers
+{
+
+template<typename K, typename V, typename Serializer=DefaultSerializer<V>>
 class NetworkMap
 {
 public:
-    typedef typename std::map<I, T>::const_iterator const_iterator;
-    typedef typename std::map<I, T>::iterator iterator;
-    
-    NetworkMap()
-        : update_counter_(0)
-        , items_(std::map<I, T>())
-        , items_added_(std::list<I>())
-        , items_removed_(std::list<T>())
-        , items_changed_(std::list<I>())
-        , clear_(false)
-        , reinstall_(false)
-    {}
+	typedef typename std::map<K, V>::const_iterator const_iterator;
+	typedef typename std::map<K, V>::iterator iterator;
 
-    ~NetworkMap()
-    {}
+	NetworkMap()
+		: update_counter_(0)
+	{
+	}
 
-    /**
-     * Inserts a new entry into the NetworkMap without
-     * queueing a update.
-     */
-    void Insert(const I& index, T item)
-    {
-        auto iter = items_.find(index);
-        if(iter == items_.end())
-        {
-            items_.insert(std::pair<I, T>(index, item));
-        }
-    }
+	void remove(const K& key, bool update=true)
+	{
+		remove(data_.find(key));
+	}
+	
+	void remove(iterator itr, bool update=true)
+	{
+		if(itr != data_.end())
+		{
+			if(update)
+			{
+				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
+					message.data.write<uint8_t>(1);
+					Serializer::SerializeDelta(message.data, itr->second);
+				});
+			}
+			data_.erase(itr);
+		}
+	}
 
-    /**
-     * Erases an entry from the NetworkMap without
-     * queueing a update.
-     */
-    void Erase(const I& index)
-    {
-        auto iter = items_.find(index);
-        if(iter != items_.end())
-        {
-            items_.erase(iter);
-        }
-    }
+	void add(const K& key, const V& value, bool update=true)
+	{
+		auto pair = data_.insert(std::make_pair(key, value));
+		if(pair.second)
+		{
+			if(update)
+			{
+				deltas_.push([=] (swganh::messages::DeltasMessage& message) {
+					message.data.write<uint8_t>(0);
+					Serializer::SerializeDelta(message.data, pair.first->second);
+				});
+			}
+		}
+	}
 
-    /**
-     * Inserts a new entry into the NetworkMap and
-     * queues a update.
-     */
-    void Add(const I& index, T item)
-    {
-        auto iter = items_.find(index);
-        if(iter == items_.end())
-        {
-            items_.insert(std::pair<I, T>(index, item));
-            items_added_.push_back(index);
-        }
-    }
+	void update(const K& key)
+	{
+		deltas_.push([=] (swganh::messages::DeltasMessage& message) {
+			message.data.write<uint8_t>(2);
+			Serializer::SerializeDelta(message.data, data_[key]);
+		});
+	}
 
-    /**
-     * Erases an entry from the NetworkMap and
-     * queues a update.
-     */
-    void Remove(iterator iter)
-    {
-        if(iter != items_.end())
-        {
-            items_removed_.push_back(iter->second);
-            items_.erase(iter);
-        }
-    }
+	bool contains(const K& key)
+	{
+		return data_.find(key) != data_.end();
+	}
+	
+	iterator find(const K& key)
+	{
+		return data_.find(key);
+	}
 
-    /**
-     * Updates an entry in the NetworkMap and
-     * queues a update.
-     */
-    void Update(const I& index, T item)
-    {
-        auto iter = items_.find(index);
-        if(iter != items_.end())
-        {
-            iter->second = item;
-            items_changed_.push_back(index);
-        }
-    }
+	std::map<K,V> data()
+	{
+		return data_;
+	}
+	
+	std::map<K,V>& raw()
+	{
+		return data_;
+	}
 
-    /**
-     * Searches for the index in the NetworkMap.
-     */
-    bool Contains(const I& index)
-    {
-        auto iter = items_.find(index);
-        if(iter != items_.end())
-            return true;
-        else
-            return false;
-    }
+	uint32_t size()
+	{
+		return data_.size();
+	}
 
-    iterator Find(const I& index)
-    {
-        return items_.find(index);
-    }
+	iterator begin()
+	{
+		return data_.begin();
+	}
 
-    /**
-     * Clears the NetworkMap.
-     */
-    void Clear(void)
-    {
-        items_.clear();
-        clear_ = true;
-    }
+	iterator end()
+	{
+		return data_.end();
+	}
 
-    /**
-     * Causes the NetworkMap to reinstall on next Delta serialize.
-     */
-    void Reinstall(void)
-    {
-        reinstall_ = true;
-    }
+	V& operator[](const K& key)
+	{
+		return find(key)->second;
+	}
 
-    /**
-     * Sets a new contents and causes the NetworkMap to reinstall on next Deltas serialize.
-     */
-    void Reinstall(const std::map<I, T>& new_items)
-    {
-        items_ = new_items;
-        reinstall_ = true;
-    }
-
-    /**
-     * Clears all addition, subtractions and changes to the NetworkMap. This should
-     * be used if an error is encountered and the deltas need to be cleared so they don't
-     * get left behind for the next update.
-     */
-    void ClearDeltas(void)
-    {
-        items_added_.clear();
-        items_removed_.clear();
-        items_changed_.clear();
-        clear_ = false;
-        reinstall_ = false;
-    }
-
-    iterator begin() { return items_.begin(); }
-    iterator end() { return items_.end(); }
-
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint32_t>(items_.size());
+	void Serialize(swganh::messages::BaseSwgMessage* message)
+	{
+		if(message->Opcode() == swganh::messages::BaselinesMessage::opcode)
+		{
+			Serialize(*((swganh::messages::BaselinesMessage*)message));
+		}
+		else if(message->Opcode() == swganh::messages::DeltasMessage::opcode)
+		{
+			Serialize(*((swganh::messages::DeltasMessage*)message));
+		}
+	}
+	
+	void Serialize(swganh::messages::BaselinesMessage& message)
+	{
+		message.data.write<uint32_t>(data_.size());
         message.data.write<uint32_t>(0);
-        std::for_each(items_.begin(), items_.end(), [=, &message](std::pair<I, T> item) {
-            item.second.Serialize(message);
-        });
-    }
-
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        uint32_t size = items_added_.size() + items_removed_.size() + items_changed_.size() + reinstall_ + clear_;
-        message.data.write<uint32_t>(size);
-        message.data.write<uint32_t>(++update_counter_);
-
-        // Added Items
-        std::for_each(items_added_.begin(), items_added_.end(), [=, &message](I index){
-            message.data.write<uint8_t>(0);
-            items_[index].Serialize(message);
-        });
-
-        // Removed Items
-        std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](T item){
-            message.data.write<uint8_t>(1);
-            item.Serialize(message);
-        });
-
-        // Changed Items
-        std::for_each(items_changed_.begin(), items_changed_.end(), [=, &message](I index){
-            message.data.write<uint8_t>(2);
-            items_[index].Serialize(message);
-        });
-
-        if(reinstall_)
-        {
-            message.data.write<uint8_t>(3);
-            message.data.write<uint16_t>(items_.size());
-            std::for_each(items_.begin(), items_.end(), [=, &message](std::pair<I, T> item) {
-                item.second.Serialize(message);
-            });
-        }
-
-        if(clear_)
-        {
-            message.data.write<uint8_t>(4);
-        }
-
-        ClearDeltas();
-    }
+		for(auto& pair : data_)
+		{
+			Serializer::SerializeBaseline(message.data, pair.second);
+		}
+	}
+	
+	void Serialize(swganh::messages::DeltasMessage& message)
+	{
+		message.data.write<uint32_t>(deltas_.size());
+		message.data.write<uint32_t>(++update_counter_);
+		
+		while(!deltas_.empty())
+		{
+			deltas_.front()(message);
+			deltas_.pop();
+		}
+	}
 
 private:
-    uint32_t update_counter_;
-    std::map<I, T> items_;
-    std::list<I> items_added_;
-    std::list<T> items_removed_;
-    std::list<I> items_changed_;
-    bool clear_;
-    bool reinstall_;
+	std::map<K, V> data_;
+
+	uint32_t update_counter_;
+	std::queue<std::function<void(swganh::messages::DeltasMessage&)>> deltas_;
 };
 
-}}} // swganh::messages::containers
+}
+}

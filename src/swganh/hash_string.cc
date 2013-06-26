@@ -7,7 +7,8 @@
 using namespace swganh;
 
 HashString::HashString()
-    : ident_(0)
+    : ident_(reinterpret_cast<void*>(memcrc("")))
+    , ident_string_("") 
 {}
 
 HashString::HashString(std::string ident_string)

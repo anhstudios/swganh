@@ -11,6 +11,10 @@
 #include "node.h"
 #include "swganh_core/object/object.h"
 
+#include <boost/foreach.hpp>
+#include <boost/geometry.hpp>
+
+
 using namespace quadtree;
 
 ///
@@ -41,10 +45,10 @@ BOOST_AUTO_TEST_CASE(CanInsertRemoveObject)
 	obj->SetPosition(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	root_node_.InsertObject(obj);
-	BOOST_CHECK_EQUAL(1, root_node_.GetContainedObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.GetContainedObjects().size());
 
 	root_node_.RemoveObject(obj);
-	BOOST_CHECK_EQUAL(0, root_node_.GetContainedObjects().size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.GetContainedObjects().size());
 }
 
 ///
@@ -61,7 +65,7 @@ BOOST_AUTO_TEST_CASE(VerifyQuadrantSplit)
 	obj2->SetObjectId(2);
 	obj3->SetObjectId(3);
 	obj4->SetObjectId(4);
-	
+
 	obj1->SetPosition(glm::vec3(-10.0f, 0.0f, 10.0f));
 	obj2->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
 	obj3->SetPosition(glm::vec3(-10.0f, 0.0f, -10.0f));
@@ -72,15 +76,15 @@ BOOST_AUTO_TEST_CASE(VerifyQuadrantSplit)
 	root_node_.InsertObject(obj3);
 	root_node_.InsertObject(obj4);
 	
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().size());
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().size());
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
     
-	BOOST_CHECK_EQUAL(1, (*root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().begin())->GetObjectId());
-	BOOST_CHECK_EQUAL(2, (*root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().begin())->GetObjectId());
-	BOOST_CHECK_EQUAL(3, (*root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().begin())->GetObjectId());
-	BOOST_CHECK_EQUAL(4, (*root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(uint64_t(1), (*root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(uint64_t(2), (*root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(uint64_t(3), (*root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(uint64_t(4), (*root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().begin())->GetObjectId());
 
 	root_node_.RemoveObject(obj1);
 	root_node_.RemoveObject(obj2);
@@ -94,36 +98,39 @@ BOOST_AUTO_TEST_CASE(VerifyQuadrantSplit)
 BOOST_AUTO_TEST_CASE(CanQuery)
 {
 	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetObjectId(0xDEADBABE);
 	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
 
 	root_node_.InsertObject(obj);
 
-	BOOST_CHECK_EQUAL(1, root_node_.Query(QueryBox( Point(0.0f, 0.0f), Point(15.0f, 15.0f) )).size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.Query(QueryBox( Point(0.0f, 0.0f), Point(15.0f, 15.0f) )).size());
 
 	root_node_.RemoveObject(obj);
 
-	BOOST_CHECK_EQUAL(0, root_node_.Query(QueryBox( Point(0.0f, 0.0f), Point(15.0f, 15.0f) )).size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.Query(QueryBox( Point(0.0f, 0.0f), Point(15.0f, 15.0f) )).size());
 }
 
 ///
 BOOST_AUTO_TEST_CASE(CanUpdateObject)
 {
 	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetObjectId(0xDEADBABE);
 	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
 
 	root_node_.InsertObject(obj);
 
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
-	BOOST_CHECK_EQUAL(0, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
 
 	glm::vec3 new_position(10.0f, 0.0f, -10.0f);
-	root_node_.UpdateObject(obj, obj->GetPosition(), new_position);
+	auto old_bounding_volume = obj->GetAABB();
 	obj->SetPosition(new_position);
+	root_node_.UpdateObject(obj, old_bounding_volume, obj->GetAABB());
 
-	BOOST_CHECK_EQUAL(0, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1), root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
 
 	root_node_.RemoveObject(obj);
 }
@@ -134,25 +141,27 @@ BOOST_AUTO_TEST_CASE(CanInsertRemoveQueryOneThousand)
 	std::vector<std::shared_ptr<swganh::object::Object>> objects;
 	boost::random::mt19937 gen;
 	boost::random::uniform_real_distribution<> random_generator(-3000.0f, 3000.0f);
+	boost::random::uniform_int_distribution<> id_generator(1000, 1000000000);
 
 	for(int i = 0; i < 1000; i++)
 	{
 		objects.push_back(std::make_shared<swganh::object::Object>());
+		objects[i]->SetObjectId(id_generator(gen));
 		objects[i]->SetEventDispatcher(&event_dispatcher_);
 		objects[i]->SetPosition(glm::vec3(random_generator(gen), 0.0f, random_generator(gen)));
 		root_node_.InsertObject(objects[i]);
 	}
 
-	BOOST_CHECK_EQUAL(1000, root_node_.GetContainedObjects().size());
-	BOOST_CHECK_EQUAL(1000, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
+	BOOST_CHECK_EQUAL(size_t(1000), root_node_.GetContainedObjects().size());
+	BOOST_CHECK_EQUAL(size_t(1000), root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
 
 	for(int i = 0; i < 1000; i++)
 	{
 		root_node_.RemoveObject(objects[i]);
 	}
 
-	BOOST_CHECK_EQUAL(0, root_node_.GetContainedObjects().size());
-	BOOST_CHECK_EQUAL(0, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.GetContainedObjects().size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
 }
 
 ///
@@ -161,25 +170,28 @@ BOOST_AUTO_TEST_CASE(CanInsertRemoveQueryTenThousand)
 	std::vector<std::shared_ptr<swganh::object::Object>> objects;
 	boost::random::mt19937 gen;
 	boost::random::uniform_real_distribution<> random_generator(-3000.0f, 3000.0f);
+	boost::random::uniform_int_distribution<> id_generator(1000, 1000000000);
 
 	for(int i = 0; i < 10000; i++)
 	{
 		objects.push_back(std::make_shared<swganh::object::Object>());
+		objects[i]->SetObjectId(id_generator(gen));
 		objects[i]->SetEventDispatcher(&event_dispatcher_);
 		objects[i]->SetPosition(glm::vec3(random_generator(gen), 0.0f, random_generator(gen)));
 		root_node_.InsertObject(objects[i]);
 	}
 
-	BOOST_CHECK_EQUAL(10000, root_node_.GetContainedObjects().size());
-	BOOST_CHECK_EQUAL(10000, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
+	BOOST_CHECK_EQUAL(size_t(10000), root_node_.GetContainedObjects().size());
+	BOOST_CHECK_EQUAL(size_t(10000), root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
 
 	for(int i = 0; i < 10000; i++)
 	{
 		root_node_.RemoveObject(objects[i]);
 	}
 
-	BOOST_CHECK_EQUAL(0, root_node_.GetContainedObjects().size());
-	BOOST_CHECK_EQUAL(0, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.GetContainedObjects().size());
+	BOOST_CHECK_EQUAL(size_t(0), root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
 }
+
 BOOST_AUTO_TEST_SUITE_END()
 /*****************************************************************************/

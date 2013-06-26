@@ -1,3 +1,4 @@
+
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
@@ -13,6 +14,7 @@
 
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/asio/deadline_timer.hpp>
+#include <boost/python/object.hpp>
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -31,15 +33,16 @@ namespace concurrency {
 
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/exception.h"
-#include "swganh/object/object_factory_interface.h"
+#include "swganh_core/object/object_factory_interface.h"
 #include "swganh_core/object/object_message_builder.h"
-#include "swganh/object/permissions/permission_type.h"
+#include "swganh_core/object/permissions/permission_type.h"
 
 namespace swganh {
 namespace object {
     
 	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
 
+	class TemplateInterface;
     /**
      * ObjectManager is a general interface for managing the object lifecycles for
      * general user defined types. In order to manage an object type an implementation
@@ -82,7 +85,7 @@ namespace object {
         template<typename T>
         void RegisterObjectType(uint32_t object_type = T::type)
         {
-            auto factory = std::make_shared<typename T::FactoryType>(kernel_->GetDatabaseManager(), kernel_->GetEventDispatcher());
+            auto factory = std::make_shared<typename T::FactoryType>(kernel_);
             factory->SetObjectManager(this);
 
             RegisterObjectType(object_type, factory);
@@ -183,7 +186,7 @@ namespace object {
         template<typename T>
         std::shared_ptr<T> CreateObjectFromStorage(uint64_t object_id)
         {
-            std::shared_ptr<Object> object = CreateObjectFromStorage(T::type, object_id);
+            std::shared_ptr<Object> object = CreateObjectFromStorage(object_id, T::type);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -199,7 +202,7 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
-			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0);
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0);
 		
         /**
          * Creates an instance of an object from the specified template.
@@ -209,9 +212,9 @@ namespace object {
          */
         template<typename T>
         std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
-			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, uint64_t object_id=0)
         {
-            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized, objectId);
+            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, type, is_persisted, object_id);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -232,28 +235,28 @@ namespace object {
          *
          * @param object the object instance to persist.
          */
-        void PersistObject(const std::shared_ptr<Object>& object);
+        void PersistObject(const std::shared_ptr<Object>& object, bool persist_inherited = false);
 
         /**
          * Persists a currently managed object by its id.
          *
          * @param object_id The id of the object to persist
          */
-        void PersistObject(uint64_t object_id);
+        void PersistObject(uint64_t object_id, bool persist_inherited = false);
         
         /**
          * Persists an object and all its related objects.
          *
          * @param object the object instance to persist.
          */
-        void PersistRelatedObjects(const std::shared_ptr<Object>& object);
+        void PersistRelatedObjects(const std::shared_ptr<Object>& object, bool persist_inherited = false);
         
         /**
          * Persists a managed object and all its related objects by id.
          *
          * @param object_id The id of the object to persist
          */
-	    void PersistRelatedObjects(uint64_t parent_object_id);
+	    void PersistRelatedObjects(uint64_t parent_object_id, bool persist_inherited = false);
 
 		/**
 		 * Gets the objects definition file data from the resource manager
@@ -262,11 +265,12 @@ namespace object {
 		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> GetSlotDefinition();
 
 		void LoadSlotsForObject(std::shared_ptr<Object> object);
+		void LoadCollisionInfoForObject(std::shared_ptr<Object> object);
 
 		PermissionsObjectMap& GetPermissionsMap();
 
 		virtual void PrepareToAccomodate(uint32_t delta);
-
+        
     private:
 		void PersistObjectsByTimer(const boost::system::error_code& e);
 		void InsertObject(std::shared_ptr<swganh::object::Object> object);
@@ -281,10 +285,7 @@ namespace object {
             std::shared_ptr<ObjectMessageBuilder>
         > ObjectMessageBuilderMap;
 
-		typedef std::map<
-			std::string,
-			uint32_t
-		> TemplateTypeMap;
+		typedef std::map<std::string, boost::python::object> PythonTemplateMap;
 
         /**
          * Registers a message builder for a specific object type
@@ -304,8 +305,12 @@ namespace object {
          * @param message_builder The message builder to store.
          */
         void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
+		/**
+		 *  Loads the python object templates and creates any objects inserting them as prototypes
+		 */
+		void LoadPythonObjectTemplates();
 
-		void ObjectManager::AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
+		void AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
 
         swganh::app::SwganhKernel* kernel_;
 
@@ -313,11 +318,14 @@ namespace object {
 
         ObjectFactoryMap factories_;
         ObjectMessageBuilderMap message_builders_;
-        TemplateTypeMap type_lookup_;
+        
+		PythonTemplateMap object_templates_;
 
 		uint64_t next_dynamic_id_;
+		uint64_t next_persistent_id_;
 
         boost::shared_mutex object_map_mutex_;
+		boost::shared_mutex object_factories_mutex_;
 		std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
 		std::shared_ptr<boost::asio::deadline_timer> persist_timer_;
 		
