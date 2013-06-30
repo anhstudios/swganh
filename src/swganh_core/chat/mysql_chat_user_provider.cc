@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 #include <boost/thread/locks.hpp>
 #include "mysql_chat_user_provider.h"
 

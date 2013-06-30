@@ -346,7 +346,7 @@ SwganhKernel* SwganhApp::GetAppKernel() const {
 void SwganhApp::StartInteractiveConsole()
 {
     swganh::scripting::ScopedGilLock lock;
-    swganh::Logger::getInstance().DisableConsoleLogging();
+//    swganh::Logger::getInstance().DisableConsoleLogging();
 
 #ifdef WIN32
     std::system("cls");
@@ -368,7 +368,7 @@ void SwganhApp::StartInteractiveConsole()
     
     PyRun_InteractiveLoop(stdin, "<stdin>");
     
-    swganh::Logger::getInstance().EnableConsoleLogging();
+//    swganh::Logger::getInstance().EnableConsoleLogging();
 }
 
 void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
@@ -450,5 +450,5 @@ void SwganhApp::LoadCoreServices_()
 
 void SwganhApp::SetupLogging_()
 {
-    swganh::Logger::getInstance().init("swganh");    
+//    swganh::Logger::getInstance().init("swganh");    
 }

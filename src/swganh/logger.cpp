@@ -3,85 +3,36 @@
 
 #include "logger.h"
 
-using namespace swganh;
+#include <fstream>
 
-Logger& Logger::getInstance()
+#include <boost/log/core.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/utility/empty_deleter.hpp>
+
+namespace swganh {
+
+logger::logger_type& logger::get()
 {
-    static Logger instance;
-    return instance;
+    return boost::log::sources::aux::logger_singleton<logger>::get();
 }
 
-void Logger::init(const std::string& app_name) 
+logger::logger_type logger::construct_logger()
 {
-    // Console Logs info and above
-    console_sink_ = logging::init_log_to_console(
-        std::clog,
-        keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) >= info,
-        keywords::format = "%TimeStamp%: %_%",
-        keywords::auto_flush = true
-        );
-// If we're in debug mode compile debug and above
-#ifdef _DEBUG
-    // Log Everything info and above to swganh.log
-    logging::init_log_to_file
-    (
-        "logs/" + app_name + "_debug.log",
-        keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) >= info,
-        keywords::format = fmt::format("%1% [%2%] <%3%> %4%")
-            % fmt::date_time("TimeStamp", std::nothrow)
-            % fmt::attr<severity_level>("Severity", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
-            % fmt::message(),
-        keywords::auto_flush = true
-    );
+    auto core = boost::log::core::get();
+    auto backend = boost::make_shared<boost::log::sinks::text_ostream_backend>();
 
-#else
-    // Log Everything info and above to swganh.log
-    logging::init_log_to_file
-    (
-        "logs/" + app_name + ".log",
-        keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) >= info,
-        keywords::format = fmt::format("%1% [%2%] <%3%> %4%")
-            % fmt::date_time("TimeStamp", std::nothrow)
-            % fmt::attr<severity_level>("Severity", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
-            % fmt::message()
-    );
-#endif
-    // Log Everything warning and above to swganh.log
-    logging::init_log_to_file
-    (
-        "logs/"+ app_name + "_warning.log",
-        keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) >= warning,
-        keywords::format = fmt::format("%1% [%2%] <%3%> %4%")
-            % fmt::date_time("TimeStamp", std::nothrow)
-            % fmt::attr<severity_level>("Severity", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
-            % fmt::message(),
-        keywords::auto_flush = true
-    );
-    
-    // Log Client/Server messages
-    logging::init_log_to_file
-    (
-        "logs/"+ app_name + "_events.log",
-        keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) == event,
-        keywords::format = fmt::format("%1% <%2%> %3%")
-            % fmt::date_time("TimeStamp", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
-            % fmt::message(),
-        keywords::auto_flush = true
-    );
-    
-    logging::add_common_attributes();
+    backend->add_stream(boost::shared_ptr<std::ostream>(&std::clog, boost::log::empty_deleter()));
+    backend->add_stream(boost::make_shared<std::ofstream>("logs/swganh.log"));
+
+    backend->auto_flush(true);
+
+    auto sink = boost::make_shared<boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend>>(backend);
+
+    core->add_sink(sink);
+
+    return logger_type();
 }
 
-void Logger::EnableConsoleLogging()
-{
-    logging::core::get()->add_sink(console_sink_);
-}
-
-void Logger::DisableConsoleLogging()
-{
-    logging::core::get()->remove_sink(console_sink_);
 }
