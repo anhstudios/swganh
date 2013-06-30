@@ -37,7 +37,7 @@ set "PROJECT_DRIVE=%~d0"
 set "BUILD_DIR=%PROJECT_BASE%build\deps\"
 set "VENDOR_DIR=%PROJECT_BASE%vendor\"
 set MSVC_VERSION=11
-set BOOST_VERSION=1.53.0
+set BOOST_VERSION=1.54.0
 set BOOST_LOG_REVISION=737
 set TURTLE_VERSION=1.2.0
 set GLM_VERSION=0.9.4.1
@@ -156,21 +156,12 @@ set BOOST_FILE=boost_%BOOST_VERSION_ALT%.zip
 set BOOST_URL=http://downloads.sourceforge.net/project/boost/boost/%BOOST_VERSION%/%BOOST_FILE%
 set BOOST_DIR=boost_%BOOST_VERSION_ALT%
 
-if not exist %BOOST_FILE% (
-    %WGET% --no-check-certificate !BOOST_URL!
-)
-
 if not exist %BOOST_DIR% (
+    if not exist %BOOST_FILE% (
+        %WGET% --no-check-certificate !BOOST_URL!
+    )
+
     %ZIP% x -y %BOOST_FILE%
-)
-
-if not exist boost-log (
-    git svn clone -r %BOOST_LOG_REVISION% https://boost-log.svn.sourceforge.net/svnroot/boost-log/trunk/boost-log
-)
-
-if not exist "%BOOST_DIR%\boost\log" (
-    xcopy "boost-log/boost/log" "%BOOST_DIR%/boost/log" /s /i /y
-    xcopy "boost-log/libs/log" "%BOOST_DIR%/libs/log" /s /i /y
 )
 
 cd "%BOOST_DIR%"
@@ -268,7 +259,7 @@ if not exist "%ZLIB_DIR%" (
 
 cd "%ZLIB_DIR%"
 
-cmake -G"Visual Studio 11" .
+cmake -G"Visual Studio %MSVC_VERSION%" .
 cmake --build . --target zlib --config Debug
 cmake --build . --target zlib --config Release
 
@@ -320,11 +311,11 @@ if not exist "%MYSQL_C_DIR%" (
 
 cd "%MYSQL_C_DIR%"
 
-cmake -G"Visual Studio 11" .
-cmake --build . --target mysqlclient --config Debug
-cmake --build . --target libmysql --config Debug
-cmake --build . --target mysqlclient --config Release
-cmake --build . --target libmysql --config Release
+cmake -G"Visual Studio %MSVC_VERSION%" .
+cmake --build . --target libmysql/mysqlclient --config Debug
+cmake --build . --target libmysql/libmysql --config Debug
+cmake --build . --target libmysql/mysqlclient --config Release
+cmake --build . --target libmysql/libmysql --config Release
 
 if not exist "%VENDOR_DIR%include\mysql.h" (
     xcopy "include" "%VENDOR_DIR%include" /s /i /y
@@ -351,9 +342,9 @@ if not exist mysql-connector-cpp (
 
 cd mysql-connector-cpp
 
-cmake -G"Visual Studio 11" -DDISABLE_ITERATOR_DEBUGGING=ON -DBOOST_ROOT=%VENDOR_DIR% -DMYSQL_INCLUDE_DIR=%VENDOR_DIR%include -DMYSQL_LIB_DIR=%VENDOR_DIR%lib/Release .
-cmake --build . --target mysqlcppconn --config Debug
-cmake --build . --target mysqlcppconn --config Release
+cmake -G"Visual Studio %MSVC_VERSION%" -DDISABLE_ITERATOR_DEBUGGING=ON -DBOOST_ROOT=%VENDOR_DIR% -DMYSQL_INCLUDE_DIR=%VENDOR_DIR%include -DMYSQL_LIB_DIR=%VENDOR_DIR%lib/Release .
+cmake --build . --target driver/mysqlcppconn --config Debug
+cmake --build . --target driver/mysqlcppconn --config Release
 
 if not exist "%VENDOR_DIR%include\cppconn" (
     xcopy "cppconn" "%VENDOR_DIR%include\cppconn" /s /i /y
