@@ -67,7 +67,7 @@ uint32_t Session::crc_seed() const {
 
 swganh::ByteBuffer Session::SendSoePacket_(swganh::ByteBuffer message)
 {
-	LOG_NET << "S->C: " << server_->listen_endpoint() << " -> " << remote_endpoint() << "\n" << message;
+//	LOG_NET << "S->C: " << server_->listen_endpoint() << " -> " << remote_endpoint() << "\n" << message;
     
     compression_filter_(this, &message);
     encryption_filter_(this, &message);
@@ -212,7 +212,7 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
             decompression_filter_(this, &message);
         }
 	    
-        LOG_NET << "C->S: " << remote_endpoint() << " -> " << server_->listen_endpoint() << "\n" << message;
+//        LOG_NET << "C->S: " << remote_endpoint() << " -> " << server_->listen_endpoint() << "\n" << message;
         
         if(message.peek<uint8_t>() != 0) {
             server_->HandleMessage(shared_from_this(), std::move(message));
