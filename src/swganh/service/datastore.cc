@@ -1,4 +1,4 @@
-// This file is part of SWGANH which is released under the MIT license.
+ // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "swganh/service/datastore.h"
@@ -8,6 +8,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/lock_guard.hpp>
 
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>

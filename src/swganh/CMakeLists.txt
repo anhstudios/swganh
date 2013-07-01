@@ -21,8 +21,8 @@ AddANHExecutable(swganh
         ${PYTHON_LIBRARY}
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
-        ${Boost_LOG_LIBRARY_DEBUG}
         ${Boost_LOG_SETUP_LIBRARY_DEBUG}
+        ${Boost_LOG_LIBRARY_DEBUG}
         ${Boost_FILESYSTEM_LIBRARY_DEBUG}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG}
         ${Boost_PYTHON3_LIBRARY_DEBUG}
@@ -39,8 +39,8 @@ AddANHExecutable(swganh
         ${PYTHON_LIBRARY}
         ${Boost_CHRONO_LIBRARY_RELEASE}
         ${Boost_DATE_TIME_LIBRARY_RELEASE}
-        ${Boost_LOG_LIBRARY_RELEASE}
         ${Boost_LOG_SETUP_LIBRARY_RELEASE}
+        ${Boost_LOG_LIBRARY_RELEASE}
         ${Boost_FILESYSTEM_LIBRARY_RELEASE}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}
         ${Boost_PYTHON3_LIBRARY_RELEASE}
