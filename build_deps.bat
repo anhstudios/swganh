@@ -36,7 +36,7 @@ set "PROJECT_BASE=%~dp0"
 set "PROJECT_DRIVE=%~d0"
 set "BUILD_DIR=%PROJECT_BASE%build\deps\"
 set "VENDOR_DIR=%PROJECT_BASE%vendor\"
-set MSVC_VERSION=11
+set MSVC_VERSION=12
 set BOOST_VERSION=1.54.0
 set BOOST_LOG_REVISION=737
 set TURTLE_VERSION=1.2.0
@@ -131,12 +131,12 @@ call where git /Q | findstr /c:"git.exe" >nul && (
     exit /b 1
 )
 
-if not exist "%VS110COMNTOOLS%" (
-    echo ***** Microsoft Visual Studio 11 required *****
+if not exist "!VS%MSVC_VERSION%0COMNTOOLS!" (
+    echo ***** Microsoft Visual Studio %MSVC_VERSION% required *****
     exit /b 1
 )
 
-call "%VS110COMNTOOLS%\vsvars32.bat" >NUL
+call "!VS%MSVC_VERSION%0COMNTOOLS!\vsvars32.bat" >NUL
 
 set environment_built=yes
 
@@ -170,7 +170,7 @@ if not exist b2.exe (
     cmd /c bootstrap.bat
 )
 
-cmd /c "b2.exe" --toolset=msvc-%MSVC_VERSION%.0 --with-serialization --with-iostreams --with-program_options --with-system --with-thread --with-filesystem --with-log --with-python --with-test --with-date_time variant=debug,release link=shared runtime-link=shared threading=multi define=_SCL_SECURE_NO_WARNINGS=0 define=_ITERATOR_DEBUG_LEVEL=0
+cmd /c "b2.exe" --toolset=msvc-%MSVC_VERSION%.0 --with-serialization --with-iostreams --with-program_options --with-system --with-thread --with-filesystem --with-log --with-python --with-test --with-date_time variant=debug,release link=shared runtime-link=shared threading=multi define=HAVE_ROUND define=_SCL_SECURE_NO_WARNINGS=0
 
 if not exist %VENDOR_DIR%include\boost (
     xcopy "boost" "%VENDOR_DIR%include\boost" /s /i /y
@@ -342,7 +342,7 @@ if not exist mysql-connector-cpp (
 
 cd mysql-connector-cpp
 
-cmake -G"Visual Studio %MSVC_VERSION%" -DDISABLE_ITERATOR_DEBUGGING=ON -DBOOST_ROOT=%VENDOR_DIR% -DMYSQL_INCLUDE_DIR=%VENDOR_DIR%include -DMYSQL_LIB_DIR=%VENDOR_DIR%lib/Release .
+cmake -G"Visual Studio %MSVC_VERSION%" -DBOOST_ROOT=%VENDOR_DIR% -DMYSQL_INCLUDE_DIR=%VENDOR_DIR%include -DMYSQL_LIB_DIR=%VENDOR_DIR%lib/Release .
 cmake --build . --target driver/mysqlcppconn --config Debug
 cmake --build . --target driver/mysqlcppconn --config Release
 
