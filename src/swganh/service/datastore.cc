@@ -79,11 +79,7 @@ std::shared_ptr<Galaxy> Datastore::createGalaxy(
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
 
         if (!result->next()) {
-<<<<<<< HEAD
-	    statement->getMoreResults();
-=======
 			statement->getMoreResults();
->>>>>>> develop
             return nullptr;
         }
 
