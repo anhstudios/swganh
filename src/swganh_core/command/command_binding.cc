@@ -157,8 +157,8 @@ void swganh::command::ExportCommand()
         .def("getDefaultTime", &BaseSwgCommandWrapper::GetDefaultTime)
         .def("getRequiredAbility", &BaseSwgCommandWrapper::GetRequiredAbility)
         .def("isQueuedCommand", &BaseSwgCommandWrapper::IsQueuedCommand)
-        .def("getActor", &BaseSwgCommandWrapper::GetActor, bp::return_value_policy<bp::copy_const_reference>())
-        .def("getTarget", &BaseSwgCommandWrapper::GetTarget, bp::return_value_policy<bp::copy_const_reference>())
+        .def("getActor", &BaseSwgCommandWrapper::GetActor)
+        .def("getTarget", &BaseSwgCommandWrapper::GetTarget)
 		.def("getTargetCreature", &BaseSwgCommandWrapper::GetTargetCreature)
     ;
 }

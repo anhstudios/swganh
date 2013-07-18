@@ -97,7 +97,7 @@ bool BaseSwgCommand::IsQueuedCommand() const
     return properties_->add_to_combat_queue != 0;
 }
 
-const std::shared_ptr<Object>& BaseSwgCommand::GetActor() const
+std::shared_ptr<Object> BaseSwgCommand::GetActor()
 {
     if (!actor_)
     {
@@ -113,7 +113,7 @@ void BaseSwgCommand::SetActor(std::shared_ptr<Object> object)
 	actor_ = object;
 }
 
-const std::shared_ptr<Object>& BaseSwgCommand::GetTarget() const
+std::shared_ptr<Object> BaseSwgCommand::GetTarget()
 {
     if (!target_)
     {

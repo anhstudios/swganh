@@ -110,6 +110,10 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
             {
                 handler.second(dispatch_event);
             }
+			catch (std::exception& e)
+			{
+				DLOG(warning) << "A handler callback caused the following exception:\n" << e.what();
+			}
             catch(...)
             {
             	DLOG(warning) << "A handler callback caused an exception.";

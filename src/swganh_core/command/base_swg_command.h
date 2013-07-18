@@ -64,12 +64,12 @@ namespace command {
 
         bool IsQueuedCommand() const;
 
-        const std::shared_ptr<object::Object>& GetActor() const;
-		void SetActor(std::shared_ptr<object::Object> object);
+        std::shared_ptr<swganh::object::Object> GetActor();
+		void SetActor(std::shared_ptr<swganh::object::Object> object);
 
-        const std::shared_ptr<object::Object>& GetTarget() const;
-		std::shared_ptr<object::Creature> GetTargetCreature();
-		void SetTarget(std::shared_ptr<object::Object> target);
+		std::shared_ptr<swganh::object::Object> GetTarget();
+		std::shared_ptr<swganh::object::Creature> GetTargetCreature();
+		void SetTarget(std::shared_ptr<swganh::object::Object> target);
 
         const std::wstring& GetCommandString() const;
 
