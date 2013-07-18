@@ -355,7 +355,7 @@ void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Ob
     
     while(!new_done || !old_done)
     {
-        if(old_done || *new_itr < *old_itr)
+        if(old_done || (!new_done && *new_itr < *old_itr))
         {
             //It's a new object!
             if (object != *new_itr)
@@ -366,7 +366,7 @@ void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Ob
 
             ++new_itr;
         }
-        else if(new_done || *old_itr < *new_itr)
+        else if(new_done || (!old_done && *old_itr < *new_itr))
         {
             //It's an old object!
             if(object != *old_itr)
