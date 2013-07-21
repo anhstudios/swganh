@@ -321,10 +321,10 @@ if not exist "%MYSQL_C_DIR%" (
 cd "%MYSQL_C_DIR%"
 
 cmake -G"Visual Studio %MSVC_VERSION%" .
-cmake --build . --target libmysql/mysqlclient --config Debug
-cmake --build . --target libmysql/libmysql --config Debug
-cmake --build . --target libmysql/mysqlclient --config Release
-cmake --build . --target libmysql/libmysql --config Release
+cmake --build . --target mysqlclient --config Debug
+cmake --build . --target libmysql --config Debug
+cmake --build . --target mysqlclient --config Release
+cmake --build . --target libmysql --config Release
 
 if not exist "%VENDOR_DIR%include\mysql.h" (
     xcopy "include" "%VENDOR_DIR%include" /s /i /y
@@ -352,8 +352,8 @@ if not exist mysql-connector-cpp (
 cd mysql-connector-cpp
 
 cmake -G"Visual Studio %MSVC_VERSION%" -DDISABLE_ITERATOR_DEBUGGING=ON -DBOOST_ROOT=%VENDOR_DIR% -DMYSQL_INCLUDE_DIR=%VENDOR_DIR%include -DMYSQL_LIB_DIR=%VENDOR_DIR%lib/Release .
-cmake --build . --target driver/mysqlcppconn --config Debug
-cmake --build . --target driver/mysqlcppconn --config Release
+cmake --build . --target mysqlcppconn --config Debug
+cmake --build . --target mysqlcppconn --config Release
 
 if not exist "%VENDOR_DIR%include\cppconn" (
     xcopy "cppconn" "%VENDOR_DIR%include\cppconn" /s /i /y
