@@ -441,9 +441,9 @@ void Installation::UpdateHopperItem(uint64_t global_id, float quantity, boost::u
 	{
 		if(hopper_[i].global_id == global_id)
 		{
-			HopperItem new_item;
-			new_item.global_id = global_id;
-			new_item.quantity = quantity;
+			//HopperItem new_item;
+			//new_item.global_id = global_id;
+			//new_item.quantity = quantity;
 			hopper_.update(i);
 
 			send_update = true;

@@ -23,10 +23,18 @@ Server::~Server() {}
 
 void Server::StartListening(uint16_t port)
 {
+    try
+    {
     listen_endpoint_ = udp::endpoint(udp::v4(), port);
     socket_.open(udp::v4());
     socket_.bind(listen_endpoint_);
-    
+    } 
+    catch(boost::system::system_error& e)
+    {
+        LOG(fatal) << e.what();
+        throw e;
+    }
+
     AsyncReceive();
 }
 

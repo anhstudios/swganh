@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <glm/glm.hpp>

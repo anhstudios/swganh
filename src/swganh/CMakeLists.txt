@@ -35,6 +35,7 @@ AddANHExecutable(swganh
         ${TBB_LIBRARIES}
         ${ZLIB_LIBRARY_DEBUG}
         ${DL_LIBRARY}
+        ${PTHREAD_LIBRARY}
     OPTIMIZED_LIBRARIES
         ${PYTHON_LIBRARY}
         ${Boost_CHRONO_LIBRARY_RELEASE}
@@ -53,4 +54,5 @@ AddANHExecutable(swganh
         ${TBB_LIBRARIES}
         ${ZLIB_LIBRARY_RELEASE}
         ${DL_LIBRARY}
+        ${PTHREAD_LIBRARY}
 )

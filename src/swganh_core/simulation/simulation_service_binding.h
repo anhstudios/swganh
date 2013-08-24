@@ -35,9 +35,9 @@ void exportSimulationService()
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneObjectBinding)(shared_ptr<swganh::object::Object>, const std::string&);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneAndPositionBinding)(uint64_t, const std::string&, float, float, float);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneObjectAndPositionBinding)(shared_ptr<swganh::object::Object>, const std::string&, float, float, float);
-    typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*LoadObjectByIdBinding)(uint64_t object_id);
+    //typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*LoadObjectByIdBinding)(uint64_t object_id);
 
-    auto create_obj_overload = CreateOverload(args("template_name", "permission_type", "is_persisted", "object_id"));
+    //auto create_obj_overload = CreateOverload(args("template_name", "permission_type", "is_persisted", "object_id"));
     
 	enum_<PermissionType>("ContainerPermission")
 		.value("DEFAULT", DEFAULT_PERMISSION)

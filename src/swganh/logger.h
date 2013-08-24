@@ -43,7 +43,7 @@ inline std::basic_ostream<CharT, TraitsT>& operator<<(
 
 struct logger
 {
-	typedef boost::log::sources::severity_logger_mt<::swganh::severity_level> logger_type;
+	typedef boost::log::sources::severity_logger_mt< ::swganh::severity_level> logger_type;
 
 	static logger_type& get();
 	static logger_type construct_logger();

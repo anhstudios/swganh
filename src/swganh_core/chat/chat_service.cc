@@ -231,7 +231,7 @@ void ChatService::Initialize()
 					room.creator_ = 0;
 
 					boost::lock_guard<boost::mutex> lock_(room_mutex_);
-					auto insert_itr = rooms_.insert(std::make_pair(room.id_, std::move(room)));
+					rooms_.insert(std::make_pair(room.id_, std::move(room)));
 				} while(result->next());
 				
 				while(statement->getMoreResults());
