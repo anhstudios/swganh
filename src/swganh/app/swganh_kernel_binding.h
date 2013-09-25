@@ -24,7 +24,6 @@
 #include "swganh_core/equipment/equipment_service_interface.h"
 #include "swganh_core/weather/weather_service_interface.h"
 #include "swganh_core/simulation/spatial_provider_interface.h"
-#include "swganh_core/structure/structure_service_interface.h"
 #include "swganh_core/player/player_service_interface.h"
 #include "swganh_core/badge/badge_service_interface.h"
 #include "swganh_core/map/map_service_interface.h"
@@ -120,11 +119,6 @@ void exportSWGANHKernel()
 				return_value_policy<reference_existing_object>(),
 				boost::mpl::vector<swganh::travel::TravelServiceInterface*, swganh::service::ServiceManager*>()),
 				"returns an internal reference of the :class:.`TravelService`")
-		.def("structureService", make_function(
-		std::bind(&swganh::service::ServiceManager::GetService<swganh::structure::StructureServiceInterface>, std::placeholders::_1, "StructureService"),
-				return_value_policy<reference_existing_object>(),
-				boost::mpl::vector<swganh::structure::StructureServiceInterface*, swganh::service::ServiceManager*>()),
-				"returns an internal reference of the :class:.`StructureServiceInterface`")
        ;
        
 }

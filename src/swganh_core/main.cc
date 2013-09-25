@@ -33,7 +33,6 @@
 #include "equipment/equipment_init.h"
 #include "spawn/spawn_init.h"
 #include "static/static_init.h"
-#include "structure/structure_init.h"
 #include "sui/sui_init.h"
 #include "weather/weather_init.h"
 #include "terrain/terrain_init.h"
@@ -76,7 +75,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh::player::Initialize(swganh_kernel);
 	swganh::spawn::Initialize(swganh_kernel);
 	swganh::statics::Initialize(swganh_kernel);
-	swganh::structure::Initialize(swganh_kernel);
 	swganh::sui::Initialize(swganh_kernel);
 	swganh::weather::Initialize(swganh_kernel);
 	swganh::terrain::Initialize(swganh_kernel);

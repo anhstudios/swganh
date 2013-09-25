@@ -12,8 +12,6 @@ def create(kernel):
 	result.stfName("deed","generic_guild_deed")		
 	
 	#### BEGIN MODIFICATIONS ####
-	result.setStringAttribute("radial_filename", "radials/deed_structure.py")
-	result.setStringAttribute("deed_building", "object/building/player/shared_player_guildhall_generic_style_01.iff")
 	####  END MODIFICATIONS  ####
 	
 	return result

@@ -13,7 +13,6 @@ add_subdirectory(object)
 add_subdirectory(player)
 add_subdirectory(simulation)
 add_subdirectory(static)
-add_subdirectory(structure)
 add_subdirectory(sui)
 add_subdirectory(terrain)
 add_subdirectory(travel)
@@ -54,7 +53,6 @@ AddANHPlugin(swganh_core
         ${Boost_REGEX_LIBRARY_DEBUG}
         ${Boost_SYSTEM_LIBRARY_DEBUG}
         ${Boost_THREAD_LIBRARY_DEBUG}
-        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_DEBUG}
         ${MYSQL_LIBRARY_DEBUG}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
         ${PYTHON_LIBRARY}
@@ -71,7 +69,6 @@ AddANHPlugin(swganh_core
         ${Boost_REGEX_LIBRARY_RELEASE}
         ${Boost_SYSTEM_LIBRARY_RELEASE}
         ${Boost_THREAD_LIBRARY_RELEASE}
-        ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_RELEASE}
         ${MYSQL_LIBRARY_RELEASE}
         ${MYSQLCONNECTORCPP_LIBRARY_RELEASE}
         ${PYTHON_LIBRARY}
