@@ -10,7 +10,7 @@ namespace swganh
 {
 namespace app
 {
-	class SwganhKernel;
+class SwganhKernel;
 }
 
 namespace chat
@@ -20,27 +20,27 @@ class MysqlChatUserProvider : public ChatUserProviderInterface
 {
 public:
 
-	MysqlChatUserProvider(swganh::app::SwganhKernel* kernel);
+    MysqlChatUserProvider(swganh::app::SwganhKernel* kernel);
 
-	uint64_t GetIdFromFullName(const std::string& name) const;
-	
-	uint64_t GetIdFromFirstName(const std::string& name) const;
+    uint64_t GetIdFromFullName(const std::string& name) const;
 
-	const std::string& GetFullNameFromId(uint64_t creature_id) const;
-	
-	std::string GetFirstNameFromId(uint64_t creature_id) const;
-	
-	const std::string& GetFullNameFromFirstName(const std::string& name) const;
+    uint64_t GetIdFromFirstName(const std::string& name) const;
 
-	std::string GetFirstNameFromFullName(const std::string& name) const;
-	
+    const std::string& GetFullNameFromId(uint64_t creature_id) const;
+
+    std::string GetFirstNameFromId(uint64_t creature_id) const;
+
+    const std::string& GetFullNameFromFirstName(const std::string& name) const;
+
+    std::string GetFirstNameFromFullName(const std::string& name) const;
+
 private:
 
-	static const std::string unk_string_;
+    static const std::string unk_string_;
 
-	mutable boost::mutex mutex_;
-	std::unordered_map<std::string, uint64_t> nameToId;
-	std::unordered_map<uint64_t, std::string> IdToName;
+    mutable boost::mutex mutex_;
+    std::unordered_map<std::string, uint64_t> nameToId;
+    std::unordered_map<uint64_t, std::string> IdToName;
 
 };
 

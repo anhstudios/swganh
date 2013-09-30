@@ -10,27 +10,33 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/galaxy/providers/galaxy_provider_interface.h"
 
-namespace swganh {
-    class EventDispatcherInterface;
-namespace app {
+namespace swganh
+{
+class EventDispatcherInterface;
+namespace app
+{
 class KernelInterface;
-}}  // namespace swganh::app
+}
+}  // namespace swganh::app
 
 
-namespace swganh {
-namespace galaxy {
+namespace swganh
+{
+namespace galaxy
+{
 
-    class GalaxyServiceInterface : public swganh::service::BaseService
-    {
-    public:
-        virtual ~GalaxyServiceInterface() {}
+class GalaxyServiceInterface : public swganh::service::BaseService
+{
+public:
+    virtual ~GalaxyServiceInterface() {}
 
-    	virtual uint32_t GetPopulation() = 0;
-		
-		virtual uint64_t GetGalaxyTimeInMilliseconds() = 0;
-        
-        virtual void Startup() = 0;
+    virtual uint32_t GetPopulation() = 0;
 
-    };
+    virtual uint64_t GetGalaxyTimeInMilliseconds() = 0;
 
-}}  // swganh::galaxy
+    virtual void Startup() = 0;
+
+};
+
+}
+}  // swganh::galaxy

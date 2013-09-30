@@ -18,48 +18,57 @@
 
 #include "version.h"
 
-namespace swganh {
-namespace chat {
+namespace swganh
+{
+namespace chat
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
 
-	//Register MysqlChatUserProvider
-	{
-		registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-			auto result = new MysqlChatUserProvider(kernel);
-			return result;
-		};
+    //Register MysqlChatUserProvider
+    {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
+            auto result = new MysqlChatUserProvider(kernel);
+            return result;
+        };
 
-		registration.DestroyObject = [] (void * object) {
-			if(object)
-			{
-				delete static_cast<MysqlChatUserProvider*>(object);
-			}
-		};
+        registration.DestroyObject = [] (void * object)
+        {
+            if(object)
+            {
+                delete static_cast<MysqlChatUserProvider*>(object);
+            }
+        };
 
-		kernel->GetPluginManager()->RegisterObject("Chat::UserProvider", &registration);
-	}
+        kernel->GetPluginManager()->RegisterObject("Chat::UserProvider", &registration);
+    }
 
     // Register Chat Service
-	{ // Chat::ChatService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Chat::ChatService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             auto chat_service = new ChatService(kernel);
-            
+
             return chat_service;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<ChatService*>(object);
             }
         };
 
         kernel->GetPluginManager()->RegisterObject("Chat::ChatService", &registration);
-	}
+    }
 }
 
-}}  // namespace swganh::chat
+}
+}  // namespace swganh::chat

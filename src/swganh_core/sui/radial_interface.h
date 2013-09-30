@@ -5,40 +5,50 @@
 #include <memory>
 #include <vector>
 
-namespace swganh {
+namespace swganh
+{
 namespace app
 {
-	class SwganhKernel;
+class SwganhKernel;
 }
 
-namespace object{
+namespace object
+{
 class Object;
 }
 
-namespace messages {
-namespace controllers {
-	struct RadialOptions;
-}}
+namespace messages
+{
+namespace controllers
+{
+struct RadialOptions;
+}
+}
 
-namespace sui {
+namespace sui
+{
 
 class RadialInterface
 {
 public:
 
-	virtual ~RadialInterface() {}
+    virtual ~RadialInterface() {}
 
     void Initialize(swganh::app::SwganhKernel* kernel)
     {
         kernel_ = kernel;
     }
 
-	virtual std::vector<swganh::messages::controllers::RadialOptions> BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<swganh::messages::controllers::RadialOptions> radials) = 0;
-	virtual void HandleRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, uint8_t action) = 0;
-	virtual swganh::app::SwganhKernel* GetKernel() { return kernel_; }
+    virtual std::vector<swganh::messages::controllers::RadialOptions> BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<swganh::messages::controllers::RadialOptions> radials) = 0;
+    virtual void HandleRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, uint8_t action) = 0;
+    virtual swganh::app::SwganhKernel* GetKernel()
+    {
+        return kernel_;
+    }
 protected:
 
-	swganh::app::SwganhKernel* kernel_;
+    swganh::app::SwganhKernel* kernel_;
 };
 
-}}
+}
+}

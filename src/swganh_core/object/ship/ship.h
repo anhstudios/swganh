@@ -7,12 +7,15 @@
 
 #include "swganh_core/object/creature/creature.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
-template<class ValueType> 
-struct ShipList {
+template<class ValueType>
+struct ShipList
+{
     uint8_t delta;
     uint32_t component_index;
     ValueType value;
@@ -24,11 +27,11 @@ class ShipMessageBuilder;
 class Ship : public swganh::object::Object
 {
 public:
-	typedef ShipFactory FactoryType;
+    typedef ShipFactory FactoryType;
     typedef ShipMessageBuilder MessageBuilderType;
     // SHIP
     uint32_t GetType() const;
-    const static uint32_t type = 0x6FB799E0; 
+    const static uint32_t type = 0x6FB799E0;
 
 private:
     /*
@@ -72,5 +75,6 @@ private:
     uint32_t unkow8;                                                // update 1
     */
 };
-    
-}}  // namespace swganh::object
+
+}
+}  // namespace swganh::object

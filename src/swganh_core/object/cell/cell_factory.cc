@@ -28,58 +28,58 @@ void CellFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connec
 
 void CellFactory::RegisterEventHandlers()
 {
-	GetEventDispatcher()->Subscribe("Cell::Cell", std::bind(&CellFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Cell::Cell", std::bind(&CellFactory::PersistHandler, this, std::placeholders::_1));
 }
 
 
 void CellFactory::PersistChangedObjects()
 {
-	std::set<shared_ptr<Object>> persisted;
-	{
-		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
-		persisted = move(persisted_objects_);
-	}
-	for (auto& object : persisted)
-	{
-		auto lock = object->AcquireLock();
-		if(object->IsDatabasePersisted(lock))
-		{
-			PersistObject(object, lock);
-		}
-	}
+    std::set<shared_ptr<Object>> persisted;
+    {
+        boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+        persisted = move(persisted_objects_);
+    }
+for (auto& object : persisted)
+    {
+        auto lock = object->AcquireLock();
+        if(object->IsDatabasePersisted(lock))
+        {
+            PersistObject(object, lock);
+        }
+    }
 }
 
 uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
-	// Persist Intangible and Base Object First
+    // Persist Intangible and Base Object First
     uint32_t counter = 1;
-	
+
     IntangibleFactory::PersistObject(object, lock, persist_inherited);
 
-	try 
+    try
     {
-		auto conn = GetDatabaseManager()->getConnection("galaxy");
-		auto statement = shared_ptr<sql::PreparedStatement>
-			(conn->prepareStatement("CALL sp_PersistCell(?);"));
-		
-		auto cell = static_pointer_cast<Cell>(object);
-		statement->setInt(counter++, cell->GetCell(lock));
-		statement->executeUpdate();
-	}
-	catch(sql::SQLException &e)
-	{
-		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>
+                         (conn->prepareStatement("CALL sp_PersistCell(?);"));
+
+        auto cell = static_pointer_cast<Cell>(object);
+        statement->setInt(counter++, cell->GetCell(lock));
+        statement->executeUpdate();
+    }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-	}
-	return counter;
+    }
+    return counter;
 }
 
 void CellFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-	ObjectFactory::DeleteObjectFromStorage(object);
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> CellFactory::CreateObject()
 {
-	return make_shared<Cell>();
+    return make_shared<Cell>();
 }

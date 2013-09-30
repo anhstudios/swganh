@@ -8,38 +8,50 @@
 
 #include "swganh/event_dispatcher.h"
 
-namespace swganh {
-namespace app {
-	class SwganhKernel;
+namespace swganh
+{
+namespace app
+{
+class SwganhKernel;
 }
-namespace messages {
-	struct AttributeListMessage;
+namespace messages
+{
+struct AttributeListMessage;
 }
-namespace object {
-	class Object; 
+namespace object
+{
+class Object;
 }
-namespace attributes {
+namespace attributes
+{
 
-    class AttributeTemplateInterface 
+class AttributeTemplateInterface
+{
+public:
+    virtual ~AttributeTemplateInterface() {}
+
+    virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object) = 0;
+    virtual void SetKernel(swganh::app::SwganhKernel* kernel) = 0;
+    virtual swganh::app::SwganhKernel* GetKernel() = 0;
+};
+
+class BaseAttributeTemplate : public AttributeTemplateInterface
+{
+public:
+    virtual ~BaseAttributeTemplate() {}
+
+    virtual void SetKernel(swganh::app::SwganhKernel* kernel)
     {
-    public:
-        virtual ~AttributeTemplateInterface() {}
-
-        virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object) = 0;
-        virtual void SetKernel(swganh::app::SwganhKernel* kernel) = 0;
-		virtual swganh::app::SwganhKernel* GetKernel() = 0;
-    };
-
-    class BaseAttributeTemplate : public AttributeTemplateInterface
+        kernel_ = kernel;
+    }
+    virtual swganh::app::SwganhKernel* GetKernel()
     {
-    public:
-        virtual ~BaseAttributeTemplate() {}
+        return kernel_;
+    }
 
-        virtual void SetKernel(swganh::app::SwganhKernel* kernel) { kernel_ = kernel; }
-        virtual swganh::app::SwganhKernel* GetKernel() { return kernel_; }
+private:
+    swganh::app::SwganhKernel* kernel_;
+};
 
-    private:
-        swganh::app::SwganhKernel* kernel_;
-    };
-
-}}
+}
+}

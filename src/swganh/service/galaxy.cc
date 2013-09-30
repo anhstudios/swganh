@@ -10,12 +10,12 @@ Galaxy::Galaxy()
     : id_(0) {}
 
 Galaxy::Galaxy(
-    uint32_t id, 
-    uint32_t primary_id, 
-    const std::string& name, 
+    uint32_t id,
+    uint32_t primary_id,
+    const std::string& name,
     const std::string& version,
-    Galaxy::StatusType status, 
-    const std::string& created_at, 
+    Galaxy::StatusType status,
+    const std::string& created_at,
     const std::string& updated_at)
     : id_(id)
     , primary_id_(primary_id)
@@ -25,7 +25,8 @@ Galaxy::Galaxy(
     , updated_at_(updated_at)
 {}
 
-Galaxy::Galaxy(const Galaxy& other) {
+Galaxy::Galaxy(const Galaxy& other)
+{
     id_ = other.id_;
     primary_id_ = other.primary_id_;
     name_ = other.name_;
@@ -35,7 +36,8 @@ Galaxy::Galaxy(const Galaxy& other) {
     updated_at_ = other.updated_at_;
 }
 
-Galaxy::Galaxy(Galaxy&& other) {
+Galaxy::Galaxy(Galaxy&& other)
+{
     id_ = other.id_;
     primary_id_ = other.primary_id_;
     name_ = std::move(other.name_);
@@ -45,7 +47,8 @@ Galaxy::Galaxy(Galaxy&& other) {
     updated_at_ = std::move(other.updated_at_);
 }
 
-void Galaxy::swap(Galaxy& other) {
+void Galaxy::swap(Galaxy& other)
+{
     std::swap(other.id_, id_);
     std::swap(other.primary_id_, primary_id_);
     std::swap(other.name_, name_);
@@ -55,49 +58,60 @@ void Galaxy::swap(Galaxy& other) {
     std::swap(other.updated_at_, updated_at_);
 }
 
-Galaxy& Galaxy::operator=(Galaxy other) {
+Galaxy& Galaxy::operator=(Galaxy other)
+{
     other.swap(*this);
     return *this;
 }
 
-uint32_t Galaxy::id() const {
+uint32_t Galaxy::id() const
+{
     return id_;
 }
 
-uint32_t Galaxy::primary_id() const {
+uint32_t Galaxy::primary_id() const
+{
     return primary_id_;
 }
 
-void Galaxy::primary_id(uint32_t primary_id) {
+void Galaxy::primary_id(uint32_t primary_id)
+{
     primary_id_ = primary_id;
 }
 
-const std::string& Galaxy::name() const {
+const std::string& Galaxy::name() const
+{
     return name_;
 }
 
-const std::string& Galaxy::version() const {
+const std::string& Galaxy::version() const
+{
     return version_;
 }
 
-Galaxy::StatusType Galaxy::status() const {
+Galaxy::StatusType Galaxy::status() const
+{
     return status_;
 }
 
-void Galaxy::status(Galaxy::StatusType status) {
+void Galaxy::status(Galaxy::StatusType status)
+{
     status_ = status;
 }
 
-const std::string& Galaxy::created_at() const {
+const std::string& Galaxy::created_at() const
+{
     return created_at_;
 }
 
-const std::string& Galaxy::updated_at() const {
+const std::string& Galaxy::updated_at() const
+{
     return updated_at_;
 }
 
-uint64_t Galaxy::GetGalaxyTimeInMilliseconds() {
+uint64_t Galaxy::GetGalaxyTimeInMilliseconds()
+{
     boost::posix_time::ptime start_time(boost::posix_time::time_from_string(created_at()));
-	boost::posix_time::ptime current_time(boost::posix_time::second_clock::local_time());
+    boost::posix_time::ptime current_time(boost::posix_time::second_clock::local_time());
     return (current_time - start_time).total_milliseconds();
 }

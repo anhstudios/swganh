@@ -9,13 +9,17 @@
 #include "swganh/character/character_data.h"
 #include "swganh/messages/client_create_character.h"
 
-namespace swganh {
-namespace character {
-    
-class CharacterProviderInterface {
+namespace swganh
+{
+namespace character
+{
+
+class CharacterProviderInterface
+{
 public:
     virtual ~CharacterProviderInterface() {}
-    
+
 };
 
-}}  // namespace swganh::character
+}
+}  // namespace swganh::character

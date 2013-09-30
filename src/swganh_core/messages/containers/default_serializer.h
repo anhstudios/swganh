@@ -13,17 +13,17 @@ template<typename T>
 class DefaultSerializer
 {
 public:
-	
-	static void SerializeBaseline(swganh::ByteBuffer& data, const T& t)
-	{
-		data.write<T>(t);
-	}
-	
-	static void SerializeDelta(swganh::ByteBuffer& data, const T& t)
-	{
-		data.write<T>(t);
-	}
-	
+
+    static void SerializeBaseline(swganh::ByteBuffer& data, const T& t)
+    {
+        data.write<T>(t);
+    }
+
+    static void SerializeDelta(swganh::ByteBuffer& data, const T& t)
+    {
+        data.write<T>(t);
+    }
+
 };
 
 }

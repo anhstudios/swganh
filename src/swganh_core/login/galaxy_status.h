@@ -5,10 +5,13 @@
 #include <cstdint>
 #include <string>
 
-namespace swganh {
-namespace login {
+namespace swganh
+{
+namespace login
+{
 
-struct GalaxyStatus {    
+struct GalaxyStatus
+{
     uint32_t galaxy_id;
     std::string name;
     std::string address;
@@ -21,4 +24,5 @@ struct GalaxyStatus {
     uint32_t status;
 };
 
-}}  // namespace swganh::login
+}
+}  // namespace swganh::login

@@ -42,8 +42,8 @@ void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     }
 
     auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
-    
+                     (connection->prepareStatement("CALL sp_GetWaypoint(?);"));
+
     statement->setUInt64(1, waypoint->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
@@ -52,9 +52,9 @@ void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
         while (result->next())
         {
             waypoint->SetCoordinates( glm::vec3(
-                result->getDouble("x_coordinate"),
-                result->getDouble("y_coordinate"),
-                result->getDouble("z_coordinate")), lock);
+                                          result->getDouble("x_coordinate"),
+                                          result->getDouble("y_coordinate"),
+                                          result->getDouble("z_coordinate")), lock);
             //waypoint->SetLocationNetworkId(result->getUInt("scene_id"));
             string custom_string = result->getString("name");
             waypoint->SetName(wstring(begin(custom_string), end(custom_string)), lock);
@@ -63,7 +63,8 @@ void WaypointFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             result->getUInt("is_active") == 0 ? waypoint->DeActivate(lock) : waypoint->Activate(lock);
             waypoint->SetColor(Waypoint::WaypointColor(result->getUInt("color")), lock);
         }
-    } while(statement->getMoreResults());
+    }
+    while(statement->getMoreResults());
 }
 
 void WaypointFactory::RegisterEventHandlers()
@@ -77,31 +78,31 @@ void WaypointFactory::RegisterEventHandlers()
 
 void WaypointFactory::PersistChangedObjects()
 {
-	std::set<shared_ptr<Object>> persisted;
-	{
-		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
-		persisted = move(persisted_objects_);
-	}
-	for (auto& object : persisted)
-	{
-		auto lock = object->AcquireLock();
-		if(object->IsDatabasePersisted(lock))
-		{
-			PersistObject(object, lock);
-		}
-	}
+    std::set<shared_ptr<Object>> persisted;
+    {
+        boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+        persisted = move(persisted_objects_);
+    }
+for (auto& object : persisted)
+    {
+        auto lock = object->AcquireLock();
+        if(object->IsDatabasePersisted(lock))
+        {
+            PersistObject(object, lock);
+        }
+    }
 }
 
 uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
-	uint32_t counter = 1;
-	
-    if (object) 
+    uint32_t counter = 1;
+
+    if (object)
     {
         IntangibleFactory::PersistObject(object, lock, persist_inherited);
 
-        try 
-        {			
+        try
+        {
             auto waypoint = static_pointer_cast<Waypoint>(object);
             auto conn = GetDatabaseManager()->getConnection("galaxy");
             auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?);");
@@ -118,24 +119,24 @@ uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object, boost:
             statement->setString(counter++, waypoint->GetPlanet(lock));
             statement->setString(counter++, waypoint->GetNameStandard(lock));
             statement->setUInt(counter++, waypoint->GetColor(lock));
-            statement->execute();						
+            statement->execute();
         }
-            catch(sql::SQLException &e)
+        catch(sql::SQLException &e)
         {
             LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
             LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-        }		
+        }
     }
-	return counter;
+    return counter;
 }
 
 void WaypointFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-	ObjectFactory::DeleteObjectFromStorage(object);
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> WaypointFactory::CreateObject()
 {
-	return make_shared<Waypoint>();
+    return make_shared<Waypoint>();
 }
 

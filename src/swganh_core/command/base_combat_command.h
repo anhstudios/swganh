@@ -4,18 +4,22 @@
 
 #include "base_swg_command.h"
 
-namespace swganh {
-namespace combat {
-	struct CombatData;
+namespace swganh
+{
+namespace combat
+{
+struct CombatData;
 }
-namespace command {
-	
-    class BaseCombatCommand : public BaseSwgCommand, public std::enable_shared_from_this<BaseCombatCommand>
-    {
-    public:
-        virtual void Run();
+namespace command
+{
 
-		std::shared_ptr<swganh::combat::CombatData> combat_data;
-    };
+class BaseCombatCommand : public BaseSwgCommand, public std::enable_shared_from_this<BaseCombatCommand>
+{
+public:
+    virtual void Run();
 
-}}
+    std::shared_ptr<swganh::combat::CombatData> combat_data;
+};
+
+}
+}

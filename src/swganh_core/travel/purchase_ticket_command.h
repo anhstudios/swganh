@@ -6,20 +6,26 @@
 
 #include <swganh_core/command/base_swg_command.h>
 
-namespace swganh {
-namespace travel {
+namespace swganh
+{
+namespace travel
+{
 
-	class TravelService;
+class TravelService;
 
-	class PurchaseTicketCommand : public swganh::command::BaseSwgCommand
-	{
-	public:
-        virtual std::string GetCommandName() const { return "purchaseticket"; }
+class PurchaseTicketCommand : public swganh::command::BaseSwgCommand
+{
+public:
+    virtual std::string GetCommandName() const
+    {
+        return "purchaseticket";
+    }
 
-		virtual void Run();
+    virtual void Run();
 
-	private:
-		TravelService* travel_;
-	};
+private:
+    TravelService* travel_;
+};
 
-}} // namespace swganh::travel
+}
+} // namespace swganh::travel

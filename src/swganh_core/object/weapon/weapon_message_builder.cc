@@ -30,6 +30,6 @@ boost::optional<BaselinesMessage> WeaponMessageBuilder::BuildBaseline6(const sha
 {
     auto message = CreateBaselinesMessage(weapon, lock, Object::VIEW_6, 2);
     message.data.append((*TangibleMessageBuilder::BuildBaseline6(weapon, lock)).data);
- 
+
     return BaselinesMessage(std::move(message));
 }

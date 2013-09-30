@@ -4,15 +4,21 @@
 
 #include <cstdint>
 
-namespace swganh {
-namespace galaxy {
-namespace providers {
+namespace swganh
+{
+namespace galaxy
+{
+namespace providers
+{
 
-class GalaxyProviderInterface {
+class GalaxyProviderInterface
+{
 public:
     virtual ~GalaxyProviderInterface() {}
 
     virtual uint32_t GetPopulation() = 0;
 };
 
-}}}  // namespace swganh::galaxy::providers
+}
+}
+}  // namespace swganh::galaxy::providers

@@ -3,7 +3,7 @@
 
 #include "swganh_core/travel/travel_service_binding.h"
 
-BOOST_PYTHON_MODULE(py_travel) 
+BOOST_PYTHON_MODULE(py_travel)
 {
     docstring_options local_docstring_options(true, true, false);
 

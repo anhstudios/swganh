@@ -15,7 +15,7 @@ struct QuestJournalData
         , active_step_bitmask(0)
         , completed_step_bitmask(0)
         , completed_flag(false)
-        , counter(0){}
+        , counter(0) {}
 
     uint32_t quest_crc;
     uint64_t owner_id;
@@ -31,7 +31,7 @@ struct QuestJournalData
         data.write<uint64_t>(t.owner_id);
         data.write<uint16_t>(t.active_step_bitmask);
         data.write<uint16_t>(t.completed_step_bitmask);
-		data.write<uint8_t>((t.completed_flag) ? 1 : 0);
+        data.write<uint8_t>((t.completed_flag) ? 1 : 0);
         data.write<uint32_t>(t.counter);
     }
 
@@ -41,7 +41,7 @@ struct QuestJournalData
         data.write<uint64_t>(t.owner_id);
         data.write<uint16_t>(t.active_step_bitmask);
         data.write<uint16_t>(t.completed_step_bitmask);
-		data.write<uint8_t>((t.completed_flag) ? 1 : 0);
+        data.write<uint8_t>((t.completed_flag) ? 1 : 0);
         data.write<uint32_t>(t.counter);
     }
 

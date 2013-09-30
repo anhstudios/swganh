@@ -23,43 +23,52 @@
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
 
-namespace swganh {
-namespace simulation {
+namespace swganh
+{
+namespace simulation
+{
 class SimulationServiceInterface;
 }
-namespace command {
-class CommandServiceInterface; 
+namespace command
+{
+class CommandServiceInterface;
 }
-namespace object {
-    class Object;
-    class ObjectController;
-	class Creature;
-	class Tangible;
-}}  // namespace swganh::object;
-
-
-namespace swganh {
-namespace command {    
-    class BaseCombatCommand;
+namespace object
+{
+class Object;
+class ObjectController;
+class Creature;
+class Tangible;
 }
-    
-namespace combat {
+}  // namespace swganh::object;
 
-    class CombatServiceInterface : public swganh::service::BaseService
-    {
-    public:
-        virtual ~CombatServiceInterface() {}
 
-        virtual void SetIncapacitated(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
-        
-        virtual void SetDead(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
+namespace swganh
+{
+namespace command
+{
+class BaseCombatCommand;
+}
 
-        virtual void EndDuel(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
-        virtual void EndCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
-        
-		virtual void Startup() = 0;
+namespace combat
+{
 
-        virtual void SendCombatAction(swganh::command::BaseCombatCommand* command) = 0;
-    };
+class CombatServiceInterface : public swganh::service::BaseService
+{
+public:
+    virtual ~CombatServiceInterface() {}
 
-}}  // namespace swganh::combat
+    virtual void SetIncapacitated(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
+
+    virtual void SetDead(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
+
+    virtual void EndDuel(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
+    virtual void EndCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
+
+    virtual void Startup() = 0;
+
+    virtual void SendCombatAction(swganh::command::BaseCombatCommand* command) = 0;
+};
+
+}
+}  // namespace swganh::combat

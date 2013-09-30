@@ -21,11 +21,11 @@ void SecurityFilter::operator()(Session* session, ByteBuffer* message) const
     {
         /// @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
-        
+
         throw std::runtime_error("Malformed message received: message larger than allowed size");
     }
 
-    
+
     if (message_size < sizeof(uint16_t)) // Size of the message header
     {
         /// @TODO: Track the number of errors for a session and set a threshhold where

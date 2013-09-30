@@ -16,5 +16,5 @@ void exportIntangible()
     ;
 
     bp::implicitly_convertible<std::shared_ptr<so::Intangible>, std::shared_ptr<so::Object>>();
-	bp::implicitly_convertible<std::shared_ptr<so::Intangible>, std::shared_ptr<so::ContainerInterface>>();
+    bp::implicitly_convertible<std::shared_ptr<so::Intangible>, std::shared_ptr<so::ContainerInterface>>();
 }

@@ -12,31 +12,38 @@
 
 #include "player_service.h"
 
-namespace swganh {
-namespace player {
+namespace swganh
+{
+namespace player
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-    
+
     // Register Player Service
-	{ // Player::PlayerService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Player::PlayerService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             auto chat_service = new PlayerService(kernel);
-            
+
             return chat_service;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<PlayerService*>(object);
             }
         };
 
         kernel->GetPluginManager()->RegisterObject("Player::PlayerService", &registration);
-	}
+    }
 }
 
-}}  // namespace swganh::player
+}
+}  // namespace swganh::player

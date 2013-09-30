@@ -6,17 +6,21 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-namespace swganh {
-namespace character {
+namespace swganh
+{
+namespace character
+{
 
-struct CharacterData {
+struct CharacterData
+{
     std::wstring name;
     uint64_t character_id;
     uint32_t race_crc;
     uint32_t galaxy_id;
     uint32_t status;
 };
-struct CharacterLoginData {
+struct CharacterLoginData
+{
     uint64_t character_id;
     uint32_t race_crc;
     std::string gender;
@@ -29,7 +33,8 @@ struct CharacterLoginData {
 };
 #define appearance_size 0x255
 #define hair_customization_size 0x71
-struct CharacterCreateInfo {
+struct CharacterCreateInfo
+{
     uint32_t           account_id;
     uint64_t           character_id;
     std::string        first_name;
@@ -47,4 +52,5 @@ struct CharacterCreateInfo {
 //#undef appearance_size
 //#undef hair_customization_size
 
-}}  // namespace swganh::character
+}
+}  // namespace swganh::character

@@ -31,11 +31,11 @@ bool CommandFactory::IsRegistered(swganh::HashString command)
 }
 
 void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator creator)
-{    
+{
     auto properties = command_service_->FindPropertiesForCommand(command);
 
     if (!properties)
-    {        
+    {
         CommandProperties new_properties;
         new_properties.command_name = command.ident_string();
         new_properties.allow_in_locomotion = 0xffffffffffffffff;

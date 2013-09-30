@@ -4,23 +4,26 @@
 
 #include <swganh_core/object/object.h>
 
-namespace swganh {
-namespace simulation {
+namespace swganh
+{
+namespace simulation
+{
 
-	class PlayerViewBox : public swganh::object::Object
-	{
-	public:
-		PlayerViewBox(std::shared_ptr<swganh::object::Object> player);
-		~PlayerViewBox();
+class PlayerViewBox : public swganh::object::Object
+{
+public:
+    PlayerViewBox(std::shared_ptr<swganh::object::Object> player);
+    ~PlayerViewBox();
 
-		void OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider);
-		void OnCollisionLeave(std::shared_ptr<swganh::object::Object> collider);
+    void OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider);
+    void OnCollisionLeave(std::shared_ptr<swganh::object::Object> collider);
 
-	protected:
-		void __BuildCollisionBox();
+protected:
+    void __BuildCollisionBox();
 
-	private:
-		std::shared_ptr<swganh::object::Object> player_;
-	};
+private:
+    std::shared_ptr<swganh::object::Object> player_;
+};
 
-}} // namespace swganh::simulation
+}
+} // namespace swganh::simulation

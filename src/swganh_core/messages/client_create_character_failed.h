@@ -6,33 +6,42 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
-    
-    struct ClientCreateCharacterFailed : public BaseSwgMessage
+namespace swganh
+{
+namespace messages
+{
+
+struct ClientCreateCharacterFailed : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-        uint16_t Opcount() const { return 3; }
-        uint32_t Opcode() const { return 0xDF333C6E; }
-        
-        std::wstring unk1;
-        std::string stf_file;
-        std::string error_string;
+        return 3;
+    }
+    uint32_t Opcode() const
+    {
+        return 0xDF333C6E;
+    }
 
-        void OnSerialize(swganh::ByteBuffer& buffer) const
-        {
-            buffer.write(unk1);
-            buffer.write(stf_file);
-            buffer.write(0);
-            buffer.write(error_string);
-        }
+    std::wstring unk1;
+    std::string stf_file;
+    std::string error_string;
 
-        void OnDeserialize(swganh::ByteBuffer& buffer)
-        {
-        	unk1 = buffer.read<std::wstring>();
-            stf_file = buffer.read<std::string>();
-            buffer.read<uint32_t>();
-            error_string = buffer.read<std::string>();
-        }
-    };
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write(unk1);
+        buffer.write(stf_file);
+        buffer.write(0);
+        buffer.write(error_string);
+    }
 
-}}  // namespace swganh::messages
+    void OnDeserialize(swganh::ByteBuffer& buffer)
+    {
+        unk1 = buffer.read<std::wstring>();
+        stf_file = buffer.read<std::string>();
+        buffer.read<uint32_t>();
+        error_string = buffer.read<std::string>();
+    }
+};
+
+}
+}  // namespace swganh::messages

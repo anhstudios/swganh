@@ -6,11 +6,11 @@
 using namespace swganh::object;
 
 HarvesterInstallation::HarvesterInstallation()
-	: Installation()
+    : Installation()
 {
 }
 
 uint32_t HarvesterInstallation::GetType() const
-{ 
-    return HarvesterInstallation::type; 
+{
+    return HarvesterInstallation::type;
 }

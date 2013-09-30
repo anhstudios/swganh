@@ -12,23 +12,25 @@
 
 #include "resource_container.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 class ResourceContainerMessageBuilder : public swganh::object::TangibleMessageBuilder
 {
 public:
     ResourceContainerMessageBuilder(swganh::EventDispatcher* event_dispatcher_)
-        : TangibleMessageBuilder(event_dispatcher_) 
+        : TangibleMessageBuilder(event_dispatcher_)
     {
         RegisterEventHandlers();
     }
 
     // deltas
     static void BuildCurrentUnitsDelta(const std::shared_ptr<ResourceContainer>& resource_container);
-	static void BuildGlobalResourceIdDelta(const std::shared_ptr<ResourceContainer>& resource_container);
-	static void BuildMaxQuantityDelta(const std::shared_ptr<ResourceContainer>& resource_container);
-	static void BuildResourceTypeDelta(const std::shared_ptr<ResourceContainer>& resource_container);
-	static void BuildVariationNameDelta(const std::shared_ptr<ResourceContainer>& resource_container);
+    static void BuildGlobalResourceIdDelta(const std::shared_ptr<ResourceContainer>& resource_container);
+    static void BuildMaxQuantityDelta(const std::shared_ptr<ResourceContainer>& resource_container);
+    static void BuildResourceTypeDelta(const std::shared_ptr<ResourceContainer>& resource_container);
+    static void BuildVariationNameDelta(const std::shared_ptr<ResourceContainer>& resource_container);
 
     // baselines
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<ResourceContainer>& resource_container, boost::unique_lock<boost::mutex>& lock);
@@ -39,6 +41,7 @@ private:
     void RegisterEventHandlers();
 };
 
-}} // swganh::object
+}
+} // swganh::object
 
 #endif // SWGANH_OBJECT_CREATURE_CREATURE_MESSAGE_BUILDER_H_

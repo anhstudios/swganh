@@ -5,33 +5,39 @@
 #include "swganh_core/object/object_factory.h"
 #include <unordered_map>
 
-namespace swganh {
-namespace database {
+namespace swganh
+{
+namespace database
+{
 class DatabaseManagerInterface;
-}} // swganh::database
+}
+} // swganh::database
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-    class Intangible;
+class Intangible;
 
-    class IntangibleFactory : public swganh::object::ObjectFactory
-    {
-    public:
-        IntangibleFactory(swganh::app::SwganhKernel* kernel);
-		virtual ~IntangibleFactory() {}
+class IntangibleFactory : public swganh::object::ObjectFactory
+{
+public:
+    IntangibleFactory(swganh::app::SwganhKernel* kernel);
+    virtual ~IntangibleFactory() {}
 
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
+    virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 
-        void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
-		virtual void PersistChangedObjects(){}
+    void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
+    virtual void PersistChangedObjects() {}
 
-        std::shared_ptr<swganh::object::Object> CreateObject();
+    std::shared_ptr<swganh::object::Object> CreateObject();
 
-        virtual void RegisterEventHandlers(){}
-    private:
-    };
+    virtual void RegisterEventHandlers() {}
+private:
+};
 
-}}  // namespace swganh::object
+}
+}  // namespace swganh::object

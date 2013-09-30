@@ -35,7 +35,7 @@ boost::optional<BaselinesMessage> HarvesterInstallationMessageBuilder::BuildBase
 
 boost::optional<BaselinesMessage> HarvesterInstallationMessageBuilder::BuildBaseline7(const shared_ptr<HarvesterInstallation>& harvester_installation, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(harvester_installation, lock, Object::VIEW_7, 16);
-	message.data.append((*InstallationMessageBuilder::BuildBaseline7(harvester_installation, lock)).data);
-	return BaselinesMessage(std::move(message));
+    auto message = CreateBaselinesMessage(harvester_installation, lock, Object::VIEW_7, 16);
+    message.data.append((*InstallationMessageBuilder::BuildBaseline7(harvester_installation, lock)).data);
+    return BaselinesMessage(std::move(message));
 }

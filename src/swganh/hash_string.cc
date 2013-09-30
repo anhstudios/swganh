@@ -8,7 +8,7 @@ using namespace swganh;
 
 HashString::HashString()
     : ident_(reinterpret_cast<void*>(memcrc("")))
-    , ident_string_("") 
+    , ident_string_("")
 {}
 
 HashString::HashString(std::string ident_string)
@@ -25,38 +25,46 @@ HashString::HashString(uint32_t ident)
     : ident_(reinterpret_cast<void*>(ident))
 {}
 
-HashString::operator uint32_t () const {
+HashString::operator uint32_t () const
+{
     return ident();
 }
 
-HashString::operator std::string () const {
+HashString::operator std::string () const
+{
     return ident_string();
 }
 
-uint32_t HashString::ident() const {
+uint32_t HashString::ident() const
+{
     return static_cast<uint32_t>(reinterpret_cast<uint64_t>(ident_));
 }
 
-const std::string& HashString::ident_string() const {
+const std::string& HashString::ident_string() const
+{
     return ident_string_;
 }
 
-bool HashString::operator<(const HashString& other) const {
+bool HashString::operator<(const HashString& other) const
+{
     bool r = (ident() < other.ident());
     return r;
 }
 
-bool HashString::operator>(const HashString& other) const {
+bool HashString::operator>(const HashString& other) const
+{
     bool r = (ident() > other.ident());
     return r;
 }
 
-bool HashString::operator==(const HashString& other) const {
+bool HashString::operator==(const HashString& other) const
+{
     bool r = (ident() == other.ident());
     return r;
 }
 
-bool HashString::operator!=(const HashString& other) const {
+bool HashString::operator!=(const HashString& other) const
+{
     bool r = (ident() != other.ident());
     return r;
 }

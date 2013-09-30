@@ -31,6 +31,6 @@ boost::optional<BaselinesMessage> FactoryCrateMessageBuilder::BuildBaseline6(con
 {
     auto message = CreateBaselinesMessage(factory_crate, lock, Object::VIEW_6, 2);
     message.data.append((*TangibleMessageBuilder::BuildBaseline6(factory_crate, lock)).data);
- 
+
     return BaselinesMessage(std::move(message));
 }

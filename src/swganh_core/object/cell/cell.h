@@ -6,18 +6,24 @@
 
 #include "swganh_core/object/intangible/intangible.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 class CellFactory;
 class CellMessageBuilder;
-class Cell : public swganh::object::Intangible {
+class Cell : public swganh::object::Intangible
+{
 
 public:
-	typedef CellFactory FactoryType;
-	typedef CellMessageBuilder MessageBuilderType;
+    typedef CellFactory FactoryType;
+    typedef CellMessageBuilder MessageBuilderType;
     // SCLT
-    virtual uint32_t GetType() const { return Cell::type; }
+    virtual uint32_t GetType() const
+    {
+        return Cell::type;
+    }
     const static uint32_t type = 0x53434c54;
 
     /**
@@ -25,18 +31,19 @@ public:
     *   @returns cell number
     */
     uint32_t GetCell();
-	uint32_t GetCell(boost::unique_lock<boost::mutex>& lock);
+    uint32_t GetCell(boost::unique_lock<boost::mutex>& lock);
 
     /**
     * @brief sets the current cell number
     *   @param cell number
     */
     void SetCell(uint32_t cell_number);
-	void SetCell(uint32_t cell_number, boost::unique_lock<boost::mutex>& lock);
+    void SetCell(uint32_t cell_number, boost::unique_lock<boost::mutex>& lock);
 
 private:
-	typedef swganh::ValueEvent<std::shared_ptr<Cell>> CellEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<Cell>> CellEvent;
 
 };
 
-}} // swganh::object
+}
+} // swganh::object

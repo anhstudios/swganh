@@ -7,27 +7,30 @@
 #include "swganh_core/object/waypoint/waypoint.h"
 #include "swganh_core/object/intangible/intangible_factory.h"
 
-namespace swganh {
-namespace object {
-    class Waypoint;
-    class WaypointFactory : public swganh::object::IntangibleFactory
-    {
-    public:
-		typedef Waypoint ObjectType;
+namespace swganh
+{
+namespace object
+{
+class Waypoint;
+class WaypointFactory : public swganh::object::IntangibleFactory
+{
+public:
+    typedef Waypoint ObjectType;
 
-        WaypointFactory(swganh::app::SwganhKernel* kernel);
-        
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+    WaypointFactory(swganh::app::SwganhKernel* kernel);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
-		
-        void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
-		
-        virtual void PersistChangedObjects();
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        std::shared_ptr<swganh::object::Object> CreateObject();        
+    virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 
-        virtual void RegisterEventHandlers();
-    };
+    void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
-}}  // namespace swganh::object
+    virtual void PersistChangedObjects();
+
+    std::shared_ptr<swganh::object::Object> CreateObject();
+
+    virtual void RegisterEventHandlers();
+};
+
+}
+}  // namespace swganh::object

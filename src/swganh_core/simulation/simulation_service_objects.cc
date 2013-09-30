@@ -82,20 +82,20 @@ using namespace swganh::object;
 void SimulationService::RegisterObjectFactories()
 {
     auto object_manager = GetObjectManager();
-	object_manager->RegisterObjectType<Object>();
-	object_manager->RegisterObjectType<Static>();
-	object_manager->RegisterObjectType<Intangible>();
-	object_manager->RegisterObjectType<Installation>();
-	object_manager->RegisterObjectType<HarvesterInstallation>();
-	object_manager->RegisterObjectType<Mission>();
-	object_manager->RegisterObjectType<Guild>();
-	object_manager->RegisterObjectType<Waypoint>();
-	object_manager->RegisterObjectType<Cell>();
-	object_manager->RegisterObjectType<Player>();
-	object_manager->RegisterObjectType<ResourceContainer>();
-	object_manager->RegisterObjectType<FactoryCrate>();
-	object_manager->RegisterObjectType<Weapon>();
-	object_manager->RegisterObjectType<Building>();
-	object_manager->RegisterObjectType<Tangible>();
-	object_manager->RegisterObjectType<Creature>();
+    object_manager->RegisterObjectType<Object>();
+    object_manager->RegisterObjectType<Static>();
+    object_manager->RegisterObjectType<Intangible>();
+    object_manager->RegisterObjectType<Installation>();
+    object_manager->RegisterObjectType<HarvesterInstallation>();
+    object_manager->RegisterObjectType<Mission>();
+    object_manager->RegisterObjectType<Guild>();
+    object_manager->RegisterObjectType<Waypoint>();
+    object_manager->RegisterObjectType<Cell>();
+    object_manager->RegisterObjectType<Player>();
+    object_manager->RegisterObjectType<ResourceContainer>();
+    object_manager->RegisterObjectType<FactoryCrate>();
+    object_manager->RegisterObjectType<Weapon>();
+    object_manager->RegisterObjectType<Building>();
+    object_manager->RegisterObjectType<Tangible>();
+    object_manager->RegisterObjectType<Creature>();
 }

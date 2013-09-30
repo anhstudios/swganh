@@ -22,7 +22,7 @@ using namespace std;
 namespace ba = boost::asio;
 
 BaseEvent::BaseEvent(EventType type)
-: type_(type)
+    : type_(type)
 {}
 
 EventType BaseEvent::Type() const
@@ -31,7 +31,7 @@ EventType BaseEvent::Type() const
 }
 
 EventDispatcher::EventDispatcher(ba::io_service& io_service)
-: io_service_(io_service)
+    : io_service_(io_service)
 {}
 
 EventDispatcher::~EventDispatcher()
@@ -51,7 +51,7 @@ CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callb
     {
         find_iter = event_handlers_.insert(make_pair(type, EventHandlerList())).first;
     }
-    
+
     find_iter->second.insert(std::make_pair(handler_id, move(callback)));
 
     return handler_id;
@@ -62,7 +62,7 @@ void EventDispatcher::Unsubscribe(EventType type, CallbackId identifier)
     boost::upgrade_lock<boost::shared_mutex> lg(event_handlers_mutex_);
 
     auto event_type_iter = event_handlers_.find(type);
-    
+
     if (event_type_iter != end(event_handlers_))
     {
         auto type_handlers = event_type_iter->second;
@@ -74,14 +74,15 @@ void EventDispatcher::Unsubscribe(EventType type, CallbackId identifier)
 boost::unique_future<shared_ptr<EventInterface>> EventDispatcher::Dispatch(const shared_ptr<EventInterface>& dispatch_event)
 {
     auto task = make_shared<boost::packaged_task<shared_ptr<EventInterface>>>(
-        [this, dispatch_event] () -> shared_ptr<EventInterface>
+                    [this, dispatch_event] () -> shared_ptr<EventInterface>
     {
         InvokeCallbacks(dispatch_event);
-        
+
         return dispatch_event;
     });
 
-    io_service_.post([task] () {
+    io_service_.post([task] ()
+    {
         (*task)();
     });
 
@@ -98,13 +99,13 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
     boost::shared_lock<boost::shared_mutex> lg(event_handlers_mutex_);
 
     auto event_type_iter = event_handlers_.find(dispatch_event->Type());
-    
+
     if (event_type_iter != end(event_handlers_))
     {
         for_each(
-            begin(event_type_iter->second), 
-            end(event_type_iter->second), 
-            [&dispatch_event] (const EventHandlerList::value_type& handler) 
+            begin(event_type_iter->second),
+            end(event_type_iter->second),
+            [&dispatch_event] (const EventHandlerList::value_type& handler)
         {
             try
             {
@@ -112,7 +113,7 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
             }
             catch(...)
             {
-            	DLOG(warning) << "A handler callback caused an exception.";
+                DLOG(warning) << "A handler callback caused an exception.";
             }
         });
     }
@@ -120,8 +121,8 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
 
 void EventDispatcher::Shutdown()
 {
-	boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
-    for (auto& item : event_handlers_)
+    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+for (auto& item : event_handlers_)
     {
         item.second.clear();
     }

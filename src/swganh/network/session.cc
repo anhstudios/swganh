@@ -37,74 +37,87 @@ Session::~Session(void)
     Close();
 }
 
-uint16_t Session::server_sequence() const {
+uint16_t Session::server_sequence() const
+{
     return server_sequence_;
 }
 
-uint32_t Session::receive_buffer_size() const {
+uint32_t Session::receive_buffer_size() const
+{
     return receive_buffer_size_;
 }
 
-void Session::receive_buffer_size(uint32_t receive_buffer_size) {
+void Session::receive_buffer_size(uint32_t receive_buffer_size)
+{
     receive_buffer_size_ = receive_buffer_size;
 }
 
-uint32_t Session::crc_length() const {
+uint32_t Session::crc_length() const
+{
     return crc_length_;
 }
 
-void Session::crc_length(uint32_t crc_length) {
+void Session::crc_length(uint32_t crc_length)
+{
     crc_length_ = crc_length;
 }
 
-void Session::crc_seed(uint32_t crc_seed) {
+void Session::crc_seed(uint32_t crc_seed)
+{
     crc_seed_ = crc_seed;
 }
 
-uint32_t Session::crc_seed() const {
+uint32_t Session::crc_seed() const
+{
     return crc_seed_;
 }
 
 swganh::ByteBuffer Session::SendSoePacket_(swganh::ByteBuffer message)
 {
 //	LOG_NET << "S->C: " << server_->listen_endpoint() << " -> " << remote_endpoint() << "\n" << message;
-    
+
     compression_filter_(this, &message);
     encryption_filter_(this, &message);
     crc_output_filter_(this, &message);
-	
+
     // Store it for resending later if necessary
     server_->SendTo(remote_endpoint(), message);
-    
+
     return message;
 }
 
 void Session::SendFragmentedPacket_(ByteBuffer message, SequencedCallbacks callbacks)
 {
-    uint32_t message_size = message.size();  
+    uint32_t message_size = message.size();
     uint32_t remaining_bytes = message_size;
     uint32_t max_size = max_data_size();
     uint32_t chunk_size = 0;
 
-    if (message_size < max_size) {
+    if (message_size < max_size)
+    {
         throw std::invalid_argument("Message must be bigger than max size to fragment");
     }
 
-    while (remaining_bytes != 0) {        
+    while (remaining_bytes != 0)
+    {
         ByteBuffer fragment;
         chunk_size = (remaining_bytes > max_size) ? max_size : remaining_bytes;
 
-        if (remaining_bytes == message_size) {
+        if (remaining_bytes == message_size)
+        {
             chunk_size -= sizeof(uint32_t);
             fragment.write(hostToBig(message_size));
         }
-        
+
         fragment.write(message.data() + (message_size - remaining_bytes), chunk_size);
         remaining_bytes -= chunk_size;
 
-        if (remaining_bytes == 0) {
+        if (remaining_bytes == 0)
+        {
             SendSequencedMessage_(0x0D, std::move(fragment), std::move(callbacks));
-        } else {
+        }
+        else
+        {
             SendSequencedMessage_(0x0D, std::move(fragment));
         }
     }
@@ -114,7 +127,8 @@ void Session::SendSequencedMessage_(uint16_t header, ByteBuffer message, Sequenc
 {
     auto shared_message = std::make_shared<ByteBuffer>(std::move(message));
     auto shared_callbacks = std::make_shared<SequencedCallbacks>(std::move(callbacks));
-    strand_.post([this, header, shared_message, shared_callbacks] () {
+    strand_.post([this, header, shared_message, shared_callbacks] ()
+    {
         // Get the next sequence number
         uint16_t message_sequence = server_sequence_++;
 
@@ -132,13 +146,15 @@ void Session::SendSequencedMessage_(uint16_t header, ByteBuffer message, Sequenc
 
 void Session::SendTo(ByteBuffer message, boost::optional<SequencedCallback> callback)
 {
-    if(!connected()) {
+    if(!connected())
+    {
         LOG(warning) << "Attempting to send to a non-connected client";
         return;
     }
 
     SequencedCallbacks callbacks;
-    if (callback) {
+    if (callback)
+    {
         callbacks.emplace_back(std::move(*callback));
     }
 
@@ -147,14 +163,18 @@ void Session::SendTo(ByteBuffer message, boost::optional<SequencedCallback> call
 
 void Session::SendTo(ByteBuffer message, SequencedCallbacks callbacks)
 {
-    if(!connected()) {
+    if(!connected())
+    {
         LOG(warning) << "Attempting to send to a non-connected client";
         return;
     }
 
-    if (message.size() > max_data_size()) {
+    if (message.size() > max_data_size())
+    {
         SendFragmentedPacket_(std::move(message), std::move(callbacks));
-    } else {
+    }
+    else
+    {
         SendSequencedMessage_(0x09, std::move(message), std::move(callbacks));
     }
 }
@@ -177,22 +197,62 @@ void Session::Close(void)
 void Session::HandleMessage(ByteBuffer message)
 {
     switch(bigToHost(message.read<uint16_t>()))
-	{
-		case CHILD_DATA_A:	   { handleChildDataA_(Deserialize<ChildDataA>(message)); break; }
-		case MULTI_PACKET:	   { handleMultiPacket_(Deserialize<MultiPacket>(message)); break; }
-		case DATA_FRAG_A:	   { handleDataFragA_(Deserialize<DataFragA>(message)); break; }
-		case ACK_A:			   { handleAckA_(Deserialize<AckA>(message)); break; }
-		case PING:			   { handlePing_(Deserialize<Ping>(message)); break; }
-		case NET_STATS_CLIENT: { handleNetStatsClient_(Deserialize<NetStatsClient>(message)); break; }
-		case OUT_OF_ORDER_A:   { handleOutOfOrderA_(Deserialize<OutOfOrderA>(message)); break; }
-		case DISCONNECT:	   { handleDisconnect_(Deserialize<Disconnect>(message)); break; }
-		case SESSION_REQUEST:  { handleSessionRequest_(Deserialize<SessionRequest>(message)); break; }
-		case FATAL_ERROR:      { Close(); break; }
-		default:
-			{
-				LOG(warning) << "Unhandled message: \n" << message;
-			}
-	}
+    {
+    case CHILD_DATA_A:
+    {
+        handleChildDataA_(Deserialize<ChildDataA>(message));
+        break;
+    }
+    case MULTI_PACKET:
+    {
+        handleMultiPacket_(Deserialize<MultiPacket>(message));
+        break;
+    }
+    case DATA_FRAG_A:
+    {
+        handleDataFragA_(Deserialize<DataFragA>(message));
+        break;
+    }
+    case ACK_A:
+    {
+        handleAckA_(Deserialize<AckA>(message));
+        break;
+    }
+    case PING:
+    {
+        handlePing_(Deserialize<Ping>(message));
+        break;
+    }
+    case NET_STATS_CLIENT:
+    {
+        handleNetStatsClient_(Deserialize<NetStatsClient>(message));
+        break;
+    }
+    case OUT_OF_ORDER_A:
+    {
+        handleOutOfOrderA_(Deserialize<OutOfOrderA>(message));
+        break;
+    }
+    case DISCONNECT:
+    {
+        handleDisconnect_(Deserialize<Disconnect>(message));
+        break;
+    }
+    case SESSION_REQUEST:
+    {
+        handleSessionRequest_(Deserialize<SessionRequest>(message));
+        break;
+    }
+    case FATAL_ERROR:
+    {
+        Close();
+        break;
+    }
+    default:
+    {
+        LOG(warning) << "Unhandled message: \n" << message;
+    }
+    }
 }
 
 void Session::HandleProtocolMessage(swganh::ByteBuffer message)
@@ -202,7 +262,8 @@ void Session::HandleProtocolMessage(swganh::ByteBuffer message)
 
 void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
 {
-    try {
+    try
+    {
         security_filter_(this, &message);
 
         if(connected())
@@ -211,15 +272,20 @@ void Session::HandleProtocolMessageInternal(swganh::ByteBuffer message)
             decryption_filter_(this, &message);
             decompression_filter_(this, &message);
         }
-	    
+
 //        LOG_NET << "C->S: " << remote_endpoint() << " -> " << server_->listen_endpoint() << "\n" << message;
-        
-        if(message.peek<uint8_t>() != 0) {
+
+        if(message.peek<uint8_t>() != 0)
+        {
             server_->HandleMessage(shared_from_this(), std::move(message));
-        } else {
+        }
+        else
+        {
             HandleMessage(move(message));
         }
-    } catch(const std::exception& e) {
+    }
+    catch(const std::exception& e)
+    {
         LOG(warning) << "Error handling protocol message: " << e.what();
     }
 }
@@ -242,10 +308,14 @@ void Session::handleSessionRequest_(SessionRequest packet)
 
 void Session::handleMultiPacket_(MultiPacket packet)
 {
-    for(auto& message : packet.packets) {
-        if(message.peek<uint8_t>() != 0) {
+    for(auto& message : packet.packets)
+    {
+        if(message.peek<uint8_t>() != 0)
+        {
             server_->HandleMessage(shared_from_this(), std::move(message));
-        } else {
+        }
+        else
+        {
             HandleMessage(std::move(message));
         }
     }
@@ -273,9 +343,11 @@ void Session::handleChildDataA_(ChildDataA packet)
 {
     if(!AcknowledgeSequence_(packet.sequence)) return;
 
-    for(auto& message : packet.messages) {
+    for(auto& message : packet.messages)
+    {
         auto shared_message = std::make_shared<ByteBuffer>(std::move(message));
-        strand_.post([this, shared_message] () {
+        strand_.post([this, shared_message] ()
+        {
             server_->HandleMessage(shared_from_this(), std::move(*shared_message));
         });
     }
@@ -284,12 +356,14 @@ void Session::handleChildDataA_(ChildDataA packet)
 void Session::handleDataFragA_(DataFragA packet)
 {
     if(!AcknowledgeSequence_(packet.sequence)) return;
-    
+
     // Continuing a frag
-    if(incoming_fragmented_total_len_ > 0) {
+    if(incoming_fragmented_total_len_ > 0)
+    {
         incoming_frag_.append(packet.data);
 
-        if(incoming_fragmented_total_len_ == incoming_frag_.size()) {
+        if(incoming_fragmented_total_len_ == incoming_frag_.size())
+        {
             incoming_fragmented_total_len_ = 0;
             server_->HandleMessage(shared_from_this(), std::move(incoming_frag_));
         }
@@ -307,10 +381,12 @@ void Session::handleAckA_(AckA packet)
 {
     auto end = unacknowledged_messages_.end();
     auto it = unacknowledged_messages_.begin();
-    while(it != end) {
+    while(it != end)
+    {
         auto current_sequence = std::get<0>(*it);
         if(current_sequence > packet.sequence) break;
-        for(auto& func : std::get<2>(*it)) {
+        for(auto& func : std::get<2>(*it))
+        {
             func(current_sequence);
         }
 
@@ -319,8 +395,9 @@ void Session::handleAckA_(AckA packet)
 }
 
 void Session::handleOutOfOrderA_(OutOfOrderA packet)
-{    
-    for(const auto& message : unacknowledged_messages_) {
+{
+    for(const auto& message : unacknowledged_messages_)
+    {
         server_->SendTo(remote_endpoint(), std::get<1>(message));
 
         if(std::get<0>(message) == packet.sequence) break;
@@ -333,21 +410,24 @@ bool Session::AcknowledgeSequence_(const uint16_t& sequence)
     {
         AckA ack(sequence);
         SendSoePacket_(Serialize(ack));
-        
+
         current_client_sequence_ = sequence;
         next_client_sequence_ = current_client_sequence_ + 1;
 
         return true;
     }
 
-    if(sequence > (next_client_sequence_ + 50) && next_client_sequence_ > 50) {
-		Close();
-	} else {
-		// Tell the client we have received an Out of Order sequence.
-		OutOfOrderA	out_of_order(current_client_sequence_);
-		SendSoePacket_(Serialize(out_of_order));        
+    if(sequence > (next_client_sequence_ + 50) && next_client_sequence_ > 50)
+    {
+        Close();
     }
-	
+    else
+    {
+        // Tell the client we have received an Out of Order sequence.
+        OutOfOrderA	out_of_order(current_client_sequence_);
+        SendSoePacket_(Serialize(out_of_order));
+    }
+
     DLOG(warning) << "Invalid sequence: [" << sequence << "] Current sequence [" << next_client_sequence_ << "]";
-	return false;
+    return false;
 }

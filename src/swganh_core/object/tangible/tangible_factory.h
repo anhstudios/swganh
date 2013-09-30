@@ -6,39 +6,46 @@
 
 #include <unordered_map>
 
-namespace swganh {
-namespace database {
+namespace swganh
+{
+namespace database
+{
 class DatabaseManagerInterface;
-}} // swganh::database
+}
+} // swganh::database
 
-namespace sql {
+namespace sql
+{
 class Statement;
 }
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
-    class Tangible;
-    class TangibleFactory : public swganh::object::ObjectFactory
-    {
-    public:
-        typedef Tangible ObjectType;
+class Tangible;
+class TangibleFactory : public swganh::object::ObjectFactory
+{
+public:
+    typedef Tangible ObjectType;
 
-        TangibleFactory(swganh::app::SwganhKernel* kernel);
-		virtual ~TangibleFactory() {}
-		
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+    TangibleFactory(swganh::app::SwganhKernel* kernel);
+    virtual ~TangibleFactory() {}
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
+    virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 
-		virtual void PersistChangedObjects();
+    void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
-        std::shared_ptr<swganh::object::Object> CreateObject();
-        
-        virtual void RegisterEventHandlers();
-    };
+    virtual void PersistChangedObjects();
 
-}}  // namespace swganh::object
+    std::shared_ptr<swganh::object::Object> CreateObject();
+
+    virtual void RegisterEventHandlers();
+};
+
+}
+}  // namespace swganh::object

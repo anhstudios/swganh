@@ -16,6 +16,6 @@ struct UpdateTransformWithParentMessageWrapper : UpdateTransformWithParentMessag
 };
 void exportUpdateTransformWithParentMessage()
 {
-	class_<UpdateTransformWithParentMessageWrapper, boost::noncopyable>("UpdateTransformWithParentMessage");
+    class_<UpdateTransformWithParentMessageWrapper, boost::noncopyable>("UpdateTransformWithParentMessage");
 }
 

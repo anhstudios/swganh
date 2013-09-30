@@ -4,40 +4,47 @@
 
 #include <memory>
 
-namespace swganh {
+namespace swganh
+{
 
-namespace object {
-    class Creature;
-    class Tangible;
+namespace object
+{
+class Creature;
+class Tangible;
 }  // namespace object
 
-namespace messages {
-namespace controllers {
-    class CommandQueueEnqueue;
-}}  // namespace messages::controllers
+namespace messages
+{
+namespace controllers
+{
+class CommandQueueEnqueue;
+}
+}  // namespace messages::controllers
 
-namespace command {
+namespace command
+{
 
-    class CommandInterface;
-    struct CommandProperties;
+class CommandInterface;
+struct CommandProperties;
+
+/**
+ * A queue for managing the flow of command processing for a single controlled object.
+ */
+class CommandQueueInterface
+{
+public:
+    virtual ~CommandQueueInterface() {}
 
     /**
-     * A queue for managing the flow of command processing for a single controlled object.
+     * Enqueues a command for processing.
+     *
+     * @param A command to process.
      */
-    class CommandQueueInterface
-    {
-    public:
-        virtual ~CommandQueueInterface() {}
-        
-        /**
-         * Enqueues a command for processing.
-         *
-         * @param A command to process.
-         */
-        virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
-        virtual void SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command) = 0;
-        virtual void ClearDefaultCommand() = 0;
-        virtual bool HasDefaultCommand() = 0;
-    };
+    virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
+    virtual void SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command) = 0;
+    virtual void ClearDefaultCommand() = 0;
+    virtual bool HasDefaultCommand() = 0;
+};
 
-}}  // namespace swganh::command
+}
+}  // namespace swganh::command

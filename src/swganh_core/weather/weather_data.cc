@@ -14,19 +14,28 @@ WeatherEvent::WeatherEvent(long minutes, Weather weather, glm::vec3 vector)
     cloud_vector.z = vector.z;
 }
 
-long WeatherEvent::GetDuration() { return duration; }
+long WeatherEvent::GetDuration()
+{
+    return duration;
+}
 void WeatherEvent::SetDuration(long minutes)
 {
     duration = minutes;
 }
 
-Weather WeatherEvent::GetWeatherType() { return weather_type; }
+Weather WeatherEvent::GetWeatherType()
+{
+    return weather_type;
+}
 void WeatherEvent::SetWeatherType(Weather weather)
 {
     weather_type = weather;
 }
 
-glm::vec3 WeatherEvent::GetCloudVector() { return cloud_vector; }
+glm::vec3 WeatherEvent::GetCloudVector()
+{
+    return cloud_vector;
+}
 void WeatherEvent::SetCloudVector(glm::vec3 vector)
 {
     cloud_vector.x = vector.x;

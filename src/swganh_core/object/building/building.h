@@ -9,8 +9,10 @@
 #include "swganh_core/object/object.h"
 #include "swganh_core/object/tangible/tangible.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 class BuildingFactory;
 class BuildingMessageBuilder;
@@ -18,7 +20,7 @@ class BuildingMessageBuilder;
 class Building : public swganh::object::Tangible
 {
 public:
-	typedef BuildingFactory FactoryType;
+    typedef BuildingFactory FactoryType;
     typedef BuildingMessageBuilder MessageBuilderType;
 
     uint32_t GetType() const;
@@ -28,4 +30,5 @@ private:
 
 };
 
-}}  // namespace swganh::object
+}
+}  // namespace swganh::object

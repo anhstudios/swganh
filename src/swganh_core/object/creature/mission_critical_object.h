@@ -42,22 +42,22 @@ struct MissionCriticalObject
 
         return true;
     }
-	
-	bool operator<(const MissionCriticalObject& b) const
-	{
-		if(mission_owner_id_ < b.mission_owner_id_)
-		{
-			return true;
-		} 
-		else if(mission_owner_id_ == b.mission_owner_id_)
-		{
-			if(critical_object_id_ < b.critical_object_id_)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+
+    bool operator<(const MissionCriticalObject& b) const
+    {
+        if(mission_owner_id_ < b.mission_owner_id_)
+        {
+            return true;
+        }
+        else if(mission_owner_id_ == b.mission_owner_id_)
+        {
+            if(critical_object_id_ < b.critical_object_id_)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 }

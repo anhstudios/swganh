@@ -11,24 +11,24 @@ namespace swganh
 namespace object
 {
 
-	class Object;
-	class ContainerInterface;
+class Object;
+class ContainerInterface;
 
-	class ContainerPermissionsInterface
-	{
-	public:
+class ContainerPermissionsInterface
+{
+public:
 
-		virtual ~ContainerPermissionsInterface() {}
+    virtual ~ContainerPermissionsInterface() {}
 
-		virtual PermissionType GetType() = 0;
+    virtual PermissionType GetType() = 0;
 
-		virtual bool canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;
+    virtual bool canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;
 
-		virtual bool canRemove(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;
+    virtual bool canRemove(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;
 
-		virtual bool canView(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester) = 0;
+    virtual bool canView(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester) = 0;
 
-	};
+};
 
 }
 }

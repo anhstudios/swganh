@@ -16,38 +16,45 @@
 #include "connection_service.h"
 #include "version.h"
 
-namespace swganh {
-namespace connection {
+namespace swganh
+{
+namespace connection
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-    
+
     // Register Connection Service
-	{ // 
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        //
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
 
-			auto app_config = kernel->GetAppConfig();
+            auto app_config = kernel->GetAppConfig();
 
-			auto connection_service = new ConnectionService(
-			app_config.connection_config.listen_address, 
-			app_config.connection_config.listen_port, 
-			app_config.connection_config.ping_port, 
-			kernel);
+            auto connection_service = new ConnectionService(
+                app_config.connection_config.listen_address,
+                app_config.connection_config.listen_port,
+                app_config.connection_config.ping_port,
+                kernel);
 
             return connection_service;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<ConnectionService*>(object);
             }
         };
 
         kernel->GetPluginManager()->RegisterObject("Connection::ConnectionService", &registration);
-	}
+    }
 }
 
-}}  // namespace swganh::connection
+}
+}  // namespace swganh::connection

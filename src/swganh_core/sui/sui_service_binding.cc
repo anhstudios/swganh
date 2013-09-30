@@ -4,11 +4,11 @@
 #include "swganh_core/sui/sui_service_binding.h"
 #include "swganh_core/sui/radial_binding.h"
 
-BOOST_PYTHON_MODULE(py_sui) 
+BOOST_PYTHON_MODULE(py_sui)
 {
     bp::docstring_options local_docstring_options(true, true, false);
 
     exportSuiService();
 
-	exportRadial();
+    exportRadial();
 }

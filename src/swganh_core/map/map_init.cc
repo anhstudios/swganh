@@ -10,30 +10,37 @@
 
 #include <swganh_core/map/map_service.h>
 
-namespace swganh {
-namespace map {
+namespace swganh
+{
+namespace map
+{
 
-	void Initialize(swganh::app::SwganhKernel* kernel)
-	{
-		swganh::plugin::ObjectRegistration registration;
-		registration.version.major = VERSION_MAJOR;
-		registration.version.minor = VERSION_MINOR;
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
+    swganh::plugin::ObjectRegistration registration;
+    registration.version.major = VERSION_MAJOR;
+    registration.version.minor = VERSION_MINOR;
 
-		// Register Map Service
-		{ // Map::MapService
-			registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-				auto map_service = new MapService(kernel);
-				return map_service;
-			};
+    // Register Map Service
+    {
+        // Map::MapService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
+            auto map_service = new MapService(kernel);
+            return map_service;
+        };
 
-			registration.DestroyObject = [] (void* object) {
-				if(object) {
-					delete static_cast<MapService*>(object);
-				}
-			};
+        registration.DestroyObject = [] (void* object)
+        {
+            if(object)
+            {
+                delete static_cast<MapService*>(object);
+            }
+        };
 
-			kernel->GetPluginManager()->RegisterObject("Map::MapService", &registration);
-		}
-	}
+        kernel->GetPluginManager()->RegisterObject("Map::MapService", &registration);
+    }
+}
 
-}} // namespace swganh::map
+}
+} // namespace swganh::map

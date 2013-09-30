@@ -47,26 +47,26 @@ using boost::asio::ip::udp;
 using swganh::app::SwganhKernel;
 
 ConnectionService::ConnectionService(
-        string listen_address,
-        uint16_t listen_port,
-        uint16_t ping_port,
-        SwganhKernel* kernel)
+    string listen_address,
+    uint16_t listen_port,
+    uint16_t ping_port,
+    SwganhKernel* kernel)
     : ConnectionServiceInterface(kernel)
     , kernel_(kernel)
     , ping_server_(nullptr)
-	, active_(kernel->GetIoThreadPool())
+    , active_(kernel->GetIoThreadPool())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , ping_port_(ping_port)
-{    
+{
     SetServiceDescription(ServiceDescription(
-        "Connection Service",
-        "connection",
-        "0.1",
-        swganh::network::resolve_to_string(listen_address_),
-        0,
-        listen_port_,
-        ping_port_));
+                              "Connection Service",
+                              "connection",
+                              "0.1",
+                              swganh::network::resolve_to_string(listen_address_),
+                              0,
+                              listen_port_,
+                              ping_port_));
 }
 
 ConnectionService::~ConnectionService()
@@ -84,28 +84,32 @@ void ConnectionService::Initialize()
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
-void ConnectionService::Startup() {
-	ping_server_ = make_shared<PingServer>(kernel_->GetIoThreadPool(), ping_port_);
+void ConnectionService::Startup()
+{
+    ping_server_ = make_shared<PingServer>(kernel_->GetIoThreadPool(), ping_port_);
 
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
     login_service_ = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-    
+
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
     RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
 
     StartListening(listen_port_);
 }
 
-void ConnectionService::Shutdown() {
+void ConnectionService::Shutdown()
+{
     StopListening();
 }
 
-const string& ConnectionService::listen_address() {
+const string& ConnectionService::listen_address()
+{
     return listen_address_;
 }
 
-uint16_t ConnectionService::listen_port() {
+uint16_t ConnectionService::listen_port()
+{
     return listen_port_;
 }
 
@@ -119,42 +123,45 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
         {
             session = make_shared<ConnectionClient>(this, kernel_->GetCpuThreadPool(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
-			LOG(info) << "Created Connection Service Session for " << endpoint.address().to_string();
+            LOG(info) << "Created Connection Service Session for " << endpoint.address().to_string();
         }
     }
 
     return session;
 }
 
-bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
+bool ConnectionService::RemoveSession(std::shared_ptr<Session> session)
+{
     {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         session_map_.erase(session->remote_endpoint());
-	}
+    }
 
     auto connection_client = static_pointer_cast<ConnectionClient>(session);
 
-    if (auto controller = connection_client->GetController()) {
+    if (auto controller = connection_client->GetController())
+    {
         simulation_service_->StopControllingObject(controller->GetId());
 
         kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<uint64_t>>("Connection::ControllerConnectionClosed", controller->GetId()));
-	}
+    }
 
     LOG(info) << "Removing disconnected client";
-	session_provider_->EndGameSession(connection_client->GetPlayerId());
+    session_provider_->EndGameSession(connection_client->GetPlayerId());
 
-	
+
     return true;
 }
 
-shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint) {
+shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint)
+{
     {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
 
         auto find_iter = session_map_.find(endpoint);
         if (find_iter != session_map_.end())
         {
-			return find_iter->second;
+            return find_iter->second;
         }
     }
 
@@ -169,9 +176,9 @@ std::shared_ptr<ConnectionClientInterface> ConnectionService::FindConnectionByPl
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
 
         auto find_iter = find_if(
-            begin(session_map_),
-            end(session_map_),
-            [player_id] (SessionMap::value_type& item)
+                             begin(session_map_),
+                             end(session_map_),
+                             [player_id] (SessionMap::value_type& item)
         {
             return item.second->GetPlayerId() == player_id;
         });
@@ -186,21 +193,21 @@ std::shared_ptr<ConnectionClientInterface> ConnectionService::FindConnectionByPl
 }
 
 void ConnectionService::HandleCmdSceneReady_(
-    const shared_ptr<ConnectionClientInterface>& client, 
+    const shared_ptr<ConnectionClientInterface>& client,
     CmdSceneReady* message)
 {
     DLOG(info) << "Handling CmdSceneReady";
 
     client->SendTo(CmdSceneReady());
 
-	auto object = simulation_service_->GetObjectById(client->GetController()->GetId());
+    auto object = simulation_service_->GetObjectById(client->GetController()->GetId());
 
     kernel_->GetEventDispatcher()->Dispatch(
         make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));
 }
 
 void ConnectionService::HandleClientIdMsg_(
-    const shared_ptr<ConnectionClientInterface>& client, 
+    const shared_ptr<ConnectionClientInterface>& client,
     ClientIdMsg* message)
 {
     DLOG(info) << "Handling ClientIdMsg";
@@ -209,7 +216,8 @@ void ConnectionService::HandleClientIdMsg_(
     uint32_t account_id = login_service_->GetAccountBySessionKey(message->session_hash);
 
     // authorized
-    if (! account_id) {
+    if (! account_id)
+    {
         LOG(warning) << "Account_id not found from session key, unauthorized access.";
         return;
     }
@@ -218,7 +226,8 @@ void ConnectionService::HandleClientIdMsg_(
     uint64_t player_id = session_provider_->GetPlayerId(account_id);
 
     // authorized
-    if (! player_id) {
+    if (! player_id)
+    {
         LOG(warning) << "No player found for the requested account, unauthorized access.";
         return;
     }
@@ -230,7 +239,8 @@ void ConnectionService::HandleClientIdMsg_(
     }
 
     // creates a new session and stores it for later use
-    if (!session_provider_->CreateGameSession(player_id, client->connection_id())) {
+    if (!session_provider_->CreateGameSession(player_id, client->connection_id()))
+    {
         DLOG(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
 

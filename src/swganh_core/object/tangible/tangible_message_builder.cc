@@ -85,12 +85,12 @@ void TangibleMessageBuilder::BuildCustomizationDelta(const shared_ptr<Tangible>&
 }
 void TangibleMessageBuilder::BuildComponentCustomizationDelta(const shared_ptr<Tangible>& tangible)
 {
-	if (tangible->HasObservers())
+    if (tangible->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 5);
-		tangible->SerializeComponentCustomization(&message);
-		tangible->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 5);
+        tangible->SerializeComponentCustomization(&message);
+        tangible->AddDeltasUpdate(&message);
+    }
 }
 void TangibleMessageBuilder::BuildOptionsMaskDelta(const shared_ptr<Tangible>& tangible)
 {

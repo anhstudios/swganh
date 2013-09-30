@@ -5,7 +5,7 @@
 
 using namespace swganh::object;
 
-uint32_t FactoryCrate::GetType() const 
-{ 
-    return FactoryCrate::type; 
+uint32_t FactoryCrate::GetType() const
+{
+    return FactoryCrate::type;
 }

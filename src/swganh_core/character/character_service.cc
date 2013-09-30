@@ -49,13 +49,13 @@ CharacterService::CharacterService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
     SetServiceDescription(service::ServiceDescription(
-        "Character Service",
-        "character",
-        "0.1",
-        "127.0.0.1",
-        0,
-        0,
-        0));
+                              "Character Service",
+                              "character",
+                              "0.1",
+                              "127.0.0.1",
+                              0,
+                              0,
+                              0));
 }
 
 CharacterService::~CharacterService()
@@ -66,7 +66,8 @@ void CharacterService::Initialize()
     character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
 
-void CharacterService::Startup() {
+void CharacterService::Startup()
+{
     auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 
     connection_service->RegisterMessageHandler(
@@ -82,57 +83,61 @@ void CharacterService::Startup() {
 }
 
 void CharacterService::HandleClientCreateCharacter_(
-    const shared_ptr<ConnectionClientInterface>& client, 
-    ClientCreateCharacter* message) 
-{    
+    const shared_ptr<ConnectionClientInterface>& client,
+    ClientCreateCharacter* message)
+{
     uint64_t character_id;
     string error_code;
-	bool name_check;
-	string name_check_error_code;
-	string name = std::string(message->character_name.begin(), message->character_name.end());
-	
-	// Profanity/Reserve/Developer/ect... name check.
-	tie(name_check, name_check_error_code) = character_provider_->IsNameAllowed(name);
-	if(!name_check) // Failed Name Check
-	{
-		ClientCreateCharacterFailed failed;
-		failed.stf_file = "ui";
-		failed.error_string = name_check_error_code;
-		client->SendTo(failed);
-		return; // Bail out of character creation.
-	}
+    bool name_check;
+    string name_check_error_code;
+    string name = std::string(message->character_name.begin(), message->character_name.end());
+
+    // Profanity/Reserve/Developer/ect... name check.
+    tie(name_check, name_check_error_code) = character_provider_->IsNameAllowed(name);
+    if(!name_check) // Failed Name Check
+    {
+        ClientCreateCharacterFailed failed;
+        failed.stf_file = "ui";
+        failed.error_string = name_check_error_code;
+        client->SendTo(failed);
+        return; // Bail out of character creation.
+    }
 
     tie(character_id, error_code) = character_provider_->CreateCharacter(*message, client->GetAccountId());
-	
+
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
     client->SendTo(heartbeat);
 
-    if (error_code.length() > 0 && character_id == 0) {
+    if (error_code.length() > 0 && character_id == 0)
+    {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
         failed.error_string = error_code;
         client->SendTo(failed);
-    } else {
+    }
+    else
+    {
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
         client->SendTo(success);
 
-		//Send an event to all interested parties
-		kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<std::pair<uint64_t, std::string>>>(
-			"Character::NewCharacter", std::make_pair(character_id, name)));
+        //Send an event to all interested parties
+        kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<std::pair<uint64_t, std::string>>>(
+                "Character::NewCharacter", std::make_pair(character_id, name)));
     }
 }
 
 void CharacterService::HandleClientRandomNameRequest_(
-    const shared_ptr<ConnectionClientInterface>& client, 
+    const shared_ptr<ConnectionClientInterface>& client,
     ClientRandomNameRequest* message)
 {
     ClientRandomNameResponse response;
     response.player_race_iff = message->player_race_iff;
 
     response.random_name = character_provider_->GetRandomNameRequest(message->player_race_iff);
-    if (response.random_name.length() > 0) {
+    if (response.random_name.length() > 0)
+    {
         response.stf_file = "ui";
         response.approval_string = "name_approved";
     }
@@ -141,13 +146,14 @@ void CharacterService::HandleClientRandomNameRequest_(
 }
 
 void CharacterService::HandleDeleteCharacterMessage_(
-    const shared_ptr<LoginClientInterface>& login_client, 
+    const shared_ptr<LoginClientInterface>& login_client,
     DeleteCharacterMessage* message)
 {
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 
-    if (character_provider_->DeleteCharacter(message->character_id, login_client->GetAccount()->account_id())) {
+    if (character_provider_->DeleteCharacter(message->character_id, login_client->GetAccount()->account_id()))
+    {
         reply_message.failure_flag = 0;
     }
 

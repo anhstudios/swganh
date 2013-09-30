@@ -4,35 +4,41 @@
 
 #include "swganh/event_dispatcher.h"
 
-namespace sql { class ResultSet; }
+namespace sql
+{
+class ResultSet;
+}
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-    class Player;
+class Player;
 
-    struct NameEvent : swganh::BaseEvent 
-    {
-        NameEvent(swganh::EventType type, const std::shared_ptr<Player>& player_, uint64_t name_id_)
-            : BaseEvent(type)
-            , player(player_)
-            , name_id(name_id_){}
+struct NameEvent : swganh::BaseEvent
+{
+    NameEvent(swganh::EventType type, const std::shared_ptr<Player>& player_, uint64_t name_id_)
+        : BaseEvent(type)
+        , player(player_)
+        , name_id(name_id_) {}
 
-        std::shared_ptr<Player> player;
-        uint64_t name_id;
-    };
+    std::shared_ptr<Player> player;
+    uint64_t name_id;
+};
 
-    struct WaypointEvent : swganh::BaseEvent
-    {
-        WaypointEvent(swganh::EventType type, const std::shared_ptr<Player>& player_, const std::shared_ptr<sql::ResultSet> result_set_)
-            : BaseEvent(type)
-            , player(player_)
-            , result_set(result_set_){}
-        
-        std::shared_ptr<Player> player;
-        std::shared_ptr<sql::ResultSet> result_set;
-    };
+struct WaypointEvent : swganh::BaseEvent
+{
+    WaypointEvent(swganh::EventType type, const std::shared_ptr<Player>& player_, const std::shared_ptr<sql::ResultSet> result_set_)
+        : BaseEvent(type)
+        , player(player_)
+        , result_set(result_set_) {}
+
+    std::shared_ptr<Player> player;
+    std::shared_ptr<sql::ResultSet> result_set;
+};
 
 
 
-}}
+}
+}

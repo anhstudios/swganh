@@ -24,12 +24,12 @@ using namespace swganh::simulation;
 
 void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection)
 {
-    try 
+    try
     {
         auto statement = connection->createStatement();
 
         unique_ptr<ResultSet> result(statement->executeQuery(
-            "CALL sp_GetSceneDescriptions()"));
+                                         "CALL sp_GetSceneDescriptions()"));
 
         while(result->next())
         {
@@ -43,7 +43,7 @@ void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::
             scene_descriptions_.insert(make_pair(description.label, description));
         }
     }
-    catch(SQLException &e) 
+    catch(SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -64,29 +64,30 @@ std::shared_ptr<swganh::simulation::SceneInterface> SceneManager::GetScene(const
 
 std::shared_ptr<swganh::simulation::SceneInterface> SceneManager::GetScene(uint32_t scene_id) const
 {
-	auto find_iter = find_if(begin(scenes_), end(scenes_), [scene_id] (ScenePair scene_pair) {
-		return scene_pair.second->GetSceneId() == scene_id;
-	});
+    auto find_iter = find_if(begin(scenes_), end(scenes_), [scene_id] (ScenePair scene_pair)
+    {
+        return scene_pair.second->GetSceneId() == scene_id;
+    });
 
-	if (find_iter == scenes_.end())
+    if (find_iter == scenes_.end())
     {
         return nullptr;
     }
-    
-	return find_iter->second;
+
+    return find_iter->second;
 }
 
 void SceneManager::ViewScenes(std::function<void(const std::string&, std::shared_ptr<Scene>)> func)
 {
-	std::for_each(scenes_.begin(), scenes_.end(), [&] (std::pair<std::string, std::shared_ptr<Scene>> pair)
-	{
-		func(pair.first, pair.second);
-	});
+    std::for_each(scenes_.begin(), scenes_.end(), [&] (std::pair<std::string, std::shared_ptr<Scene>> pair)
+    {
+        func(pair.first, pair.second);
+    });
 }
 
 void SceneManager::StartScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel)
 {
-	auto description_iter = scene_descriptions_.find(scene_label);
+    auto description_iter = scene_descriptions_.find(scene_label);
 
     if (description_iter == scene_descriptions_.end())
     {
@@ -94,7 +95,7 @@ void SceneManager::StartScene(const std::string& scene_label, swganh::app::Swgan
     }
 
     auto scene_iter = scenes_.find(scene_label);
-    if (scene_iter != scenes_.end()) 
+    if (scene_iter != scenes_.end())
     {
         throw std::runtime_error("Scene has already been loaded: " + scene_label);
     }
@@ -105,18 +106,19 @@ void SceneManager::StartScene(const std::string& scene_label, swganh::app::Swgan
 
     scenes_.insert(make_pair(scene_label, scene));
 
-	kernel->GetEventDispatcher()->Dispatch(std::make_shared<NewSceneEvent>("SceneManager:NewScene", 
-		scene->GetSceneId(), scene->GetLabel(), scene->GetTerrainMap()));
+    kernel->GetEventDispatcher()->Dispatch(std::make_shared<NewSceneEvent>("SceneManager:NewScene",
+                                           scene->GetSceneId(), scene->GetLabel(), scene->GetTerrainMap()));
 }
 
 void SceneManager::StopScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel)
 {
-	auto itr = scenes_.find(scene_label);
-	if(itr != scenes_.end()) {
+    auto itr = scenes_.find(scene_label);
+    if(itr != scenes_.end())
+    {
 
-		kernel->GetEventDispatcher()->Dispatch(std::make_shared<DestroySceneEvent>("SceneManager:DestroyScene",
-			itr->second->GetSceneId()));
+        kernel->GetEventDispatcher()->Dispatch(std::make_shared<DestroySceneEvent>("SceneManager:DestroyScene",
+                                               itr->second->GetSceneId()));
 
-		scenes_.erase(scene_label);
-	}
+        scenes_.erase(scene_label);
+    }
 }

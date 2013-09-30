@@ -6,26 +6,26 @@ namespace swganh
 {
 namespace object
 {
-	class Creature;
+class Creature;
 }
 
 namespace combat
 {
-	struct BuffEvent : swganh::BaseEvent
-	{
-		BuffEvent(swganh::EventType type, 
-			std::shared_ptr<swganh::object::Creature> object_, 
-			swganh::HashString name_,
-			uint32_t duration_)
-			: BaseEvent(type)
-			, object(object_)
-			, name(name_)
-			, duration(duration_) 
-		{}
+struct BuffEvent : swganh::BaseEvent
+{
+    BuffEvent(swganh::EventType type,
+              std::shared_ptr<swganh::object::Creature> object_,
+              swganh::HashString name_,
+              uint32_t duration_)
+        : BaseEvent(type)
+        , object(object_)
+        , name(name_)
+        , duration(duration_)
+    {}
 
-		std::shared_ptr<swganh::object::Creature> object;
-		swganh::HashString name;
-		uint32_t duration;
-	};
+    std::shared_ptr<swganh::object::Creature> object;
+    swganh::HashString name;
+    uint32_t duration;
+};
 }
 }

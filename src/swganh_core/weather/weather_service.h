@@ -24,59 +24,65 @@
 #include "swganh_core/player/player_service_interface.h"
 
 
-namespace swganh {
-namespace simulation {
-	class SimulationServiceInterface;
-}} // namespace swganh::simulation
+namespace swganh
+{
+namespace simulation
+{
+class SimulationServiceInterface;
+}
+} // namespace swganh::simulation
 
-namespace swganh {
-namespace weather {
+namespace swganh
+{
+namespace weather
+{
 
-	class PlanetWeather
-	{
-	public:
-		uint64_t updateGalaxyTickTime_;
-		std::vector<swganh::weather::WeatherEvent> weatherSequence_;
-		swganh::weather::Scene scene_;
-		uint32_t sequenceCount_;
-	};
-    
-    class WeatherService : public swganh::weather::WeatherServiceInterface
-    {
-    public:
-        explicit WeatherService(swganh::app::SwganhKernel* kernel);
-    
-        ~WeatherService();
-        
-        virtual void Initialize();
-		virtual void Startup();
-		virtual void Shutdown();
+class PlanetWeather
+{
+public:
+    uint64_t updateGalaxyTickTime_;
+    std::vector<swganh::weather::WeatherEvent> weatherSequence_;
+    swganh::weather::Scene scene_;
+    uint32_t sequenceCount_;
+};
 
-		swganh::weather::Weather GetSceneWeather(uint32_t scene_id);
-		void SetSceneWeather(uint32_t scene_id, std::vector<swganh::weather::WeatherEvent> weather_sequence_);
-		void RunWeatherSequence();
+class WeatherService : public swganh::weather::WeatherServiceInterface
+{
+public:
+    explicit WeatherService(swganh::app::SwganhKernel* kernel);
 
-    private:
-		void tickPlanetWeather_();
-		void WeatherScript();
-		void RemoveWeatherScene(uint32_t scene_);
-		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<swganh::observer::ObserverInterface> obj_controller);
-		void SendServerWeatherMessageAll_(swganh::weather::Weather weather_type, glm::vec3 cloud_vector, uint32_t scene_id);
-		void OnPlayerEnter(std::shared_ptr<swganh::object::Object> player_obj);
-		void RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
+    ~WeatherService();
 
-		swganh::app::SwganhKernel* kernel_;
-		swganh::scripting::PythonScript script_;
-		swganh::simulation::SimulationServiceInterface* simulation_service_;
-		swganh::CallbackId player_selected_callback_;
-		swganh::galaxy::GalaxyServiceInterface* galaxy_service_;
-		mutable boost::mutex weather_mutex_;
-		std::vector<swganh::weather::WeatherEvent> weather_sequence_;
-		std::shared_ptr<boost::asio::deadline_timer> weather_timer_;
-		std::map<uint32_t, PlanetWeather> sceneLookup_;
-		uint64_t weatherScriptTimer;
-		std::string script_prefix_;
-    };
-}}  // namespace swganh::weather
+    virtual void Initialize();
+    virtual void Startup();
+    virtual void Shutdown();
+
+    swganh::weather::Weather GetSceneWeather(uint32_t scene_id);
+    void SetSceneWeather(uint32_t scene_id, std::vector<swganh::weather::WeatherEvent> weather_sequence_);
+    void RunWeatherSequence();
+
+private:
+    void tickPlanetWeather_();
+    void WeatherScript();
+    void RemoveWeatherScene(uint32_t scene_);
+    void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<swganh::observer::ObserverInterface> obj_controller);
+    void SendServerWeatherMessageAll_(swganh::weather::Weather weather_type, glm::vec3 cloud_vector, uint32_t scene_id);
+    void OnPlayerEnter(std::shared_ptr<swganh::object::Object> player_obj);
+    void RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
+
+    swganh::app::SwganhKernel* kernel_;
+    swganh::scripting::PythonScript script_;
+    swganh::simulation::SimulationServiceInterface* simulation_service_;
+    swganh::CallbackId player_selected_callback_;
+    swganh::galaxy::GalaxyServiceInterface* galaxy_service_;
+    mutable boost::mutex weather_mutex_;
+    std::vector<swganh::weather::WeatherEvent> weather_sequence_;
+    std::shared_ptr<boost::asio::deadline_timer> weather_timer_;
+    std::map<uint32_t, PlanetWeather> sceneLookup_;
+    uint64_t weatherScriptTimer;
+    std::string script_prefix_;
+};
+}
+}  // namespace swganh::weather
 
 #endif  // SWGANH_CORE_WEATHER_WEATHER_SERVICE_H_

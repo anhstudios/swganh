@@ -16,13 +16,13 @@ namespace spawn
 class DefaultController : public FsmController
 {
 public:
-	DefaultController(FiniteStateMachineInterface* parent, std::shared_ptr<swganh::object::Object> object, 
-							 std::shared_ptr<FsmStateInterface> initial_state)
-		: FsmController(parent, object, initial_state)
-	{}
+    DefaultController(FiniteStateMachineInterface* parent, std::shared_ptr<swganh::object::Object> object,
+                      std::shared_ptr<FsmStateInterface> initial_state)
+        : FsmController(parent, object, initial_state)
+    {}
 
-	void Notify(swganh::messages::BaseSwgMessage* message) {}
-	void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::Session::SequencedCallback &&) {}
+    void Notify(swganh::messages::BaseSwgMessage* message) {}
+    void Notify(swganh::messages::BaseSwgMessage* message, swganh::network::Session::SequencedCallback &&) {}
 };
 }
 }

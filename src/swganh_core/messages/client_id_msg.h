@@ -7,29 +7,38 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
-    
-    struct ClientIdMsg : public BaseSwgMessage
+namespace swganh
+{
+namespace messages
+{
+
+struct ClientIdMsg : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-        uint16_t Opcount() const { return 3; }
-        uint32_t Opcode() const { return 0xD5899226; }
-        
-        std::string session_hash;
-        
-        void OnSerialize(swganh::ByteBuffer& buffer) const
-        {
-            buffer.write<uint32_t>(0);
-            buffer.write<uint32_t>(0);
-            buffer.write(session_hash);
-        }
+        return 3;
+    }
+    uint32_t Opcode() const
+    {
+        return 0xD5899226;
+    }
 
-        void OnDeserialize(swganh::ByteBuffer& buffer)
-        {
-            buffer.read<uint32_t>();  // unknown
-            buffer.read<uint32_t>();  // size @TODO Investigate if this is proper usage.
-            session_hash = buffer.read<std::string>();
-        }
-    };
+    std::string session_hash;
 
-}}  // namespace swganh::messages
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write<uint32_t>(0);
+        buffer.write<uint32_t>(0);
+        buffer.write(session_hash);
+    }
+
+    void OnDeserialize(swganh::ByteBuffer& buffer)
+    {
+        buffer.read<uint32_t>();  // unknown
+        buffer.read<uint32_t>();  // size @TODO Investigate if this is proper usage.
+        session_hash = buffer.read<std::string>();
+    }
+};
+
+}
+}  // namespace swganh::messages

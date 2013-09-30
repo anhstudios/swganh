@@ -25,24 +25,24 @@ using namespace swganh::scripting;
 using swganh::object::Creature;
 
 PyCharacterCreate::PyCharacterCreate(swganh::app::SwganhKernel* kernel)
-	: kernel_(kernel)
+    : kernel_(kernel)
 {
     simulation_ = kernel_->GetServiceManager()->GetService<swganh::simulation::SimulationService>("SimulationService");
 }
 
 uint64_t PyCharacterCreate::CreateCharacter(
-	const std::wstring& full_name, const std::string& profession, 
-	const std::string& location, float height, const std::string& bio, const std::string& customization, 
-	const std::string& hair_iff, const std::string& hair_customization, const std::string& iff_template)
+    const std::wstring& full_name, const std::string& profession,
+    const std::string& location, float height, const std::string& bio, const std::string& customization,
+    const std::string& hair_iff, const std::string& hair_customization, const std::string& iff_template)
 {
     uint64_t character_id = 0;
     std::vector<int> char_customization(customization.begin(), customization.end());
-	std::vector<int> hair_custom(hair_customization.begin(), hair_customization.end());
+    std::vector<int> hair_custom(hair_customization.begin(), hair_customization.end());
 
     PythonScript script(kernel_->GetAppConfig().script_directory + "/character_create/create_starting_character.py");
 
     auto create_func = script.GetGlobal("CreateStartingCharacter");
-    
+
     {
         ScopedGilLock lock;
         try
@@ -54,10 +54,10 @@ uint64_t PyCharacterCreate::CreateCharacter(
             simulation_->PersistRelatedObjects(character_id, true);
         }
         catch (bp::error_already_set&)
-	    {
-		    logPythonException();
-	    }
+        {
+            logPythonException();
+        }
     }
 
-	return character_id;
+    return character_id;
 }

@@ -3,7 +3,7 @@
 
 #include "swganh_core/terrain/terrain_service_binding.h"
 
-BOOST_PYTHON_MODULE(py_terrain) 
+BOOST_PYTHON_MODULE(py_terrain)
 {
     boost::python::docstring_options local_docstring_options(true, true, false);
 

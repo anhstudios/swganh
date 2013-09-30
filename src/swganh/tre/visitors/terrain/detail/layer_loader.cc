@@ -17,32 +17,32 @@
 
 using namespace swganh::tre;
 
-/** 
+/**
 	This class is used to load a particular implementation based on it's node name.
 	We should consider using a map here instead as this is slightly inefficient.
 */
 Layer* LayerLoader(std::string node_name)
 {
-	if(node_name == "LAYRFORM")
-		return new ContainerLayer();
-	else if(node_name == "BCIRFORM")
-		return new BoundaryCircle();
-	else if(node_name == "BPOLFORM")
-		return new BoundaryPolygon();
-	else if(node_name == "BPLNFORM")
-		return new BoundaryPolyline();
-	else if(node_name == "BRECFORM")
-		return new BoundaryRectangle();
-	else if(node_name == "FFRAFORM")
-		return new FractalFilter();
-	else if(node_name == "FHGTFORM")
-		return new HeightFilter();
-	else if(node_name == "FSLPFORM")
-		return new SlopeFilter();
-	else if(node_name == "AHCNFORM")
-		return new HeightConstant();
-	else if(node_name == "AHFRFORM")
-		return new HeightFractal();
-	else
-		return nullptr;
+    if(node_name == "LAYRFORM")
+        return new ContainerLayer();
+    else if(node_name == "BCIRFORM")
+        return new BoundaryCircle();
+    else if(node_name == "BPOLFORM")
+        return new BoundaryPolygon();
+    else if(node_name == "BPLNFORM")
+        return new BoundaryPolyline();
+    else if(node_name == "BRECFORM")
+        return new BoundaryRectangle();
+    else if(node_name == "FFRAFORM")
+        return new FractalFilter();
+    else if(node_name == "FHGTFORM")
+        return new HeightFilter();
+    else if(node_name == "FSLPFORM")
+        return new SlopeFilter();
+    else if(node_name == "AHCNFORM")
+        return new HeightConstant();
+    else if(node_name == "AHFRFORM")
+        return new HeightFractal();
+    else
+        return nullptr;
 }

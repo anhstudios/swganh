@@ -42,9 +42,9 @@ CommandQueue::~CommandQueue()
 }
 
 void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& command)
-{   
+{
     auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
- 
+
     bool is_valid;
     uint32_t error;
     uint32_t action;
@@ -92,7 +92,8 @@ bool CommandQueue::HasDefaultCommand()
 
 void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command)
 {
-    try {
+    try
+    {
         bool is_valid;
         uint32_t error;
         uint32_t action;
@@ -103,23 +104,25 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
         {
             if (command->Validate())
             {
-		        command->Run();
-				command->PostRun(true);
+                command->Run();
+                command->PostRun(true);
             }
             else
             {
                 LOG(warning) << "Invalid Command: " <<  command->GetCommandName();
                 action = 1; // indicates a general error
-				command->PostRun(false);
+                command->PostRun(false);
             }
         }
-		else
-		{
-			command->PostRun(false);
-		}
+        else
+        {
+            command->PostRun(false);
+        }
 
         command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
-    } catch(const std::exception& e) {
+    }
+    catch(const std::exception& e)
+    {
         LOG(warning) << "Error Processing Command: " <<  command->GetCommandName() << "\n" << e.what();
     }
 }
@@ -131,15 +134,15 @@ void CommandQueue::Notify()
     {
         processing_ = true;
         process_lg.unlock();
-        
+
         if (auto command = GetNextCommand())
-        {           
+        {
             ProcessCommand(command);
 
-			std::shared_ptr<swganh::object::Creature> actor = std::static_pointer_cast<swganh::object::Creature>(command->GetActor());
-			uint64_t default_time = actor->HasState(swganh::object::COMBAT) ? static_cast<uint64_t>(command->GetDefaultTime() * 1000) : 0;
-			timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(default_time)));
-            timer_.async_wait([this] (const boost::system::error_code& ec) 
+            std::shared_ptr<swganh::object::Creature> actor = std::static_pointer_cast<swganh::object::Creature>(command->GetActor());
+            uint64_t default_time = actor->HasState(swganh::object::COMBAT) ? static_cast<uint64_t>(command->GetDefaultTime() * 1000) : 0;
+            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(default_time)));
+            timer_.async_wait([this] (const boost::system::error_code& ec)
             {
                 if (!ec && this)
                 {
@@ -147,7 +150,7 @@ void CommandQueue::Notify()
                         boost::lock_guard<boost::mutex> lg(process_mutex_);
                         processing_ = false;
                     }
-            
+
                     this->Notify();
                 }
             });
@@ -157,7 +160,7 @@ void CommandQueue::Notify()
             process_lg.lock();
             processing_ = false;
         }
-    }		
+    }
 }
 
 std::shared_ptr<swganh::command::BaseSwgCommand> CommandQueue::GetNextCommand()

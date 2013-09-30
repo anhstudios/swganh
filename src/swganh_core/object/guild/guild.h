@@ -12,36 +12,43 @@
 
 #include "guild_tag.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 class GuildFactory;
 class GuildMessageBuilder;
-class Guild : public swganh::object::Object {
+class Guild : public swganh::object::Object
+{
 public:
-	typedef GuildFactory FactoryType;
-	typedef GuildMessageBuilder MessageBuilderType;
+    typedef GuildFactory FactoryType;
+    typedef GuildMessageBuilder MessageBuilderType;
     Guild();
     ~Guild();
 
     void AddGuildTag(uint32_t guild_id, std::string abbreviation);
-	void AddGuildTag(uint32_t guild_id, std::string abbreviation, boost::unique_lock<boost::mutex>& lock);
+    void AddGuildTag(uint32_t guild_id, std::string abbreviation, boost::unique_lock<boost::mutex>& lock);
 
     void RemoveGuildTag(uint32_t guild_id);
-	void RemoveGuildTag(uint32_t guild_id, boost::unique_lock<boost::mutex>& lock);
+    void RemoveGuildTag(uint32_t guild_id, boost::unique_lock<boost::mutex>& lock);
 
     std::set<GuildTag> GetGuildList();
-	std::set<GuildTag> GetGuildList(boost::unique_lock<boost::mutex>& lock);
+    std::set<GuildTag> GetGuildList(boost::unique_lock<boost::mutex>& lock);
 
-	void SerializeGuildList(swganh::messages::BaseSwgMessage* message);
-	void SerializeGuildList(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
+    void SerializeGuildList(swganh::messages::BaseSwgMessage* message);
+    void SerializeGuildList(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
-    virtual uint32_t GetType() const { return type; }
+    virtual uint32_t GetType() const
+    {
+        return type;
+    }
     const static uint32_t type = 0x444C4947;
 
 private:
-	typedef swganh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
     swganh::containers::NetworkSet<GuildTag>     guild_list_;
 };
 
-}}  // namespaces swganh::object
+}
+}  // namespaces swganh::object

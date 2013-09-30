@@ -4,25 +4,28 @@
 
 #include "swganh_core/object/intangible/intangible_factory.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
-	class ManufactureSchematic;
-    class ManufactureSchematicFactory : public swganh::object::IntangibleFactory
-    {
-    public:
-		typedef ManufactureSchematic ObjectType;
+class ManufactureSchematic;
+class ManufactureSchematicFactory : public swganh::object::IntangibleFactory
+{
+public:
+    typedef ManufactureSchematic ObjectType;
 
-		ManufactureSchematicFactory(swganh::app::SwganhKernel* kernel);
-        
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+    ManufactureSchematicFactory(swganh::app::SwganhKernel* kernel);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
-		virtual void PersistChangedObjects(){}
-        void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        std::shared_ptr<swganh::object::Object> CreateObject();
-    };
+    virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
+    virtual void PersistChangedObjects() {}
+    void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
-}}  // namespace swganh::object
+    std::shared_ptr<swganh::object::Object> CreateObject();
+};
+
+}
+}  // namespace swganh::object

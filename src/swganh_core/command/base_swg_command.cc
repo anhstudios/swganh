@@ -19,7 +19,7 @@ using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::simulation::SimulationServiceInterface;
 
 void BaseSwgCommand::Initialize(
-    swganh::app::SwganhKernel* kernel, 
+    swganh::app::SwganhKernel* kernel,
     const CommandProperties& properties)
 {
     kernel_ = kernel;
@@ -30,12 +30,12 @@ void BaseSwgCommand::Initialize(
 
 const std::shared_ptr<ObserverInterface> BaseSwgCommand::GetController() const
 {
-	return controller_;
+    return controller_;
 }
 
 void BaseSwgCommand::SetController(std::shared_ptr<swganh::observer::ObserverInterface> controller)
 {
-	controller_ = controller;
+    controller_ = controller;
 }
 
 bool BaseSwgCommand::Validate()
@@ -74,7 +74,7 @@ uint64_t BaseSwgCommand::GetAllowedStateBitmask() const
 }
 uint64_t BaseSwgCommand::GetAllowedLocomotionBitmask() const
 {
-	return properties_->allow_in_locomotion;
+    return properties_->allow_in_locomotion;
 }
 
 float BaseSwgCommand::GetMaxRangeToTarget() const
@@ -86,7 +86,7 @@ float BaseSwgCommand::GetDefaultTime() const
 {
     return properties_->default_time;
 }
-        
+
 std::string BaseSwgCommand::GetRequiredAbility() const
 {
     return properties_->character_ability.ident_string();
@@ -110,7 +110,7 @@ const std::shared_ptr<Object>& BaseSwgCommand::GetActor() const
 
 void BaseSwgCommand::SetActor(std::shared_ptr<Object> object)
 {
-	actor_ = object;
+    actor_ = object;
 }
 
 const std::shared_ptr<Object>& BaseSwgCommand::GetTarget() const
@@ -125,26 +125,26 @@ const std::shared_ptr<Object>& BaseSwgCommand::GetTarget() const
 }
 std::shared_ptr<Creature> BaseSwgCommand::GetTargetCreature()
 {
-	auto creatureTarget = std::static_pointer_cast<Creature>(GetTarget());
+    auto creatureTarget = std::static_pointer_cast<Creature>(GetTarget());
 
-	return creatureTarget;
+    return creatureTarget;
 }
 
 void BaseSwgCommand::SetTarget(std::shared_ptr<Object> object)
 {
-	target_ = object;
+    target_ = object;
 }
 
 void BaseSwgCommand::SetCommandProperties(const CommandProperties& properties)
 {
     properties_ = &properties;
 }
-        
+
 const std::wstring& BaseSwgCommand::GetCommandString() const
 {
     return command_request_.command_options;
 }
-        
+
 const CommandQueueEnqueue& BaseSwgCommand::GetCommandRequest() const
 {
     return command_request_;

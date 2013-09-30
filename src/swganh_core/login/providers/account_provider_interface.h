@@ -8,11 +8,15 @@
 
 #include "swganh_core/login/account.h"
 
-namespace swganh {
-namespace login {
-namespace providers {
+namespace swganh
+{
+namespace login
+{
+namespace providers
+{
 
-class AccountProviderInterface {
+class AccountProviderInterface
+{
 public:
     virtual ~AccountProviderInterface() {}
 
@@ -23,4 +27,6 @@ public:
     virtual bool AutoRegisterAccount(std::string username, std::string password) = 0;
 };
 
-}}}  // namespace swganh::login::providers
+}
+}
+}  // namespace swganh::login::providers

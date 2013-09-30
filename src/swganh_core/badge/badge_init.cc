@@ -13,26 +13,32 @@
 
 #include "version.h"
 
-namespace swganh {
-namespace badge {
+namespace swganh
+{
+namespace badge
+{
 
 void Initialize(swganh::app::SwganhKernel* kernel)
 {
-	swganh::plugin::ObjectRegistration registration;
-	registration.version.major = VERSION_MAJOR;
-	registration.version.minor = VERSION_MINOR;
+    swganh::plugin::ObjectRegistration registration;
+    registration.version.major = VERSION_MAJOR;
+    registration.version.minor = VERSION_MINOR;
 
-	registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-		return new BadgeService(kernel);
-	};
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+    {
+        return new BadgeService(kernel);
+    };
 
-	registration.DestroyObject = [] (void* object) {
-		if(object) {
-			delete static_cast<BadgeService*>(object);
-		}
-	};
+    registration.DestroyObject = [] (void* object)
+    {
+        if(object)
+        {
+            delete static_cast<BadgeService*>(object);
+        }
+    };
 
-	kernel->GetPluginManager()->RegisterObject("Badge::BadgeService", &registration);
+    kernel->GetPluginManager()->RegisterObject("Badge::BadgeService", &registration);
 }
 
-}} // namespace swganh::badge
+}
+} // namespace swganh::badge

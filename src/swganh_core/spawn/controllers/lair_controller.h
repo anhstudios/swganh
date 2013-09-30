@@ -16,10 +16,10 @@ namespace spawn
 class LairController : public FsmController
 {
 public:
-	LairController(FiniteStateMachineInterface* parent, std::shared_ptr<swganh::object::Object> object, 
-		std::shared_ptr<FsmStateInterface> initial_state);
+    LairController(FiniteStateMachineInterface* parent, std::shared_ptr<swganh::object::Object> object,
+                   std::shared_ptr<FsmStateInterface> initial_state);
 
-	void Notify(swganh::messages::BaseSwgMessage* message);
+    void Notify(swganh::messages::BaseSwgMessage* message);
 };
 }
 }

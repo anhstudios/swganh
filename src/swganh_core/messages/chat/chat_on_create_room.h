@@ -9,25 +9,34 @@
 #include "swganh/byte_buffer.h"
 #include "swganh_core/messages/base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct ChatOnCreateRoom : public BaseSwgMessage
+struct ChatOnCreateRoom : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 4; }
-    	uint32_t Opcode() const { return 0x35D7CC9F; }
+        return 4;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x35D7CC9F;
+    }
 
-		swganh::ByteBuffer data;
+    swganh::ByteBuffer data;
 
-    	ChatOnCreateRoom()
-    	{}
+    ChatOnCreateRoom()
+    {}
 
-    	void OnSerialize(swganh::ByteBuffer& buffer) const
-    	{
-			buffer.append(data);
-    	}
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.append(data);
+    }
 
-    	void OnDeserialize(swganh::ByteBuffer& buffer) {}
-    };
+    void OnDeserialize(swganh::ByteBuffer& buffer) {}
+};
 
-}} // namespace swganh::messages
+}
+} // namespace swganh::messages

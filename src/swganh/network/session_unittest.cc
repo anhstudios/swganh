@@ -14,10 +14,13 @@
 using namespace boost::asio::ip;
 using namespace std;
 
-namespace swganh {
-namespace network {
+namespace swganh
+{
+namespace network
+{
 
-class SessionTests {
+class SessionTests
+{
 protected:
     // builds a simple swg message
     ByteBuffer buildSimpleMessage() const;
@@ -37,7 +40,8 @@ protected:
 BOOST_FIXTURE_TEST_SUITE(SessionTest, SessionTests)
 
 /// This test verifies that new sessions have a send sequence of 0
-BOOST_AUTO_TEST_CASE(NewSessionHasZeroSendSequence) {
+BOOST_AUTO_TEST_CASE(NewSessionHasZeroSendSequence)
+{
     auto service = buildMockServer();
     boost::asio::io_service io_service;
     shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
@@ -46,13 +50,15 @@ BOOST_AUTO_TEST_CASE(NewSessionHasZeroSendSequence) {
 }
 
 /// This test verifies that data packets sent out on the data channel are sequenced.
-BOOST_AUTO_TEST_CASE(SendingDataChannelMessageIncreasesServerSequence) {
+BOOST_AUTO_TEST_CASE(SendingDataChannelMessageIncreasesServerSequence)
+{
     auto service = buildMockServer();
     boost::asio::io_service io_service;
     shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
-    for (int i = 1; i <= 3; ++i ) {
+    for (int i = 1; i <= 3; ++i )
+    {
         session->SendTo(buildSimpleMessage());
         BOOST_CHECK_EQUAL(i, session->server_sequence());
     }
@@ -78,7 +84,8 @@ BOOST_AUTO_TEST_SUITE_END()
 
 // SessionTest member implementations
 
-ByteBuffer SessionTests::buildSimpleMessage() const {
+ByteBuffer SessionTests::buildSimpleMessage() const
+{
     ByteBuffer buffer;
 
     buffer.write<uint16_t>(1);
@@ -87,7 +94,8 @@ ByteBuffer SessionTests::buildSimpleMessage() const {
     return buffer;
 }
 
-ByteBuffer SessionTests::buildSimpleDataChannelPacket(uint16_t sequence) const {
+ByteBuffer SessionTests::buildSimpleDataChannelPacket(uint16_t sequence) const
+{
     ByteBuffer buffer;
 
     buffer.write<uint16_t>(hostToBig<uint16_t>(0x09));
@@ -97,44 +105,51 @@ ByteBuffer SessionTests::buildSimpleDataChannelPacket(uint16_t sequence) const {
     return buffer;
 }
 
-ByteBuffer SessionTests::buildSimpleFragmentedMessage() const {
+ByteBuffer SessionTests::buildSimpleFragmentedMessage() const
+{
     ByteBuffer buffer;
 
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 6; ++i)
+    {
         buffer.write<uint32_t>(5);
     }
 
     return buffer;
 }
 
-ByteBuffer SessionTests::buildSimpleFragmentedPacket(uint16_t sequence) const {
+ByteBuffer SessionTests::buildSimpleFragmentedPacket(uint16_t sequence) const
+{
     ByteBuffer buffer;
 
     buffer.write<uint16_t>(hostToBig<uint16_t>(0x0D));
     buffer.write<uint16_t>(hostToBig<uint16_t>(sequence));
     buffer.write<uint32_t>(hostToBig<uint32_t>(24)); // size of the total fragmented message
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         buffer.write<uint32_t>(5);
     }
 
     return buffer;
 }
 
-udp::endpoint SessionTests::buildTestEndpoint() const {
+udp::endpoint SessionTests::buildTestEndpoint() const
+{
     udp::endpoint endpoint(address_v4::from_string("127.0.0.1"), 1000);
     return endpoint;
 }
 
 
-shared_ptr<MockServer> SessionTests::buildMockServer() const {
+shared_ptr<MockServer> SessionTests::buildMockServer() const
+{
     auto server = make_shared<MockServer>();
 
     MOCK_EXPECT(server->max_receive_size)
-        .at_least(1)
-        .returns(496);
-        
+    .at_least(1)
+    .returns(496);
+
     return server;
 }
 
-}}  // namespace swganh::network
+}
+}  // namespace swganh::network

@@ -19,7 +19,7 @@ data/sql/setup.cfg
 .cproject
 .project
 .settings
-
+*.kdev4
 data/docs/generated
 /nbproject/private/
 

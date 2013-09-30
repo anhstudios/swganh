@@ -32,7 +32,7 @@ void PlayerWaypointSerializer::SerializeDelta(swganh::ByteBuffer& data, const Pl
     data.write<float>(coordinates_.y);
     data.write<float>(coordinates_.z);
     data.write<uint64_t>(0);
-	data.write<uint32_t>(swganh::memcrc(t.waypoint->GetPlanet()));
+    data.write<uint32_t>(swganh::memcrc(t.waypoint->GetPlanet()));
     data.write<std::wstring>(t.waypoint->GetName());
     data.write<uint64_t>(t.waypoint->GetObjectId());
     data.write<uint8_t>(t.waypoint->GetColor());

@@ -7,34 +7,40 @@
 
 #include "swganh_core/object/object_message_builder.h"
 
-namespace swganh {
-namespace messages {
-    struct BaselinesMessage;
-}} // swganh::messages
+namespace swganh
+{
+namespace messages
+{
+struct BaselinesMessage;
+}
+} // swganh::messages
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
-    class Intangible;
+class Intangible;
 
-    class IntangibleMessageBuilder : public ObjectMessageBuilder
+class IntangibleMessageBuilder : public ObjectMessageBuilder
+{
+public:
+    IntangibleMessageBuilder(swganh::EventDispatcher* dispatcher) :
+        ObjectMessageBuilder(dispatcher)
     {
-    public:
-        IntangibleMessageBuilder(swganh::EventDispatcher* dispatcher) :
-            ObjectMessageBuilder(dispatcher)
-        {
-            RegisterEventHandlers();
-        }
+        RegisterEventHandlers();
+    }
 
-		virtual ~IntangibleMessageBuilder() {}
+    virtual ~IntangibleMessageBuilder() {}
 
-		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Intangible>& intangible, boost::unique_lock<boost::mutex>& lock);
 
-    private:
+private:
 
-        void RegisterEventHandlers();
-    };
+    void RegisterEventHandlers();
+};
 
-}}  // swganh::object
+}
+}  // swganh::object

@@ -4,25 +4,28 @@
 
 #include "swganh_core/object/object_factory.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
-	class Guild;
-    class GuildFactory : public swganh::object::ObjectFactory
-    {
-    public:
-		GuildFactory(swganh::app::SwganhKernel* kernel);
-		typedef Guild ObjectType;
-        
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+class Guild;
+class GuildFactory : public swganh::object::ObjectFactory
+{
+public:
+    GuildFactory(swganh::app::SwganhKernel* kernel);
+    typedef Guild ObjectType;
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
-		virtual void PersistChangedObjects(){}
+    virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
-    };
+    void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
+    virtual void PersistChangedObjects() {}
 
-}}  // namespace swganh::object
+    std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+};
+
+}
+}  // namespace swganh::object

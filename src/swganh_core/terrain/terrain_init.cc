@@ -17,28 +17,34 @@
 
 #include "version.h"
 
-namespace swganh {
-namespace terrain {
+namespace swganh
+{
+namespace terrain
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
 
-	// Register
-    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    // Register
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+    {
         return new TerrainService(kernel);
     };
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
+    registration.DestroyObject = [] (void * object)
+    {
+        if (object)
+        {
             delete static_cast<TerrainService*>(object);
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("Terrain::TerrainService", &registration);    
+    kernel->GetPluginManager()->RegisterObject("Terrain::TerrainService", &registration);
 
 }
 
-}}  // namespace swganh::galaxy
+}
+}  // namespace swganh::galaxy

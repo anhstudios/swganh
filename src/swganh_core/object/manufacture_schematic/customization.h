@@ -9,23 +9,23 @@ namespace object
 
 struct Customization
 {
-	uint16_t index;
-	std::string name;
-	uint32_t pallet_selection;
-	uint32_t pallet_start_index;
-	uint32_t pallet_end_index;
+    uint16_t index;
+    std::string name;
+    uint32_t pallet_selection;
+    uint32_t pallet_start_index;
+    uint32_t pallet_end_index;
 
-	bool operator==(const Customization& other)
-	{
-		return other.name == name;
-	}
-	void Serialize(swganh::messages::BaselinesMessage& message)
-	{
-	}
+    bool operator==(const Customization& other)
+    {
+        return other.name == name;
+    }
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+    }
 
-	void Serialize(swganh::messages::DeltasMessage& message)
-	{
-	}
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+    }
 };
 
 }

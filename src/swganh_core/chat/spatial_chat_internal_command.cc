@@ -52,12 +52,13 @@ void SpatialChatInternalCommand::Run()
     const wregex p(L"(\\d+) (\\d+) (\\d+) (\\d+) (\\d+) (.*)");
     wsmatch m;
 
-    if (regex_match(GetCommandString(), m, p)) {
+    if (regex_match(GetCommandString(), m, p))
+    {
         chat_service_->SendSpatialChat(
-            GetActor(), 
-            GetTarget(), 
+            GetActor(),
+            GetTarget(),
             m[6].str().substr(0, 256), // Use a max of 255 characters and discard the rest.
-            std::stoi(m[2].str()), // Convert the string to an integer 
+            std::stoi(m[2].str()), // Convert the string to an integer
             std::stoi(m[3].str()));
     }
 }

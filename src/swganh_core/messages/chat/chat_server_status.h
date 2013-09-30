@@ -7,29 +7,38 @@
 #include "swganh/byte_buffer.h"
 #include "swganh_core/messages/base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct ChatServerStatus : public BaseSwgMessage
+struct ChatServerStatus : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 2; }
-    	uint32_t Opcode() const { return 0x7102B15F; }
+        return 2;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x7102B15F;
+    }
 
-		uint8_t status;
-		
-    	ChatServerStatus(uint8_t status_)
-			: status(status_)
-    	{}
+    uint8_t status;
 
-    	void OnSerialize(swganh::ByteBuffer& buffer) const
-    	{
-    		buffer.write<uint8_t>(status);
-    	}
+    ChatServerStatus(uint8_t status_)
+        : status(status_)
+    {}
 
-    	void OnDeserialize(swganh::ByteBuffer& buffer)
-    	{
-    		status = buffer.read<uint8_t>();
-    	}
-    };
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write<uint8_t>(status);
+    }
 
-}} // namespace swganh::messages
+    void OnDeserialize(swganh::ByteBuffer& buffer)
+    {
+        status = buffer.read<uint8_t>();
+    }
+};
+
+}
+} // namespace swganh::messages

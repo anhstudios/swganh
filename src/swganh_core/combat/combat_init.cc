@@ -21,27 +21,33 @@
 
 #include "version.h"
 
-namespace swganh {
-namespace combat {
+namespace swganh
+{
+namespace combat
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
 
     // Register
-    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+    {
         return new CombatService(kernel);
     };
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
+    registration.DestroyObject = [] (void * object)
+    {
+        if (object)
+        {
             delete static_cast<CombatService*>(object);
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("Combat::CombatService", &registration);    
+    kernel->GetPluginManager()->RegisterObject("Combat::CombatService", &registration);
 }
 
-}}  // namespace swganh::galaxy
+}
+}  // namespace swganh::galaxy

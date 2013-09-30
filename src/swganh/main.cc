@@ -24,18 +24,20 @@ using namespace boost;
 using namespace swganh;
 using namespace std;
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     Py_Initialize();
-	PyEval_InitThreads();
-    
+    PyEval_InitThreads();
+
     // Step 2: Release the GIL from the main thread so that other threads can use it
     PyEval_ReleaseThread(PyGILState_GetThisThreadState());
-    
-    try {
+
+    try
+    {
         app::SwganhApp app(argc, argv);
 
-        for (;;) {
+        for (;;)
+        {
 
             if (swganh::KeyboardHit())
             {
@@ -45,7 +47,7 @@ int main(int argc, char* argv[])
                     app.StartInteractiveConsole();
                 }
                 else
-                {   
+                {
                     // Echo out the input that was given and add it back to the input stream to read in.
                     std::cout << input;
                     cin.putback(input);
@@ -53,23 +55,28 @@ int main(int argc, char* argv[])
                     string cmd;
                     cin >> cmd;
 
-                    if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
+                    if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0)
+                    {
                         LOG(info) << "Exit command received from command line. Shutting down.";
                         break;
                     }
-					else if(cmd.compare("si_dump") == 0) {
-						app.GetAppKernel()->GetEventDispatcher()->Dispatch(std::make_shared<swganh::BaseEvent>("SpatialIndexSvgDump"));
-					}
-					else {
+                    else if(cmd.compare("si_dump") == 0)
+                    {
+                        app.GetAppKernel()->GetEventDispatcher()->Dispatch(std::make_shared<swganh::BaseEvent>("SpatialIndexSvgDump"));
+                    }
+                    else
+                    {
                         LOG(warning) << "Invalid command received: " << cmd;
                         std::cout << "Type exit or (q)uit to quit" << std::endl;
                     }
                 }
             }
-			boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+            boost::this_thread::sleep(boost::posix_time::milliseconds(500));
         }
 
-    } catch(std::exception& e) {
+    }
+    catch(std::exception& e)
+    {
         LOG(fatal) << "Unhandled application exception occurred: " << e.what();
     }
 

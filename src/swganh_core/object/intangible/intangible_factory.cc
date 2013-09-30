@@ -40,54 +40,55 @@ void IntangibleFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& 
     }
 
     auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetIntangible(?);"));
-    
+                     (connection->prepareStatement("CALL sp_GetIntangible(?);"));
+
     statement->setUInt64(1, intangible->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
 
     do
-    { 
+    {
         while (result->next())
         {
             intangible->SetGenericInt(result->getInt("generic_int"), lock);
         }
-    } while(statement->getMoreResults());
+    }
+    while(statement->getMoreResults());
 }
 
 uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
-	// Persist Intangible
+    // Persist Intangible
     uint32_t counter = 1;
-	
+
     ObjectFactory::PersistObject(object, lock, persist_inherited);
-	
-    try 
+
+    try
     {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?,?);"));
+                         (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?,?);"));
         auto tangible = static_pointer_cast<Intangible>(object);
-		statement->setUInt64(counter++, tangible->GetObjectId(lock));
-		statement->setString(counter++, tangible->GetStfNameFile(lock));
-		statement->setString(counter++, tangible->GetStfNameString(lock));
-		statement->setInt(counter++, tangible->GetGenericInt(lock));
-		statement->executeUpdate();
-	}
-	catch(sql::SQLException &e)
-	{
-		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        statement->setUInt64(counter++, tangible->GetObjectId(lock));
+        statement->setString(counter++, tangible->GetStfNameFile(lock));
+        statement->setString(counter++, tangible->GetStfNameString(lock));
+        statement->setInt(counter++, tangible->GetGenericInt(lock));
+        statement->executeUpdate();
+    }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-	}
-	return counter;
+    }
+    return counter;
 }
 
 void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-	ObjectFactory::DeleteObjectFromStorage(object);
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> IntangibleFactory::CreateObject()
 {
-	return make_shared<Intangible>();
+    return make_shared<Intangible>();
 }

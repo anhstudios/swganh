@@ -18,7 +18,8 @@ BOOST_AUTO_TEST_CASE(CanSwapEndianFor16BitSignedIntegral)
     test = swganh::swapEndian(little_endian);
     BOOST_CHECK_EQUAL(big_endian, test);
 }
-BOOST_AUTO_TEST_CASE(CanSwapEndianFor16BitUnsignedIntegral) {
+BOOST_AUTO_TEST_CASE(CanSwapEndianFor16BitUnsignedIntegral)
+{
     uint16_t big_endian = 0x0200;
     uint16_t little_endian = 0x0002;
 
@@ -29,7 +30,8 @@ BOOST_AUTO_TEST_CASE(CanSwapEndianFor16BitUnsignedIntegral) {
     BOOST_CHECK_EQUAL(big_endian, test);
 }
 
-BOOST_AUTO_TEST_CASE(CanSwapEndianFor32BitSignedIntegral) {
+BOOST_AUTO_TEST_CASE(CanSwapEndianFor32BitSignedIntegral)
+{
     int32_t big_endian = 0x02000000;
     int32_t little_endian = 0x00000002;
 
@@ -40,7 +42,8 @@ BOOST_AUTO_TEST_CASE(CanSwapEndianFor32BitSignedIntegral) {
     BOOST_CHECK_EQUAL(big_endian, test);
 }
 
-BOOST_AUTO_TEST_CASE(CanSwapEndianFor32BitUnsignedIntegral) {
+BOOST_AUTO_TEST_CASE(CanSwapEndianFor32BitUnsignedIntegral)
+{
     uint32_t big_endian = 0x02000000;
     uint32_t little_endian = 0x00000002;
 
@@ -51,7 +54,8 @@ BOOST_AUTO_TEST_CASE(CanSwapEndianFor32BitUnsignedIntegral) {
     BOOST_CHECK_EQUAL(big_endian, test);
 }
 
-BOOST_AUTO_TEST_CASE(CanSwapEndianFor64BitSignedIntegral) {    
+BOOST_AUTO_TEST_CASE(CanSwapEndianFor64BitSignedIntegral)
+{
     int64_t big_endian = 0x0200000000000000;
     int64_t little_endian = 0x0000000000000002;
 
@@ -62,7 +66,8 @@ BOOST_AUTO_TEST_CASE(CanSwapEndianFor64BitSignedIntegral) {
     BOOST_CHECK_EQUAL(big_endian, test);
 }
 
-BOOST_AUTO_TEST_CASE(CanSwapEndianFor64BitUnsignedIntegral) {
+BOOST_AUTO_TEST_CASE(CanSwapEndianFor64BitUnsignedIntegral)
+{
     uint64_t big_endian = 0x0200000000000000;
     uint64_t little_endian = 0x0000000000000002;
 

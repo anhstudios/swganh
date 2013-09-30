@@ -24,10 +24,10 @@ using namespace std;
 void exportTravelService()
 {
     class_<TravelServiceInterface, std::shared_ptr<TravelServiceInterface>, boost::noncopyable>("TravelService", "", no_init)
-		.def("beginTicketTransaction", &TravelServiceInterface::BeginTicketTransaction, "")
-		.def("useTicket", &TravelServiceInterface::UseTicket, "")
-		.def("getAvailableTickets", &TravelServiceInterface::GetAvailableTickets, "")
-		.def("getInventoryTicket", &TravelServiceInterface::GetInventoryTicket, "")
-		.def("getAvailableInventoryTicketBySelection", &TravelServiceInterface::GetAvailableInventoryTicketBySelection, "")
-		;
+    .def("beginTicketTransaction", &TravelServiceInterface::BeginTicketTransaction, "")
+    .def("useTicket", &TravelServiceInterface::UseTicket, "")
+    .def("getAvailableTickets", &TravelServiceInterface::GetAvailableTickets, "")
+    .def("getInventoryTicket", &TravelServiceInterface::GetInventoryTicket, "")
+    .def("getAvailableInventoryTicketBySelection", &TravelServiceInterface::GetAvailableInventoryTicketBySelection, "")
+    ;
 }

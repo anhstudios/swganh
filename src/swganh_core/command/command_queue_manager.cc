@@ -18,17 +18,17 @@ void CommandQueueManager::EnqueueCommand(const std::shared_ptr<swganh::command::
 {
     CommandQueueInterface* queue = nullptr;
 
-	{
-		boost::unique_lock<boost::mutex> lg(queue_map_mutex_);
-    
-		auto find_iter = queue_map_.find(command->GetController()->GetId());
-		if (find_iter == queue_map_.end())
-		{
-			return;
-		}
+    {
+        boost::unique_lock<boost::mutex> lg(queue_map_mutex_);
 
-		queue = find_iter->second.get();
-	}
+        auto find_iter = queue_map_.find(command->GetController()->GetId());
+        if (find_iter == queue_map_.end())
+        {
+            return;
+        }
+
+        queue = find_iter->second.get();
+    }
 
     queue->EnqueueCommand(command);
 }
@@ -50,13 +50,13 @@ void CommandQueueManager::RemoveQueue(uint64_t queue_owner_id)
     boost::lock_guard<boost::mutex> lg(queue_map_mutex_);
     queue_map_.erase(queue_owner_id);
 }
-        
+
 void CommandQueueManager::ClearQueues()
 {
     boost::lock_guard<boost::mutex> lg(queue_map_mutex_);
     queue_map_.clear();
 }
-        
+
 void CommandQueueManager::SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command)
 {
     CommandQueueInterface* queue = nullptr;

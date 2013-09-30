@@ -37,22 +37,22 @@ void GetAttributesBatchCommand::Initialize(
     BaseSwgCommand::Initialize(kernel, properties);
 
     attributes_service_ = kernel->GetServiceManager()->GetService<AttributesService>("AttributesService");
-	simulation_service_ = kernel->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+    simulation_service_ = kernel->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
 void GetAttributesBatchCommand::Run()
 {
-	std::wstring command_str = GetCommandString();
-	std::vector<std::string> objects;
-	boost::trim(command_str);
-	boost::split(objects, command_str, boost::is_any_of(" "));
-	auto actor = GetActor();
-	for (auto& object : objects)
-	{
-		auto found = simulation_service_->GetObjectById(boost::lexical_cast<uint64_t>(object));
-		if (found)
-		{
-			attributes_service_->SendAttributesMessage(found, actor);
-		}
-	}
+    std::wstring command_str = GetCommandString();
+    std::vector<std::string> objects;
+    boost::trim(command_str);
+    boost::split(objects, command_str, boost::is_any_of(" "));
+    auto actor = GetActor();
+for (auto& object : objects)
+    {
+        auto found = simulation_service_->GetObjectById(boost::lexical_cast<uint64_t>(object));
+        if (found)
+        {
+            attributes_service_->SendAttributesMessage(found, actor);
+        }
+    }
 }

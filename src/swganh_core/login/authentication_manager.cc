@@ -10,30 +10,38 @@ using namespace swganh::login;
 using namespace swganh::login;
 using namespace std;
 
-AuthenticationManager::AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder) 
+AuthenticationManager::AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder)
     : encoder_(encoder) {}
 
-std::shared_ptr<encoders::EncoderInterface> AuthenticationManager::encoder() {
+std::shared_ptr<encoders::EncoderInterface> AuthenticationManager::encoder()
+{
     return encoder_;
 }
 
-bool AuthenticationManager::Authenticate(std::shared_ptr<LoginClientInterface> client, std::shared_ptr<Account> account) {
+bool AuthenticationManager::Authenticate(std::shared_ptr<LoginClientInterface> client, std::shared_ptr<Account> account)
+{
 
     auto current_account = client->GetAccount();
 
-    if (current_account) {
+    if (current_account)
+    {
         // make sure the password hasn't changed
-        if (current_account->password() != account->password()) {
+        if (current_account->password() != account->password())
+        {
             // consider throwing here perhaps?
             return false;
         }
-    } else {
+    }
+    else
+    {
         string presented_password = client->GetPassword();
-        if (presented_password.empty()) {
+        if (presented_password.empty())
+        {
             return false;
         }
 
-        if (!encoder_->IsPasswordValid(account->password(), presented_password, account->salt())) {
+        if (!encoder_->IsPasswordValid(account->password(), presented_password, account->salt()))
+        {
             return false;
         }
     }

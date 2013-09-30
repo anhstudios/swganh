@@ -62,59 +62,66 @@ using boost::regex_search;
 
 MysqlCharacterProvider::MysqlCharacterProvider(SwganhKernel* kernel)
     : CharacterProviderInterface()
-    , kernel_(kernel) 
-	, py_character_create_(kernel)
+    , kernel_(kernel)
+    , py_character_create_(kernel)
 {
-	auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+    auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
 
-	// Load each table of restricted names.
-	auto statement = std::shared_ptr<sql::PreparedStatement>(
-		conn->prepareStatement("CALL sp_LoadProfaneNames();")
-		);
+    // Load each table of restricted names.
+    auto statement = std::shared_ptr<sql::PreparedStatement>(
+                         conn->prepareStatement("CALL sp_LoadProfaneNames();")
+                     );
 
-	auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-	while(result_set->next())
-	{
-		profane_names_.push_back(result_set->getString("name"));
-	}while(statement->getMoreResults());
+    auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    while(result_set->next())
+    {
+        profane_names_.push_back(result_set->getString("name"));
+    }
+    while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("CALL sp_LoadReservedNames();"));
-	result_set.reset(statement->executeQuery());
-	while(result_set->next())
-	{
-		reserved_names_.push_back(result_set->getString("name"));
-	}while(statement->getMoreResults());
+    statement.reset(conn->prepareStatement("CALL sp_LoadReservedNames();"));
+    result_set.reset(statement->executeQuery());
+    while(result_set->next())
+    {
+        reserved_names_.push_back(result_set->getString("name"));
+    }
+    while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("CALL sp_LoadFictionallyReservedNames();"));
-	result_set.reset(statement->executeQuery());
-	while(result_set->next())
-	{
-		fictionally_reserved_names_.push_back(result_set->getString("name"));
-	}while(statement->getMoreResults());
+    statement.reset(conn->prepareStatement("CALL sp_LoadFictionallyReservedNames();"));
+    result_set.reset(statement->executeQuery());
+    while(result_set->next())
+    {
+        fictionally_reserved_names_.push_back(result_set->getString("name"));
+    }
+    while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("CALL sp_LoadRaciallyInnapropriateNames();"));
-	result_set.reset(statement->executeQuery());
-	while(result_set->next())
-	{
+    statement.reset(conn->prepareStatement("CALL sp_LoadRaciallyInnapropriateNames();"));
+    result_set.reset(statement->executeQuery());
+    while(result_set->next())
+    {
         racially_inappropriate_.push_back(result_set->getString("name"));
-	}while(statement->getMoreResults());
+    }
+    while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("CALL sp_LoadDeveloperNames();"));	
-	result_set.reset(statement->executeQuery());
-	while(result_set->next())
-	{
-		developer_names_.push_back(result_set->getString("name"));
-	}while(statement->getMoreResults());
+    statement.reset(conn->prepareStatement("CALL sp_LoadDeveloperNames();"));
+    result_set.reset(statement->executeQuery());
+    while(result_set->next())
+    {
+        developer_names_.push_back(result_set->getString("name"));
+    }
+    while(statement->getMoreResults());
 }
 
-vector<CharacterData> MysqlCharacterProvider::GetCharactersForAccount(uint64_t account_id) {
+vector<CharacterData> MysqlCharacterProvider::GetCharactersForAccount(uint64_t account_id)
+{
     vector<CharacterData> characters;
 
-    try {
+    try
+    {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("CALL sp_ReturnAccountCharacters(?);")
-            );
+                             conn->prepareStatement("CALL sp_ReturnAccountCharacters(?);")
+                         );
         statement->setInt64(1, account_id);
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
 
@@ -132,18 +139,21 @@ vector<CharacterData> MysqlCharacterProvider::GetCharactersForAccount(uint64_t a
                 character.name = std::wstring(custom_name.begin(), custom_name.end());
 
                 std::string non_shared_template = result_set->getString("iff_template");
-				if (non_shared_template.size() > 30)
-				{
-					non_shared_template.erase(23, 7);
-				}
+                if (non_shared_template.size() > 30)
+                {
+                    non_shared_template.erase(23, 7);
+                }
 
                 character.race_crc = swganh::memcrc(non_shared_template);
                 character.galaxy_id = kernel_->GetServiceDirectory()->galaxy().id();
                 character.status = 1;
                 characters.push_back(character);
-            } while (statement->getMoreResults());
+            }
+            while (statement->getMoreResults());
         }
-    } catch(sql::SQLException &e) {
+    }
+    catch(sql::SQLException &e)
+    {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
@@ -151,11 +161,13 @@ vector<CharacterData> MysqlCharacterProvider::GetCharactersForAccount(uint64_t a
     return characters;
 }
 
-bool MysqlCharacterProvider::DeleteCharacter(uint64_t character_id, uint64_t account_id){
+bool MysqlCharacterProvider::DeleteCharacter(uint64_t character_id, uint64_t account_id)
+{
     // this actually just archives the character and all their data so it can still be retrieved at a later time
     string sql = "CALL sp_CharacterDelete(?,?);";
     int rows_updated = 0;
-    try {
+    try
+    {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, character_id);
@@ -163,22 +175,25 @@ bool MysqlCharacterProvider::DeleteCharacter(uint64_t character_id, uint64_t acc
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
-           rows_updated = result_set->getInt(1);
+            rows_updated = result_set->getInt(1);
         }
-		while(statement->getMoreResults());
+        while(statement->getMoreResults());
     }
-     catch(sql::SQLException &e) {
+    catch(sql::SQLException &e)
+    {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return rows_updated > 0;
 }
-std::wstring MysqlCharacterProvider::GetRandomNameRequest(const std::string& base_model) {
-    try {
+std::wstring MysqlCharacterProvider::GetRandomNameRequest(const std::string& base_model)
+{
+    try
+    {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("CALL sp_CharacterNameCreate(?);")
-            );
+                             conn->prepareStatement("CALL sp_CharacterNameCreate(?);")
+                         );
         statement->setString(1, base_model);
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
@@ -186,35 +201,45 @@ std::wstring MysqlCharacterProvider::GetRandomNameRequest(const std::string& bas
             std::string str = result_set->getString(1);
             std::wstring wstr(str.begin(), str.end());
             return wstr;
-        }while(statement->getMoreResults());
-    } catch(sql::SQLException &e) {
+        }
+        while(statement->getMoreResults());
+    }
+    catch(sql::SQLException &e)
+    {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return L"";
 }
-uint16_t MysqlCharacterProvider::GetMaxCharacters(uint64_t player_id) {
+uint16_t MysqlCharacterProvider::GetMaxCharacters(uint64_t player_id)
+{
     uint16_t max_chars = 2;
-    try {
+    try
+    {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("CALL sp_GetMaxCharacters(?);")
-            );
+                             conn->prepareStatement("CALL sp_GetMaxCharacters(?);")
+                         );
         statement->setUInt64(1, player_id);
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
             max_chars = result_set->getUInt(1);
-        }while(statement->getMoreResults());
-    } catch(sql::SQLException &e) {
+        }
+        while(statement->getMoreResults());
+    }
+    catch(sql::SQLException &e)
+    {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return max_chars;
 }
 
-tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCreateCharacter& character_info, uint32_t account_id) {
-    try {
+tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCreateCharacter& character_info, uint32_t account_id)
+{
+    try
+    {
         // A regular expression that searches for a first name and optional sirname.
         // Only letters, and the ' and - characters are allowed. Only 3 instances
         // of the ' and - characters may be in the entire name, which must be between
@@ -228,7 +253,8 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
 
         wsmatch m;
 
-        if (! regex_match(character_info.character_name, m, p)) {
+        if (! regex_match(character_info.character_name, m, p))
+        {
             LOG(warning) << "Invalid character name [" << std::string(character_info.character_name.begin(), character_info.character_name.end()) << "]";
             return make_tuple(0,"name_declined_syntax");
         }
@@ -242,22 +268,22 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
             custom_name += L" " + last_name;
         }
 
-		uint64_t character_id = py_character_create_.CreateCharacter(custom_name, character_info.starting_profession, character_info.start_location, character_info.height, character_info.biography, 
-			character_info.character_customization, character_info.hair_object, character_info.hair_customization, character_info.player_race_iff);
-		if (character_id > 0)
-		{
-			// Setup player account
-			std::unique_ptr<sql::PreparedStatement> statement (
-				kernel_->GetDatabaseManager()->getConnection("galaxy")->prepareStatement("CALL sp_AddCharacterToAccount(?,?);"));
-			statement->setUInt64(1, character_id);
-			statement->setUInt(2, account_id);
-			statement->execute();
+        uint64_t character_id = py_character_create_.CreateCharacter(custom_name, character_info.starting_profession, character_info.start_location, character_info.height, character_info.biography,
+                                character_info.character_customization, character_info.hair_object, character_info.hair_customization, character_info.player_race_iff);
+        if (character_id > 0)
+        {
+            // Setup player account
+            std::unique_ptr<sql::PreparedStatement> statement (
+                kernel_->GetDatabaseManager()->getConnection("galaxy")->prepareStatement("CALL sp_AddCharacterToAccount(?,?);"));
+            statement->setUInt64(1, character_id);
+            statement->setUInt(2, account_id);
+            statement->execute();
 
-			return make_tuple(character_id, "");
-		}
-		
-	}
-	catch(sql::SQLException &e)
+            return make_tuple(character_id, "");
+        }
+
+    }
+    catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -347,27 +373,30 @@ std::string MysqlCharacterProvider::getCharacterCreateErrorCode_(uint32_t error_
         error_string = "name_declined_internal_error";
         break;
     }
-	LOG(warning) << "Errored occured in CharacterCreate: " << error_string;
+    LOG(warning) << "Errored occured in CharacterCreate: " << error_string;
     return error_string;
 }
 
 uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
 {
     uint64_t character_id = 0;
-    try {
+    try
+    {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::unique_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("CALL sp_GetCharacterIdByName(?,?);")
-            );
+                             conn->prepareStatement("CALL sp_GetCharacterIdByName(?,?);")
+                         );
         statement->setString(1, name + '%');
         statement->setUInt(2, swganh::object::Player::type);
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
-           character_id = result_set->getUInt64(1);
+            character_id = result_set->getUInt64(1);
         }
-		while(statement->getMoreResults());
-    } catch(sql::SQLException &e) {
+        while(statement->getMoreResults());
+    }
+    catch(sql::SQLException &e)
+    {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
@@ -376,34 +405,39 @@ uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
 
 std::tuple<bool, std::string> MysqlCharacterProvider::IsNameAllowed(std::string name)
 {
-	// Convert name to lower-case.
-	boost::to_lower(name);
+    // Convert name to lower-case.
+    boost::to_lower(name);
 
-	// Run name through filters.
-	for(std::string restricted_name : profane_names_) {
-		if(regex_search(name, regex(restricted_name)))
-			return std::tuple<bool, std::string>(false, "name_declined_profane");
-	}
+    // Run name through filters.
+    for(std::string restricted_name : profane_names_)
+    {
+        if(regex_search(name, regex(restricted_name)))
+            return std::tuple<bool, std::string>(false, "name_declined_profane");
+    }
 
-	for(std::string restricted_name : reserved_names_) {
-		if(regex_search(name, regex(restricted_name)))
-			return std::tuple<bool, std::string>(false, "name_declined_reserved");
-	}
+    for(std::string restricted_name : reserved_names_)
+    {
+        if(regex_search(name, regex(restricted_name)))
+            return std::tuple<bool, std::string>(false, "name_declined_reserved");
+    }
 
-	for(std::string restricted_name : fictionally_reserved_names_) {
-		if(regex_search(name, regex(restricted_name)))
-			return std::tuple<bool, std::string>(false, "name_declined_fictionally_reserved");
-	}
+    for(std::string restricted_name : fictionally_reserved_names_)
+    {
+        if(regex_search(name, regex(restricted_name)))
+            return std::tuple<bool, std::string>(false, "name_declined_fictionally_reserved");
+    }
 
-	for(std::string restricted_name : racially_inappropriate_) {
-		if(regex_search(name, regex(restricted_name)))
-			return std::tuple<bool, std::string>(false, "name_declined_racially_inappropriate");
-	}
+    for(std::string restricted_name : racially_inappropriate_)
+    {
+        if(regex_search(name, regex(restricted_name)))
+            return std::tuple<bool, std::string>(false, "name_declined_racially_inappropriate");
+    }
 
-	for(std::string restricted_name : developer_names_) {
-		if(regex_search(name, regex(restricted_name)))
-			return std::tuple<bool, std::string>(false, "name_declined_developer");
-	}
-	
-	return std::tuple<bool, std::string>(true, " ");
+    for(std::string restricted_name : developer_names_)
+    {
+        if(regex_search(name, regex(restricted_name)))
+            return std::tuple<bool, std::string>(false, "name_declined_developer");
+    }
+
+    return std::tuple<bool, std::string>(true, " ");
 }

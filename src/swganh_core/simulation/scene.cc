@@ -31,16 +31,16 @@ public:
     SceneImpl(SceneDescription description, swganh::app::SwganhKernel* kernel)
         : kernel_(kernel)
         , description_(move(description))
-		
-    {
-		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
-		tmp->SetSceneName(description.name);
-		tmp->SetSceneId(description.id);
-		spatial_index_ = tmp;
 
-		movement_manager_ = make_shared<MovementManager>(kernel, description.name);
-		movement_manager_->SetSpatialProvider(spatial_index_);
-	}
+    {
+        auto tmp = kernel_->GetPluginManager()->CreateObject<swganh::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
+        tmp->SetSceneName(description.name);
+        tmp->SetSceneId(description.id);
+        spatial_index_ = tmp;
+
+        movement_manager_ = make_shared<MovementManager>(kernel, description.name);
+        movement_manager_->SetSpatialProvider(spatial_index_);
+    }
 
     const SceneDescription& GetDescription() const
     {
@@ -54,16 +54,17 @@ public:
 
     void AddObject(shared_ptr<Object> object)
     {
-		InsertObject(object);
-		// Set Scene Id for all sub objects as well
-		object->SetSceneId(description_.id);
-		object->ViewObjects(object, 1, true, [=] (shared_ptr<Object> contained){
-			if (contained->GetSceneId() != description_.id)
-				contained->SetSceneId(description_.id);
-		});
-		spatial_index_->AddObject(nullptr, object);
+        InsertObject(object);
+        // Set Scene Id for all sub objects as well
+        object->SetSceneId(description_.id);
+        object->ViewObjects(object, 1, true, [=] (shared_ptr<Object> contained)
+        {
+            if (contained->GetSceneId() != description_.id)
+                contained->SetSceneId(description_.id);
+        });
+        spatial_index_->AddObject(nullptr, object);
     }
-    
+
     void RemoveObject(shared_ptr<Object> object)
     {
         if (!HasObject(object))
@@ -71,72 +72,78 @@ public:
             return;
         }
 
-		EraseObject(object);             
+        EraseObject(object);
 
-		spatial_index_->RemoveObject(nullptr, object);
+        spatial_index_->RemoveObject(nullptr, object);
 
-		movement_manager_->ResetMovementCounter(object);
+        movement_manager_->ResetMovementCounter(object);
     }
 
-	void InsertObject(const shared_ptr<Object>& object)
-	{
-		// make sure it's not already there
-		auto find_iter = objects_.find(object);
-		if (find_iter == end(objects_))
-			objects_.insert(find_iter, object);
+    void InsertObject(const shared_ptr<Object>& object)
+    {
+        // make sure it's not already there
+        auto find_iter = objects_.find(object);
+        if (find_iter == end(objects_))
+            objects_.insert(find_iter, object);
 
-		auto find_map = object_map_.find(object->GetObjectId());
-		if (find_map == end(object_map_))
-			object_map_.insert(find_map, ObjectPair(object->GetObjectId(), object));
-	}
+        auto find_map = object_map_.find(object->GetObjectId());
+        if (find_map == end(object_map_))
+            object_map_.insert(find_map, ObjectPair(object->GetObjectId(), object));
+    }
 
-	void EraseObject(const shared_ptr<Object>& object)
-	{        
-		objects_.erase(object);
+    void EraseObject(const shared_ptr<Object>& object)
+    {
+        objects_.erase(object);
         object_map_.erase(object->GetObjectId());
-	}
+    }
 
-	void HandleDataTransform(const shared_ptr<Object>& object, DataTransform message)
-	{
-		movement_manager_->HandleDataTransform(object, message);
-	}
-	void HandleDataTransformWithParent(const shared_ptr<Object>& object, DataTransformWithParent message)
-	{
-		movement_manager_->HandleDataTransformWithParent(object, message);
-	}
+    void HandleDataTransform(const shared_ptr<Object>& object, DataTransform message)
+    {
+        movement_manager_->HandleDataTransform(object, message);
+    }
+    void HandleDataTransformWithParent(const shared_ptr<Object>& object, DataTransformWithParent message)
+    {
+        movement_manager_->HandleDataTransformWithParent(object, message);
+    }
 
-	shared_ptr<swganh::simulation::SpatialProviderInterface> GetSpatialIndex() { return spatial_index_; }
-	shared_ptr<swganh::simulation::MovementManagerInterface> GetMovementManager() { return movement_manager_; }
+    shared_ptr<swganh::simulation::SpatialProviderInterface> GetSpatialIndex()
+    {
+        return spatial_index_;
+    }
+    shared_ptr<swganh::simulation::MovementManagerInterface> GetMovementManager()
+    {
+        return movement_manager_;
+    }
 
 private:
 
     typedef std::map<
-        uint64_t,
-        shared_ptr<Object>
+    uint64_t,
+    shared_ptr<Object>
     > ObjectMap;
-	typedef std::pair<
-		uint64_t,
-		shared_ptr<Object>
-	> ObjectPair;
+    typedef std::pair<
+    uint64_t,
+    shared_ptr<Object>
+    > ObjectPair;
 
     typedef std::set<std::shared_ptr<Object>> ObjectSet;
 
     ObjectSet objects_;
     ObjectMap object_map_;
-	
-	swganh::app::SwganhKernel* kernel_;
-	shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_index_;
-	shared_ptr<swganh::simulation::MovementManagerInterface> movement_manager_;
+
+    swganh::app::SwganhKernel* kernel_;
+    shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_index_;
+    shared_ptr<swganh::simulation::MovementManagerInterface> movement_manager_;
 
     SceneDescription description_;
 
 };
 
 Scene::Scene(SceneDescription description, swganh::app::SwganhKernel* kernel)
-: impl_(new SceneImpl(move(description), move(kernel)))
+    : impl_(new SceneImpl(move(description), move(kernel)))
 {}
 
-Scene::Scene(uint32_t scene_id, string name, string label, string description, string terrain, swganh::app::SwganhKernel* kernel) 
+Scene::Scene(uint32_t scene_id, string name, string label, string description, string terrain, swganh::app::SwganhKernel* kernel)
 {
     SceneDescription scene_description;
 
@@ -168,9 +175,9 @@ const std::string& Scene::GetDescription() const
 {
     return impl_->GetDescription().description;
 }
-const std::string& Scene::GetTerrainMap() const 
+const std::string& Scene::GetTerrainMap() const
 {
-	return impl_->GetDescription().terrain;
+    return impl_->GetDescription().terrain;
 }
 void Scene::AddObject(std::shared_ptr<swganh::object::Object> object)
 {
@@ -184,37 +191,37 @@ void Scene::RemoveObject(std::shared_ptr<swganh::object::Object> object)
 
 void Scene::HandleDataTransform(const shared_ptr<Object>& object, DataTransform message)
 {
-	impl_->HandleDataTransform(object, message);
+    impl_->HandleDataTransform(object, message);
 }
 void Scene::HandleDataTransformWithParent(const shared_ptr<Object>& object, DataTransformWithParent message)
 {
-	impl_->HandleDataTransformWithParent(object, message);
+    impl_->HandleDataTransformWithParent(object, message);
 }
 
 void Scene::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
-	impl_->GetSpatialIndex()->ViewObjects(requester, max_depth, topDown, func);
+    impl_->GetSpatialIndex()->ViewObjects(requester, max_depth, topDown, func);
 }
 
 void Scene::ViewObjects(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func)
 {
-	impl_->GetSpatialIndex()->ViewObjectsInRange(position, radius, max_depth, topDown, func);
+    impl_->GetSpatialIndex()->ViewObjectsInRange(position, radius, max_depth, topDown, func);
 }
 
 void Scene::HandleDataTransformServer(const std::shared_ptr<swganh::object::Object>& object, const glm::vec3& new_position)
 {
-	impl_->GetMovementManager()->HandleDataTransformServer(object, new_position);
+    impl_->GetMovementManager()->HandleDataTransformServer(object, new_position);
 }
 
 void Scene::HandleDataTransformWithParentServer(
-	const std::shared_ptr<swganh::object::Object>& parent, 
-	const std::shared_ptr<swganh::object::Object>& object,
-	const glm::vec3& new_position)
+    const std::shared_ptr<swganh::object::Object>& parent,
+    const std::shared_ptr<swganh::object::Object>& object,
+    const glm::vec3& new_position)
 {
-	impl_->GetMovementManager()->HandleDataTransformWithParentServer(parent, object, new_position);
+    impl_->GetMovementManager()->HandleDataTransformWithParentServer(parent, object, new_position);
 }
 
 std::set<std::pair<float, std::shared_ptr<swganh::object::Object>>> Scene::FindObjectsInRangeByTag(const std::shared_ptr<swganh::object::Object> requester, const std::string& tag, float range)
 {
-	return impl_->GetSpatialIndex()->FindObjectsInRangeByTag(requester, tag, range);
+    return impl_->GetSpatialIndex()->FindObjectsInRangeByTag(requester, tag, range);
 }

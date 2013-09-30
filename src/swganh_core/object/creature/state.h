@@ -10,9 +10,10 @@ namespace object
 /**
  *
  */
-enum State : int64_t
+enum State :
+int64_t
 {
-	NONE = 0x00,
+    NONE = 0x00,
     COVER = 0x01,
     COMBAT = 0x02,
     PEACE = 0x04,

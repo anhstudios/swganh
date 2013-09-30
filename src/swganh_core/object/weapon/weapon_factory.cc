@@ -10,7 +10,7 @@ using namespace swganh::object;
 using namespace swganh::object;
 
 WeaponFactory::WeaponFactory(swganh::app::SwganhKernel* kernel)
-	: TangibleFactory(kernel)
+    : TangibleFactory(kernel)
 {}
 
 void WeaponFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
@@ -20,29 +20,29 @@ void WeaponFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
 
 void WeaponFactory::PersistChangedObjects()
 {
-	std::set<shared_ptr<Object>> persisted;
-	{
-		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
-		persisted = move(persisted_objects_);
-	}
-	for (auto& object : persisted)
-	{
-		auto lock = object->AcquireLock();
-		if(object->IsDatabasePersisted(lock))
-		{
-			PersistObject(object, lock);
-		}
-	}
+    std::set<shared_ptr<Object>> persisted;
+    {
+        boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+        persisted = move(persisted_objects_);
+    }
+for (auto& object : persisted)
+    {
+        auto lock = object->AcquireLock();
+        if(object->IsDatabasePersisted(lock))
+        {
+            PersistObject(object, lock);
+        }
+    }
 }
 
 uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
-	return TangibleFactory::PersistObject(object, lock, persist_inherited);
+    return TangibleFactory::PersistObject(object, lock, persist_inherited);
 }
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-	ObjectFactory::DeleteObjectFromStorage(object);
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> WeaponFactory::CreateObject()

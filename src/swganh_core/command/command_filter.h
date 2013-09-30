@@ -5,54 +5,60 @@
 #include <tuple>
 #include <cstdint>
 
-namespace swganh {
-namespace command {
+namespace swganh
+{
+namespace command
+{
 
 class CommandInterface;
 
-}}
+}
+}
 
-namespace swganh {
-namespace command {
+namespace swganh
+{
+namespace command
+{
 
 enum ERROR
 {
-	CANNOT_WHILE_IN_POSTURE = 1,
-	INSUFFICIENT_ABILITY = 2,
-	INVALID_TARGET = 3,
-	OUT_OF_RANGE = 4,
-	CANNOT_WHILE_IN_STATE = 5,
-	GOD_LEVEL = 6
+    CANNOT_WHILE_IN_POSTURE = 1,
+    INSUFFICIENT_ABILITY = 2,
+    INVALID_TARGET = 3,
+    OUT_OF_RANGE = 4,
+    CANNOT_WHILE_IN_STATE = 5,
+    GOD_LEVEL = 6
 };
 
 /**
 * Defines a set of filters that can be run on a command
 */
-struct CommandFilters {
+struct CommandFilters
+{
 
-	/**
-	* Checks the target of a command matches what is expected
-	*/
+    /**
+    * Checks the target of a command matches what is expected
+    */
     static std::tuple<bool, uint32_t, uint32_t> TargetCheckFilter(swganh::command::CommandInterface* command);
-    
-	/**
-	* Checks that the actor of a command is in the proper posture to execute that command
-	*/
+
+    /**
+    * Checks that the actor of a command is in the proper posture to execute that command
+    */
     static std::tuple<bool, uint32_t, uint32_t> PostureCheckFilter(swganh::command::CommandInterface* command);
-    
-	/**
-	* Checks that the actor of a command is in the proper state to execute that command
-	*/
+
+    /**
+    * Checks that the actor of a command is in the proper state to execute that command
+    */
     static std::tuple<bool, uint32_t, uint32_t> StateCheckFilter(swganh::command::CommandInterface* command);
-    
-	/**
-	* Checks that the actor of a command has necessary abilities to execute that command
-	*/
+
+    /**
+    * Checks that the actor of a command has necessary abilities to execute that command
+    */
     static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(swganh::command::CommandInterface* command);
-    
-	/**
-	* Checks that the target of a combat command can be attacked
-	*/
+
+    /**
+    * Checks that the target of a combat command can be attacked
+    */
     static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(swganh::command::CommandInterface* command);
 
     /**
@@ -74,4 +80,5 @@ struct CommandFilters {
     static uint32_t  GetLowestCommonBit(uint64_t creature_mask, uint64_t cmd_properties_mask);
 };
 
-}} // swganh::command
+}
+} // swganh::command

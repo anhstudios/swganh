@@ -8,17 +8,21 @@
 
 #include "swganh/event_dispatcher.h"
 
-namespace swganh {
-namespace app {
-	class SwganhKernel;
+namespace swganh
+{
+namespace app
+{
+class SwganhKernel;
 }
-namespace object {
-	class Object; 
+namespace object
+{
+class Object;
 
-    class TemplateInterface 
-    {
-    public:
-		virtual std::shared_ptr<swganh::object::Object> CreateTemplate(swganh::app::SwganhKernel* kernel, std::map<std::string, std::string> parameters) = 0;		
-    };
+class TemplateInterface
+{
+public:
+    virtual std::shared_ptr<swganh::object::Object> CreateTemplate(swganh::app::SwganhKernel* kernel, std::map<std::string, std::string> parameters) = 0;
+};
 
-}}
+}
+}

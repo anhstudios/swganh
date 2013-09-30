@@ -6,22 +6,31 @@
 #include "swganh/byte_buffer.h"
 #include "swganh_core/messages/base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct ChatRoomList : public BaseSwgMessage
+struct ChatRoomList : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 2; }
-    	uint32_t Opcode() const { return 0x70DEB197; }
-		
-		swganh::ByteBuffer data;
-		
-    	void OnSerialize(swganh::ByteBuffer& buffer) const 
-		{
-			buffer.append(data);
-		}
+        return 2;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x70DEB197;
+    }
 
-    	void OnDeserialize(swganh::ByteBuffer& buffer) {}
-    };
+    swganh::ByteBuffer data;
 
-}} // namespace swganh::messages
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.append(data);
+    }
+
+    void OnDeserialize(swganh::ByteBuffer& buffer) {}
+};
+
+}
+} // namespace swganh::messages

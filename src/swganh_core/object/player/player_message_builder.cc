@@ -21,7 +21,7 @@ using namespace swganh::messages;
 
 void PlayerMessageBuilder::RegisterEventHandlers()
 {
-    
+
     event_dispatcher->Subscribe("Player::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
@@ -186,10 +186,11 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(const shared_ptr<Player>& obj
 
         message.data.write<uint32_t>(status_flags.size());
 
-        for_each(begin(status_flags), end(status_flags), [&message] (uint32_t& flag) {
+        for_each(begin(status_flags), end(status_flags), [&message] (uint32_t& flag)
+        {
             message.data.write<uint32_t>(flag);
         });
-        
+
         object->AddDeltasUpdate(&message);
     }
 }
@@ -198,12 +199,13 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(const shared_ptr<Player>& ob
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 6);
-        
+
         auto profile_flags = object->GetProfileFlags();
 
         message.data.write<uint32_t>(profile_flags.size());
 
-        for_each(begin(profile_flags),end(profile_flags), [&message] (uint32_t& flag) {
+        for_each(begin(profile_flags),end(profile_flags), [&message] (uint32_t& flag)
+        {
             message.data.write<uint32_t>(flag);
         });
 
@@ -222,7 +224,7 @@ void PlayerMessageBuilder::BuildProfessionTagDelta(const shared_ptr<Player>& obj
 }
 void PlayerMessageBuilder::BuildBornDateDelta(const shared_ptr<Player>& object)
 {
-     if (object->HasObservers())
+    if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 8);
         message.data.write(object->GetBornDate());
@@ -232,7 +234,7 @@ void PlayerMessageBuilder::BuildBornDateDelta(const shared_ptr<Player>& object)
 }
 void PlayerMessageBuilder::BuildPlayTimeDelta(const shared_ptr<Player>& object)
 {
-     if (object->HasObservers())
+    if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 9);
         message.data.write(object->GetTotalPlayTime());
@@ -307,25 +309,25 @@ void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(const shared_p
 }
 void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& object)
 {
-	if (object->HasObservers())
+    if (object->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
-		object->SerializeQuests(&message);
-		object->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
+        object->SerializeQuests(&message);
+        object->AddDeltasUpdate(&message);
+    }
 }
 void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
 {
-	if (object->HasObservers())
+    if (object->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
-		//object->SerializeAbilities(&message);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
+        //object->SerializeAbilities(&message);
 
-		message.data.write<uint32_t>(0);
-		message.data.write<uint32_t>(0);
+        message.data.write<uint32_t>(0);
+        message.data.write<uint32_t>(0);
 
-		object->AddDeltasUpdate(&message);
-	}
+        object->AddDeltasUpdate(&message);
+    }
 }
 
 void PlayerMessageBuilder::BuildExperimentationFlagDelta(const shared_ptr<Player>& object)
@@ -333,7 +335,7 @@ void PlayerMessageBuilder::BuildExperimentationFlagDelta(const shared_ptr<Player
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 1);
-        message.data.write(object->GetExperimentationFlag());            
+        message.data.write(object->GetExperimentationFlag());
 
         object->AddDeltasUpdate(&message);
     }
@@ -343,7 +345,7 @@ void PlayerMessageBuilder::BuildCraftingStageDelta(const shared_ptr<Player>& obj
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 2);
-        message.data.write(object->GetCraftingStage());            
+        message.data.write(object->GetCraftingStage());
 
         object->AddDeltasUpdate(&message);
     }
@@ -353,19 +355,19 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(const shared_ptr<Pla
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 3);
-        message.data.write(object->GetNearestCraftingStation());            
+        message.data.write(object->GetNearestCraftingStation());
 
         object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildDraftSchematicDelta(const shared_ptr<Player>& object)
 {
-	if (object->HasObservers())
+    if (object->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
-		object->SerializeDraftSchematics(&message);
-		object->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
+        object->SerializeDraftSchematics(&message);
+        object->AddDeltasUpdate(&message);
+    }
 }
 
 void PlayerMessageBuilder::BuildExperimentationPointsDelta(const shared_ptr<Player>& object)
@@ -373,7 +375,7 @@ void PlayerMessageBuilder::BuildExperimentationPointsDelta(const shared_ptr<Play
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 5);
-        message.data.write(object->GetExperimentationPoints());            
+        message.data.write(object->GetExperimentationPoints());
 
         object->AddDeltasUpdate(&message);
     }
@@ -383,35 +385,35 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(const shared_ptr<Play
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 6);
-        message.data.write(object->GetAccomplishmentCounter());            
+        message.data.write(object->GetAccomplishmentCounter());
 
         object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildFriendsDelta(const shared_ptr<Player>& object)
 {
-	if (object->HasObservers())
+    if (object->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
-		object->SerializeFriends(&message);
-		object->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
+        object->SerializeFriends(&message);
+        object->AddDeltasUpdate(&message);
+    }
 }
 void PlayerMessageBuilder::BuildIgnoredDelta(const shared_ptr<Player>& object)
 {
-	if (object->HasObservers())
+    if (object->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
-		object->SerializeIgnoredPlayers(&message);
-		object->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
+        object->SerializeIgnoredPlayers(&message);
+        object->AddDeltasUpdate(&message);
+    }
 }
 void PlayerMessageBuilder::BuildLanguageDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 9);
-        message.data.write(object->GetLanguage());            
+        message.data.write(object->GetLanguage());
 
         object->AddDeltasUpdate(&message);
     }
@@ -421,7 +423,7 @@ void PlayerMessageBuilder::BuildCurrentStomachDelta(const shared_ptr<Player>& ob
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 10);
-        message.data.write(object->GetCurrentStomach());            
+        message.data.write(object->GetCurrentStomach());
 
         object->AddDeltasUpdate(&message);
     }
@@ -431,7 +433,7 @@ void PlayerMessageBuilder::BuildMaxStomachDelta(const shared_ptr<Player>& object
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 11);
-        message.data.write(object->GetMaxStomach());            
+        message.data.write(object->GetMaxStomach());
 
         object->AddDeltasUpdate(&message);
     }
@@ -441,7 +443,7 @@ void PlayerMessageBuilder::BuildCurrentDrinkDelta(const shared_ptr<Player>& obje
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 12);
-        message.data.write(object->GetCurrentDrink());            
+        message.data.write(object->GetCurrentDrink());
 
         object->AddDeltasUpdate(&message);
     }
@@ -451,7 +453,7 @@ void PlayerMessageBuilder::BuildMaxDrinkDelta(const shared_ptr<Player>& object)
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 13);
-        message.data.write(object->GetMaxDrink());            
+        message.data.write(object->GetMaxDrink());
 
         object->AddDeltasUpdate(&message);
     }
@@ -461,7 +463,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 17);
-        message.data.write(object->GetExperimentationPoints());            
+        message.data.write(object->GetExperimentationPoints());
 
         object->AddDeltasUpdate(&message);
     }
@@ -472,12 +474,13 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const sha
 {
     auto message = CreateBaselinesMessage(object, lock, Object::VIEW_3, 10);
     message.data.append((*IntangibleMessageBuilder::BuildBaseline3(object, lock)).data);
-    
+
     auto status_flags = object->GetStatusFlags(lock);
 
     message.data.write<uint32_t>(status_flags.size());
 
-    for_each(begin(status_flags), end(status_flags), [&message] (uint32_t& flag) {
+    for_each(begin(status_flags), end(status_flags), [&message] (uint32_t& flag)
+    {
         message.data.write<uint32_t>(flag);
     });
 
@@ -485,7 +488,8 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const sha
 
     message.data.write<uint32_t>(profile_flags.size());
 
-    for_each(begin(profile_flags), end(profile_flags), [&message] (uint32_t& flag) {
+    for_each(begin(profile_flags), end(profile_flags), [&message] (uint32_t& flag)
+    {
         message.data.write<uint32_t>(flag);
     });
 
@@ -508,42 +512,42 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(const sha
     auto message = CreateBaselinesMessage(object, lock, Object::VIEW_8, 7);
     object->SerializeXp(&message, lock);
     object->SerializeWaypoints(&message, lock);
-    
+
     message.data.write<uint32_t>(object->GetCurrentForcePower(lock));
     message.data.write<uint32_t>(object->GetMaxForcePower(lock));
-    
+
     message.data.write<uint32_t>(0); // Force Sensetive Quest List Soze
     message.data.write<uint32_t>(0); // Force Sensetive Quest List Counter
-    
+
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Size
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Counter
-    
+
     object->SerializeQuests(&message, lock);
-    
+
     return BaselinesMessage(move(message));
 }
 
 boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(const shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock)
 {
     auto message = CreateBaselinesMessage(object, lock, Object::VIEW_9, 17);
-    
+
     //object->SerializeAbilities(&message, lock);
     message.data.write<uint32_t>(0);
-	message.data.write<uint32_t>(0);
-	
-	message.data.write<uint32_t>(object->GetExperimentationFlag(lock));
+    message.data.write<uint32_t>(0);
+
+    message.data.write<uint32_t>(object->GetExperimentationFlag(lock));
     message.data.write<uint32_t>(object->GetCraftingStage(lock));
     message.data.write<uint64_t>(object->GetNearestCraftingStation(lock));
-    
+
     object->SerializeDraftSchematics(&message, lock);
-    
+
     message.data.write<uint32_t>(object->GetExperimentationPoints(lock));
     message.data.write<uint32_t>(object->GetAccomplishmentCounter(lock));
-    
+
     object->SerializeFriends(&message, lock);
-    
+
     object->SerializeIgnoredPlayers(&message, lock);
-    
+
     message.data.write<uint32_t>(object->GetLanguage(lock));
     message.data.write<uint32_t>(object->GetCurrentStomach(lock));
     message.data.write<uint32_t>(object->GetMaxStomach(lock));
@@ -554,6 +558,6 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(const sha
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(object->GetJediState(lock)); // Jedi State
-    
+
     return BaselinesMessage(message);
 }

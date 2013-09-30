@@ -10,7 +10,7 @@ using namespace swganh::object;
 using namespace swganh::object;
 
 ManufactureSchematicFactory::ManufactureSchematicFactory(swganh::app::SwganhKernel* kernel)
-	: IntangibleFactory(kernel)
+    : IntangibleFactory(kernel)
 {
 }
 
@@ -21,12 +21,12 @@ void ManufactureSchematicFactory::LoadFromStorage(const std::shared_ptr<sql::Con
 
 uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
-	return 0;
+    return 0;
 }
 
 void ManufactureSchematicFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-	ObjectFactory::DeleteObjectFromStorage(object);
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> ManufactureSchematicFactory::CreateObject()

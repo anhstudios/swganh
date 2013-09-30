@@ -38,7 +38,7 @@ bool lineIntersectsPolygon(const CollisionBox& polygon, const vec3& pt1, const v
 
 	for(; itr != end;)
 	{
-		//If the next is the end, 
+		//If the next is the end,
 		//we need to make it the beginning for this final edge
 		if(next == end)
 			next = polygon.outer().cbegin();
@@ -62,7 +62,7 @@ int heuristicCostEstimate(const vec3& start, const vec3& end)
 std::vector<vec3> generateValidNeighbors(std::shared_ptr<Object>& object, const vec3& point)
 {
 	std::vector<vec3> result;
-	
+
 	//Generate the basic N, S, E, W, NE, NW, SW, SE points
 	for(int x=-1; x < 2; ++x)
 	{
@@ -145,7 +145,7 @@ std::vector<glm::vec3> FsmStateInterface::FindPath(std::shared_ptr<swganh::objec
 	int startHeuristic = heuristicCostEstimate(start, destination);
 	f_score.insert(std::make_pair(start, startHeuristic));
 	fscore_queue.insert(std::make_pair(startHeuristic, start));
-	
+
 	//Perform the loop
 	while(openset.size() > 0)
 	{

@@ -7,17 +7,26 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct AbortTradeMessage : public BaseSwgMessage
+struct AbortTradeMessage : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 1; }
-    	uint32_t Opcode() const { return 0x9CA80F98; }
-    	
-    	void OnSerialize(swganh::ByteBuffer& buffer) const {}
-    	
-    	void OnDeserialize(swganh::ByteBuffer& buffer) {}
-    };
+        return 1;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x9CA80F98;
+    }
 
-}} // namespace swganh::messages
+    void OnSerialize(swganh::ByteBuffer& buffer) const {}
+
+    void OnDeserialize(swganh::ByteBuffer& buffer) {}
+};
+
+}
+} // namespace swganh::messages

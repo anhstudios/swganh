@@ -9,24 +9,30 @@
 #include "swganh/service/service_interface.h"
 #include "attribute_template_interface.h"
 
-namespace swganh {
-namespace object {
-	class Object;
-}}
+namespace swganh
+{
+namespace object
+{
+class Object;
+}
+}
 
-namespace swganh {
-namespace attributes {
+namespace swganh
+{
+namespace attributes
+{
 
-    class AttributesServiceInterface: public swganh::service::BaseService
-    {
-    public:        
-        virtual ~AttributesServiceInterface() {}
+class AttributesServiceInterface: public swganh::service::BaseService
+{
+public:
+    virtual ~AttributesServiceInterface() {}
 
-        virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(int8_t template_id) = 0;
-        virtual void SetAttributeTemplate(const std::shared_ptr<AttributeTemplateInterface> template_, int8_t template_id) = 0;        
-		virtual bool HasAttributeTemplate(int8_t template_id) = 0;
-		virtual void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor) = 0;
-		virtual std::shared_ptr<AttributeTemplateInterface> GetPythonAttributeTemplate(std::string filename) = 0;
-    };
+    virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(int8_t template_id) = 0;
+    virtual void SetAttributeTemplate(const std::shared_ptr<AttributeTemplateInterface> template_, int8_t template_id) = 0;
+    virtual bool HasAttributeTemplate(int8_t template_id) = 0;
+    virtual void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor) = 0;
+    virtual std::shared_ptr<AttributeTemplateInterface> GetPythonAttributeTemplate(std::string filename) = 0;
+};
 
-}}  // namespace swganh::attributes
+}
+}  // namespace swganh::attributes

@@ -9,11 +9,12 @@ namespace swganh
 namespace object
 {
 
-struct PlayerWaypointSerializer {
+struct PlayerWaypointSerializer
+{
     PlayerWaypointSerializer()
-        : waypoint(nullptr){}
+        : waypoint(nullptr) {}
     PlayerWaypointSerializer(std::shared_ptr<swganh::object::Waypoint> waypoint_)
-        : waypoint(waypoint_){}
+        : waypoint(waypoint_) {}
 
     static void SerializeBaseline(swganh::ByteBuffer& data, const PlayerWaypointSerializer& t);
     static void SerializeDelta(swganh::ByteBuffer& data, const PlayerWaypointSerializer& t);

@@ -14,7 +14,7 @@ using swganh::command::CommandInterface;
 
 void CommandValidator::AddCommandEnqueueFilter(swganh::command::CommandFilter&& filter)
 {
-	enqueue_filters_.push_back(std::move(filter));
+    enqueue_filters_.push_back(std::move(filter));
 }
 
 void CommandValidator::AddCommandProcessFilter(swganh::command::CommandFilter&& filter)
@@ -36,7 +36,7 @@ std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateCommand(
     swganh::command::CommandInterface* command,
     const std::vector<CommandFilter>& filters)
 {
-	std::tuple<bool, uint32_t, uint32_t> result;
+    std::tuple<bool, uint32_t, uint32_t> result;
 
     std::all_of(
         begin(filters),
@@ -44,7 +44,7 @@ std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateCommand(
         [&result, command] (const CommandFilter& filter)->bool
     {
         result = filter(command);
-		return std::get<0>(result);
+        return std::get<0>(result);
     });
 
     return result;

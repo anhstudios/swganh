@@ -4,11 +4,15 @@
 
 #include <string>
 
-namespace swganh {
-namespace login {
-namespace encoders {
+namespace swganh
+{
+namespace login
+{
+namespace encoders
+{
 
-class EncoderInterface {
+class EncoderInterface
+{
 public:
     virtual ~EncoderInterface() {}
 
@@ -16,4 +20,6 @@ public:
     virtual bool IsPasswordValid(std::string encoded, std::string raw, std::string salt) = 0;
 };
 
-}}}  // namespace swganh::login::encoders
+}
+}
+}  // namespace swganh::login::encoders

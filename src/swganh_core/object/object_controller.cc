@@ -12,11 +12,11 @@
 
 #ifndef WIN32
 #include <boost/regex.hpp>
-    using boost::regex;
-    using boost::regex_search;
-    using boost::smatch;
+using boost::regex;
+using boost::regex_search;
+using boost::smatch;
 #else
-    #include <regex>
+#include <regex>
 #endif
 
 using namespace std;
@@ -61,16 +61,16 @@ void ObjectController::SetRemoteClient(shared_ptr<ConnectionClientInterface> rem
 
 void ObjectController::Notify(BaseSwgMessage* message)
 {
-	swganh::ByteBuffer buffer;
-	message->SetObserverId(GetId());
-	message->Serialize(buffer);
-	client_->SendTo(buffer, boost::optional<swganh::network::Session::SequencedCallback>());
+    swganh::ByteBuffer buffer;
+    message->SetObserverId(GetId());
+    message->Serialize(buffer);
+    client_->SendTo(buffer, boost::optional<swganh::network::Session::SequencedCallback>());
 }
 
 void ObjectController::Notify(BaseSwgMessage* message, swganh::network::Session::SequencedCallback&& callback)
 {
-	swganh::ByteBuffer buffer;
-	message->SetObserverId(GetId());
-	message->Serialize(buffer);
+    swganh::ByteBuffer buffer;
+    message->SetObserverId(GetId());
+    message->Serialize(buffer);
     client_->SendTo(buffer, move(callback));
 }

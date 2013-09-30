@@ -19,7 +19,7 @@ using namespace swganh::scripting;
 namespace bp = boost::python;
 
 PythonScript::PythonScript(const std::string& filename, bool delay_execution)
-        : filename_(filename)
+    : filename_(filename)
 {
     ReadFileContents_();
     PreparePythonEnvironment_();
@@ -59,8 +59,8 @@ std::shared_ptr<boost::python::object> PythonScript::GetGlobal(const std::string
     try
     {
         instance = std::shared_ptr<bp::object>(
-            new bp::object((*globals_)[name.c_str()]),
-            PythonObjectDeleter());
+                       new bp::object((*globals_)[name.c_str()]),
+                       PythonObjectDeleter());
     }
     catch(bp::error_already_set&)
     {
@@ -84,7 +84,7 @@ void PythonScript::PreparePythonEnvironment_()
     {
         main_.reset(
             new bp::object(bp::handle<>(bp::borrowed(
-            PyImport_AddModule("__main__")))));
+                                            PyImport_AddModule("__main__")))));
 
         globals_.reset(new bp::object(main_->attr("__dict__")));
 
@@ -105,6 +105,6 @@ void PythonScript::ReadFileContents_()
     filestream >> std::noskipws;
 
     filecontents_ = std::string(
-        (std::istreambuf_iterator<char>(filestream)),
-        std::istreambuf_iterator<char>());
+                        (std::istreambuf_iterator<char>(filestream)),
+                        std::istreambuf_iterator<char>());
 }

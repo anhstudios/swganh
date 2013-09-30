@@ -10,8 +10,10 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
 void GroupMessageBuilder::RegisterEventHandlers()
@@ -61,29 +63,30 @@ void GroupMessageBuilder::BuildLootMasterDelta(const shared_ptr<Group>& group)
 
 boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline3(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(group, lock, Object::VIEW_3, 8);
-	message.data.append((*ObjectMessageBuilder::BuildBaseline3(group, lock)).data);
-	return BaselinesMessage(std::move(message));
+    auto message = CreateBaselinesMessage(group, lock, Object::VIEW_3, 8);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline3(group, lock)).data);
+    return BaselinesMessage(std::move(message));
 }
 
 boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group>& group, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(group, lock, Object::VIEW_6, 6);
-	message.data.append((*ObjectMessageBuilder::BuildBaseline6(group, lock)).data);
+    auto message = CreateBaselinesMessage(group, lock, Object::VIEW_6, 6);
+    message.data.append((*ObjectMessageBuilder::BuildBaseline6(group, lock)).data);
     group->SerializeGroupMembers(&message, lock);
-	
-	//Unknown List
-	message.data.write<uint32_t>(0);
-	message.data.write<uint32_t>(0);
 
-	//Unknown String
-	message.data.write<std::string>("");
+    //Unknown List
+    message.data.write<uint32_t>(0);
+    message.data.write<uint32_t>(0);
+
+    //Unknown String
+    message.data.write<std::string>("");
 
     message.data.write<uint16_t>(group->GetDifficulty(lock));
-	message.data.write<uint32_t>(4); //Unknown Int
+    message.data.write<uint32_t>(4); //Unknown Int
     message.data.write<uint64_t>(group->GetLootMaster(lock));
     message.data.write<uint32_t>(group->GetLootMode(lock));
-	return BaselinesMessage(std::move(message));
+    return BaselinesMessage(std::move(message));
 }
 
-}} // swganh::object
+}
+} // swganh::object

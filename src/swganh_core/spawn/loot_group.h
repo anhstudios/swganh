@@ -11,12 +11,12 @@ namespace swganh
 {
 namespace app
 {
-	class SwganhKernel;
+class SwganhKernel;
 }
 
 namespace object
 {
-	class Object;
+class Object;
 }
 
 namespace spawn
@@ -28,23 +28,24 @@ class LootGroup
 {
 public:
 
-	LootGroup(uint32_t max_items, uint32_t min_credits, uint32_t max_credits);
-	
-	void AddItem(std::shared_ptr<LootItem> item);
-	
-	uint32_t GetId();
-	void SetId(uint32_t id);
-	
-	std::set<std::shared_ptr<swganh::object::Object>> GetDrops(swganh::app::SwganhKernel* kernel);
-	
-	uint32_t GetCreditPayout();
+    LootGroup(uint32_t max_items, uint32_t min_credits, uint32_t max_credits);
+
+    void AddItem(std::shared_ptr<LootItem> item);
+
+    uint32_t GetId();
+    void SetId(uint32_t id);
+
+    std::set<std::shared_ptr<swganh::object::Object>> GetDrops(swganh::app::SwganhKernel* kernel);
+
+    uint32_t GetCreditPayout();
 
 private:
-	std::vector<std::shared_ptr<LootItem>> loot_items_;
-	
-	uint32_t id_;
-	uint32_t max_items_;
-	RandomGenerator random_gen_;
+    std::vector<std::shared_ptr<LootItem>> loot_items_;
+
+    uint32_t id_;
+    uint32_t max_items_;
+    RandomGenerator random_gen_;
 };
 
-}}
+}
+}

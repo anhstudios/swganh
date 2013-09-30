@@ -4,45 +4,47 @@
 
 #include "swganh_core/galaxy/galaxy_service_interface.h"
 
-namespace swganh {
-namespace galaxy {
+namespace swganh
+{
+namespace galaxy
+{
 
 /**
 * Manages statistics on a galaxy and provides galaxy time
 */
 class GalaxyService : public swganh::galaxy::GalaxyServiceInterface
 {
-public:    
+public:
 
-	/**
-	* Creates a new instance
-	*/
+    /**
+    * Creates a new instance
+    */
     explicit GalaxyService(swganh::app::SwganhKernel* kernel);
 
-	/**
-	* Custom destructor
-	*/
+    /**
+    * Custom destructor
+    */
     ~GalaxyService();
 
-	/**
-	* @return the population of the galaxy
-	*/
+    /**
+    * @return the population of the galaxy
+    */
     uint32_t GetPopulation();
-		
-	/**
-	* @return the current time of the galaxy since galaxy birth
-	*/
-	uint64_t GetGalaxyTimeInMilliseconds();
-        
-	/**
-	* Called on server startup
-	*/
+
+    /**
+    * @return the current time of the galaxy since galaxy birth
+    */
+    uint64_t GetGalaxyTimeInMilliseconds();
+
+    /**
+    * Called on server startup
+    */
     void Initialize();
     void Startup();
 
 private:
     GalaxyService();
-        
+
     void GalaxyStatusTimerHandler_(const boost::system::error_code& e, int delay_in_secs);
 
     std::shared_ptr<swganh::galaxy::providers::GalaxyProviderInterface> galaxy_provider_;
@@ -52,5 +54,6 @@ private:
     std::shared_ptr<boost::asio::deadline_timer> galaxy_timer_;
 };
 
-}}  // swganh::galaxy
+}
+}  // swganh::galaxy
 

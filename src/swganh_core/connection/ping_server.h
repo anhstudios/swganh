@@ -8,8 +8,10 @@
 
 #include <boost/asio.hpp>
 
-namespace swganh {
-namespace connection {
+namespace swganh
+{
+namespace connection
+{
 
 class PingServer
 {
@@ -35,7 +37,7 @@ private:
     PingServer();
     PingServer(const PingServer&);
     PingServer& operator=(const PingServer&);
-    
+
     void AsyncReceive();
 
     void HandleReceive(const boost::system::error_code& error, size_t bytesReceived);
@@ -50,4 +52,5 @@ private:
     uint64_t bytes_sent_;
 };
 
-}}  // namespace swganh::connection
+}
+}  // namespace swganh::connection

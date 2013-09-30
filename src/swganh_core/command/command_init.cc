@@ -23,23 +23,29 @@
 
 #include "version.h"
 
-namespace swganh {
-namespace command {
+namespace swganh
+{
+namespace command
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-    
-    { // Command::CommandFactory
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+
+    {
+        // Command::CommandFactory
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             auto factory = new CommandFactory();
             return factory;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<CommandFactory*>(object);
             }
         };
@@ -47,13 +53,17 @@ void Initialize(swganh::app::SwganhKernel* kernel)
         kernel->GetPluginManager()->RegisterObject("Command::CommandFactory", &registration);
     }
 
-    { // Command::CommandQueue
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Command::CommandQueue
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             return new CommandQueue(kernel);
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<CommandQueue*>(object);
             }
         };
@@ -61,13 +71,17 @@ void Initialize(swganh::app::SwganhKernel* kernel)
         kernel->GetPluginManager()->RegisterObject("Command::CommandQueue", &registration);
     }
 
-    { // Command::CommandQueueManager
-        registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Command::CommandQueueManager
+        registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void *
+        {
             return new CommandQueueManager();
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<CommandQueueManager*>(object);
             }
         };
@@ -75,13 +89,17 @@ void Initialize(swganh::app::SwganhKernel* kernel)
         kernel->GetPluginManager()->RegisterObject("Command::CommandQueueManager", &registration);
     }
 
-    { // Command::CommandPropertiesManager
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Command::CommandPropertiesManager
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             return new CommandPropertiesManager(kernel->GetResourceManager());
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<CommandPropertiesManager*>(object);
             }
         };
@@ -89,15 +107,19 @@ void Initialize(swganh::app::SwganhKernel* kernel)
         kernel->GetPluginManager()->RegisterObject("Command::CommandPropertiesManager", &registration);
     }
 
-    { // Command::CommandService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Command::CommandService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             auto command_service = new CommandService(kernel);
-            
+
             return command_service;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<CommandService*>(object);
             }
         };
@@ -105,13 +127,17 @@ void Initialize(swganh::app::SwganhKernel* kernel)
         kernel->GetPluginManager()->RegisterObject("Command::CommandService", &registration);
     }
 
-    { // Command::CommandValidator
-        registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Command::CommandValidator
+        registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void *
+        {
             return new CommandValidator();
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<CommandValidator*>(object);
             }
         };
@@ -120,5 +146,6 @@ void Initialize(swganh::app::SwganhKernel* kernel)
     }
 }
 
-}}  // namespace swganh::command
+}
+}  // namespace swganh::command
 

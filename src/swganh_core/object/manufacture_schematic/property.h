@@ -9,23 +9,23 @@ namespace object
 
 struct Property
 {
-	std::string property_stf_file;
-	std::string property_stf_name;
-	float value;
+    std::string property_stf_file;
+    std::string property_stf_name;
+    float value;
 
-	bool operator==(const Property& other)
-	{
-		return other.value == value;
-	}
-	void Serialize(swganh::messages::BaselinesMessage& message)
-	{
-		
-	}
+    bool operator==(const Property& other)
+    {
+        return other.value == value;
+    }
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
 
-	void Serialize(swganh::messages::DeltasMessage& message)
-	{
-	
-	}
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+
+    }
 };
 
 }

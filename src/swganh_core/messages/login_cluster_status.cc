@@ -8,15 +8,15 @@ using namespace swganh::messages;
 using namespace std;
 
 LoginClusterStatus swganh::messages::BuildLoginClusterStatus(
-    const vector<GalaxyStatus>& galaxy_status) 
+    const vector<GalaxyStatus>& galaxy_status)
 {
-	LoginClusterStatus message;
-	
+    LoginClusterStatus message;
+
     std::for_each(
         galaxy_status.begin(),
-        galaxy_status.end(), 
-        [&message] (const GalaxyStatus& status) 
-    {  
+        galaxy_status.end(),
+        [&message] (const GalaxyStatus& status)
+    {
         ClusterServer cluster_server;
         cluster_server.address = status.address;
         cluster_server.ping_port = status.ping_port;
@@ -28,9 +28,9 @@ LoginClusterStatus swganh::messages::BuildLoginClusterStatus(
         cluster_server.max_chars = status.max_characters;
         cluster_server.max_pop = status.max_population;
         cluster_server.server_pop = status.server_population;
-        
+
         message.servers.push_back(cluster_server);
     });
-	
-	return message;
+
+    return message;
 }
