@@ -19,7 +19,7 @@ using namespace std;
 using namespace swganh::object;
 
 BuildingFactory::BuildingFactory(swganh::app::SwganhKernel* kernel)
-	: TangibleFactory(kernel)
+    : TangibleFactory(kernel)
 {}
 
 void BuildingFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock)
@@ -29,5 +29,5 @@ void BuildingFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
 
 std::shared_ptr<swganh::object::Object> BuildingFactory::CreateObject()
 {
-	return std::make_shared<Building>();
+    return std::make_shared<Building>();
 }

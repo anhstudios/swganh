@@ -31,13 +31,15 @@ ProsePackage::~ProsePackage() {}
 
 OutOfBand::OutOfBand()
     : count_(0)
-    , data_(make_shared<ByteBuffer>()) {
+    , data_(make_shared<ByteBuffer>())
+{
     Initialize_();
 }
 
 OutOfBand::OutOfBand(const ProsePackage& prose)
     : count_(0)
-    , data_(make_shared<ByteBuffer>()) {
+    , data_(make_shared<ByteBuffer>())
+{
     Initialize_();
 
     AddProsePackage(prose);
@@ -49,7 +51,8 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      uint64_t to_object_id, const string& to_stf_file, const string& to_stf_label, const wstring& to_custom_string,
                      int32_t di_integer, float df_float, bool display_flag)
     : count_(0)
-    , data_(new ByteBuffer()) {
+    , data_(new ByteBuffer())
+{
     Initialize_();
 
     AddProsePackage(base_stf_file, base_stf_label,
@@ -60,63 +63,64 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
 }
 
 OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
-              ProseType prose_type, uint64_t object_id, bool display_flag)
+                     ProseType prose_type, uint64_t object_id, bool display_flag)
     : count_(0)
     , data_(make_shared<ByteBuffer>())
 {
     Initialize_();
     switch (prose_type)
     {
-        case TU:
-            AddProsePackage(base_stf_file, base_stf_string, object_id, 0, 0, 0, 0.0f, display_flag);
-            break;
-        case TT:
-            AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
-            break;
-        case TO:
-            AddProsePackage(base_stf_file, base_stf_string, 0, 0, object_id, 0, 0.0f, display_flag);
-            break;
-		case DI:
-			AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, (int32_t)object_id, 0.0f, display_flag);
-			break;
-		case DF:
-			AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, 0, (float)object_id, display_flag);
-        default:
-            AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
-            break;
+    case TU:
+        AddProsePackage(base_stf_file, base_stf_string, object_id, 0, 0, 0, 0.0f, display_flag);
+        break;
+    case TT:
+        AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
+        break;
+    case TO:
+        AddProsePackage(base_stf_file, base_stf_string, 0, 0, object_id, 0, 0.0f, display_flag);
+        break;
+    case DI:
+        AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, (int32_t)object_id, 0.0f, display_flag);
+        break;
+    case DF:
+        AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, 0, (float)object_id, display_flag);
+    default:
+        AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
+        break;
     }
-    
+
 }
 
 OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
-              ProseType prose_type, const std::wstring& message, bool display_flag)
+                     ProseType prose_type, const std::wstring& message, bool display_flag)
     : count_(0)
     , data_(make_shared<ByteBuffer>())
 {
     Initialize_();
     switch (prose_type)
     {
-        case TU:
-            AddProsePackage(base_stf_file, base_stf_string, message, L"", L"", 0, 0.0f, display_flag);
-            break;
-        case TT:
-            AddProsePackage(base_stf_file, base_stf_string, L"", message, L"", 0, 0.0f, display_flag);
-            break;
-        case TO:
-            AddProsePackage(base_stf_file, base_stf_string, L"", L"", message, 0, 0.0f, display_flag);
-            break;
-        default:
-            AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, 0, 0.0f, display_flag);
-            break;
+    case TU:
+        AddProsePackage(base_stf_file, base_stf_string, message, L"", L"", 0, 0.0f, display_flag);
+        break;
+    case TT:
+        AddProsePackage(base_stf_file, base_stf_string, L"", message, L"", 0, 0.0f, display_flag);
+        break;
+    case TO:
+        AddProsePackage(base_stf_file, base_stf_string, L"", L"", message, 0, 0.0f, display_flag);
+        break;
+    default:
+        AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, 0, 0.0f, display_flag);
+        break;
     }
-    
+
 }
 
 OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      uint64_t tu_object_id, uint64_t tt_object_id, uint64_t to_object_id,
                      int32_t di_integer, float df_float, bool display_flag)
     : count_(0)
-    , data_(make_shared<ByteBuffer>()) {
+    , data_(make_shared<ByteBuffer>())
+{
     Initialize_();
 
     AddProsePackage(base_stf_file, base_stf_label,
@@ -130,7 +134,8 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      const string& to_stf_file, const string& to_stf_label,
                      int32_t di_integer, float df_float, bool display_flag)
     : count_(0)
-    , data_(make_shared<ByteBuffer>()) {
+    , data_(make_shared<ByteBuffer>())
+{
     Initialize_();
 
     AddProsePackage(base_stf_file, base_stf_label,
@@ -146,7 +151,8 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      const wstring& to_custom_string,
                      int32_t di_integer, float df_float, bool display_flag)
     : count_(0)
-    , data_(make_shared<ByteBuffer>()) {
+    , data_(make_shared<ByteBuffer>())
+{
     Initialize_();
 
     AddProsePackage(base_stf_file, base_stf_label,
@@ -154,20 +160,23 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                     di_integer, df_float, display_flag);
 }
 
-OutOfBand::~OutOfBand() 
+OutOfBand::~OutOfBand()
 {
 }
 
-uint16_t OutOfBand::Count() const {
+uint16_t OutOfBand::Count() const
+{
     return count_;
 }
 
-uint32_t OutOfBand::Length() const {
+uint32_t OutOfBand::Length() const
+{
     // Take the size of the data package minus the 4 bytes for the length value.
     return (data_->size() - 4) / 2;
 }
 
-void OutOfBand::AddProsePackage(const ProsePackage& prose) {
+void OutOfBand::AddProsePackage(const ProsePackage& prose)
+{
     ByteBuffer tmp(*data_);
 
     tmp.write<uint8_t>(0x01);
@@ -206,7 +215,8 @@ void OutOfBand::AddProsePackage(const ProsePackage& prose) {
 
     // This whole ProsePackage is treated as a wide-character string, so if
     // the string length totals are odd then we need to add some padding.
-    if (std_string_lengths % 2) {
+    if (std_string_lengths % 2)
+    {
         tmp.write<uint8_t>(0);
     }
 
@@ -226,7 +236,8 @@ void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_
                                 uint64_t tu_object_id, const string& tu_stf_file, const string& tu_stf_label, const wstring& tu_custom_string,
                                 uint64_t tt_object_id, const string& tt_stf_file, const string& tt_stf_label, const wstring& tt_custom_string,
                                 uint64_t to_object_id, const string& to_stf_file, const string& to_stf_label, const wstring& to_custom_string,
-                                int32_t di_integer, float df_float, bool display_flag) {
+                                int32_t di_integer, float df_float, bool display_flag)
+{
     ProsePackage prose;
 
     prose.base_stf_file = base_stf_file;
@@ -256,7 +267,8 @@ void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_
 
 void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_stf_label,
                                 uint64_t tu_object_id, uint64_t tt_object_id, uint64_t to_object_id,
-                                int32_t di_integer, float df_float, bool display_flag) {
+                                int32_t di_integer, float df_float, bool display_flag)
+{
     ProsePackage prose;
 
     prose.base_stf_file = base_stf_file;
@@ -277,7 +289,8 @@ void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_
                                 const string& tu_stf_file, const string& tu_stf_label,
                                 const string& tt_stf_file, const string& tt_stf_label,
                                 const string& to_stf_file, const string& to_stf_label,
-                                int32_t di_integer, float df_float, bool display_flag) {
+                                int32_t di_integer, float df_float, bool display_flag)
+{
     ProsePackage prose;
 
     prose.base_stf_file = base_stf_file;
@@ -301,7 +314,8 @@ void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_
 
 void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_stf_label,
                                 const wstring& tu_custom_string, const wstring& tt_custom_string, const wstring& to_custom_string,
-                                int32_t di_integer, float df_float, bool display_flag) {
+                                int32_t di_integer, float df_float, bool display_flag)
+{
     ProsePackage prose;
 
     prose.base_stf_file = base_stf_file;
@@ -318,20 +332,24 @@ void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_
     AddProsePackage(prose);
 }
 
-const ByteBuffer* OutOfBand::Pack() const {
+const ByteBuffer* OutOfBand::Pack() const
+{
     return data_.get();
 }
 
 
-void OutOfBand::Initialize_() {
+void OutOfBand::Initialize_()
+{
     data_->write<uint32_t>(2);
     data_->write<uint16_t>(0);
 }
 
-void OutOfBand::SetCount_(ByteBuffer& buffer, uint16_t count) {
+void OutOfBand::SetCount_(ByteBuffer& buffer, uint16_t count)
+{
     buffer.writeAt<uint16_t>(4, count);
 }
 
-void OutOfBand::SetLength_(ByteBuffer& buffer) {
+void OutOfBand::SetLength_(ByteBuffer& buffer)
+{
     buffer.writeAt<uint32_t>(0, (buffer.size()-4) / 2);
 }

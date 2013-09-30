@@ -10,15 +10,15 @@ using namespace swganh::object;
 
 bool StaticContainerPermission::canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object)
 {
-	return false;
+    return false;
 }
 
 bool StaticContainerPermission::canRemove(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object)
 {
-	return true;
+    return true;
 }
 
 bool StaticContainerPermission::canView(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester)
 {
-	return true;
+    return true;
 }

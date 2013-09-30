@@ -4,31 +4,34 @@
 
 #include "swganh_core/object/tangible/tangible_factory.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-	class ObjectManager;
-
-
-
-	class FactoryCrate;
-
-    class FactoryCrateFactory : public swganh::object::TangibleFactory
-    {
-    public:
-		typedef FactoryCrate ObjectType;
-
-        FactoryCrateFactory(swganh::app::SwganhKernel* kernel);
-        
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
-
-		virtual void PersistChangedObjects(){}
-
-		virtual void RegisterEventHandlers(){}
-
-		std::shared_ptr<swganh::object::Object> CreateObject();
-
-    };
+class ObjectManager;
 
 
-}}  // namespace swganh::object
+
+class FactoryCrate;
+
+class FactoryCrateFactory : public swganh::object::TangibleFactory
+{
+public:
+    typedef FactoryCrate ObjectType;
+
+    FactoryCrateFactory(swganh::app::SwganhKernel* kernel);
+
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+
+    virtual void PersistChangedObjects() {}
+
+    virtual void RegisterEventHandlers() {}
+
+    std::shared_ptr<swganh::object::Object> CreateObject();
+
+};
+
+
+}
+}  // namespace swganh::object

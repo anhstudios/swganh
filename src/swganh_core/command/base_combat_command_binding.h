@@ -2,10 +2,13 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-namespace swganh {
-namespace command {
+namespace swganh
+{
+namespace command
+{
 
-    void ExportBaseCombatCommand();
+void ExportBaseCombatCommand();
 
-}}
+}
+}
 

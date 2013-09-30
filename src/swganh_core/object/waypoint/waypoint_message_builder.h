@@ -4,38 +4,44 @@
 
 #include "swganh_core/object/intangible/intangible_message_builder.h"
 
-namespace swganh {
-namespace messages {
-    struct BaselinesMessage;
-}} // swganh::messages
+namespace swganh
+{
+namespace messages
+{
+struct BaselinesMessage;
+}
+} // swganh::messages
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
-    class Waypoint;
+class Waypoint;
 
-    class WaypointMessageBuilder : public swganh::object::IntangibleMessageBuilder
+class WaypointMessageBuilder : public swganh::object::IntangibleMessageBuilder
+{
+public:
+    WaypointMessageBuilder(swganh::EventDispatcher* dispatcher) :
+        IntangibleMessageBuilder(dispatcher)
     {
-    public:
-        WaypointMessageBuilder(swganh::EventDispatcher* dispatcher) : 
-            IntangibleMessageBuilder(dispatcher)
-        {
-            RegisterEventHandlers();
-        }
+        RegisterEventHandlers();
+    }
 
-		static void BuildActivateDelta(const std::shared_ptr<Waypoint>& object);
-		static void BuildPlanetDelta(const std::shared_ptr<Waypoint>& object);
-		static void BuildCoordinatesDelta(const std::shared_ptr<Waypoint>& object);
-		static void BuildColorDelta(const std::shared_ptr<Waypoint>& object);
+    static void BuildActivateDelta(const std::shared_ptr<Waypoint>& object);
+    static void BuildPlanetDelta(const std::shared_ptr<Waypoint>& object);
+    static void BuildCoordinatesDelta(const std::shared_ptr<Waypoint>& object);
+    static void BuildColorDelta(const std::shared_ptr<Waypoint>& object);
 
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock);
-		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Waypoint>& object, boost::unique_lock<boost::mutex>& lock);
 
-	private:
-		typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
-        
-        void RegisterEventHandlers();
-    };
+private:
+    typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
 
-}}  // swganh::object
+    void RegisterEventHandlers();
+};
+
+}
+}  // swganh::object

@@ -52,22 +52,23 @@ using swganh::app::SwganhKernel;
 LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKernel* kernel)
     : swganh::login::LoginServiceInterface(kernel->GetCpuThreadPool())
     , kernel_(kernel)
-	, galaxy_status_timer_(kernel->GetCpuThreadPool())
+    , galaxy_status_timer_(kernel->GetCpuThreadPool())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
-	, active_(kernel->GetCpuThreadPool())
+    , active_(kernel->GetCpuThreadPool())
 {
     SetServiceDescription(service::ServiceDescription(
-        "Login Service",
-        "login",
-        "0.1",
-        swganh::network::resolve_to_string(listen_address_),
-        0,
-        listen_port_,
-        0));
+                              "Login Service",
+                              "login",
+                              "0.1",
+                              swganh::network::resolve_to_string(listen_address_),
+                              0,
+                              listen_port_,
+                              0));
 }
 
-LoginService::~LoginService() {
+LoginService::~LoginService()
+{
     session_timer_->cancel();
     session_timer_.reset();
 }
@@ -88,7 +89,8 @@ shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
     return session;
 }
 
-bool LoginService::RemoveSession(std::shared_ptr<Session> session) {
+bool LoginService::RemoveSession(std::shared_ptr<Session> session)
+{
     {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         session_map_.erase(session->remote_endpoint());
@@ -97,7 +99,8 @@ bool LoginService::RemoveSession(std::shared_ptr<Session> session) {
     return true;
 }
 
-shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
+shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint)
+{
     {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
 
@@ -119,11 +122,11 @@ void LoginService::Initialize()
     authentication_manager_ = std::make_shared<AuthenticationManager>(encoder);
 
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
-	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
+    galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
 }
 
-void LoginService::Startup() 
-{    
+void LoginService::Startup()
+{
     RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
 
     auto event_dispatcher = kernel_->GetEventDispatcher();
@@ -177,7 +180,8 @@ void LoginService::login_error_timeout_secs(int new_timeout)
     login_error_timeout_secs_ = new_timeout;
 }
 
-void LoginService::UpdateGalaxyStatus_() {
+void LoginService::UpdateGalaxyStatus_()
+{
     //LOG(info) << "Updating galaxy status";
 
     galaxy_status_ = GetGalaxyStatus_();
@@ -190,27 +194,32 @@ void LoginService::UpdateGalaxyStatus_() {
         end(session_map_),
         [&status_message] (SessionMap::value_type& item)
     {
-        if (item.second) {
+        if (item.second)
+        {
             item.second->SendTo(status_message);
         }
     });
 }
 
-std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
+std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_()
+{
     std::vector<GalaxyStatus> galaxy_status;
 
     auto service_directory = kernel_->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
 
-    std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (swganh::service::Galaxy& galaxy) {
+    std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (swganh::service::Galaxy& galaxy)
+    {
         auto service_list = service_directory->getServiceSnapshot(galaxy);
 
-        auto it = std::find_if(service_list.begin(), service_list.end(), [] (swganh::service::ServiceDescription& service) {
+        auto it = std::find_if(service_list.begin(), service_list.end(), [] (swganh::service::ServiceDescription& service)
+        {
             return service.type().compare("connection") == 0;
         });
 
-        if (it != service_list.end()) {
+        if (it != service_list.end())
+        {
             GalaxyStatus status;
             status.address = it->address();
             status.connection_port = it->udp_port();
@@ -249,7 +258,8 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterfa
         }
     }
 
-    if (!account || !authentication_manager_->Authenticate(login_client, account)) {
+    if (!account || !authentication_manager_->Authenticate(login_client, account))
+    {
         LOG(warning) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
@@ -262,12 +272,12 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterfa
         auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
-			if (login_client)
-			{
+            if (login_client)
+            {
                 login_client->Close();
 
-				DLOG(info) << "Closing connection";
-			}
+                DLOG(info) << "Closing connection";
+            }
         });
 
         return;
@@ -276,7 +286,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterfa
     login_client->SetAccount(account);
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-        + boost::lexical_cast<string>(login_client->remote_endpoint().address());
+                             + boost::lexical_cast<string>(login_client->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
     login_client->SendTo(
@@ -294,6 +304,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterfa
         BuildEnumerateCharacterId(characters));
 }
 
-uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {
+uint32_t LoginService::GetAccountBySessionKey(const string& session_key)
+{
     return account_provider_->FindBySessionKey(session_key);
 }

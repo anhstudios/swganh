@@ -6,17 +6,26 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct CloseHolocronMessage : public BaseSwgMessage
+struct CloseHolocronMessage : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 1; }
-    	uint32_t Opcode() const { return 0xC0938A9D; }
+        return 1;
+    }
+    uint32_t Opcode() const
+    {
+        return 0xC0938A9D;
+    }
 
-    	void OnSerialize(swganh::ByteBuffer& buffer) const {}
+    void OnSerialize(swganh::ByteBuffer& buffer) const {}
 
-    	void OnDeserialize(swganh::ByteBuffer& buffer) {}
-    };
+    void OnDeserialize(swganh::ByteBuffer& buffer) {}
+};
 
-}} // namespace swganh::messages
+}
+} // namespace swganh::messages

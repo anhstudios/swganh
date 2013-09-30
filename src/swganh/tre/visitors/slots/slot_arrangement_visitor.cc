@@ -14,14 +14,14 @@ void SlotArrangementVisitor::visit_folder(uint32_t depth, std::string name, uint
 
 void SlotArrangementVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
-	if(name == "0000ARG ")
-	{
-		uint32_t end_pos = data.read_position() + size;
-		std::vector<string> combination;
-		while(data.read_position() < end_pos)
-		{
-			combination.push_back(data.read<string>(false, true));
-		}
-		combinations_.push_back(std::move(combination));
-	}
+    if(name == "0000ARG ")
+    {
+        uint32_t end_pos = data.read_position() + size;
+        std::vector<string> combination;
+        while(data.read_position() < end_pos)
+        {
+            combination.push_back(data.read<string>(false, true));
+        }
+        combinations_.push_back(std::move(combination));
+    }
 }

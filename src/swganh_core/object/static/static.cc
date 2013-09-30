@@ -7,6 +7,6 @@ using namespace std;
 using namespace swganh::object;
 
 uint32_t Static::GetType() const
-{ 
-    return Static::type; 
+{
+    return Static::type;
 }

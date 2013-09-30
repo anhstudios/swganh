@@ -16,37 +16,37 @@ namespace swganh
 {
 namespace combat
 {
-	typedef std::pair<boost::posix_time::ptime, std::shared_ptr<swganh::object::Creature>> BuffQueueType;
+typedef std::pair<boost::posix_time::ptime, std::shared_ptr<swganh::object::Creature>> BuffQueueType;
 
-	struct timeOrder
-	{
-		bool operator()(const BuffQueueType& lhs, const BuffQueueType& rhs) const
-		{
-			return lhs.first < rhs.first;
-		}
-	};
+struct timeOrder
+{
+    bool operator()(const BuffQueueType& lhs, const BuffQueueType& rhs) const
+    {
+        return lhs.first < rhs.first;
+    }
+};
 
-	typedef std::priority_queue<BuffQueueType, std::vector<BuffQueueType>, timeOrder> BuffQueue;
+typedef std::priority_queue<BuffQueueType, std::vector<BuffQueueType>, timeOrder> BuffQueue;
 
-	class BuffManager
-	{
-	public:
+class BuffManager
+{
+public:
 
-		BuffManager(swganh::app::SwganhKernel* kernel);
+    BuffManager(swganh::app::SwganhKernel* kernel);
 
-		void Start();
+    void Start();
 
-	private:
-		void handleTick_(const boost::system::error_code& e);
+private:
+    void handleTick_(const boost::system::error_code& e);
 
-		swganh::app::SwganhKernel * kernel_;
+    swganh::app::SwganhKernel * kernel_;
 
-		boost::mutex mutex_;
+    boost::mutex mutex_;
 
-		BuffQueue q_;
-		std::map<swganh::HashString, std::shared_ptr<BuffInterface>> buffs_;
-		boost::asio::deadline_timer timer_;
-	};
+    BuffQueue q_;
+    std::map<swganh::HashString, std::shared_ptr<BuffInterface>> buffs_;
+    boost::asio::deadline_timer timer_;
+};
 
 }
 }

@@ -9,113 +9,125 @@
 #include <swganh_core/badge/badge_service_interface.h>
 #include <swganh_core/connection/connection_client_interface.h>
 
-namespace swganh {
+namespace swganh
+{
 
-namespace object {
-	class Player;
+namespace object
+{
+class Player;
 } // namespace swganh::object
 
-namespace equipment {
-	class EquipmentService;
+namespace equipment
+{
+class EquipmentService;
 } // namespace swganh::equipment
 
-namespace command {
-	class CommandServiceInterface;
+namespace command
+{
+class CommandServiceInterface;
 } // namespace swganh::command
 
-namespace badge {
+namespace badge
+{
 
-	class BadgeRegion;
+class BadgeRegion;
 
-	/**
-	 * Badge IDs for accumulation badges.
-	 */
-	enum AccumulationBadges
-	{
-		COUNT_5 = 0,
-		COUNT_10,
-		COUNT_25,
-		COUNT_50,
-		COUNT_75,
-		COUNT_100,
-		COUNT_125
-	};
+/**
+ * Badge IDs for accumulation badges.
+ */
+enum AccumulationBadges
+{
+    COUNT_5 = 0,
+    COUNT_10,
+    COUNT_25,
+    COUNT_50,
+    COUNT_75,
+    COUNT_100,
+    COUNT_125
+};
 
-	/**
-	 * Badge IDs for exploration accumulation badges.
-	 */
-	enum ExpAccumulationBadges
-	{
-		EXP_COUNT_10 = 100,
-		EXP_COUNT_20,
-		EXP_COUNT_30,
-		EXP_COUNT_40,
-		EXP_COUNT_45
-	};
+/**
+ * Badge IDs for exploration accumulation badges.
+ */
+enum ExpAccumulationBadges
+{
+    EXP_COUNT_10 = 100,
+    EXP_COUNT_20,
+    EXP_COUNT_30,
+    EXP_COUNT_40,
+    EXP_COUNT_45
+};
 
-	enum BadgeType
-	{
-		ACCUMULATION = 1,
-		INTEREST,
-		EXPLORATION_JEDI,
-		EXPLORATION_DANGEROUS,
-		EXPLORATION_EASY,
-		EVENTS,
-		CONTENT,
-		MASTER
-	};
+enum BadgeType
+{
+    ACCUMULATION = 1,
+    INTEREST,
+    EXPLORATION_JEDI,
+    EXPLORATION_DANGEROUS,
+    EXPLORATION_EASY,
+    EVENTS,
+    CONTENT,
+    MASTER
+};
 
-	struct Badge
-	{
-		uint32_t id;
-		std::string name;
-		std::string sound;
-		BadgeType type;
+struct Badge
+{
+    uint32_t id;
+    std::string name;
+    std::string sound;
+    BadgeType type;
 
-		uint32_t GetIndex() { return (uint32_t)floor((double)((id)/32)); }
-		uint8_t GetBit() { return (id)%32; }
-	};
+    uint32_t GetIndex()
+    {
+        return (uint32_t)floor((double)((id)/32));
+    }
+    uint8_t GetBit()
+    {
+        return (id)%32;
+    }
+};
 
-	class BadgeService : public BadgeServiceInterface
-	{
-	public:
-		BadgeService(swganh::app::SwganhKernel* kernel);
-		~BadgeService();
+class BadgeService : public BadgeServiceInterface
+{
+public:
+    BadgeService(swganh::app::SwganhKernel* kernel);
+    ~BadgeService();
 
-        void Initialize();
-		void Startup();
+    void Initialize();
+    void Startup();
 
-		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
-		virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
+    virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
+    virtual void GiveBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
 
-		virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
-		virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
+    virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
+    virtual bool HasBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
 
-		virtual void RemoveBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
-		virtual void RemoveBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
+    virtual void RemoveBadge(std::shared_ptr<swganh::object::Object> object, std::string name);
+    virtual void RemoveBadge(std::shared_ptr<swganh::object::Object> object, uint32_t id);
 
-	private:
-		const std::shared_ptr<Badge> FindBadge(uint32_t id);
-		const std::shared_ptr<Badge> FindBadge(std::string name);
+private:
+    const std::shared_ptr<Badge> FindBadge(uint32_t id);
+    const std::shared_ptr<Badge> FindBadge(std::string name);
 
-		//void LoadBadges_();
-		void LoadBadges_(const std::shared_ptr<sql::Connection>& connection);
-		void LoadBadgeRegions_();
+    //void LoadBadges_();
+    void LoadBadges_(const std::shared_ptr<sql::Connection>& connection);
+    void LoadBadgeRegions_();
 
-		void CheckBadgeAccumulation(std::shared_ptr<swganh::object::Object> player);
-		void CheckExplorationBadgeAccumulation(std::shared_ptr<swganh::object::Object> object);
-		void CheckBadgeRemovalAccumulation(std::shared_ptr<swganh::object::Object> player);
-		void CheckExplorationBadgeRemovalAccumulation(std::shared_ptr<swganh::object::Object> object);
-		void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<Badge> badge);
+    void CheckBadgeAccumulation(std::shared_ptr<swganh::object::Object> player);
+    void CheckExplorationBadgeAccumulation(std::shared_ptr<swganh::object::Object> object);
+    void CheckBadgeRemovalAccumulation(std::shared_ptr<swganh::object::Object> player);
+    void CheckExplorationBadgeRemovalAccumulation(std::shared_ptr<swganh::object::Object> object);
+    void GiveBadge(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<Badge> badge);
 
-		std::vector<std::shared_ptr<Badge>> badges_;
-		std::vector<
-			std::shared_ptr<BadgeRegion>
-		> badge_regions_;
+    std::vector<std::shared_ptr<Badge>> badges_;
+    std::vector<
+    std::shared_ptr<BadgeRegion>
+    > badge_regions_;
 
-		swganh::app::SwganhKernel* kernel_;
-		swganh::equipment::EquipmentService* equipment_service_;
-		swganh::command::CommandServiceInterface* command_service_;
-	};
+    swganh::app::SwganhKernel* kernel_;
+    swganh::equipment::EquipmentService* equipment_service_;
+    swganh::command::CommandServiceInterface* command_service_;
+};
 
-}} // namespace swganh::badge
+}
+} // namespace swganh::badge

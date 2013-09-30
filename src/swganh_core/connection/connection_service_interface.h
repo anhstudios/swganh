@@ -28,37 +28,43 @@
 #include "swganh_core/messages/heart_beat.h"
 
 
-namespace swganh {
-namespace character {
+namespace swganh
+{
+namespace character
+{
 class CharacterProviderInterface;
 class CharacterServiceInterface;
-}}
+}
+}
 
-namespace swganh {
-namespace connection {
-    
+namespace swganh
+{
+namespace connection
+{
+
 class ConnectionClientInterface;
 
 class ConnectionServiceInterface : public swganh::service::BaseService, public swganh::network::BaseSwgServer
 {
 public:
-    
-	ConnectionServiceInterface(swganh::app::SwganhKernel* kernel)
-		: swganh::network::BaseSwgServer(kernel->GetIoThreadPool())
-	{
-	}
+
+    ConnectionServiceInterface(swganh::app::SwganhKernel* kernel)
+        : swganh::network::BaseSwgServer(kernel->GetIoThreadPool())
+    {
+    }
 
     virtual ~ConnectionServiceInterface() {}
 
     virtual bool RemoveSession(std::shared_ptr<swganh::network::Session> session) = 0;
 
     virtual std::shared_ptr<swganh::network::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
-    
+
     virtual std::shared_ptr<ConnectionClientInterface> FindConnectionByPlayerId(uint64_t player_id) = 0;
-    
+
     virtual const std::string& listen_address() = 0;
 
     virtual uint16_t listen_port() = 0;
 };
-    
-}}  // namespace swganh::connection
+
+}
+}  // namespace swganh::connection

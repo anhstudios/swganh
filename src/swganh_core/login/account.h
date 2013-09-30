@@ -5,10 +5,13 @@
 #include <cstdint>
 #include <string>
 
-namespace swganh {
-namespace login {
+namespace swganh
+{
+namespace login
+{
 
-class Account {
+class Account
+{
 public:
     explicit Account(bool enabled = false);
     ~Account();
@@ -30,7 +33,7 @@ public:
 
     bool IsEnabled() const;
     void Enable();
-    void Disable();   
+    void Disable();
 
 protected:
     std::string username_;
@@ -43,4 +46,5 @@ protected:
     bool enabled_;
 };
 
-}}  // namespace swganh::login
+}
+}  // namespace swganh::login

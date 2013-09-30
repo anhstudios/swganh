@@ -60,25 +60,25 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 {
     auto swganh_kernel = static_cast<SwganhKernel*>(kernel);
 
-	swganh::attributes::Initialize(swganh_kernel);
-	swganh::badge::Initialize(swganh_kernel);
+    swganh::attributes::Initialize(swganh_kernel);
+    swganh::badge::Initialize(swganh_kernel);
     swganh::character::Initialize(swganh_kernel);
-	swganh::connection::Initialize(swganh_kernel);
+    swganh::connection::Initialize(swganh_kernel);
     swganh::command::Initialize(swganh_kernel);
-	swganh::combat::Initialize(swganh_kernel);
-	swganh::equipment::Initialize(swganh_kernel);
+    swganh::combat::Initialize(swganh_kernel);
+    swganh::equipment::Initialize(swganh_kernel);
     swganh::login::Initialize(swganh_kernel);
     swganh::galaxy::Initialize(swganh_kernel);
     swganh::simulation::Initialize(swganh_kernel);
     swganh::chat::Initialize(swganh_kernel);
-	swganh::simulation::Initialize(swganh_kernel);
-	swganh::player::Initialize(swganh_kernel);
-	swganh::spawn::Initialize(swganh_kernel);
-	swganh::statics::Initialize(swganh_kernel);
-	swganh::sui::Initialize(swganh_kernel);
-	swganh::weather::Initialize(swganh_kernel);
-	swganh::terrain::Initialize(swganh_kernel);
-	swganh::map::Initialize(swganh_kernel);
-	swganh::travel::Initialize(swganh_kernel);
+    swganh::simulation::Initialize(swganh_kernel);
+    swganh::player::Initialize(swganh_kernel);
+    swganh::spawn::Initialize(swganh_kernel);
+    swganh::statics::Initialize(swganh_kernel);
+    swganh::sui::Initialize(swganh_kernel);
+    swganh::weather::Initialize(swganh_kernel);
+    swganh::terrain::Initialize(swganh_kernel);
+    swganh::map::Initialize(swganh_kernel);
+    swganh::travel::Initialize(swganh_kernel);
     return ExitModule;
 }

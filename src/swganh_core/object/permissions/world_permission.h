@@ -12,16 +12,16 @@ namespace object
 
 class WorldPermission : public ContainerPermissionsInterface
 {
-	virtual PermissionType GetType()
-	{
-		return WORLD_PERMISSION;
-	}
+    virtual PermissionType GetType()
+    {
+        return WORLD_PERMISSION;
+    }
 
-	bool canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object);
+    bool canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object);
 
-	bool canRemove(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object);
+    bool canRemove(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object);
 
-	bool canView(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester);
+    bool canView(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester);
 };
 
 }

@@ -4,18 +4,20 @@
 
 #include "swganh_core/object/installation/installation.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 class HarvesterInstallationFactory;
 class HarvesterInstallationMessageBuilder;
 class HarvesterInstallation : public swganh::object::Installation
 {
 public:
-	typedef HarvesterInstallationFactory FactoryType;
+    typedef HarvesterInstallationFactory FactoryType;
     typedef HarvesterInstallationMessageBuilder MessageBuilderType;
 
-	HarvesterInstallation();
+    HarvesterInstallation();
 
     /**
      * @return The type of this object instance.
@@ -27,5 +29,6 @@ public:
 private:
 };
 
-}}  // namespace swganh::object
+}
+}  // namespace swganh::object
 

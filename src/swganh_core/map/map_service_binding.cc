@@ -3,7 +3,7 @@
 
 #include "swganh_core/map/map_service_binding.h"
 
-BOOST_PYTHON_MODULE(py_map) 
+BOOST_PYTHON_MODULE(py_map)
 {
     docstring_options local_docstring_options(true, true, false);
 

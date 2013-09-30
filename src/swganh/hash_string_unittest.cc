@@ -17,24 +17,27 @@ using namespace std;
 BOOST_AUTO_TEST_SUITE(ANHHashString)
 
 /// This test shows how to create a hash string and check it's generated identifier.
-BOOST_AUTO_TEST_CASE(CreatingEventTypeFromStringGeneratesUniqueIdentifier) {
+BOOST_AUTO_TEST_CASE(CreatingEventTypeFromStringGeneratesUniqueIdentifier)
+{
     HashString hash_string("test_hash_string");
-    
+
     BOOST_CHECK_MESSAGE(uint32_t(0x107D0089) == hash_string.ident(), "HashString did not create the expected identifier");
 }
 
 /// This test shows how to compare two hash strings.
-BOOST_AUTO_TEST_CASE(CanCompareTwoHashStrings) {
+BOOST_AUTO_TEST_CASE(CanCompareTwoHashStrings)
+{
     HashString hash_string1("test_string1");
     HashString hash_string2("another_hash_string");
     HashString hash_string3("another_hash_string");
 
-    BOOST_CHECK_MESSAGE(hash_string1 != hash_string2, "hash_string1 and hash_string2 should not match."); 
+    BOOST_CHECK_MESSAGE(hash_string1 != hash_string2, "hash_string1 and hash_string2 should not match.");
     BOOST_CHECK_MESSAGE(hash_string2 == hash_string3, "hash_string2 and hash_string3 should match");
 }
 
 /// This test shows how to use HashString as a key in std containers.
-BOOST_AUTO_TEST_CASE(CanUseHashStringAsContainerKey) {
+BOOST_AUTO_TEST_CASE(CanUseHashStringAsContainerKey)
+{
     // Create a simple std::map<HashString, int> map.
     map<HashString, int> hash_string_map;
 

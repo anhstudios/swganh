@@ -24,8 +24,8 @@ struct ObserverInterfaceWrapper : ObserverInterface, wrapper<ObserverInterface>
 
 void exportObjectController()
 {
-	//typedef void (ObserverInterface::*NotifyFunc)(const swganh::ByteBuffer& message);
+    //typedef void (ObserverInterface::*NotifyFunc)(const swganh::ByteBuffer& message);
     //class_<ObserverInterface, std::shared_ptr<ObserverInterface>, boost::noncopyable>("ObserverInterface", "Object that describes the observer of an object", no_init)
     //    .def("notify", NotifyFunc(&ObserverInterface::Notify), "Notifies the controller whent he object has been updated")
-    //;	
+    //;
 }

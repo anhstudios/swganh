@@ -17,8 +17,8 @@ struct GuildWrapper : Guild,  wrapper<Guild>
 
 void exportGuild()
 {
-	class_<GuildWrapper, bases<swganh::object::Object>, boost::noncopyable>("Guild")
-		.def("addGuildTag", (void(Guild::*)(uint32_t,std::string)) &GuildWrapper::AddGuildTag, "adds guild tag to the specified guild_id")
-		.def("removeGuildTag", (void(Guild::*)(uint32_t)) &GuildWrapper::RemoveGuildTag, "remove guild tag")
-		;	
+    class_<GuildWrapper, bases<swganh::object::Object>, boost::noncopyable>("Guild")
+    .def("addGuildTag", (void(Guild::*)(uint32_t,std::string)) &GuildWrapper::AddGuildTag, "adds guild tag to the specified guild_id")
+    .def("removeGuildTag", (void(Guild::*)(uint32_t)) &GuildWrapper::RemoveGuildTag, "remove guild tag")
+    ;
 }

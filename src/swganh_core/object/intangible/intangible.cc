@@ -10,35 +10,37 @@ using namespace swganh::object;
 using namespace swganh::messages;
 
 Intangible::Intangible()
-	: generic_int_(0)
+    : generic_int_(0)
 {
 }
 
-uint32_t Intangible::GetGenericInt() {
+uint32_t Intangible::GetGenericInt()
+{
     auto lock = AcquireLock();
     return GetGenericInt(lock);
 }
 
 uint32_t Intangible::GetGenericInt(boost::unique_lock<boost::mutex>& lock)
 {
-	return generic_int_;
+    return generic_int_;
 }
 
-void Intangible::SetGenericInt(uint32_t generic_int) {
+void Intangible::SetGenericInt(uint32_t generic_int)
+{
     auto lock = AcquireLock();
     SetGenericInt(generic_int, lock);
 }
 
 void Intangible::SetGenericInt(uint32_t generic_int, boost::unique_lock<boost::mutex>& lock)
 {
-	generic_int_ = generic_int;
+    generic_int_ = generic_int;
 }
 
 void Intangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	if (auto dispatch = GetEventDispatcher())
-	{
-		dispatch->Dispatch(make_shared<ObserverEvent>
-			("Intangible::Baselines", shared_from_this(), observer));
-	}
+    if (auto dispatch = GetEventDispatcher())
+    {
+        dispatch->Dispatch(make_shared<ObserverEvent>
+                           ("Intangible::Baselines", shared_from_this(), observer));
+    }
 }

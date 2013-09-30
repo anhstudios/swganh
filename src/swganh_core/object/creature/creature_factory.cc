@@ -40,8 +40,8 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     }
 
     auto statement = std::unique_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetCreature(?);"));
-    
+                     (connection->prepareStatement("CALL sp_GetCreature(?);"));
+
     statement->setUInt64(1, creature->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
@@ -71,7 +71,7 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetCombatLevel(result->getUInt("combat_level"), lock);
             creature->SetAnimation(result->getString("animation"), lock);
             creature->SetMoodAnimation(result->getString("mood_animation"), lock);
-            
+
             /// @TODO: Find a better place for this.
             if (creature->GetMoodAnimation(lock).compare("none") == 0)
             {
@@ -84,7 +84,7 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetMoodId(result->getUInt("mood_id"), lock);
             creature->SetPerformanceId(result->getUInt("performance_id"), lock);
             creature->SetDisguise(result->getString("disguise_template"), lock);
-            
+
             creature->SetStatCurrent(HEALTH, result->getUInt("current_health"), lock);
             creature->SetStatCurrent(STRENGTH, result->getUInt("current_strength"), lock);
             creature->SetStatCurrent(CONSTITUTION, result->getUInt("current_constitution"), lock);
@@ -94,7 +94,7 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetStatCurrent(MIND, result->getUInt("current_mind"), lock);
             creature->SetStatCurrent(FOCUS, result->getUInt("current_focus"), lock);
             creature->SetStatCurrent(WILLPOWER, result->getUInt("current_willpower"), lock);
-            
+
             creature->SetStatMax(HEALTH, result->getUInt("max_health"), lock);
             creature->SetStatMax(STRENGTH, result->getUInt("max_strength"), lock);
             creature->SetStatMax(CONSTITUTION, result->getUInt("max_constitution"), lock);
@@ -104,7 +104,7 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetStatMax(MIND, result->getUInt("max_mind"), lock);
             creature->SetStatMax(FOCUS, result->getUInt("max_focus"), lock);
             creature->SetStatMax(WILLPOWER, result->getUInt("max_willpower"), lock);
-            
+
             creature->SetStatWound(HEALTH, result->getUInt("health_wounds"), lock);
             creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"), lock);
             creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"), lock);
@@ -114,7 +114,7 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetStatWound(MIND, result->getUInt("mind_wounds"), lock);
             creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"), lock);
             creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"), lock);
-            
+
             creature->SetStatBase(HEALTH, result->getUInt("health_wounds"), lock);
             creature->SetStatBase(STRENGTH, result->getUInt("strength_wounds"), lock);
             creature->SetStatBase(CONSTITUTION, result->getUInt("constitution_wounds"), lock);
@@ -125,7 +125,8 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetStatBase(FOCUS, result->getUInt("focus_wounds"), lock);
             creature->SetStatBase(WILLPOWER, result->getUInt("willpower_wounds"), lock);
         }
-    } while(statement->getMoreResults());
+    }
+    while(statement->getMoreResults());
 
     LoadBuffs_(connection, creature, lock);
     LoadSkills_(connection, creature, lock);
@@ -135,75 +136,75 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
 
 void CreatureFactory::RegisterEventHandlers()
 {
-	GetEventDispatcher()->Subscribe("Creature::Bank", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Bank", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::Cash", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::StatBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::Skill", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::Posture", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::OwnerId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::Scale", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::BattleFatigue", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::StateBitmask", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::StatWound", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::AccelerationMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Posture", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::OwnerId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Scale", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::BattleFatigue", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::StateBitmask", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::StatWound", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::AccelerationMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::AccelerationMultiplierModifier", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::StatEncumberance", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::SkillMod", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierModifer", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::ListenToId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::RunSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::SlopeModifierAngle", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::SlopeModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::TurnRadius", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::WalkingSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::WaterModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::MissionCriticalObject", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::CombatLevel", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::Animation", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::WeaponId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::GroupId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::InviteSenderId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::GuildId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::TargetId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::MoodId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::PerformanceId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::StatCurrent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::StatMax", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::EquipmentItem", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::Disguise", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::Stationary", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-	GetEventDispatcher()->Subscribe("Creature::PvPStatus", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierModifer", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::ListenToId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::RunSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::SlopeModifierAngle", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::SlopeModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::TurnRadius", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::WalkingSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::WaterModifierPercent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::MissionCriticalObject", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::CombatLevel", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Animation", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::WeaponId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::GroupId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::InviteSenderId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::GuildId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::TargetId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::MoodId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::PerformanceId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::StatCurrent", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::StatMax", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::EquipmentItem", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Disguise", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::Stationary", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Creature::PvPStatus", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
 }
 void CreatureFactory::PersistChangedObjects()
 {
-	std::set<shared_ptr<Object>> persisted;
-	{
-		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
-		persisted = move(persisted_objects_);
-	}
-	for (auto& object : persisted)
-	{
-		auto lock = object->AcquireLock();
-		if(object->IsDatabasePersisted(lock))
-		{
-			PersistObject(object, lock);
-		}
-	}
+    std::set<shared_ptr<Object>> persisted;
+    {
+        boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+        persisted = move(persisted_objects_);
+    }
+for (auto& object : persisted)
+    {
+        auto lock = object->AcquireLock();
+        if(object->IsDatabasePersisted(lock))
+        {
+            PersistObject(object, lock);
+        }
+    }
 }
 uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
     uint32_t counter = 1;
 
-	TangibleFactory::PersistObject(object, lock, persist_inherited);
+    TangibleFactory::PersistObject(object, lock, persist_inherited);
 
-	// Now for the biggy
+    // Now for the biggy
     try
-    {	
+    {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
         // 65 of these
         string sql = "CALL sp_PersistCreature(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
-            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                     "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         auto statement = unique_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         auto creature = static_pointer_cast<Creature>(object);
         statement->setUInt64(counter++, creature->GetObjectId(lock));
@@ -276,7 +277,7 @@ uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object, boost:
         statement->setInt(counter++, creature->GetStatMax(WILLPOWER, lock));
 
         int updated = statement->executeUpdate();
-				
+
         LOG(warning) << "Updated " << updated << " rows in sp_PersistCreature with object id = " << object->GetObjectId(lock);
     }
     catch(sql::SQLException &e)
@@ -284,79 +285,82 @@ uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object, boost:
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-	return counter;
+    return counter;
 }
 
 void CreatureFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-	ObjectFactory::DeleteObjectFromStorage(object);
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> CreatureFactory::CreateObject()
 {
-	return make_shared<Creature>();
+    return make_shared<Creature>();
 }
 
-void CreatureFactory::LoadSkills_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature, 
-								  boost::unique_lock<boost::mutex>& lock)
+void CreatureFactory::LoadSkills_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature,
+                                  boost::unique_lock<boost::mutex>& lock)
 {
     auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetCreatureSkills(?);"));
-    
+                     (connection->prepareStatement("CALL sp_GetCreatureSkills(?);"));
+
     statement->setUInt64(1, creature->GetObjectId(lock));
 
-    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
     do
     {
         while (result->next())
         {
             creature->AddSkill(result->getString("name"), lock);
         }
-    } while(statement->getMoreResults());
+    }
+    while(statement->getMoreResults());
 }
 
-void CreatureFactory::LoadSkillMods_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature, 
-									 boost::unique_lock<boost::mutex>& lock)
+void CreatureFactory::LoadSkillMods_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature,
+                                     boost::unique_lock<boost::mutex>& lock)
 {
     auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetCreatureSkillMods(?);"));
-    
-    statement->setUInt64(1, creature->GetObjectId(lock));
+                     (connection->prepareStatement("CALL sp_GetCreatureSkillMods(?);"));
 
-    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());    
-    do
-    {
-        while (result->next())
-        {
-            creature->AddSkillMod(SkillMod(result->getString("name"), result->getUInt("value"), 0), lock);	
-        }
-    } while(statement->getMoreResults());
-}
-
-void CreatureFactory::LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature, 
-										 boost::unique_lock<boost::mutex>& lock)
-{
-    auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetCreatureSkillCommands(?);"));
-    
     statement->setUInt64(1, creature->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
     do
-    {  
+    {
+        while (result->next())
+        {
+            creature->AddSkillMod(SkillMod(result->getString("name"), result->getUInt("value"), 0), lock);
+        }
+    }
+    while(statement->getMoreResults());
+}
+
+void CreatureFactory::LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature,
+        boost::unique_lock<boost::mutex>& lock)
+{
+    auto statement = std::shared_ptr<sql::PreparedStatement>
+                     (connection->prepareStatement("CALL sp_GetCreatureSkillCommands(?);"));
+
+    statement->setUInt64(1, creature->GetObjectId(lock));
+
+    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+    do
+    {
         while (result->next())
         {
             creature->AddSkillCommand(std::make_pair(result->getInt("id"), result->getString("name")), lock);
         }
-    } while(statement->getMoreResults());
+    }
+    while(statement->getMoreResults());
 }
 
-void CreatureFactory::LoadBuffs_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<swganh::object::Creature>& creature, 
-								 boost::unique_lock<boost::mutex>& lock)
+void CreatureFactory::LoadBuffs_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<swganh::object::Creature>& creature,
+                                 boost::unique_lock<boost::mutex>& lock)
 {
     auto statement = std::shared_ptr<sql::PreparedStatement>
-        (connection->prepareStatement("CALL sp_GetCreatureBuffs(?);"));
-    
+                     (connection->prepareStatement("CALL sp_GetCreatureBuffs(?);"));
+
     statement->setUInt64(1, creature->GetObjectId(lock));
 
     auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
@@ -366,5 +370,6 @@ void CreatureFactory::LoadBuffs_(const std::shared_ptr<sql::Connection>& connect
         {
             creature->AddBuff(result->getString("name"), result->getUInt("duration"));
         }
-    } while(statement->getMoreResults());
+    }
+    while(statement->getMoreResults());
 }

@@ -10,7 +10,8 @@ namespace object
 /**
  * Represents a Stats index.
  */
-enum StatIndex : uint16_t
+enum StatIndex :
+uint16_t
 {
     HEALTH = 0,
     STRENGTH,

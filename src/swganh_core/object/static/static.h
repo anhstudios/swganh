@@ -4,17 +4,19 @@
 
 #include "swganh_core/object/object.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-  
+
 class StaticFactory;
 class StaticMessageBuilder;
 
 class Static : public swganh::object::Object
 {
 public:
-	typedef StaticFactory FactoryType;
+    typedef StaticFactory FactoryType;
     typedef StaticMessageBuilder MessageBuilderType;
 
     // STAO
@@ -22,4 +24,5 @@ public:
     const static uint32_t type = 0x5354414F;
 };
 
-}}  // namespace swganh::object_obj
+}
+}  // namespace swganh::object_obj

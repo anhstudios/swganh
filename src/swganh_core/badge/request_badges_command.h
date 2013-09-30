@@ -6,39 +6,46 @@
 
 #include "swganh_core/command/base_swg_command.h"
 
-namespace swganh {
+namespace swganh
+{
 
-namespace equipment {
-	class EquipmentService;
+namespace equipment
+{
+class EquipmentService;
 } // namespace swganh::equipment
 
-namespace badge {
+namespace badge
+{
 
-    class BadgeService;
+class BadgeService;
 
-	/**
-	* An command implementation for request badges
-	*/
-    class RequestBadgesCommand : public swganh::command::BaseSwgCommand
+/**
+* An command implementation for request badges
+*/
+class RequestBadgesCommand : public swganh::command::BaseSwgCommand
+{
+public:
+
+    virtual std::string GetCommandName() const
     {
-    public:
+        return "requestbadges";
+    }
 
-        virtual std::string GetCommandName() const { return "requestbadges"; }
+    /**
+    	Creates a new instance
+    */
+    void Initialize(
+        swganh::app::SwganhKernel* kernel,
+        const swganh::command::CommandProperties& properties);
 
-		/**
-			Creates a new instance
-		*/
-        void Initialize(
-            swganh::app::SwganhKernel* kernel,
-            const swganh::command::CommandProperties& properties);
+    /**
+    * Runs this command
+    */
+    virtual void Run();
 
-		/**
-		* Runs this command
-		*/
-        virtual void Run();
+private:
+    swganh::equipment::EquipmentService* equipment_service_;
+};
 
-    private:
-		swganh::equipment::EquipmentService* equipment_service_;
-    };
-
-}}
+}
+}

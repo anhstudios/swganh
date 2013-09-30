@@ -38,11 +38,11 @@ struct GuildTag
         return id == other.id;
     }
 
-	bool operator<(const GuildTag& other) const
-	{
-		return id < other.id;
-	}
-	
+    bool operator<(const GuildTag& other) const
+    {
+        return id < other.id;
+    }
+
     uint32_t id;
     std::string abbreviation;
 };

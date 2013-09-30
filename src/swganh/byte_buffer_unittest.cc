@@ -6,7 +6,8 @@
 
 using namespace swganh;
 
-namespace {
+namespace
+{
 
 BOOST_AUTO_TEST_SUITE(ANHByteBuffer)
 
@@ -134,7 +135,7 @@ BOOST_AUTO_TEST_CASE(UnicodeStringStoredAs16Bit)
     std::wstring test_string(L"testdata");
 
     BOOST_CHECK_EQUAL(uint32_t(8), test_string.length());
-    
+
     buffer.write<std::wstring>(test_string);
 
     BOOST_CHECK_EQUAL(uint32_t(8), buffer.read<uint32_t>());
@@ -248,12 +249,12 @@ BOOST_AUTO_TEST_CASE(CanAppendBuffers)
 BOOST_AUTO_TEST_CASE(CanSwapEndian)
 {
     ByteBuffer buffer;
-    
+
     buffer.write<char>(0);
     buffer.write<char>(0);
     buffer.write<char>(0);
     buffer.write<char>(2);
-    
+
     BOOST_CHECK_EQUAL(uint32_t(2), buffer.peek<uint32_t>(true));
 
     // Start a new check with a 64bit value
@@ -270,7 +271,8 @@ BOOST_AUTO_TEST_CASE(CanSwapEndian)
     BOOST_CHECK_EQUAL(uint64_t(2), buffer.peek<uint64_t>(true));
 }
 
-BOOST_AUTO_TEST_CASE(CanCompareByteBuffers) {    
+BOOST_AUTO_TEST_CASE(CanCompareByteBuffers)
+{
     ByteBuffer buffer1;
     buffer1.write<int>(0);
     buffer1.write<int>(1);

@@ -15,19 +15,22 @@ MysqlGalaxyProvider::MysqlGalaxyProvider(swganh::database::DatabaseManager* db_m
 
 uint32_t MysqlGalaxyProvider::GetPopulation()
 {
-	uint32_t population = 0;
-    try {
+    uint32_t population = 0;
+    try
+    {
         string sql = "call sp_GetPopulation();";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery(sql));
 
-		if (result_set->next())
-			population = result_set->getUInt(1);
+        if (result_set->next())
+            population = result_set->getUInt(1);
 
-		while(statement->getMoreResults());
+        while(statement->getMoreResults());
 
-    } catch(sql::SQLException &e) {
+    }
+    catch(sql::SQLException &e)
+    {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }

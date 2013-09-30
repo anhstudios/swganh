@@ -47,7 +47,7 @@ char swganh::GetHitKey()
 {
 #ifdef WIN32
     return _getch();
-#else        
+#else
     struct termios oldt, newt;
     int ch;
 

@@ -3,8 +3,10 @@
 
 #pragma once
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 class Building;
 class Cell;
@@ -25,4 +27,5 @@ class Tangible;
 class Waypoint;
 class Weapon;
 
-}}  // namespace swganh::object
+}
+}  // namespace swganh::object

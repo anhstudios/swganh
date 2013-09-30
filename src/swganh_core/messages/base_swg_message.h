@@ -8,43 +8,46 @@
 #include "swganh/byte_buffer.h"
 #include "swganh/utilities.h"
 
-namespace swganh {
-namespace messages {
-      
-    struct BaseSwgMessage 
+namespace swganh
+{
+namespace messages
+{
+
+struct BaseSwgMessage
+{
+    virtual ~BaseSwgMessage() {}
+
+    virtual uint16_t Opcount() const = 0;
+    virtual uint32_t Opcode() const = 0;
+    virtual void OnSerialize(swganh::ByteBuffer& buffer) const = 0;
+    virtual void OnDeserialize(swganh::ByteBuffer& buffer) = 0;
+
+    virtual void Serialize(swganh::ByteBuffer& buffer) const
     {
-		virtual ~BaseSwgMessage() {}
-	
-		virtual uint16_t Opcount() const = 0;
-		virtual uint32_t Opcode() const = 0;
-		virtual void OnSerialize(swganh::ByteBuffer& buffer) const = 0;
-		virtual void OnDeserialize(swganh::ByteBuffer& buffer) = 0;
+        buffer.write(swganh::hostToLittle(Opcount()));
+        buffer.write(Opcode());
 
-        virtual void Serialize(swganh::ByteBuffer& buffer) const
+        OnSerialize(buffer);
+    }
+
+    virtual void SetObserverId(uint64_t observer_id)
+    {
+    }
+
+    virtual void Deserialize(swganh::ByteBuffer buffer)
+    {
+        uint32_t opcount = swganh::littleToHost(buffer.read<uint16_t>()); // Opcount
+        uint32_t opcode = buffer.read<uint32_t>();
+
+        if (opcount != Opcount() && opcode != Opcode())
         {
-            buffer.write(swganh::hostToLittle(Opcount()));
-            buffer.write(Opcode());			
-            
-            OnSerialize(buffer);
+            assert(true && "Opcodes don't match");
+            return;
         }
 
-		virtual void SetObserverId(uint64_t observer_id)
-		{
-		}
-    
-        virtual void Deserialize(swganh::ByteBuffer buffer)
-        {
-            uint32_t opcount = swganh::littleToHost(buffer.read<uint16_t>()); // Opcount
-            uint32_t opcode = buffer.read<uint32_t>();
-    
-            if (opcount != Opcount() && opcode != Opcode())
-            {
-                assert(true && "Opcodes don't match");
-                return;
-            }
-            
-            OnDeserialize(buffer);
-        }
-    };
-        
-}}  // namespace swganh::messages
+        OnDeserialize(buffer);
+    }
+};
+
+}
+}  // namespace swganh::messages

@@ -23,14 +23,14 @@ using namespace std;
 GalaxyService::GalaxyService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-    SetServiceDescription(ServiceDescription(        
-		"Galaxy Service",
-        "galaxy",
-        "0.1",
-        "127.0.0.1", 
-        0,
-        0, 
-        0));
+    SetServiceDescription(ServiceDescription(
+                              "Galaxy Service",
+                              "galaxy",
+                              "0.1",
+                              "127.0.0.1",
+                              0,
+                              0,
+                              0));
 }
 
 GalaxyService::~GalaxyService()
@@ -40,17 +40,17 @@ GalaxyService::~GalaxyService()
 
 uint32_t GalaxyService::GetPopulation()
 {
-	return galaxy_provider_->GetPopulation();
+    return galaxy_provider_->GetPopulation();
 }
 
 uint64_t GalaxyService::GetGalaxyTimeInMilliseconds()
 {
-	return kernel_->GetServiceDirectory()->galaxy().GetGalaxyTimeInMilliseconds();
+    return kernel_->GetServiceDirectory()->galaxy().GetGalaxyTimeInMilliseconds();
 }
 
 void GalaxyService::Initialize()
 {
-	galaxy_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::galaxy::providers::GalaxyProviderInterface>("Galaxy::GalaxyProvider");
+    galaxy_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::galaxy::providers::GalaxyProviderInterface>("Galaxy::GalaxyProvider");
 }
 
 void GalaxyService::Startup()
@@ -64,13 +64,13 @@ void GalaxyService::GalaxyStatusTimerHandler_(const boost::system::error_code& e
 {
     if (!e)
     {
-        kernel_->GetServiceDirectory()->updateGalaxyStatus();        
+        kernel_->GetServiceDirectory()->updateGalaxyStatus();
         kernel_->GetEventDispatcher()->Dispatch(std::make_shared<BaseEvent>("UpdateGalaxyStatus"));
-        
+
 
         if (this && galaxy_timer_)
         {
-            galaxy_timer_->expires_from_now(boost::posix_time::seconds(delay_in_secs));    
+            galaxy_timer_->expires_from_now(boost::posix_time::seconds(delay_in_secs));
             galaxy_timer_->async_wait(std::bind(&GalaxyService::GalaxyStatusTimerHandler_, this, std::placeholders::_1, delay_in_secs));
         }
     }

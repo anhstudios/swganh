@@ -9,84 +9,94 @@
 #include "command_interface.h"
 #include "command_properties.h"
 
-namespace swganh {
-namespace observer {
-	class ObserverInterface;
+namespace swganh
+{
+namespace observer
+{
+class ObserverInterface;
 }
 }
 
-namespace swganh {
-namespace app {
-    class SwganhKernel;
+namespace swganh
+{
+namespace app
+{
+class SwganhKernel;
 }
 
-namespace object {
-	class Object;
-	class Creature;
+namespace object
+{
+class Object;
+class Creature;
 }
 
-namespace messages {
-namespace controllers {
-    class CommandQueueEnqueue;
-}}  // namespace messages::controllers
+namespace messages
+{
+namespace controllers
+{
+class CommandQueueEnqueue;
+}
+}  // namespace messages::controllers
 
-namespace command {
+namespace command
+{
 
-    class BaseSwgCommand : public CommandInterface
-    {
-    public:
-        virtual void Initialize(swganh::app::SwganhKernel* kernel, const CommandProperties& properties);
+class BaseSwgCommand : public CommandInterface
+{
+public:
+    virtual void Initialize(swganh::app::SwganhKernel* kernel, const CommandProperties& properties);
 
-        const std::shared_ptr<swganh::observer::ObserverInterface> GetController() const;
-		void SetController(std::shared_ptr<swganh::observer::ObserverInterface> controller);
+    const std::shared_ptr<swganh::observer::ObserverInterface> GetController() const;
+    void SetController(std::shared_ptr<swganh::observer::ObserverInterface> controller);
 
-        virtual bool Validate();
-        
-        swganh::app::SwganhKernel* GetKernel() const;
+    virtual bool Validate();
 
-        uint32_t GetActionCounter() const;
+    swganh::app::SwganhKernel* GetKernel() const;
 
-        uint32_t GetPriority() const;
+    uint32_t GetActionCounter() const;
 
-        CommandGroup GetCommandGroup() const;
-        
-        uint32_t GetTargetRequiredType() const;
+    uint32_t GetPriority() const;
 
-        uint64_t GetAllowedStateBitmask() const;
+    CommandGroup GetCommandGroup() const;
 
-		uint64_t GetAllowedLocomotionBitmask() const;
-        
-        float GetMaxRangeToTarget() const;
-        
-        float GetDefaultTime() const;
+    uint32_t GetTargetRequiredType() const;
 
-        std::string GetRequiredAbility() const;
+    uint64_t GetAllowedStateBitmask() const;
 
-        bool IsQueuedCommand() const;
+    uint64_t GetAllowedLocomotionBitmask() const;
 
-        const std::shared_ptr<object::Object>& GetActor() const;
-		void SetActor(std::shared_ptr<object::Object> object);
+    float GetMaxRangeToTarget() const;
 
-        const std::shared_ptr<object::Object>& GetTarget() const;
-		std::shared_ptr<object::Creature> GetTargetCreature();
-		void SetTarget(std::shared_ptr<object::Object> target);
+    float GetDefaultTime() const;
 
-        const std::wstring& GetCommandString() const;
+    std::string GetRequiredAbility() const;
 
-        virtual void SetCommandProperties(const CommandProperties& properties);
-        virtual void PostRun(bool success) {}
+    bool IsQueuedCommand() const;
 
-        const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
+    const std::shared_ptr<object::Object>& GetActor() const;
+    void SetActor(std::shared_ptr<object::Object> object);
 
-        void SetCommandRequest(swganh::messages::controllers::CommandQueueEnqueue command_request);
-		
-    private:    
-        swganh::app::SwganhKernel* kernel_;
-        const CommandProperties* properties_;
-        std::shared_ptr<swganh::observer::ObserverInterface> controller_;
-		mutable std::shared_ptr<object::Object> actor_;
-        mutable std::shared_ptr<object::Object> target_;
-        swganh::messages::controllers::CommandQueueEnqueue command_request_;
-    };
+    const std::shared_ptr<object::Object>& GetTarget() const;
+    std::shared_ptr<object::Creature> GetTargetCreature();
+    void SetTarget(std::shared_ptr<object::Object> target);
 
-}}
+    const std::wstring& GetCommandString() const;
+
+    virtual void SetCommandProperties(const CommandProperties& properties);
+    virtual void PostRun(bool success) {}
+
+    const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
+
+    void SetCommandRequest(swganh::messages::controllers::CommandQueueEnqueue command_request);
+
+private:
+    swganh::app::SwganhKernel* kernel_;
+    const CommandProperties* properties_;
+    std::shared_ptr<swganh::observer::ObserverInterface> controller_;
+    mutable std::shared_ptr<object::Object> actor_;
+    mutable std::shared_ptr<object::Object> target_;
+    swganh::messages::controllers::CommandQueueEnqueue command_request_;
+};
+
+}
+}

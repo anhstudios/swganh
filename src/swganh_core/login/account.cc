@@ -6,59 +6,72 @@
 using namespace swganh::login;
 using namespace std;
 
-Account::Account(bool enabled) 
+Account::Account(bool enabled)
     : enabled_(enabled) {}
 
 Account::~Account() {}
 
-uint32_t Account::account_id() const {
+uint32_t Account::account_id() const
+{
     return account_id_;
 }
 
-void Account::account_id(uint32_t account_id) {
+void Account::account_id(uint32_t account_id)
+{
     account_id_ = account_id;
 }
 
-string Account::username() const {
+string Account::username() const
+{
     return username_;
 }
 
-void Account::username(string username) {
+void Account::username(string username)
+{
     username_ = move(username);
 }
 
-string Account::salt() const {
+string Account::salt() const
+{
     return salt_;
 }
 
-void Account::salt(string salt) {
+void Account::salt(string salt)
+{
     salt_ = move(salt);
 }
 
-string Account::password() const {
+string Account::password() const
+{
     return password_;
 }
 
-void Account::password(string password) {
+void Account::password(string password)
+{
     password_ = move(password);
 }
 
-string Account::algorithm() const {
+string Account::algorithm() const
+{
     return algorithm_;
 }
 
-void Account::algorithm(string algorithm) {
+void Account::algorithm(string algorithm)
+{
     algorithm_ = move(algorithm);
 }
 
-bool Account::IsEnabled() const {
+bool Account::IsEnabled() const
+{
     return enabled_;
 }
 
-void Account::Enable() {
+void Account::Enable()
+{
     enabled_ = true;
 }
 
-void Account::Disable() {
+void Account::Disable()
+{
     enabled_ = false;
 }

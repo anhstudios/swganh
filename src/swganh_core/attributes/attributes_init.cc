@@ -20,31 +20,38 @@
 #include "attributes_service.h"
 #include "version.h"
 
-namespace swganh {
-namespace attributes {
+namespace swganh
+{
+namespace attributes
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-    
+
     // Register Attribute Service
-	{ // Attribute::AttributeService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Attribute::AttributeService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             auto attributes_service = new AttributesService(kernel);
-            
+
             return attributes_service;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<AttributesService*>(object);
             }
         };
 
         kernel->GetPluginManager()->RegisterObject("Attribute::AttributesService", &registration);
-	}
+    }
 }
 
-}}  // namespace swganh::attribute
+}
+}  // namespace swganh::attribute

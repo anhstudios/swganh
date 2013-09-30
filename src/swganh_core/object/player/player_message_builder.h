@@ -6,64 +6,70 @@
 
 #include "player.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-    class Waypoint;
-}} // swganh::object
+class Waypoint;
+}
+} // swganh::object
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-    class PlayerMessageBuilder : public swganh::object::IntangibleMessageBuilder
+class PlayerMessageBuilder : public swganh::object::IntangibleMessageBuilder
+{
+public:
+    PlayerMessageBuilder(swganh::EventDispatcher* dispatcher) :
+        IntangibleMessageBuilder(dispatcher)
     {
-    public:
-        PlayerMessageBuilder(swganh::EventDispatcher* dispatcher) :
-            IntangibleMessageBuilder(dispatcher)
-        {
-            RegisterEventHandlers();
-        }
+        RegisterEventHandlers();
+    }
 
-        // deltas
-        static void BuildStatusBitmaskDelta(const std::shared_ptr<Player>& object);
-        static void BuildProfileBitmaskDelta(const std::shared_ptr<Player>& object);
-        static void BuildProfessionTagDelta(const std::shared_ptr<Player>& object);
-        static void BuildBornDateDelta(const std::shared_ptr<Player>& object);
-        static void BuildPlayTimeDelta(const std::shared_ptr<Player>& object);
-        static void BuildAdminTagDelta(const std::shared_ptr<Player>& object);
-        static void BuildXpDelta(const std::shared_ptr<Player>& object);
-        static void BuildWaypointDelta(const std::shared_ptr<Player>& object);
-        static void BuildCurrentForcePowerDelta(const std::shared_ptr<Player>& object);
-        static void BuildMaxForcePowerDelta(const std::shared_ptr<Player>& object);
-        static void BuildForceSensitiveQuestDelta(const std::shared_ptr<Player>& object);
-        static void BuildCompletedForceSensitiveQuestDelta(const std::shared_ptr<Player>& object);
-        static void BuildQuestJournalDelta(const std::shared_ptr<Player>& object);
-        static void BuildAbilityDelta(const std::shared_ptr<Player>& object);
-        static void BuildExperimentationFlagDelta(const std::shared_ptr<Player>& object);
-        static void BuildCraftingStageDelta(const std::shared_ptr<Player>& object);
-        static void BuildNearestCraftingStationDelta(const std::shared_ptr<Player>& object);
-        static void BuildDraftSchematicDelta(const std::shared_ptr<Player>& object);
-        static void BuildExperimentationPointsDelta(const std::shared_ptr<Player>& object);
-        static void BuildAccomplishmentCounterDelta(const std::shared_ptr<Player>& object);
-        static void BuildFriendsDelta(const std::shared_ptr<Player>& object);
-        static void BuildIgnoredDelta(const std::shared_ptr<Player>& object);
-        static void BuildLanguageDelta(const std::shared_ptr<Player>& object);
-        static void BuildCurrentStomachDelta(const std::shared_ptr<Player>& object);
-        static void BuildMaxStomachDelta(const std::shared_ptr<Player>& object);
-        static void BuildCurrentDrinkDelta(const std::shared_ptr<Player>& object);
-        static void BuildMaxDrinkDelta(const std::shared_ptr<Player>& object);
-        static void BuildJediStateDelta(const std::shared_ptr<Player>& object);
+    // deltas
+    static void BuildStatusBitmaskDelta(const std::shared_ptr<Player>& object);
+    static void BuildProfileBitmaskDelta(const std::shared_ptr<Player>& object);
+    static void BuildProfessionTagDelta(const std::shared_ptr<Player>& object);
+    static void BuildBornDateDelta(const std::shared_ptr<Player>& object);
+    static void BuildPlayTimeDelta(const std::shared_ptr<Player>& object);
+    static void BuildAdminTagDelta(const std::shared_ptr<Player>& object);
+    static void BuildXpDelta(const std::shared_ptr<Player>& object);
+    static void BuildWaypointDelta(const std::shared_ptr<Player>& object);
+    static void BuildCurrentForcePowerDelta(const std::shared_ptr<Player>& object);
+    static void BuildMaxForcePowerDelta(const std::shared_ptr<Player>& object);
+    static void BuildForceSensitiveQuestDelta(const std::shared_ptr<Player>& object);
+    static void BuildCompletedForceSensitiveQuestDelta(const std::shared_ptr<Player>& object);
+    static void BuildQuestJournalDelta(const std::shared_ptr<Player>& object);
+    static void BuildAbilityDelta(const std::shared_ptr<Player>& object);
+    static void BuildExperimentationFlagDelta(const std::shared_ptr<Player>& object);
+    static void BuildCraftingStageDelta(const std::shared_ptr<Player>& object);
+    static void BuildNearestCraftingStationDelta(const std::shared_ptr<Player>& object);
+    static void BuildDraftSchematicDelta(const std::shared_ptr<Player>& object);
+    static void BuildExperimentationPointsDelta(const std::shared_ptr<Player>& object);
+    static void BuildAccomplishmentCounterDelta(const std::shared_ptr<Player>& object);
+    static void BuildFriendsDelta(const std::shared_ptr<Player>& object);
+    static void BuildIgnoredDelta(const std::shared_ptr<Player>& object);
+    static void BuildLanguageDelta(const std::shared_ptr<Player>& object);
+    static void BuildCurrentStomachDelta(const std::shared_ptr<Player>& object);
+    static void BuildMaxStomachDelta(const std::shared_ptr<Player>& object);
+    static void BuildCurrentDrinkDelta(const std::shared_ptr<Player>& object);
+    static void BuildMaxDrinkDelta(const std::shared_ptr<Player>& object);
+    static void BuildJediStateDelta(const std::shared_ptr<Player>& object);
 
-        // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline8(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline9(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
-    
-    private:
-        typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
-        
-        void RegisterEventHandlers();
-    };
+    // baselines
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline8(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline9(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);
 
-}}  // swganh::object
+private:
+    typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
+
+    void RegisterEventHandlers();
+};
+
+}
+}  // swganh::object

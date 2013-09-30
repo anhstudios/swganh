@@ -14,12 +14,12 @@ void SlotDescriptorVisitor::visit_folder(uint32_t depth, std::string name, uint3
 
 void SlotDescriptorVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
-	if(name == "0000DATA")
-	{
-		uint32_t end_pos = data.read_position() + size;
-		while(data.read_position() < end_pos)
-		{
-			slots_available.push_back(data.read<std::string>(false, true));
-		}
-	}
+    if(name == "0000DATA")
+    {
+        uint32_t end_pos = data.read_position() + size;
+        while(data.read_position() < end_pos)
+        {
+            slots_available.push_back(data.read<std::string>(false, true));
+        }
+    }
 }

@@ -5,29 +5,38 @@
 #include "swganh_core/galaxy/providers/galaxy_provider_interface.h"
 #include <memory>
 
-namespace swganh { namespace database { class DatabaseManager; 
-}}  // swganh::database
+namespace swganh
+{
+namespace database
+{
+class DatabaseManager;
+}
+}  // swganh::database
 
-namespace swganh {
-namespace galaxy {
+namespace swganh
+{
+namespace galaxy
+{
 
 /**
 * Provides basic galaxy functionality via mysql
 */
-class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface {
+class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface
+{
 public:
-	/**
-	* Creates a new instance
-	*/
+    /**
+    * Creates a new instance
+    */
     explicit MysqlGalaxyProvider(swganh::database::DatabaseManager* db_manager);
 
-	/**
-	* @return the population of the galaxy
-	*/
-	virtual uint32_t GetPopulation();
-	
+    /**
+    * @return the population of the galaxy
+    */
+    virtual uint32_t GetPopulation();
+
 private:
     swganh::database::DatabaseManager* db_manager_;
 };
 
-}}  // namespace swganh::galaxy::providers
+}
+}  // namespace swganh::galaxy::providers

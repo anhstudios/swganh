@@ -4,8 +4,10 @@
 #include "swganh/event_dispatcher.h"
 #include "object.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 struct ControllerEvent : swganh::BaseEvent
 {
@@ -20,7 +22,7 @@ struct ControllerEvent : swganh::BaseEvent
 
 struct ObserverEvent : swganh::BaseEvent
 {
-	ObserverEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> object_, std::shared_ptr<swganh::observer::ObserverInterface> observer_)
+    ObserverEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> object_, std::shared_ptr<swganh::observer::ObserverInterface> observer_)
         : BaseEvent(type)
         , object(object_)
         , observer(observer_)
@@ -31,16 +33,17 @@ struct ObserverEvent : swganh::BaseEvent
 
 struct UpdatePositionEvent : swganh::BaseEvent
 {
-	UpdatePositionEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> parent_, std::shared_ptr<swganh::object::Object> object_, glm::vec3 new_position)
-		: BaseEvent(type)
+    UpdatePositionEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> parent_, std::shared_ptr<swganh::object::Object> object_, glm::vec3 new_position)
+        : BaseEvent(type)
         , object(object_)
-		, parent(parent_)
-		, position(new_position)
-	{}
+        , parent(parent_)
+        , position(new_position)
+    {}
 
-	std::shared_ptr<swganh::object::Object> object;
-	std::shared_ptr<swganh::object::Object> parent;
-	glm::vec3 position;
+    std::shared_ptr<swganh::object::Object> object;
+    std::shared_ptr<swganh::object::Object> parent;
+    glm::vec3 position;
 };
 
-}} // swganh::object
+}
+} // swganh::object

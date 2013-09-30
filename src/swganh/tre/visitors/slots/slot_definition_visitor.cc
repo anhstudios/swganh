@@ -14,33 +14,33 @@ void SlotDefinitionVisitor::visit_folder(uint32_t depth, std::string name, uint3
 
 void SlotDefinitionVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
-	if(name == "0006DATA")
-	{
-		uint32_t final_loc = data.read_position() + size;
-		while(data.read_position() < final_loc)
-		{
-			slot_entry entry;
+    if(name == "0006DATA")
+    {
+        uint32_t final_loc = data.read_position() + size;
+        while(data.read_position() < final_loc)
+        {
+            slot_entry entry;
 
-			entry.name = data.read<std::string>(false, true);
-		
-			entry.global = data.read<char>() != 0;
-			entry.canMod = data.read<char>() != 0;
-			entry.exclusive = data.read<char>() != 0;
+            entry.name = data.read<std::string>(false, true);
 
-			entry.hardpoint_name = data.read<std::string>(false, true);
-			entry.unkValue = data.read<std::uint32_t>();
+            entry.global = data.read<char>() != 0;
+            entry.canMod = data.read<char>() != 0;
+            entry.exclusive = data.read<char>() != 0;
 
-			slots_.push_back(std::move(entry));
-		}
-	}
+            entry.hardpoint_name = data.read<std::string>(false, true);
+            entry.unkValue = data.read<std::uint32_t>();
+
+            slots_.push_back(std::move(entry));
+        }
+    }
 }
 
 size_t SlotDefinitionVisitor::findSlotByName(const std::string& name)
 {
-	for(size_t i = 0; i < slots_.size(); ++i)
-	{
-		if(slots_[i].name == name)
-			return i;
-	}
-	return -1;
+    for(size_t i = 0; i < slots_.size(); ++i)
+    {
+        if(slots_[i].name == name)
+            return i;
+    }
+    return -1;
 }

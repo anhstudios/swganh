@@ -3,11 +3,20 @@
 
 #pragma once
 
-namespace swganh { namespace app { class SwganhKernel; }}
+namespace swganh
+{
+namespace app
+{
+class SwganhKernel;
+}
+}
 
-namespace swganh {
-namespace simulation {
+namespace swganh
+{
+namespace simulation
+{
 
-	void Initialize(swganh::app::SwganhKernel* kernel);
+void Initialize(swganh::app::SwganhKernel* kernel);
 
-}}
+}
+}

@@ -9,41 +9,49 @@
 
 #include "swganh_core/messages/obj_controller_message.h"
 
-namespace swganh {
-namespace messages {
-namespace controllers {
+namespace swganh
+{
+namespace messages
+{
+namespace controllers
+{
 
-    class AddBuffMessage : public ObjControllerMessage
+class AddBuffMessage : public ObjControllerMessage
+{
+public:
+    explicit AddBuffMessage(uint32_t controller_type = 0x0000001B)
+        : ObjControllerMessage(controller_type, message_type())
+        , buff("")
+        , duration(0)
+    {}
+
+    AddBuffMessage(const ObjControllerMessage& base)
+        : ObjControllerMessage(base)
     {
-    public:
-        explicit AddBuffMessage(uint32_t controller_type = 0x0000001B)
-            : ObjControllerMessage(controller_type, message_type())
-            , buff("")
-            , duration(0)
-        {}
+    }
 
-		AddBuffMessage(const ObjControllerMessage& base)
-			: ObjControllerMessage(base)
-		{
-		}
+    static uint32_t message_type()
+    {
+        return 0x00000229;
+    }
 
-        static uint32_t message_type() { return 0x00000229; }
-        
-        swganh::HashString buff;        
-        float duration;
-        
+    swganh::HashString buff;
+    float duration;
 
-        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
-        {
-            buffer.write<uint32_t>(buff);
-            buffer.write<float>(duration);
-        }
 
-        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
-        {
-            buff = buffer.read<uint32_t>();
-            duration = buffer.read<float>();
-        }
-    };
+    void OnControllerSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write<uint32_t>(buff);
+        buffer.write<float>(duration);
+    }
 
-}}}  // namespace swganh::messages::controllers
+    void OnControllerDeserialize(swganh::ByteBuffer& buffer)
+    {
+        buff = buffer.read<uint32_t>();
+        duration = buffer.read<float>();
+    }
+};
+
+}
+}
+}  // namespace swganh::messages::controllers

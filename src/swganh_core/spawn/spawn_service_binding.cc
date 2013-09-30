@@ -4,7 +4,7 @@
 #include "swganh/scripting/python_shared_ptr.h"
 #include "swganh_core/spawn/spawn_service_binding.h"
 
-BOOST_PYTHON_MODULE(py_spawn) 
+BOOST_PYTHON_MODULE(py_spawn)
 {
     bp::docstring_options local_docstring_options(true, true, false);
 

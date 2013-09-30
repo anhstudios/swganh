@@ -10,17 +10,17 @@ using namespace swganh::object;
 
 bool RideablePermission::canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object)
 {
-	std::shared_ptr<Creature> creo = std::static_pointer_cast<Creature>(container);
-	return requester == object && creo && creo->GetOwnerId() == requester->GetObjectId();
+    std::shared_ptr<Creature> creo = std::static_pointer_cast<Creature>(container);
+    return requester == object && creo && creo->GetOwnerId() == requester->GetObjectId();
 }
 
 bool RideablePermission::canRemove(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object)
 {
-	std::shared_ptr<Creature> creo = std::static_pointer_cast<Creature>(container);
-	return requester == object && creo && creo->GetOwnerId() == requester->GetObjectId();
+    std::shared_ptr<Creature> creo = std::static_pointer_cast<Creature>(container);
+    return requester == object && creo && creo->GetOwnerId() == requester->GetObjectId();
 }
 
 bool RideablePermission::canView(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester)
 {
-	return true;
+    return true;
 }

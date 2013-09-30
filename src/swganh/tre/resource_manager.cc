@@ -10,18 +10,18 @@
 
 using namespace swganh::tre;
 
-ResourceManager::ResourceManager(std::shared_ptr<TreArchive> archive) 
-	: archive_(archive)
+ResourceManager::ResourceManager(std::shared_ptr<TreArchive> archive)
+    : archive_(archive)
 {
 }
 
-void ResourceManager::LoadResourceByName(const std::string& name, std::shared_ptr<VisitorInterface> type, bool is_cached) 
+void ResourceManager::LoadResourceByName(const std::string& name, std::shared_ptr<VisitorInterface> type, bool is_cached)
 {
-	auto resource = archive_->GetResource(name);
-	iff_file::loadIFF(resource, type);
-	if(is_cached)
-	{
-		boost::lock_guard<boost::mutex> lock(resource_mutex_);
-		loadedResources_.insert(ResourceCache::value_type(name, type));
-	}
+    auto resource = archive_->GetResource(name);
+    iff_file::loadIFF(resource, type);
+    if(is_cached)
+    {
+        boost::lock_guard<boost::mutex> lock(resource_mutex_);
+        loadedResources_.insert(ResourceCache::value_type(name, type));
+    }
 }

@@ -6,25 +6,34 @@
 #include "swganh/byte_buffer.h"
 #include "swganh_core/messages/base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct ChatDeletePersistentMessage : public BaseSwgMessage
+struct ChatDeletePersistentMessage : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 2; }
-    	uint32_t Opcode() const { return 0x8F251641; }
-    
-    	uint32_t mail_message_id;
-    
-    	void OnSerialize(swganh::ByteBuffer& buffer) const
-    	{
-    		buffer.write(mail_message_id);
-    	}
-    
-    	void OnDeserialize(swganh::ByteBuffer& buffer)
-    	{
-    		mail_message_id = buffer.read<uint32_t>();
-    	}
-    };
+        return 2;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x8F251641;
+    }
 
-}} // namespace swganh::messages
+    uint32_t mail_message_id;
+
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write(mail_message_id);
+    }
+
+    void OnDeserialize(swganh::ByteBuffer& buffer)
+    {
+        mail_message_id = buffer.read<uint32_t>();
+    }
+};
+
+}
+} // namespace swganh::messages

@@ -8,13 +8,18 @@
 #include <cstdint>
 #include "swganh_core/object/object_message_builder.h"
 
-namespace swganh {
-namespace messages {
-    struct BaselinesMessage;
-}} // swganh::messages
+namespace swganh
+{
+namespace messages
+{
+struct BaselinesMessage;
+}
+} // swganh::messages
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
 class Static;
@@ -32,11 +37,12 @@ public:
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Static>& static_object, boost::unique_lock<boost::mutex>& lock);
 
 private:
-	typedef swganh::ValueEvent<std::shared_ptr<Static>> StaticEvent;
-    
+    typedef swganh::ValueEvent<std::shared_ptr<Static>> StaticEvent;
+
     void RegisterEventHandlers();
 };
 
-}} // swganh::object
+}
+} // swganh::object
 
 #endif // SWGANH_OBJECT_GUILD_GUILD_MESSAGE_BUILDER_H_

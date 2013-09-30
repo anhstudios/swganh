@@ -6,25 +6,34 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct ServerTimeMessage : public BaseSwgMessage
+struct ServerTimeMessage : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 2; }
-    	uint32_t Opcode() const { return 0x2EBC3BD9; }
+        return 2;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x2EBC3BD9;
+    }
 
-    	uint64_t galactic_time; // number of seconds from server start to present galactic time
+    uint64_t galactic_time; // number of seconds from server start to present galactic time
 
-    	void OnSerialize(swganh::ByteBuffer& buffer) const
-    	{
-    		buffer.write(galactic_time);
-    	}
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write(galactic_time);
+    }
 
-    	void OnDeserialize(swganh::ByteBuffer& buffer)
-    	{
-    		galactic_time = buffer.read<uint64_t>();
-    	}
-    };
+    void OnDeserialize(swganh::ByteBuffer& buffer)
+    {
+        galactic_time = buffer.read<uint64_t>();
+    }
+};
 
-}} // namespace swganh::messages
+}
+} // namespace swganh::messages

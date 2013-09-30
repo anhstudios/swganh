@@ -6,13 +6,18 @@
 
 #include "swganh/network/session.h"
 
-namespace swganh {
-namespace observer {
-	class ObserverInterface;
-}}
+namespace swganh
+{
+namespace observer
+{
+class ObserverInterface;
+}
+}
 
-namespace swganh {
-namespace connection {
+namespace swganh
+{
+namespace connection
+{
 
 class ConnectionClientInterface : public swganh::network::Session
 {
@@ -24,11 +29,11 @@ public:
         PLAYING,
         DISCONNECTING
     };
-   
-	ConnectionClientInterface(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool, 
-									boost::asio::ip::udp::endpoint remote_endpoint) 
-		: Session(server, cpu_pool, remote_endpoint)
-	{}
+
+    ConnectionClientInterface(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool,
+                              boost::asio::ip::udp::endpoint remote_endpoint)
+        : Session(server, cpu_pool, remote_endpoint)
+    {}
 
     virtual State GetState() const = 0;
 
@@ -37,11 +42,12 @@ public:
     virtual uint64_t GetPlayerId() const = 0;
 
     virtual void Connect(uint32_t account_id, uint64_t player_id) = 0;
-    
+
     virtual const std::shared_ptr<swganh::observer::ObserverInterface>& GetController() const = 0;
 
     virtual void SetController(const std::shared_ptr<swganh::observer::ObserverInterface>& controller) = 0;
 
 };
 
-}}  // namespace swganh::connection
+}
+}  // namespace swganh::connection

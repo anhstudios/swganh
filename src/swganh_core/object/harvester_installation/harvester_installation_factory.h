@@ -4,20 +4,23 @@
 
 #include "swganh_core/object/installation/installation_factory.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-	class HarvesterInstallation;
-    class HarvesterInstallationFactory : public swganh::object::InstallationFactory
-    {
-    public:
-		typedef HarvesterInstallation ObjectType;
-		virtual void PersistChangedObjects(){}
-        HarvesterInstallationFactory(swganh::app::SwganhKernel* kernel);
-        
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+class HarvesterInstallation;
+class HarvesterInstallationFactory : public swganh::object::InstallationFactory
+{
+public:
+    typedef HarvesterInstallation ObjectType;
+    virtual void PersistChangedObjects() {}
+    HarvesterInstallationFactory(swganh::app::SwganhKernel* kernel);
 
-		std::shared_ptr<swganh::object::Object> CreateObject();
-    };
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-}}  // namespace swganh::object
+    std::shared_ptr<swganh::object::Object> CreateObject();
+};
+
+}
+}  // namespace swganh::object

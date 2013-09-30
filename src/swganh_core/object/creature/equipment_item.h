@@ -7,13 +7,13 @@ namespace swganh
 namespace object
 {
 
-class EquipmentNotFound : public std::runtime_error 
+class EquipmentNotFound : public std::runtime_error
 {
 public:
-	EquipmentNotFound()
-	: runtime_error("Equipment not found")
-	{
-	}
+    EquipmentNotFound()
+        : runtime_error("Equipment not found")
+    {
+    }
 };
 
 struct EquipmentItem

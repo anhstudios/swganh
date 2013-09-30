@@ -3,7 +3,7 @@
 
 #include "attributes_binding.h"
 
-BOOST_PYTHON_MODULE(py_attributes) 
+BOOST_PYTHON_MODULE(py_attributes)
 {
     bp::docstring_options local_docstring_options(true, true, false);
 

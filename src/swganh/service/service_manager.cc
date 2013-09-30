@@ -14,18 +14,18 @@
 
 #ifndef WIN32
 #include <boost/regex.hpp>
-    using boost::regex;
-    using boost::regex_search;
+using boost::regex;
+using boost::regex_search;
 #else
-    #include <regex>
-    using std::regex;
-    using std::regex_search;
+#include <regex>
+using std::regex;
+using std::regex_search;
 #endif
 
 using namespace swganh::service;
 using namespace std;
 
-ServiceManager::ServiceManager(ServiceDirectoryInterface* service_directory) 
+ServiceManager::ServiceManager(ServiceDirectoryInterface* service_directory)
     : service_directory_(service_directory)
 {}
 
@@ -41,7 +41,8 @@ ServiceInterface* ServiceManager::GetService(string name)
 {
     auto it = services_.find(name);
 
-    if (it == services_.end()) {
+    if (it == services_.end())
+    {
         return nullptr;
     }
 
@@ -52,18 +53,19 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
 {
     auto current_service = GetService(name);
 
-    if (current_service) {
+    if (current_service)
+    {
         // throw exception here, service already exists
         throw std::runtime_error("service already exists: " + name);
         return;
     }
 
     auto& service_description = service->GetServiceDescription();
-    if (!service_directory_->registerService(service_description)) 
+    if (!service_directory_->registerService(service_description))
     {
         throw std::runtime_error("Unable to register service " + service_description.name());
     }
-            
+
     // update the status of the service
     service_description.status(swganh::service::Galaxy::LOADING);
     service_directory_->updateService(service_description);
@@ -74,20 +76,20 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
 void ServiceManager::Start()
 {
     // First pass initialization
-    for (auto& service_entry : services_)
+for (auto& service_entry : services_)
     {
         auto& service = service_entry.second;
         service->Initialize();
     }
 
     // After all resources are acquired services can be started
-    for (auto& service_entry : services_)
+for (auto& service_entry : services_)
     {
         auto& service = service_entry.second;
 
         service->Startup();
         service->SetStatus(Galaxy::ONLINE);
-        
+
         auto service_description = service->GetServiceDescription();
         service_directory_->updateService(service_description);
         LOG(info) << "Started " << service_description.name();
@@ -96,13 +98,13 @@ void ServiceManager::Start()
 
 void ServiceManager::Stop()
 {
-    for (auto& service_entry : services_)
+for (auto& service_entry : services_)
     {
         auto& service = service_entry.second;
 
         service->Shutdown();
         service->SetStatus(Galaxy::OFFLINE);
-        
+
         auto service_description = service->GetServiceDescription();
         service_directory_->updateService(service_description);
         LOG(info) << "Stopped " << service_description.name();

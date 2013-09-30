@@ -18,41 +18,50 @@
 
 #include "version.h"
 
-namespace swganh {
-namespace galaxy {
+namespace swganh
+{
+namespace galaxy
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
 
     // Register
-    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+    {
         return new MysqlGalaxyProvider(kernel->GetDatabaseManager());
     };
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
+    registration.DestroyObject = [] (void * object)
+    {
+        if (object)
+        {
             delete static_cast<MysqlGalaxyProvider*>(object);
         }
     };
 
     kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyProvider", &registration);
 
-	// Register
-    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    // Register
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+    {
         return new GalaxyService(kernel);
     };
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
+    registration.DestroyObject = [] (void * object)
+    {
+        if (object)
+        {
             delete static_cast<GalaxyService*>(object);
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyService", &registration);    
+    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyService", &registration);
 
 }
 
-}}  // namespace swganh::galaxy
+}
+}  // namespace swganh::galaxy

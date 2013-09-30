@@ -9,32 +9,38 @@
 
 #include "swganh_core/object/intangible/intangible_message_builder.h"
 
-namespace swganh {
-namespace messages {
-    struct BaselinesMessage;
-}} // swganh::messages
+namespace swganh
+{
+namespace messages
+{
+struct BaselinesMessage;
+}
+} // swganh::messages
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
-    class Cell;
+class Cell;
 
-    class CellMessageBuilder : public swganh::object::IntangibleMessageBuilder
+class CellMessageBuilder : public swganh::object::IntangibleMessageBuilder
+{
+public:
+    CellMessageBuilder(swganh::EventDispatcher* dispatcher) :
+        IntangibleMessageBuilder(dispatcher)
     {
-    public:
-        CellMessageBuilder(swganh::EventDispatcher* dispatcher) :
-            IntangibleMessageBuilder(dispatcher)
-        {
-            RegisterEventHandlers();
-        }
-        virtual void RegisterEventHandlers();
-        static void BuildStfDetailDelta(const std::shared_ptr<Cell>& intangible);
+        RegisterEventHandlers();
+    }
+    virtual void RegisterEventHandlers();
+    static void BuildStfDetailDelta(const std::shared_ptr<Cell>& intangible);
 
-		static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock);
-    };
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Cell>& cell, boost::unique_lock<boost::mutex>& lock);
+};
 
-}}  // swganh::object
+}
+}  // swganh::object
 
 #endif  // SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_MESSAGE_BUILDER_H_

@@ -10,7 +10,7 @@ namespace swganh
 {
 namespace object
 {
-	class Creature;
+class Creature;
 }
 
 namespace combat
@@ -18,18 +18,18 @@ namespace combat
 
 class BuffInterface
 {
- public:
-	virtual ~BuffInterface() {}
- 
-	virtual void ApplyBuff(std::shared_ptr<swganh::object::Creature> creature) = 0;
+public:
+    virtual ~BuffInterface() {}
 
-	virtual void RemoveBuff(std::shared_ptr<swganh::object::Creature> creature) = 0;
+    virtual void ApplyBuff(std::shared_ptr<swganh::object::Creature> creature) = 0;
 
-	virtual std::string GetName() = 0;
+    virtual void RemoveBuff(std::shared_ptr<swganh::object::Creature> creature) = 0;
 
-	virtual uint32_t GetDuration() = 0;
+    virtual std::string GetName() = 0;
 
-	std::string filename;
+    virtual uint32_t GetDuration() = 0;
+
+    std::string filename;
 };
 
 }

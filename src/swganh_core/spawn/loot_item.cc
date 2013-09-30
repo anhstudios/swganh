@@ -6,11 +6,11 @@
 using namespace swganh::spawn;
 
 LootItem::LootItem(float drop_percent, LootFactory factory)
-	: factory_(factory)
+    : factory_(factory)
 {
 }
 
 std::shared_ptr<swganh::object::Object> LootItem::AttemptDrop(swganh::app::SwganhKernel* kernel, float attempt)
 {
-	return factory_(kernel);
+    return factory_(kernel);
 }
