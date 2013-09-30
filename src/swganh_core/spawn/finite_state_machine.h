@@ -26,53 +26,56 @@ namespace swganh
 {
 namespace app
 {
-	class SwganhKernel;
+class SwganhKernel;
 }
 
 namespace object
 {
-	class Object;
+class Object;
 }
 
 namespace spawn
 {
-	class FsmBundleInterface;
-	class FsmStateInterface;
-	class FsmController;
+class FsmBundleInterface;
+class FsmStateInterface;
+class FsmController;
 
-	typedef std::function<std::shared_ptr<FsmController>(FiniteStateMachineInterface*, std::shared_ptr<swganh::object::Object>, 
-						std::shared_ptr<FsmStateInterface>)> ControllerFactory;
+typedef std::function<std::shared_ptr<FsmController>(FiniteStateMachineInterface*, std::shared_ptr<swganh::object::Object>,
+        std::shared_ptr<FsmStateInterface>)> ControllerFactory;
 
-	class FiniteStateMachine : public FiniteStateMachineInterface
-	{
-	public:
-	
-		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, 
-			std::shared_ptr<FsmStateInterface> initial_state,
-			ControllerFactory controller_factory);
+class FiniteStateMachine : public FiniteStateMachineInterface
+{
+public:
 
-		~FiniteStateMachine();
+    FiniteStateMachine(swganh::app::SwganhKernel* kernel_,
+                       std::shared_ptr<FsmStateInterface> initial_state,
+                       ControllerFactory controller_factory);
 
-		void StartManagingObject(std::shared_ptr<swganh::object::Object> object);
-		void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
+    ~FiniteStateMachine();
 
-		void MarkDirty(std::shared_ptr<FsmController> controller_);
+    void StartManagingObject(std::shared_ptr<swganh::object::Object> object);
+    void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
 
-		swganh::app::SwganhKernel* GetKernel() { return kernel_; }
+    void MarkDirty(std::shared_ptr<FsmController> controller_);
 
-	private:
+    swganh::app::SwganhKernel* GetKernel()
+    {
+        return kernel_;
+    }
 
-		void HandleDispatch(const boost::system::error_code& error);
-		
-		boost::mutex mutex_;
+private:
 
-		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;
+    void HandleDispatch(const boost::system::error_code& error);
 
-		ControllerFactory controller_factory_;
-		std::shared_ptr<FsmStateInterface> initial_state_;
+    boost::mutex mutex_;
 
-		boost::asio::deadline_timer machine_cleaner_;
-		swganh::app::SwganhKernel* kernel_;
-	};
+    std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;
+
+    ControllerFactory controller_factory_;
+    std::shared_ptr<FsmStateInterface> initial_state_;
+
+    boost::asio::deadline_timer machine_cleaner_;
+    swganh::app::SwganhKernel* kernel_;
+};
 }
 }

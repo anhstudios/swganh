@@ -4,13 +4,16 @@
 
 #include "login_client_interface.h"
 
-namespace swganh {
-namespace login {
+namespace swganh
+{
+namespace login
+{
 
-class LoginClient : public swganh::login::LoginClientInterface {
-public:    
+class LoginClient : public swganh::login::LoginClientInterface
+{
+public:
     LoginClient(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint);
-    
+
     std::string GetUsername() const;
     void SetUsername(std::string username);
 
@@ -32,5 +35,6 @@ private:
     std::shared_ptr<swganh::login::Account> account_;
 };
 
-}}  // namespace swganh::login
+}
+}  // namespace swganh::login
 

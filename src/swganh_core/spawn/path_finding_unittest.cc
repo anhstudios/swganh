@@ -11,9 +11,9 @@ class PathFindingTest
 {
 public:
 	PathFindingTest()
-		: event_dispatcher_(io_service_) 
-	{ 
-		object_ = make_object(); 
+		: event_dispatcher_(io_service_)
+	{
+		object_ = make_object();
 	}
 
 	std::shared_ptr<Object> make_object()
@@ -38,15 +38,15 @@ BOOST_AUTO_TEST_CASE(canFindTrivialPath)
 	try {
 	std::vector<glm::vec3> path1 = FsmStateInterface::FindPath(object_, glm::vec3(1.0, 0.0, 0.0));
 	std::vector<glm::vec3> path2 = FsmStateInterface::FindPath(object_, glm::vec3(0.0, 1.0, 0.0));
-	} 
+	}
 	catch(...)
 	{
 	}
 
-	
+
 	BOOST_CHECK_EQUAL(path1.size(), 5);
 	BOOST_CHECK_EQUAL(path2.size(), 5);
-	
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

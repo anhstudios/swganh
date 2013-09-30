@@ -8,23 +8,24 @@ namespace swganh
 {
 namespace tre
 {
-	class PobVisitor;
-	class FlrVisitor;
+class PobVisitor;
+class FlrVisitor;
 }
 
 namespace object
 {
 
 struct CollisionData
-{	
-	//Bounding Box
+{
+    //Bounding Box
 
 
-	//Floor Collision
-	std::shared_ptr<tre::FlrVisitor> floor_data_;
+    //Floor Collision
+    std::shared_ptr<tre::FlrVisitor> floor_data_;
 
-	//Portal Object
-	std::shared_ptr<tre::PobVisitor> portal_data_;
+    //Portal Object
+    std::shared_ptr<tre::PobVisitor> portal_data_;
 };
 
-}}
+}
+}

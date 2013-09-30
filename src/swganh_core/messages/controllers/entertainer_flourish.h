@@ -8,40 +8,48 @@
 
 #include "swganh_core/messages/obj_controller_message.h"
 
-namespace swganh {
-namespace messages {
-namespace controllers {
+namespace swganh
+{
+namespace messages
+{
+namespace controllers
+{
 
-    class EntertainerFlourish : public ObjControllerMessage
+class EntertainerFlourish : public ObjControllerMessage
+{
+public:
+    explicit EntertainerFlourish(uint32_t controller_type = 0x0000000B)
+        : ObjControllerMessage(controller_type, message_type())
+        , flourish_id(0)
+    {}
+
+    EntertainerFlourish(const ObjControllerMessage& base)
+        : ObjControllerMessage(base)
     {
-    public:
-        explicit EntertainerFlourish(uint32_t controller_type = 0x0000000B)
-            : ObjControllerMessage(controller_type, message_type())
-            , flourish_id(0)
-        {}
+    }
 
-		EntertainerFlourish(const ObjControllerMessage& base)
-			: ObjControllerMessage(base)
-		{
-		}
+    static uint32_t message_type()
+    {
+        return 0x00000166;
+    }
 
-        static uint32_t message_type() { return 0x00000166; }
-        
-        uint32_t flourish_id;
-        
+    uint32_t flourish_id;
 
-        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
-        {
-            buffer.write<uint32_t>(0);
-            buffer.write(flourish_id);
-            buffer.write<uint32_t>(0);
-            buffer.write<uint32_t>(0);
-        }
 
-        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
-        {
-            flourish_id = buffer.read<uint32_t>();
-        }
-    };
+    void OnControllerSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write<uint32_t>(0);
+        buffer.write(flourish_id);
+        buffer.write<uint32_t>(0);
+        buffer.write<uint32_t>(0);
+    }
 
-}}}  // namespace swganh::messages::controllers
+    void OnControllerDeserialize(swganh::ByteBuffer& buffer)
+    {
+        flourish_id = buffer.read<uint32_t>();
+    }
+};
+
+}
+}
+}  // namespace swganh::messages::controllers

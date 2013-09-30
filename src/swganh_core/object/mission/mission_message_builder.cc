@@ -20,263 +20,263 @@ using namespace swganh::messages;
 
 void MissionMessageBuilder::RegisterEventHandlers()
 {
-	event_dispatcher->Subscribe("Mission::DifficultyLevel", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::DifficultyLevel", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
         BuildDifficultyLevelDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::StartLocation", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::StartLocation", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildStartingLocationDelta(value_event->Get());
+        BuildStartingLocationDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::CreatorName", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::CreatorName", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildCreatorNameDelta(value_event->Get());
+        BuildCreatorNameDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::CreditReward", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::CreditReward", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildCreditRewardDelta(value_event->Get());
+        BuildCreditRewardDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::DestinationLocation", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::DestinationLocation", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildDestinationLocationDelta(value_event->Get());
+        BuildDestinationLocationDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::TargetIff", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::TargetIff", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildTargetIffCrcDelta(value_event->Get());
+        BuildTargetIffCrcDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::MissionDescription", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::MissionDescription", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildMissionDescriptionDelta(value_event->Get());
+        BuildMissionDescriptionDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::MissionTitle", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::MissionTitle", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildMissionTitleDelta(value_event->Get());
+        BuildMissionTitleDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::RepeatCounter", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::RepeatCounter", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
         BuildDifficultyLevelDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::Waypoint", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::Waypoint", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildMissionWaypointDelta(value_event->Get());
+        BuildMissionWaypointDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::MissionType", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::MissionType", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildMissionTitleDelta(value_event->Get());
+        BuildMissionTitleDelta(value_event->Get());
     });
-	event_dispatcher->Subscribe("Mission::TargetName", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Mission::TargetName", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<MissionEvent>(incoming_event);
-		BuildTargetNameDelta(value_event->Get());
+        BuildTargetNameDelta(value_event->Get());
     });
 }
 
 void MissionMessageBuilder::BuildDifficultyLevelDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 5);
-		message.data.write(mission->GetDifficultyLevel());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 5);
+        message.data.write(mission->GetDifficultyLevel());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildStartingLocationDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 6);
-		auto location = mission->GetStartingPosition();
-		message.data.write(location.x);
-		message.data.write(location.y);
-		message.data.write(location.z);
-		message.data.write<uint64_t>(0L);
-		message.data.write(mission->GetStartingSceneCrc());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 6);
+        auto location = mission->GetStartingPosition();
+        message.data.write(location.x);
+        message.data.write(location.y);
+        message.data.write(location.z);
+        message.data.write<uint64_t>(0L);
+        message.data.write(mission->GetStartingSceneCrc());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
-void MissionMessageBuilder::BuildCreatorNameDelta(const std::shared_ptr<Mission>& mission) 
+void MissionMessageBuilder::BuildCreatorNameDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 7);
-		message.data.write(mission->GetMissionCreator());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 7);
+        message.data.write(mission->GetMissionCreator());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildCreditRewardDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 8);
-		message.data.write(mission->GetMissionReward());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 8);
+        message.data.write(mission->GetMissionReward());
+        mission->AddDeltasUpdate(&message);
+    }
 }
-	
+
 void MissionMessageBuilder::BuildDestinationLocationDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 9);
-		auto location = mission->GetDestinationPosition();
-		message.data.write(location.x);
-		message.data.write(location.y);
-		message.data.write(location.z);
-		message.data.write<uint64_t>(0L);
-		message.data.write(mission->GetDestinationSceneCrc());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 9);
+        auto location = mission->GetDestinationPosition();
+        message.data.write(location.x);
+        message.data.write(location.y);
+        message.data.write(location.z);
+        message.data.write<uint64_t>(0L);
+        message.data.write(mission->GetDestinationSceneCrc());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildTargetIffCrcDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 10);
-		message.data.write(mission->GetTargetObjectTemplateCrc());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 10);
+        message.data.write(mission->GetTargetObjectTemplateCrc());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildMissionDescriptionDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 11);
-		message.data.write(mission->GetMissionDescriptionStfFile());
-		message.data.write<uint32_t>(0);
-		message.data.write(mission->GetMissionDescriptionStfName());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 11);
+        message.data.write(mission->GetMissionDescriptionStfFile());
+        message.data.write<uint32_t>(0);
+        message.data.write(mission->GetMissionDescriptionStfName());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildMissionTitleDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 12);
-		message.data.write(mission->GetMissionTitleStfFile());
-		message.data.write<uint32_t>(0);
-		message.data.write(mission->GetMissionTitleStfName());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 12);
+        message.data.write(mission->GetMissionTitleStfFile());
+        message.data.write<uint32_t>(0);
+        message.data.write(mission->GetMissionTitleStfName());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildRepeatCounterDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 13);
-		message.data.write(mission->GetRepeatCounter());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 13);
+        message.data.write(mission->GetRepeatCounter());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildMissionTypeCrcDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 14);
-		message.data.write(mission->GetMissionTypeCrc());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 14);
+        message.data.write(mission->GetMissionTypeCrc());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildTargetNameDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 15);
-		message.data.write(mission->GetTargetName());
-		mission->AddDeltasUpdate(&message);
-	}
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 15);
+        message.data.write(mission->GetTargetName());
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 void MissionMessageBuilder::BuildMissionWaypointDelta(const std::shared_ptr<Mission>& mission)
 {
-	if (mission->HasObservers())
+    if (mission->HasObservers())
     {
-		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 16);
-		auto waypoint = mission->GetMissionWaypoint();
-		auto location = waypoint->GetCoordinates();
-		
-		message.data.write<uint32_t>(0); //Unknown
-		message.data.write(location.x);
-		message.data.write(location.y);
-		message.data.write(location.z);
-		message.data.write(0);
-		message.data.write(mission->GetStartingSceneCrc());
-		message.data.write(waypoint->GetName());
-		message.data.write(waypoint->GetObjectId());
-		message.data.write(waypoint->GetColor());
-		message.data.write(waypoint->GetActiveFlag());
+        DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 16);
+        auto waypoint = mission->GetMissionWaypoint();
+        auto location = waypoint->GetCoordinates();
 
-		mission->AddDeltasUpdate(&message);
-	}
+        message.data.write<uint32_t>(0); //Unknown
+        message.data.write(location.x);
+        message.data.write(location.y);
+        message.data.write(location.z);
+        message.data.write(0);
+        message.data.write(mission->GetStartingSceneCrc());
+        message.data.write(waypoint->GetName());
+        message.data.write(waypoint->GetObjectId());
+        message.data.write(waypoint->GetColor());
+        message.data.write(waypoint->GetActiveFlag());
+
+        mission->AddDeltasUpdate(&message);
+    }
 }
 
 boost::optional<BaselinesMessage> MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mission>& mission, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(mission, lock, Object::VIEW_3, 17);
-	auto waypoint = mission->GetMissionWaypoint(lock);
-	auto start_location = mission->GetStartingPosition(lock);
-	auto end_location = mission->GetDestinationPosition(lock);
-	auto waypoint_location = waypoint->GetCoordinates(lock);
-	
-	message.data.append((*IntangibleMessageBuilder::BuildBaseline3(mission, lock)).data);
-	message.data.write(mission->GetDifficultyLevel(lock));
-	message.data.write(start_location.x);
-	message.data.write(start_location.y);
-	message.data.write(start_location.z);
-	message.data.write<uint64_t>(0L);
-	message.data.write(mission->GetStartingSceneCrc(lock));
-	message.data.write(mission->GetMissionCreator(lock));
-	message.data.write(mission->GetMissionReward(lock));
-	message.data.write(end_location.x);
-	message.data.write(end_location.y);
-	message.data.write(end_location.z);
-	message.data.write<uint64_t>(0L);
-	message.data.write(mission->GetDestinationSceneCrc(lock));
-	message.data.write(mission->GetTargetObjectTemplateCrc(lock));
-	message.data.write(mission->GetMissionDescriptionStfFile(lock));
-	message.data.write<uint32_t>(0);
-	message.data.write(mission->GetMissionDescriptionStfName(lock));
-	message.data.write(mission->GetMissionTitleStfFile(lock));
-	message.data.write<uint32_t>(0);
-	message.data.write(mission->GetMissionTitleStfName(lock));
-	message.data.write(mission->GetRepeatCounter(lock));
-	message.data.write(mission->GetMissionTypeCrc(lock));
-	message.data.write(mission->GetTargetName(lock));
-	message.data.write<uint32_t>(0); //Unknown
-	message.data.write(waypoint_location.x);
-	message.data.write(waypoint_location.y);
-	message.data.write(waypoint_location.z);
-	message.data.write(0);
-	message.data.write(mission->GetStartingSceneCrc(lock));
-	message.data.write(waypoint->GetName(lock));
-	message.data.write(waypoint->GetObjectId(lock));
-	message.data.write(waypoint->GetColor(lock));
-	message.data.write(waypoint->GetActiveFlag(lock));
-	return BaselinesMessage(std::move(message));
+    auto message = CreateBaselinesMessage(mission, lock, Object::VIEW_3, 17);
+    auto waypoint = mission->GetMissionWaypoint(lock);
+    auto start_location = mission->GetStartingPosition(lock);
+    auto end_location = mission->GetDestinationPosition(lock);
+    auto waypoint_location = waypoint->GetCoordinates(lock);
+
+    message.data.append((*IntangibleMessageBuilder::BuildBaseline3(mission, lock)).data);
+    message.data.write(mission->GetDifficultyLevel(lock));
+    message.data.write(start_location.x);
+    message.data.write(start_location.y);
+    message.data.write(start_location.z);
+    message.data.write<uint64_t>(0L);
+    message.data.write(mission->GetStartingSceneCrc(lock));
+    message.data.write(mission->GetMissionCreator(lock));
+    message.data.write(mission->GetMissionReward(lock));
+    message.data.write(end_location.x);
+    message.data.write(end_location.y);
+    message.data.write(end_location.z);
+    message.data.write<uint64_t>(0L);
+    message.data.write(mission->GetDestinationSceneCrc(lock));
+    message.data.write(mission->GetTargetObjectTemplateCrc(lock));
+    message.data.write(mission->GetMissionDescriptionStfFile(lock));
+    message.data.write<uint32_t>(0);
+    message.data.write(mission->GetMissionDescriptionStfName(lock));
+    message.data.write(mission->GetMissionTitleStfFile(lock));
+    message.data.write<uint32_t>(0);
+    message.data.write(mission->GetMissionTitleStfName(lock));
+    message.data.write(mission->GetRepeatCounter(lock));
+    message.data.write(mission->GetMissionTypeCrc(lock));
+    message.data.write(mission->GetTargetName(lock));
+    message.data.write<uint32_t>(0); //Unknown
+    message.data.write(waypoint_location.x);
+    message.data.write(waypoint_location.y);
+    message.data.write(waypoint_location.z);
+    message.data.write(0);
+    message.data.write(mission->GetStartingSceneCrc(lock));
+    message.data.write(waypoint->GetName(lock));
+    message.data.write(waypoint->GetObjectId(lock));
+    message.data.write(waypoint->GetColor(lock));
+    message.data.write(waypoint->GetActiveFlag(lock));
+    return BaselinesMessage(std::move(message));
 }
 
 boost::optional<BaselinesMessage> MissionMessageBuilder::BuildBaseline6(const std::shared_ptr<Mission>& mission, boost::unique_lock<boost::mutex>& lock)
 {
-	auto message = CreateBaselinesMessage(mission, lock, Object::VIEW_6, 1);
+    auto message = CreateBaselinesMessage(mission, lock, Object::VIEW_6, 1);
     message.data.append((*IntangibleMessageBuilder::BuildBaseline6(mission, lock)).data);
     return BaselinesMessage(move(message));
 }

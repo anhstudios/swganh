@@ -25,10 +25,10 @@ void Server::StartListening(uint16_t port)
 {
     try
     {
-    listen_endpoint_ = udp::endpoint(udp::v4(), port);
-    socket_.open(udp::v4());
-    socket_.bind(listen_endpoint_);
-    } 
+        listen_endpoint_ = udp::endpoint(udp::v4(), port);
+        socket_.open(udp::v4());
+        socket_.bind(listen_endpoint_);
+    }
     catch(boost::system::system_error& e)
     {
         LOG(fatal) << e.what();
@@ -40,19 +40,21 @@ void Server::StartListening(uint16_t port)
 
 void Server::StopListening()
 {
-	socket_.close();
+    socket_.close();
 }
 
-void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
-    socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
-        endpoint, 
-        [this] (const boost::system::error_code& error, std::size_t bytes_transferred)
+void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer)
+{
+    socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()),
+                          endpoint,
+                          [this] (const boost::system::error_code& error, std::size_t bytes_transferred)
     {
         bytes_sent_ += bytes_transferred;
     });
 }
 
-void Server::AsyncReceive() {
+void Server::AsyncReceive()
+{
     socket_.async_receive_from(
         buffer(recv_buffer_.data(), recv_buffer_.size()),
         current_remote_endpoint_,
@@ -62,15 +64,17 @@ void Server::AsyncReceive() {
         {
             bytes_recv_ += bytes_transferred;
 
-            GetSession(current_remote_endpoint_)->HandleProtocolMessage(ByteBuffer(recv_buffer_.data(), bytes_transferred));                			
+            GetSession(current_remote_endpoint_)->HandleProtocolMessage(ByteBuffer(recv_buffer_.data(), bytes_transferred));
         }
 
-        if(error != boost::asio::error::operation_aborted) {
+        if(error != boost::asio::error::operation_aborted)
+        {
             AsyncReceive();
         }
     });
 }
 
-uint32_t Server::max_receive_size() {
+uint32_t Server::max_receive_size()
+{
     return max_receive_size_;
 }

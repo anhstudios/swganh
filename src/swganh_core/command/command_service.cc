@@ -53,13 +53,13 @@ CommandService::CommandService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
     SetServiceDescription(ServiceDescription(
-        "CommandService",
-        "command",
-        "0.1",
-        "127.0.0.1",
-        0,
-        0,
-        0));
+                              "CommandService",
+                              "command",
+                              "0.1",
+                              "127.0.0.1",
+                              0,
+                              0,
+                              0));
 }
 
 CommandService::~CommandService()
@@ -104,7 +104,7 @@ void CommandService::EnqueueCommandRequest(
     {
         auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
 
-		swg_command->SetController(object->GetController());
+        swg_command->SetController(object->GetController());
         swg_command->SetCommandRequest(*command_request);
 
         EnqueueCommand(swg_command);
@@ -129,7 +129,7 @@ bool CommandService::HasDefaultCommand(uint64_t queue_owner_id)
 {
     return command_queue_manager_impl_->HasDefaultCommand(queue_owner_id);
 }
-        
+
 std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForEnqueue(CommandInterface* command)
 {
     return command_validator_impl_->ValidateForEnqueue(command);
@@ -144,7 +144,7 @@ swganh::command::CommandPropertiesMap CommandService::LoadCommandPropertiesMap()
 {
     return command_properties_manager_impl_->LoadCommandPropertiesMap();
 }
- 
+
 boost::optional<const CommandProperties&> CommandService::FindPropertiesForCommand(swganh::HashString command)
 {
     return command_properties_manager_impl_->FindPropertiesForCommand(command);
@@ -158,7 +158,7 @@ void CommandService::Initialize()
     command_properties_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandPropertiesManagerInterface>("Command::CommandPropertiesManager");
     command_queue_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
     command_validator_impl_ = kernel_->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
-    
+
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 }
 
@@ -177,7 +177,7 @@ void CommandService::Startup()
     AddCommandProcessFilter(std::bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
 
     script_prefix_ = kernel_->GetAppConfig().script_directory;
-    
+
     simulation_service_->RegisterControllerHandler(&CommandService::EnqueueCommandRequest, this);
 
     auto event_dispatcher = kernel_->GetEventDispatcher();
@@ -195,28 +195,28 @@ void CommandService::SendCommandQueueRemove(
     uint32_t error,
     uint32_t action)
 {
-	auto controller = object->GetController();
-	if(controller != nullptr)
-	{
-		CommandQueueRemove remove;
-		remove.action_counter = action_counter;
-		remove.timer = default_time_sec;
-		remove.error = error;
-		remove.action = action;
-		controller->Notify(&remove);
-	}
+    auto controller = object->GetController();
+    if(controller != nullptr)
+    {
+        CommandQueueRemove remove;
+        remove.action_counter = action_counter;
+        remove.timer = default_time_sec;
+        remove.error = error;
+        remove.action = action;
+        controller->Notify(&remove);
+    }
 }
 
 void CommandService::SubscribeObjectReadyEvent(swganh::EventDispatcher* dispatcher)
 {
     obj_ready_id_ = dispatcher->Subscribe(
-        "ObjectReadyEvent",
-        [this] (std::shared_ptr<swganh::EventInterface> incoming_event)
+                        "ObjectReadyEvent",
+                        [this] (std::shared_ptr<swganh::EventInterface> incoming_event)
     {
         const auto& object = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
 
         command_queue_manager_impl_->AddQueue(
-            object->GetObjectId(), 
+            object->GetObjectId(),
             kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::CommandQueue"));
     });
 }
@@ -224,8 +224,8 @@ void CommandService::SubscribeObjectReadyEvent(swganh::EventDispatcher* dispatch
 void CommandService::SubscribeObjectRemovedEvent(swganh::EventDispatcher* dispatcher)
 {
     obj_removed_id_ = dispatcher->Subscribe(
-        "ObjectRemovedEvent",
-        [this] (std::shared_ptr<swganh::EventInterface> incoming_event)
+                          "ObjectRemovedEvent",
+                          [this] (std::shared_ptr<swganh::EventInterface> incoming_event)
     {
         const auto& object = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
         command_queue_manager_impl_->RemoveQueue(object->GetObjectId());
@@ -236,12 +236,12 @@ void CommandService::LoadPythonCommands()
 {
     bf::path p(kernel_->GetAppConfig().script_directory + "/commands");
 
-    try 
+    try
     {
         if (bf::exists(p) && bf::is_directory(p))
         {
             std::for_each(bf::directory_iterator(p), bf::directory_iterator(),
-                [this] (const bf::directory_entry& entry)
+                          [this] (const bf::directory_entry& entry)
             {
                 std::string script_path = entry.path().string();
                 std::string extension = bf::extension(entry.path());
@@ -264,9 +264,10 @@ void CommandService::LoadPythonCommands(const std::string& command_script)
     PythonScript script(command_script);
 
     auto globals = script.GetGlobals();
-        
+
     ScopedGilLock lock;
-    try {
+    try
+    {
         auto keys = globals.keys();
 
         auto length = boost::python::len(keys);
@@ -274,8 +275,8 @@ void CommandService::LoadPythonCommands(const std::string& command_script)
         {
             std::string key = boost::python::extract<std::string>(keys[i]);
 
-            if (key.find("Command") != std::string::npos && key.find("Base") == std::string::npos 
-                && commands_loaded_.find(key) == commands_loaded_.end())
+            if (key.find("Command") != std::string::npos && key.find("Base") == std::string::npos
+                    && commands_loaded_.find(key) == commands_loaded_.end())
             {
                 auto creator = PythonInstanceCreator<CommandInterface>(command_script, key);
                 auto command = creator();
@@ -289,6 +290,6 @@ void CommandService::LoadPythonCommands(const std::string& command_script)
     catch (boost::python::error_already_set&)
     {
         ScopedGilLock lock;
-		swganh::scripting::logPythonException();
+        swganh::scripting::logPythonException();
     }
 }

@@ -3,7 +3,7 @@
 
 #include "swganh_core/static/static_service_binding.h"
 
-BOOST_PYTHON_MODULE(py_static) 
+BOOST_PYTHON_MODULE(py_static)
 {
     docstring_options local_docstring_options(true, true, false);
 

@@ -9,8 +9,8 @@ using namespace std;
 
 EnumerateCharacterId swganh::messages::BuildEnumerateCharacterId(std::vector<CharacterData> characters)
 {
-	EnumerateCharacterId message;	
-	message.characters = move(characters);
-	
-	return message;
+    EnumerateCharacterId message;
+    message.characters = move(characters);
+
+    return message;
 }

@@ -6,25 +6,34 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct ClientInactivityMessage : public BaseSwgMessage
+struct ClientInactivityMessage : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 2; }
-    	uint32_t Opcode() const { return 0x0F5D5325; }
+        return 2;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x0F5D5325;
+    }
 
-    	uint8_t inactivity_flag; // 0 = active, 1 = inactive
-    	
-    	void OnSerialize(swganh::ByteBuffer& buffer) const
-    	{
-    		buffer.write(inactivity_flag);
-    	}
+    uint8_t inactivity_flag; // 0 = active, 1 = inactive
 
-    	void OnDeserialize(swganh::ByteBuffer& buffer)
-    	{
-    		inactivity_flag = buffer.read<uint8_t>();
-    	}
-    };
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write(inactivity_flag);
+    }
 
-}} // namespace swganh::messages
+    void OnDeserialize(swganh::ByteBuffer& buffer)
+    {
+        inactivity_flag = buffer.read<uint8_t>();
+    }
+};
+
+}
+} // namespace swganh::messages

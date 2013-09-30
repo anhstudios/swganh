@@ -7,18 +7,21 @@
 
 #include "swganh/network/session.h"
 
-namespace swganh {
-namespace login {
+namespace swganh
+{
+namespace login
+{
 
 class Account;
 
-class LoginClientInterface : public swganh::network::Session {
-public:    
+class LoginClientInterface : public swganh::network::Session
+{
+public:
     LoginClientInterface(swganh::network::ServerInterface* server, boost::asio::io_service& cpu_pool, boost::asio::ip::udp::endpoint remote_endpoint)
-		:Session(server, cpu_pool, remote_endpoint)
-	{
-	}
-    
+        :Session(server, cpu_pool, remote_endpoint)
+    {
+    }
+
     virtual std::string GetUsername() const = 0;
     virtual void SetUsername(std::string username) = 0;
 
@@ -32,4 +35,5 @@ public:
     virtual void SetAccount(const std::shared_ptr<Account>& account) = 0;
 };
 
-}}  // namespace swganh::login
+}
+}  // namespace swganh::login

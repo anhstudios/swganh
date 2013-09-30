@@ -14,8 +14,9 @@
 #else
 #include <tbb/concurrent_unordered_map.h>
 
-namespace Concurrency {
-    using ::tbb::concurrent_unordered_map;
+namespace Concurrency
+{
+using ::tbb::concurrent_unordered_map;
 }
 
 #endif
@@ -24,67 +25,76 @@ namespace Concurrency {
 #include "swganh_core/messages/obj_controller_message.h"
 #include "swganh_core/messages/controllers/show_fly_text.h"
 
-namespace swganh {
-namespace connection {
-    class ConnectionClientInterface;
-}}
+namespace swganh
+{
+namespace connection
+{
+class ConnectionClientInterface;
+}
+}
 
-namespace swganh {
-namespace messages {
-    class OutOfBand;
-}}
+namespace swganh
+{
+namespace messages
+{
+class OutOfBand;
+}
+}
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-    class Object;
-    
-    class ObjectControllerInterface : public swganh::observer::ObserverInterface, public std::enable_shared_from_this<ObjectControllerInterface>
-    {
-    public:
-        typedef std::runtime_error InvalidControllerMessage;
+class Object;
 
-    public:
-        ObjectControllerInterface(
-            std::shared_ptr<Object> object,
-            std::shared_ptr<swganh::connection::ConnectionClientInterface> client);
+class ObjectControllerInterface : public swganh::observer::ObserverInterface, public std::enable_shared_from_this<ObjectControllerInterface>
+{
+public:
+    typedef std::runtime_error InvalidControllerMessage;
 
-        ~ObjectControllerInterface();
+public:
+    ObjectControllerInterface(
+        std::shared_ptr<Object> object,
+        std::shared_ptr<swganh::connection::ConnectionClientInterface> client);
 
-        uint64_t GetId() const;
+    ~ObjectControllerInterface();
 
-        /**
-         * @return Handle to the object this controller manages.
-         */
-        std::shared_ptr<Object> GetObject() const;
+    uint64_t GetId() const;
 
-        /**
-         * @return Handle to the remote client controlling the object.
-         */
-        std::shared_ptr<swganh::connection::ConnectionClientInterface> GetRemoteClient();
-        
-        /**
-         * Sets handle to the remote client controlling the object.
-         *
-         * @param remote_client the new remote client for this controller.
-         */
-        void SetRemoteClient(std::shared_ptr<swganh::connection::ConnectionClientInterface> remote_client);
+    /**
+     * @return Handle to the object this controller manages.
+     */
+    std::shared_ptr<Object> GetObject() const;
 
-        using swganh::observer::ObserverInterface::Notify;
+    /**
+     * @return Handle to the remote client controlling the object.
+     */
+    std::shared_ptr<swganh::connection::ConnectionClientInterface> GetRemoteClient();
 
-        /**
-         * Notifies the controller when the object has been updated.
-         *
-         * @param message The message to be delivered to the remote client.
-         */
-        void Notify(swganh::messages::BaseSwgMessage* message);        
-        
-    private:
+    /**
+     * Sets handle to the remote client controlling the object.
+     *
+     * @param remote_client the new remote client for this controller.
+     */
+    void SetRemoteClient(std::shared_ptr<swganh::connection::ConnectionClientInterface> remote_client);
 
-        ObjectControllerInterface();
+    using swganh::observer::ObserverInterface::Notify;
 
-        std::shared_ptr<Object> object_;
-        std::shared_ptr<swganh::connection::ConnectionClientInterface> client_;
-    };
+    /**
+     * Notifies the controller when the object has been updated.
+     *
+     * @param message The message to be delivered to the remote client.
+     */
+    void Notify(swganh::messages::BaseSwgMessage* message);
 
-}}  // namespace swganh::object
+private:
+
+    ObjectControllerInterface();
+
+    std::shared_ptr<Object> object_;
+    std::shared_ptr<swganh::connection::ConnectionClientInterface> client_;
+};
+
+}
+}  // namespace swganh::object

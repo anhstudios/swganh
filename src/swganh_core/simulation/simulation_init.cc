@@ -21,71 +21,86 @@
 
 #include "version.h"
 
-namespace swganh {
-namespace simulation {
+namespace swganh
+{
+namespace simulation
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
 
-	SimulationService* simulation_service = nullptr;
-	
-	// Register Simulation Service
-	{
-		// Register
-		registration.CreateObject = [kernel, simulation_service] (swganh::plugin::ObjectParams* params) -> void* {
-			return new SimulationService(kernel);
-		};
-		
-		registration.DestroyObject = [] (void * object) {
-			if (object) {
-				delete static_cast<SimulationService*>(object);
-			}
-		};
-		kernel->GetPluginManager()->RegisterObject("Simulation::SimulationService", &registration);
-	}
-	// Register Movement Manager
-	{
-		registration.CreateObject = [kernel, simulation_service] (swganh::plugin::ObjectParams* params) -> void* {
-			return new MovementManager(kernel, "");
-		};
-		registration.DestroyObject = [] (void  * object) {
-			if (object) {
-				delete static_cast<MovementManager*>(object);
-			}
-		};
-		kernel->GetPluginManager()->RegisterObject("Simulation::MovementManager", &registration);
-	}
+    SimulationService* simulation_service = nullptr;
 
-	// Register Scene Manager
-	{
-		registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void* {
-			return new SceneManager();
-		};
-		registration.DestroyObject = [] (void * object) {
-			if (object) {
-				delete static_cast<SceneManager*>(object);
-			}
-		};
-		kernel->GetPluginManager()->RegisterObject("Simulation::SceneManager", &registration);
-	}
-	// Register Quadtree
-	{
-		// Register
-		registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void * {
-			return new QuadtreeSpatialProvider();
-		};
+    // Register Simulation Service
+    {
+        // Register
+        registration.CreateObject = [kernel, simulation_service] (swganh::plugin::ObjectParams* params) -> void*
+        {
+            return new SimulationService(kernel);
+        };
 
-		registration.DestroyObject = [] (void * object) {
-			if (object) {
-				delete static_cast<QuadtreeSpatialProvider*>(object);
-			}
-		};
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
+                delete static_cast<SimulationService*>(object);
+            }
+        };
+        kernel->GetPluginManager()->RegisterObject("Simulation::SimulationService", &registration);
+    }
+    // Register Movement Manager
+    {
+        registration.CreateObject = [kernel, simulation_service] (swganh::plugin::ObjectParams* params) -> void*
+        {
+            return new MovementManager(kernel, "");
+        };
+        registration.DestroyObject = [] (void  * object)
+        {
+            if (object)
+            {
+                delete static_cast<MovementManager*>(object);
+            }
+        };
+        kernel->GetPluginManager()->RegisterObject("Simulation::MovementManager", &registration);
+    }
 
-		kernel->GetPluginManager()->RegisterObject("Simulation::SpatialProvider", &registration);  
-	}
+    // Register Scene Manager
+    {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void*
+        {
+            return new SceneManager();
+        };
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
+                delete static_cast<SceneManager*>(object);
+            }
+        };
+        kernel->GetPluginManager()->RegisterObject("Simulation::SceneManager", &registration);
+    }
+    // Register Quadtree
+    {
+        // Register
+        registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void *
+        {
+            return new QuadtreeSpatialProvider();
+        };
+
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
+                delete static_cast<QuadtreeSpatialProvider*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Simulation::SpatialProvider", &registration);
+    }
 }
 
-}}  // namespace swganh::galaxy
+}
+}  // namespace swganh::galaxy

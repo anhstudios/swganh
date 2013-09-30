@@ -10,7 +10,7 @@ using namespace swganh::network;
 using swganh::ByteBuffer;
 
 void DecryptionFilter::operator()(Session* session, ByteBuffer* message) const
-{    
+{
     if (message->size() <= 2)
     {
         throw std::runtime_error("Invalid message size");
@@ -18,15 +18,15 @@ void DecryptionFilter::operator()(Session* session, ByteBuffer* message) const
 
     uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
 
-    Decrypt_((char*)message->data() + offset, 
-            message->size() - offset, 
-            session->crc_seed());
+    Decrypt_((char*)message->data() + offset,
+             message->size() - offset,
+             session->crc_seed());
 }
 
 int DecryptionFilter::Decrypt_(
-    char* buffer, 
-    uint32_t len, 
-    uint32_t seed) const 
+    char* buffer,
+    uint32_t len,
+    uint32_t seed) const
 {
     int retVal = 0;
 
@@ -41,9 +41,9 @@ int DecryptionFilter::Decrypt_(
         seed = tempSeed;
     }
 
-    for(uint32_t count = blockCount * 4; 
-        count < blockCount * 4 + byteCount; 
-        count++)
+    for(uint32_t count = blockCount * 4;
+            count < blockCount * 4 + byteCount;
+            count++)
     {
         buffer[count] ^= seed;
     }

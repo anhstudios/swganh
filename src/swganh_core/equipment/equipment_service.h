@@ -8,8 +8,8 @@ namespace swganh
 {
 namespace tre
 {
-	class ResourceManager;
-	class SlotDefinitionVisitor;
+class ResourceManager;
+class SlotDefinitionVisitor;
 }
 }
 
@@ -24,42 +24,42 @@ namespace equipment
 class EquipmentService : public swganh::equipment::EquipmentServiceInterface
 {
 public:
-	/**
-	* Creates a new instance
-	*/
-	EquipmentService(swganh::tre::ResourceManager* resourceManager);
+    /**
+    * Creates a new instance
+    */
+    EquipmentService(swganh::tre::ResourceManager* resourceManager);
 
     ~EquipmentService();
 
     virtual void Initialize();
 
-	/**
-	* @return the id of a slot by name
-	*/
-	virtual int32_t GetSlotIdByName(std::string slot_name);
-	
-	/**
-	* @return the name of a slot by id
-	*/
-	virtual std::string GetSlotNameById(int32_t slot_id);
+    /**
+    * @return the id of a slot by name
+    */
+    virtual int32_t GetSlotIdByName(std::string slot_name);
 
-	/**
-	* Clears a slot for an object by name
-	* @param object the object to manipulate
-	* @param slot_name the name of the slot to clear
-	*/
-	virtual void ClearSlot(std::shared_ptr<swganh::object::Object> object, std::string slot_name);
-	
-	/**
-	* @param object the object to search
-	* @param slot_name the name of the slot to return
-	* @returns a sub object of object by slot name
-	*/
-	virtual std::shared_ptr<swganh::object::Object> GetEquippedObject(
-		std::shared_ptr<swganh::object::Object> object, std::string slot_name);
+    /**
+    * @return the name of a slot by id
+    */
+    virtual std::string GetSlotNameById(int32_t slot_id);
+
+    /**
+    * Clears a slot for an object by name
+    * @param object the object to manipulate
+    * @param slot_name the name of the slot to clear
+    */
+    virtual void ClearSlot(std::shared_ptr<swganh::object::Object> object, std::string slot_name);
+
+    /**
+    * @param object the object to search
+    * @param slot_name the name of the slot to return
+    * @returns a sub object of object by slot name
+    */
+    virtual std::shared_ptr<swganh::object::Object> GetEquippedObject(
+        std::shared_ptr<swganh::object::Object> object, std::string slot_name);
 
 private:
-	std::shared_ptr<swganh::tre::SlotDefinitionVisitor> slot_definitions_;
+    std::shared_ptr<swganh::tre::SlotDefinitionVisitor> slot_definitions_;
 };
 }
 }

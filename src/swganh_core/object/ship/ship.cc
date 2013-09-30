@@ -6,7 +6,7 @@
 using namespace std;
 using namespace swganh::object;
 
-uint32_t Ship::GetType() const 
-{ 
-    return Ship::type; 
+uint32_t Ship::GetType() const
+{
+    return Ship::type;
 }

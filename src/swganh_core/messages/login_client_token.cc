@@ -13,17 +13,17 @@ using namespace std;
 using swganh::ByteBuffer;
 
 LoginClientToken swganh::messages::BuildLoginClientToken(
-    shared_ptr<LoginClientInterface> login_client, 
+    shared_ptr<LoginClientInterface> login_client,
     const string& session_key)
 {
-	LoginClientToken message;
-	
-	ByteBuffer session_buffer;
-	session_buffer.write(session_key);
-	
-	message.session_key = session_buffer;
-	message.station_id = login_client->GetAccount()->account_id();
-	message.station_username = login_client->GetUsername();
-	
-	return message;
+    LoginClientToken message;
+
+    ByteBuffer session_buffer;
+    session_buffer.write(session_key);
+
+    message.session_key = session_buffer;
+    message.station_id = login_client->GetAccount()->account_id();
+    message.station_username = login_client->GetUsername();
+
+    return message;
 }

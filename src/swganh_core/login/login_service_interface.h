@@ -20,27 +20,39 @@
 #include "swganh_core/login/galaxy_status.h"
 #include "swganh_core/messages/login_client_id.h"
 
-namespace swganh {
-namespace database {
-class DatabaseManagerInterface; 
-}}  // namespace swganh::database
+namespace swganh
+{
+namespace database
+{
+class DatabaseManagerInterface;
+}
+}  // namespace swganh::database
 
-namespace swganh {
-namespace event_dispatcher {
+namespace swganh
+{
+namespace event_dispatcher
+{
 class EventInterface;
-}}  // namespace swganh::event_dispatcher
+}
+}  // namespace swganh::event_dispatcher
 
-namespace swganh {
-namespace character {
+namespace swganh
+{
+namespace character
+{
 class CharacterProviderInterface;
-}}
+}
+}
 
-namespace swganh {
-namespace login {
-    
+namespace swganh
+{
+namespace login
+{
+
 class AuthenticationManagerInterface;
 
-namespace providers {
+namespace providers
+{
 class AccountProviderInterface;
 }
 
@@ -50,9 +62,9 @@ class LoginServiceInterface
 {
 public:
     LoginServiceInterface(boost::asio::io_service& io_service)
-		: swganh::network::BaseSwgServer(io_service)
-	{	}
-    
+        : swganh::network::BaseSwgServer(io_service)
+    {	}
+
     virtual ~LoginServiceInterface() {}
 
     virtual bool RemoveSession(std::shared_ptr<swganh::network::Session> session) = 0;
@@ -60,15 +72,16 @@ public:
     virtual std::shared_ptr<swganh::network::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
 
     virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
-        
+
     virtual int galaxy_status_check_duration_secs() const = 0;
     virtual void galaxy_status_check_duration_secs(int new_duration) = 0;
 
     virtual bool login_auto_registration() const = 0;
     virtual void login_auto_registration(bool auto_registeration) = 0;
-    
+
     virtual int login_error_timeout_secs() const = 0;
     virtual void login_error_timeout_secs(int new_timeout) = 0;
 };
 
-}} // namespace swganh::login
+}
+} // namespace swganh::login

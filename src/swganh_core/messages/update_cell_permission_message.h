@@ -6,17 +6,25 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
-    
+namespace swganh
+{
+namespace messages
+{
+
 struct UpdateCellPermissionMessage : public BaseSwgMessage
 {
-    uint16_t Opcount() const { return 3; }
-    uint32_t Opcode() const { return 0xF612499C; }
-    
+    uint16_t Opcount() const
+    {
+        return 3;
+    }
+    uint32_t Opcode() const
+    {
+        return 0xF612499C;
+    }
+
     uint8_t permission_flag;
     uint64_t cell_id;
-    
+
     void OnSerialize(swganh::ByteBuffer& buffer) const
     {
         buffer.write(permission_flag);
@@ -30,4 +38,5 @@ struct UpdateCellPermissionMessage : public BaseSwgMessage
     }
 };
 
-}}  // namespace swganh::messages
+}
+}  // namespace swganh::messages

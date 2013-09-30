@@ -6,25 +6,34 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
-    struct NewTicketActivityMessage : public BaseSwgMessage
+struct NewTicketActivityMessage : public BaseSwgMessage
+{
+    uint16_t Opcount() const
     {
-    	uint16_t Opcount() const { return 2; }
-    	uint32_t Opcode() const { return 0x274F4E78; }
-    	
-    	uint64_t ticket_id;
-    	
-    	void OnSerialize(swganh::ByteBuffer& buffer) const
-    	{
-    		buffer.write(ticket_id);
-    	}
+        return 2;
+    }
+    uint32_t Opcode() const
+    {
+        return 0x274F4E78;
+    }
 
-    	void OnDeserialize(swganh::ByteBuffer& buffer)
-    	{
-    		ticket_id = buffer.read<uint64_t>();
-    	}
-    };
+    uint64_t ticket_id;
 
-}} // namespace swganh::messages
+    void OnSerialize(swganh::ByteBuffer& buffer) const
+    {
+        buffer.write(ticket_id);
+    }
+
+    void OnDeserialize(swganh::ByteBuffer& buffer)
+    {
+        ticket_id = buffer.read<uint64_t>();
+    }
+};
+
+}
+} // namespace swganh::messages

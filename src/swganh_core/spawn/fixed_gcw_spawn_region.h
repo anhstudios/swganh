@@ -12,19 +12,20 @@ namespace spawn
 class FixedGCWSpawnRegion : public SpawnRegion
 {
 public:
-	
-	FixedGCWSpawnRegion(std::shared_ptr<LootGroup> loot_group, SpawnFactory typeRebel, SpawnFactory typeImperial);
-	
-	std::shared_ptr<swganh::object::Object> Spawn(swganh::app::SwganhKernel* kernel);
-	
-	void AddSpawnPoint(glm::vec3 spawn_point);
-	
-	bool NeedsSpawn(swganh::app::SwganhKernel* kernel);
-	
-	glm::vec3 NextSpawnLocation(swganh::app::SwganhKernel* kernel);
-	
+
+    FixedGCWSpawnRegion(std::shared_ptr<LootGroup> loot_group, SpawnFactory typeRebel, SpawnFactory typeImperial);
+
+    std::shared_ptr<swganh::object::Object> Spawn(swganh::app::SwganhKernel* kernel);
+
+    void AddSpawnPoint(glm::vec3 spawn_point);
+
+    bool NeedsSpawn(swganh::app::SwganhKernel* kernel);
+
+    glm::vec3 NextSpawnLocation(swganh::app::SwganhKernel* kernel);
+
 private:
-	SpawnFactory rebel_factory_, imp_factory_;
+    SpawnFactory rebel_factory_, imp_factory_;
 };
 
-}}
+}
+}

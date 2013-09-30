@@ -28,8 +28,8 @@ void GuildFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conne
 }
 
 uint32_t GuildFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
-{	
-	return 0;
+{
+    return 0;
 }
 
 void GuildFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
@@ -37,13 +37,13 @@ void GuildFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 
 shared_ptr<Object> GuildFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-	if(db_persisted || db_initialized)
-	{
-		//TODO: Have to hit the db to make this
-		return make_shared<Guild>();
-	}
-	else
-	{
-		return make_shared<Guild>();
-	}
+    if(db_persisted || db_initialized)
+    {
+        //TODO: Have to hit the db to make this
+        return make_shared<Guild>();
+    }
+    else
+    {
+        return make_shared<Guild>();
+    }
 }

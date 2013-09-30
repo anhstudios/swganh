@@ -11,7 +11,7 @@ using namespace boost::random;
 
 RandomGenerator::RandomGenerator(uniform_int_distribution<> distribution)
     : generator(rand())
-    , distribution_(distribution)    
+    , distribution_(distribution)
 {
 }
 
@@ -30,10 +30,10 @@ int RandomGenerator::Rand()
 
 float RandomGenerator::Randf()
 {
-	boost::uniform_real<float> u(0.0f, 1.0f);
+    boost::uniform_real<float> u(0.0f, 1.0f);
     boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > gen(generator, u);
-	last_randomf = gen();
-	return last_randomf;
+    last_randomf = gen();
+    return last_randomf;
 }
 
 int RandomGenerator::Rand(int start, int end)
@@ -44,10 +44,10 @@ int RandomGenerator::Rand(int start, int end)
 
 float RandomGenerator::Randf(float start, float end)
 {
-	boost::uniform_real<float> u(start, end);
-	boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > gen(generator, u);
-	last_randomf = gen();
-	return last_randomf;
+    boost::uniform_real<float> u(start, end);
+    boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > gen(generator, u);
+    last_randomf = gen();
+    return last_randomf;
 }
 
 
@@ -58,5 +58,5 @@ int RandomGenerator::LastRand()
 
 float RandomGenerator::LastRandf()
 {
-	return last_randomf;
+    return last_randomf;
 }

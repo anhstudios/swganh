@@ -11,29 +11,29 @@ namespace swganh
 {
 namespace object
 {
-	class Object;
+class Object;
 }
 
 namespace spawn
 {
-	class FiniteStateMachineInterface;
-	class FsmManager
-	{
-	public:
-		
-		FsmManager(EventDispatcher* event_dispatch);
-	
-		void RegisterAutomaton(const std::wstring& name, std::shared_ptr<FiniteStateMachineInterface> automaton);
-		std::shared_ptr<FiniteStateMachineInterface> GetAutomatonByName(const std::wstring& name);
-		void DeregisterAutomaton(const std::wstring& name);
-		
-		void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine);
-		void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
+class FiniteStateMachineInterface;
+class FsmManager
+{
+public:
 
-	private:
-		boost::shared_mutex mutex_;
-		
-		std::map<std::wstring, std::shared_ptr<FiniteStateMachineInterface>> machines_;
-	};
+    FsmManager(EventDispatcher* event_dispatch);
+
+    void RegisterAutomaton(const std::wstring& name, std::shared_ptr<FiniteStateMachineInterface> automaton);
+    std::shared_ptr<FiniteStateMachineInterface> GetAutomatonByName(const std::wstring& name);
+    void DeregisterAutomaton(const std::wstring& name);
+
+    void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine);
+    void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
+
+private:
+    boost::shared_mutex mutex_;
+
+    std::map<std::wstring, std::shared_ptr<FiniteStateMachineInterface>> machines_;
+};
 }
 }

@@ -6,22 +6,26 @@
 
 #include "swganh_core/login/encoders/encoder_interface.h"
 
-namespace swganh {
-namespace login {
+namespace swganh
+{
+namespace login
+{
 
 class Account;
 class LoginClientInterface;
 
-class AuthenticationManagerInterface {
+class AuthenticationManagerInterface
+{
 public:
 
-	virtual ~AuthenticationManagerInterface() {}
+    virtual ~AuthenticationManagerInterface() {}
 
     virtual std::shared_ptr<encoders::EncoderInterface> encoder() = 0;
 
     virtual bool Authenticate(
-        std::shared_ptr<swganh::login::LoginClientInterface> client, 
+        std::shared_ptr<swganh::login::LoginClientInterface> client,
         std::shared_ptr<swganh::login::Account> account) = 0;
 };
 
-}}  // namespace swganh::login
+}
+}  // namespace swganh::login

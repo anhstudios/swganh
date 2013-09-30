@@ -7,12 +7,12 @@ namespace swganh
 namespace object
 {
 
-class SkillModNotFound : public std::runtime_error 
+class SkillModNotFound : public std::runtime_error
 {
 public:
-	SkillModNotFound()
-	: runtime_error("Skill mod not found")
-	{}
+    SkillModNotFound()
+        : runtime_error("Skill mod not found")
+    {}
 };
 
 struct SkillMod

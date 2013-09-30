@@ -16,29 +16,36 @@
 #include "spawn_service.h"
 #include "version.h"
 
-namespace swganh {
-namespace spawn {
+namespace swganh
+{
+namespace spawn
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-    
+
     // Register Spawn Service
-	{ // Spawn::SpawnService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Spawn::SpawnService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             return new SpawnService(kernel);
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<SpawnService*>(object);
             }
         };
 
         kernel->GetPluginManager()->RegisterObject("Spawn::SpawnService", &registration);
-	}
+    }
 }
 
-}}  // namespace swganh::spawn
+}
+}  // namespace swganh::spawn

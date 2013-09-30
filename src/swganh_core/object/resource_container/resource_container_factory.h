@@ -4,36 +4,43 @@
 
 #include "swganh_core/object/tangible/tangible_factory.h"
 
-namespace swganh {
-namespace database {
+namespace swganh
+{
+namespace database
+{
 class DatabaseManagerInterface;
-}} // swganh::database
+}
+} // swganh::database
 
-namespace sql {
+namespace sql
+{
 class Statement;
 }
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
-	class ResourceContainer;
-    class ResourceContainerFactory : public swganh::object::TangibleFactory
-    {
-    public:
-		typedef ResourceContainer ObjectType;
+class ResourceContainer;
+class ResourceContainerFactory : public swganh::object::TangibleFactory
+{
+public:
+    typedef ResourceContainer ObjectType;
 
-		 ResourceContainerFactory(swganh::app::SwganhKernel* kernel);
-         
-        virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
+    ResourceContainerFactory(swganh::app::SwganhKernel* kernel);
 
-        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
-		virtual void PersistChangedObjects(){}
+    virtual void LoadFromStorage(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
-        void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
+    virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited = false);
+    virtual void PersistChangedObjects() {}
 
-        std::shared_ptr<swganh::object::Object> CreateObject();
+    void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
-		virtual void RegisterEventHandlers(){}
-    };
+    std::shared_ptr<swganh::object::Object> CreateObject();
 
-}}  // namespace swganh::object
+    virtual void RegisterEventHandlers() {}
+};
+
+}
+}  // namespace swganh::object

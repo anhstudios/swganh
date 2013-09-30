@@ -31,21 +31,21 @@ using std::stringstream;
 using std::vector;
 
 TreReader::TreReader(const string& filename, ResourceLookup& lookup_, uint32_t index)
-: filename_(filename)
+    : filename_(filename)
 {
     input_stream_.exceptions(ifstream::failbit | ifstream::badbit);
 
-	try
-	{
-		input_stream_.open(filename_.c_str(), ios_base::binary);
-		ReadHeader();
-		ReadIndex(lookup_, index);
-	} 
-	catch(std::ifstream::failure e) 
-	{
-		LOG(fatal) << "Failure opening/reading file:" << filename;
-		throw e;
-	}
+    try
+    {
+        input_stream_.open(filename_.c_str(), ios_base::binary);
+        ReadHeader();
+        ReadIndex(lookup_, index);
+    }
+    catch(std::ifstream::failure e)
+    {
+        LOG(fatal) << "Failure opening/reading file:" << filename;
+        throw e;
+    }
 }
 
 TreReader::~TreReader()
@@ -73,7 +73,7 @@ vector<string> TreReader::GetResourceNames() const
     for_each(
         begin(resource_lookup_),
         end(resource_lookup_),
-		[this, &resource_names] (const std::pair<const char*, TreResourceInfo>& info)
+        [this, &resource_names] (const std::pair<const char*, TreResourceInfo>& info)
     {
         resource_names.push_back(info.first);
     });
@@ -83,15 +83,15 @@ vector<string> TreReader::GetResourceNames() const
 
 swganh::ByteBuffer TreReader::GetResource(const std::string& resource_name)
 {
-    swganh::ByteBuffer data; 
-    
+    swganh::ByteBuffer data;
+
     GetResource(resource_name, data);
 
     return data;
 }
 
 void TreReader::GetResource(const std::string& resource_name, swganh::ByteBuffer& buffer)
-{    
+{
     auto file_info = GetResourceInfo(resource_name);
 
     if (file_info.data_size > buffer.size())
@@ -113,7 +113,7 @@ void TreReader::GetResource(const std::string& resource_name, swganh::ByteBuffer
 
 bool TreReader::ContainsResource(const string& resource_name) const
 {
-	auto find_iter = resource_lookup_.find(resource_name.c_str());
+    auto find_iter = resource_lookup_.find(resource_name.c_str());
     return find_iter != end(resource_lookup_);
 }
 
@@ -125,7 +125,7 @@ uint32_t TreReader::GetResourceSize(const string& resource_name) const
     {
         throw std::runtime_error("File name invalid");
     }
-         
+
     return find_iter->second.data_size;
 }
 
@@ -148,59 +148,59 @@ void TreReader::ReadHeader()
     }
 
     ValidateFileType(string(header_.file_type, 4));
-    ValidateFileVersion(string(header_.file_version, 4));        
+    ValidateFileVersion(string(header_.file_version, 4));
 }
 
 void TreReader::ReadIndex(ResourceLookup& lookup_, uint32_t index)
 {
-	std::vector<TreResourceInfo> resource_block_ = ReadResourceBlock();
+    std::vector<TreResourceInfo> resource_block_ = ReadResourceBlock();
     name_block_ = ReadNameBlock();
 
-	for(auto& info : resource_block_)
-	{
-		//Insert into the global index pointing to this reader
-		char* name = &name_block_[info.name_offset];
-		auto lb = lookup_.lower_bound(name);
-		if(lb != lookup_.end() && !(lookup_.key_comp()(name, lb->first)))
-		{
-			lb->second = index;
-		}
-		else
-		{
-			lookup_.insert(lb, std::make_pair(name, index));
-		}
+    for(auto& info : resource_block_)
+    {
+        //Insert into the global index pointing to this reader
+        char* name = &name_block_[info.name_offset];
+        auto lb = lookup_.lower_bound(name);
+        if(lb != lookup_.end() && !(lookup_.key_comp()(name, lb->first)))
+        {
+            lb->second = index;
+        }
+        else
+        {
+            lookup_.insert(lb, std::make_pair(name, index));
+        }
 
-		//Insert into the local index pointing to the info.
-		resource_lookup_.insert(std::make_pair(name, info));
-	}
+        //Insert into the local index pointing to the info.
+        resource_lookup_.insert(std::make_pair(name, info));
+    }
 }
 
 vector<TreResourceInfo> TreReader::ReadResourceBlock()
 {
     uint32_t uncompressed_size = header_.resource_count * sizeof(TreResourceInfo);
-    
+
     vector<TreResourceInfo> files(header_.resource_count);
-        
+
     ReadDataBlock(header_.info_offset,
-        header_.info_compression,
-        header_.info_compressed_size,
-        uncompressed_size,
-        reinterpret_cast<char*>(&files[0]));
+                  header_.info_compression,
+                  header_.info_compressed_size,
+                  uncompressed_size,
+                  reinterpret_cast<char*>(&files[0]));
 
     return files;
 }
-        
+
 vector<char> TreReader::ReadNameBlock()
 {
-    vector<char> data(header_.name_uncompressed_size); 
-    
+    vector<char> data(header_.name_uncompressed_size);
+
     uint32_t name_offset = header_.info_offset + header_.info_compressed_size;
 
     ReadDataBlock(
-        name_offset, 
-        header_.name_compression, 
-        header_.name_compressed_size, 
-        header_.name_uncompressed_size, 
+        name_offset,
+        header_.name_compression,
+        header_.name_compressed_size,
+        header_.name_uncompressed_size,
         &data[0]);
 
     return data;
@@ -225,10 +225,10 @@ void TreReader::ValidateFileVersion(string file_version) const
 void TreReader::ReadDataBlock(
     uint32_t offset,
     uint32_t compression,
-    uint32_t compressed_size, 
-    uint32_t uncompressed_size, 
+    uint32_t compressed_size,
+    uint32_t uncompressed_size,
     char* buffer)
-{    
+{
     if (compression == 0)
     {
         {
@@ -240,7 +240,7 @@ void TreReader::ReadDataBlock(
     else if (compression == 2)
     {
         vector<char> compressed_data(compressed_size);
-        
+
         {
             boost::lock_guard<boost::mutex> lg(mutex_);
             input_stream_.seekg(offset, ios_base::beg);

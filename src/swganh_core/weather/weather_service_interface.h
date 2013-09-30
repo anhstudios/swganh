@@ -10,27 +10,35 @@
 #include "weather_data.h"
 #include "swganh/app/swganh_kernel.h"
 #include <boost/asio.hpp>
-namespace swganh{
-namespace weather{
+namespace swganh
+{
+namespace weather
+{
 
 }
 }
 
-namespace swganh {
-namespace weather {
+namespace swganh
+{
+namespace weather
+{
 class WeatherProviderInterface;
-}} // namespace swganh::character
+}
+} // namespace swganh::character
 
-namespace swganh {
-namespace weather {
-    
-    class WeatherServiceInterface : public swganh::service::BaseService
-    {
-    public:
-        virtual ~WeatherServiceInterface() {}
+namespace swganh
+{
+namespace weather
+{
 
-        virtual Weather GetSceneWeather(uint32_t scene_id) =0;
-		virtual void SetSceneWeather(uint32_t scene_id, std::vector<WeatherEvent> weather_sequence) =0;
-    };
+class WeatherServiceInterface : public swganh::service::BaseService
+{
+public:
+    virtual ~WeatherServiceInterface() {}
 
-}}  // namespace swganh::weather
+    virtual Weather GetSceneWeather(uint32_t scene_id) =0;
+    virtual void SetSceneWeather(uint32_t scene_id, std::vector<WeatherEvent> weather_sequence) =0;
+};
+
+}
+}  // namespace swganh::weather

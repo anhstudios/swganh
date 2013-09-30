@@ -9,8 +9,8 @@ using namespace swganh::object;
 static double VIEWING_RANGE = 128.0f;
 
 PlayerViewBox::PlayerViewBox(std::shared_ptr<Object> player)
-	: Object()
-	, player_(player)
+    : Object()
+    , player_(player)
 {
 }
 
@@ -20,21 +20,21 @@ PlayerViewBox::~PlayerViewBox()
 
 void PlayerViewBox::OnCollisionEnter(std::shared_ptr<Object> collider)
 {
-	std::cout << "PlayerViewBox::OnCollisionEnter" << std::endl;
-	// Add aware.
+    std::cout << "PlayerViewBox::OnCollisionEnter" << std::endl;
+    // Add aware.
 }
 
 void PlayerViewBox::OnCollisionLeave(std::shared_ptr<Object> collider)
 {
-	std::cout << "PlayerViewBox::OnCollisionLeave" << std::endl;
-	// Remove aware.
+    std::cout << "PlayerViewBox::OnCollisionLeave" << std::endl;
+    // Remove aware.
 }
 
 void PlayerViewBox::__BuildCollisionBox()
 {
-	local_collision_box_.clear();
-	boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(-1.0f * VIEWING_RANGE, VIEWING_RANGE));
-	boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(VIEWING_RANGE, VIEWING_RANGE));
-	boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(VIEWING_RANGE, -1.0f * VIEWING_RANGE));
-	boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(-1.0f * VIEWING_RANGE, -1.0f * VIEWING_RANGE));
+    local_collision_box_.clear();
+    boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(-1.0f * VIEWING_RANGE, VIEWING_RANGE));
+    boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(VIEWING_RANGE, VIEWING_RANGE));
+    boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(VIEWING_RANGE, -1.0f * VIEWING_RANGE));
+    boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(-1.0f * VIEWING_RANGE, -1.0f * VIEWING_RANGE));
 }

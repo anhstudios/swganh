@@ -20,31 +20,38 @@
 #include "weather_service.h"
 #include "version.h"
 
-namespace swganh {
-namespace weather {
+namespace swganh
+{
+namespace weather
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-    
+
     // Register Chat Service
-	{ // Chat::ChatService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+    {
+        // Chat::ChatService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             auto weather_service = new WeatherService(kernel);
-            
+
             return weather_service;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<WeatherService*>(object);
             }
         };
 
         kernel->GetPluginManager()->RegisterObject("Weather::WeatherService", &registration);
-	}
+    }
 }
 
-}}  // namespace swganh::chat
+}
+}  // namespace swganh::chat

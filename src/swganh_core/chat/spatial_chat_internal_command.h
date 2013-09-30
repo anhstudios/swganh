@@ -6,34 +6,40 @@
 
 #include "swganh_core/command/base_swg_command.h"
 
-namespace swganh {
-namespace chat {
+namespace swganh
+{
+namespace chat
+{
 
-    class ChatService;
+class ChatService;
 
-	/**
-	* An command implementation for spatial chat
-	*/
-    class SpatialChatInternalCommand : public swganh::command::BaseSwgCommand
+/**
+* An command implementation for spatial chat
+*/
+class SpatialChatInternalCommand : public swganh::command::BaseSwgCommand
+{
+public:
+
+    virtual std::string GetCommandName() const
     {
-    public:
+        return "spatialchatinternal";
+    }
 
-        virtual std::string GetCommandName() const { return "spatialchatinternal"; }
+    /**
+    	Creates a new instance
+    */
+    virtual void Initialize(
+        swganh::app::SwganhKernel* kernel,
+        const swganh::command::CommandProperties& properties);
 
-		/**
-			Creates a new instance
-		*/
-        virtual void Initialize(
-            swganh::app::SwganhKernel* kernel,
-            const swganh::command::CommandProperties& properties);
+    /**
+    * Runs this command
+    */
+    virtual void Run();
 
-		/**
-		* Runs this command
-		*/
-        virtual void Run();
+private:
+    ChatService* chat_service_;
+};
 
-    private:
-        ChatService* chat_service_;
-    };
-
-}}
+}
+}

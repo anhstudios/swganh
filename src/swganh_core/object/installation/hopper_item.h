@@ -9,25 +9,25 @@ namespace object
 
 struct HopperItem
 {
-	uint64_t global_id;
-	float quantity;
+    uint64_t global_id;
+    float quantity;
 
-	void Serialize(swganh::messages::BaselinesMessage& message)
-	{
-		message.data.write(global_id);
-		message.data.write(quantity);
-	}
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write(global_id);
+        message.data.write(quantity);
+    }
 
-	void Serialize(swganh::messages::DeltasMessage& message)
-	{
-		message.data.write(global_id);
-		message.data.write(quantity);
-	}
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write(global_id);
+        message.data.write(quantity);
+    }
 
-	bool operator==(const HopperItem& other)
-	{
-		return other.global_id == global_id;
-	}
+    bool operator==(const HopperItem& other)
+    {
+        return other.global_id == global_id;
+    }
 };
 
 }

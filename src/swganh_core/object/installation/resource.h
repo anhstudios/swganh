@@ -9,9 +9,9 @@ namespace object
 
 struct Resource
 {
-	uint64_t global_id;
-	std::string resource_name;
-	std::string resource_type;
+    uint64_t global_id;
+    std::string resource_name;
+    std::string resource_type;
 };
 
 }

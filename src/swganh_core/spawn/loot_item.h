@@ -9,12 +9,12 @@ namespace swganh
 {
 namespace app
 {
-	class SwganhKernel;
+class SwganhKernel;
 }
 
 namespace object
 {
-	class Object;
+class Object;
 }
 
 namespace spawn
@@ -26,13 +26,13 @@ class LootItem
 {
 public:
 
-	LootItem(float drop_percent, LootFactory factory);
+    LootItem(float drop_percent, LootFactory factory);
 
-	std::shared_ptr<swganh::object::Object> AttemptDrop(swganh::app::SwganhKernel* kernel, float attempt);
-	
+    std::shared_ptr<swganh::object::Object> AttemptDrop(swganh::app::SwganhKernel* kernel, float attempt);
+
 private:
 
-	LootFactory factory_;
+    LootFactory factory_;
 
 };
 

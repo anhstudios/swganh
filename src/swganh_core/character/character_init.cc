@@ -17,46 +17,55 @@
 #include "mysql_character_provider.h"
 #include "version.h"
 
-namespace swganh {
-namespace character {
+namespace swganh
+{
+namespace character
+{
 
-void Initialize(swganh::app::SwganhKernel* kernel) 
-{    
+void Initialize(swganh::app::SwganhKernel* kernel)
+{
     swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-	
-	// Register
-	{
-		registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
-			return new MysqlCharacterProvider(kernel);
-		};
 
-		registration.DestroyObject = [] (void * object) {
-			if (object) 
-			{
-				delete static_cast<MysqlCharacterProvider*>(object);
-			}
-		};
+    // Register
+    {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
+            return new MysqlCharacterProvider(kernel);
+        };
 
-		kernel->GetPluginManager()->RegisterObject("Character::CharacterProvider", &registration);    
-	}
-	// Register Character Service
-	{ // Character::CharacterService
-        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
+                delete static_cast<MysqlCharacterProvider*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Character::CharacterProvider", &registration);
+    }
+    // Register Character Service
+    {
+        // Character::CharacterService
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void *
+        {
             auto character_service = new CharacterService(kernel);
-            
+
             return character_service;
         };
 
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
+        registration.DestroyObject = [] (void * object)
+        {
+            if (object)
+            {
                 delete static_cast<CharacterService*>(object);
             }
         };
 
         kernel->GetPluginManager()->RegisterObject("Character::CharacterService", &registration);
-	}
+    }
 }
 
-}}  // namespace swganh::mysql_auth
+}
+}  // namespace swganh::mysql_auth

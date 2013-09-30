@@ -7,14 +7,17 @@
 #include <string>
 
 
-namespace swganh{
-    class ByteBuffer;
+namespace swganh
+{
+class ByteBuffer;
 }
 /*! \brief Common is a catch-all library containing primarily base classes and
  * classes used for maintaining application lifetimes.
  */
-namespace swganh {
-namespace messages {
+namespace swganh
+{
+namespace messages
+{
 
 /**
  * @brief The ProsePackage is part of the OutOfBand attachment and is used to send custom STF strings.
@@ -36,14 +39,16 @@ namespace messages {
  *
  * Credit to Xenozephyr for information.
  */
-enum ProseType {
+enum ProseType
+{
     TU = 0,
     TT,
     TO,
     DI,
     DF
 };
-struct ProsePackage {
+struct ProsePackage
+{
     /**
      * Default constructor.
      *
@@ -62,18 +67,18 @@ struct ProsePackage {
      */
     ProsePackage(std::string stf_file, std::string stf_label);
 
-	
-	/// Helper functions for AddProsePackage
 
-	ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, int32_t di_integer);
+    /// Helper functions for AddProsePackage
 
-	ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, uint64_t t_object_id, const std::string& t_stf_file = "", const std::string& t_stf_label ="", const std::wstring& t_custom_string = L"");	
+    ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, int32_t di_integer);
 
-	ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, float df_val);
+    ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, uint64_t t_object_id, const std::string& t_stf_file = "", const std::string& t_stf_label ="", const std::wstring& t_custom_string = L"");
 
-	/// Default deconstructor.
+    ProsePackage(std::string stf_file, std::string stf_label, ProseType prose_type, float df_val);
+
+    /// Default deconstructor.
     ~ProsePackage();
-    
+
     std::string  base_stf_file;  ///< File containing the STF message.
     std::string  base_stf_label; ///< Label of the STF message.
 
@@ -100,7 +105,8 @@ struct ProsePackage {
 };
 
 /// @TODO fully document the WaypointPackage
-struct WaypointPackage {
+struct WaypointPackage
+{
     float position_x;
     float position_y;
     float position_z;
@@ -121,7 +127,8 @@ struct WaypointPackage {
  * @see ProsePackage
  * @see WaypointPackage
  */
-class OutOfBand {
+class OutOfBand
+{
 public:
     /// Default constructor, generates an empty OutOfBand package.
     OutOfBand();
@@ -141,11 +148,11 @@ public:
     OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               ProseType prose_type, uint64_t object_id, bool display_flag = 0);
 
-     /**
-     * Constructor overload for common Prose Packages
-     *
-     *
-     */
+    /**
+    * Constructor overload for common Prose Packages
+    *
+    *
+    */
     OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               ProseType prose_type, const std::wstring& message, bool display_flag = 0);
     /**
@@ -277,4 +284,5 @@ protected:
 
     std::shared_ptr<swganh::ByteBuffer> data_;
 };
-}} // swganh::messages
+}
+} // swganh::messages

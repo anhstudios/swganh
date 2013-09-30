@@ -10,15 +10,17 @@
 
 #include "creature.h"
 
-namespace swganh {
-namespace object {
+namespace swganh
+{
+namespace object
+{
 
 
 class CreatureMessageBuilder : public swganh::object::TangibleMessageBuilder
 {
 public:
     CreatureMessageBuilder(swganh::EventDispatcher* event_dispatcher_)
-        : TangibleMessageBuilder(event_dispatcher_) 
+        : TangibleMessageBuilder(event_dispatcher_)
     {
         RegisterEventHandlers();
     }
@@ -31,7 +33,7 @@ public:
     static void BuildStatBaseDelta(const std::shared_ptr<Creature>& creature);
     static void BuildSkillDelta(const std::shared_ptr<Creature>& creature);
     static void BuildPostureDelta(const std::shared_ptr<Creature>& creature);
-	static void BuildPostureUpdate(const std::shared_ptr<Creature>& creature);
+    static void BuildPostureUpdate(const std::shared_ptr<Creature>& creature);
     static void BuildFactionRankDelta(const std::shared_ptr<Creature>& creature);
     static void BuildOwnerIdDelta(const std::shared_ptr<Creature>& creature);
     static void BuildScaleDelta(const std::shared_ptr<Creature>& creature);
@@ -74,9 +76,10 @@ public:
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock);
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(const std::shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock);
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(const std::shared_ptr<Creature>& creature, boost::unique_lock<boost::mutex>& lock);
-    
+
 private:
     typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 };
 
-}} // swganh::object
+}
+} // swganh::object

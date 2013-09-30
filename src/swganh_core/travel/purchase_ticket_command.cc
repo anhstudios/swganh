@@ -33,24 +33,25 @@ using boost::regex_match;
 
 void PurchaseTicketCommand::Run()
 {
-	travel_ = GetKernel()->GetServiceManager()->GetService<TravelService>("TravelService");
+    travel_ = GetKernel()->GetServiceManager()->GetService<TravelService>("TravelService");
 
-	const wregex p(L"(.*) (.*) (.*) (.*) (\\d+)");
-	wsmatch m;
+    const wregex p(L"(.*) (.*) (.*) (.*) (\\d+)");
+    wsmatch m;
 
-	if(regex_match(GetCommandString(), m, p)) {
-		auto source_scene = m[1].str();
-		auto source_location = m[2].str();
-		auto target_scene = m[3].str();
-		auto target_location = m[4].str();
+    if(regex_match(GetCommandString(), m, p))
+    {
+        auto source_scene = m[1].str();
+        auto source_location = m[2].str();
+        auto target_scene = m[3].str();
+        auto target_location = m[4].str();
 
-		travel_->PurchaseTicket(GetActor(), 
-			std::string(source_scene.begin(), source_scene.end()), 
-			std::string(source_location.begin(), source_location.end()),
-			std::string(target_scene.begin(), target_scene.end()),
-			std::string(target_location.begin(), target_location.end()),
-			0,
-			0,
-			std::stoi(m[5].str()) ? true : false);
-	}
+        travel_->PurchaseTicket(GetActor(),
+                                std::string(source_scene.begin(), source_scene.end()),
+                                std::string(source_location.begin(), source_location.end()),
+                                std::string(target_scene.begin(), target_scene.end()),
+                                std::string(target_location.begin(), target_location.end()),
+                                0,
+                                0,
+                                std::stoi(m[5].str()) ? true : false);
+    }
 }

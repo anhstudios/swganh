@@ -3,7 +3,7 @@
 
 #include "swganh_core/badge/badge_service_binding.h"
 
-BOOST_PYTHON_MODULE(py_badge) 
+BOOST_PYTHON_MODULE(py_badge)
 {
     docstring_options local_docstring_options(true, true, false);
 

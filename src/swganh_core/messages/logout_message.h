@@ -6,17 +6,26 @@
 #include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 
-namespace swganh {
-namespace messages {
-    
-    struct LogoutMessage : public BaseSwgMessage<LogoutMessage>
+namespace swganh
+{
+namespace messages
+{
+
+struct LogoutMessage : public BaseSwgMessage<LogoutMessage>
+{
+    static const uint16_t Opcount() const
     {
-        static const uint16_t Opcount() const { return 1; }
-        static const uint32_t Opcode() const { return 0x42FD19DD; }
-        
-        void OnSerialize(swganh::ByteBuffer& buffer) const {}
+        return 1;
+    }
+    static const uint32_t Opcode() const
+    {
+        return 0x42FD19DD;
+    }
 
-        void OnDeserialize(swganh::ByteBuffer& buffer) {}
-    };
+    void OnSerialize(swganh::ByteBuffer& buffer) const {}
 
-}}  // namespace swganh::messages
+    void OnDeserialize(swganh::ByteBuffer& buffer) {}
+};
+
+}
+}  // namespace swganh::messages

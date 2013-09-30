@@ -11,24 +11,24 @@ namespace simulation
 {
 struct NewSceneEvent : swganh::BaseEvent
 {
-	NewSceneEvent(swganh::EventType type, uint32_t scene_id_, std::string scene_label_, std::string terrain_filename_)
+    NewSceneEvent(swganh::EventType type, uint32_t scene_id_, std::string scene_label_, std::string terrain_filename_)
         : BaseEvent(type)
         , scene_id(scene_id_)
-		, scene_label(scene_label_)
-		, terrain_filename(terrain_filename_)
+        , scene_label(scene_label_)
+        , terrain_filename(terrain_filename_)
     {}
-    uint32_t scene_id; 
-	std::string scene_label;
-	std::string terrain_filename;
+    uint32_t scene_id;
+    std::string scene_label;
+    std::string terrain_filename;
 };
 
 struct DestroySceneEvent : swganh::BaseEvent
 {
-	DestroySceneEvent(swganh::EventType type, uint32_t scene_id_)
+    DestroySceneEvent(swganh::EventType type, uint32_t scene_id_)
         : BaseEvent(type)
         , scene_id(scene_id_)
     {}
-    uint32_t scene_id; 
+    uint32_t scene_id;
 };
 
 }

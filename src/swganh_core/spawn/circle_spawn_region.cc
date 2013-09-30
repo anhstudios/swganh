@@ -5,26 +5,26 @@
 
 using namespace swganh::spawn;
 
-CircleSpawnRegion::CircleSpawnRegion(std::shared_ptr<swganh::terrain::TerrainServiceInterface> terrain, 
-		std::shared_ptr<LootGroup> loot_group, uint32_t density, uint32_t timeout, float rarity,
-		float x, float y, float radius, SpawnFactory type)
-	: SpawnRegion(loot_group, density, timeout, rarity)
-	, factory_(type)
-	, center_(x, y)
+CircleSpawnRegion::CircleSpawnRegion(std::shared_ptr<swganh::terrain::TerrainServiceInterface> terrain,
+                                     std::shared_ptr<LootGroup> loot_group, uint32_t density, uint32_t timeout, float rarity,
+                                     float x, float y, float radius, SpawnFactory type)
+    : SpawnRegion(loot_group, density, timeout, rarity)
+    , factory_(type)
+    , center_(x, y)
 {
 }
-	
+
 std::shared_ptr<swganh::object::Object> CircleSpawnRegion::Spawn(swganh::app::SwganhKernel* kernel)
 {
-	return factory_(kernel);
+    return factory_(kernel);
 }
-	
+
 bool CircleSpawnRegion::NeedsSpawn(swganh::app::SwganhKernel* kernel)
 {
-	return false;
+    return false;
 }
-	
+
 glm::vec3 CircleSpawnRegion::NextSpawnLocation(swganh::app::SwganhKernel* kernel)
 {
-	return glm::vec3(0, 0, 0);
+    return glm::vec3(0, 0, 0);
 }
