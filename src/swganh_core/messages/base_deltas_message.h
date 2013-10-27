@@ -39,8 +39,8 @@ struct BaseDeltasMessage : public BaseSwgMessage
         object_type = buffer.read<uint32_t>();
         view_type = buffer.read<uint32_t>();
         uint32_t data_size = buffer.read<uint32_t>() - 4;
-        update_type = buffer.read<uint16_t>();
         update_count = buffer.read<uint16_t>();
+        update_type = buffer.read<uint16_t>();
         data = swganh::ByteBuffer(buffer.data() + buffer.read_position(), data_size);
     }
 };
