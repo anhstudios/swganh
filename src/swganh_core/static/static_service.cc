@@ -162,6 +162,8 @@ void StaticService::Startup()
     std::stringstream ss;
     ss << "CALL sp_GetStaticData();";
 
+	//sofar this loads the tables skills; skills_skill_required and skills_skillmods
+
     auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
     statement->execute(ss.str());
 

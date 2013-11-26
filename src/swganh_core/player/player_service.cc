@@ -66,6 +66,7 @@ void PlayerService::Startup()
         "ObjectReadyEvent",
         [this] (shared_ptr<EventInterface> incoming_event)
     {
+		LOG(error) <<"PlayerService::Startup() :: ObjectReadyEvent";
         auto creature = static_pointer_cast<ValueEvent<shared_ptr<Creature>>>(incoming_event)->Get();
 
         //Reload buffs from last login
@@ -130,7 +131,12 @@ void PlayerService::OnPlayerExit(shared_ptr<swganh::object::Player> player)
         auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(30));
         auto parent = std::static_pointer_cast<swganh::object::Object>(player->GetContainer());
 
-        auto object_controller = std::static_pointer_cast<swganh::object::ObjectController>(parent->GetController());
+		//fatal - we cant relog after logging out
+		//the actual issue is, that Objectcontroller is already removed at this point
+		//so the deadlinetimer never gets called
+		// plus getController() wont get us the ObjectController :(
+        //auto object_controller = std::static_pointer_cast<swganh::object::ObjectController>(parent->GetController());
+		auto object_controller = simulation_service_->GetObjectController(parent->GetObjectId());
         if(object_controller != nullptr)
         {
             deadline_timer->async_wait(boost::bind(&PlayerService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 30, object_controller));
@@ -269,6 +275,7 @@ void PlayerService::RemoveClientTimerHandler_(
     int delay_in_secs,
     shared_ptr<swganh::object::ObjectController> controller)
 {
+	DLOG(info) << "calling PlayerService::RemoveClientTimerHandler_";
     if (controller)
     {
         // destroy if they haven't reconnected
@@ -296,6 +303,8 @@ void PlayerService::RemoveClientTimerHandler_(
 
             StoreAllCalledMounts(creature);
             creature->CleanUpBuffs();
+
+			simulation_service_->StopControllingObject(object_id);
 
             simulation_service_->RemoveObject(object);
 

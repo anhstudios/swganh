@@ -130,6 +130,7 @@ void ObjectFactory::RegisterEventHandlers()
 void ObjectFactory::PersistChangedObjects()
 {
     std::set<shared_ptr<Object>> persisted;
+	std::pair<shared_ptr<Object>,HashString> p1;
     {
         boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
         persisted = move(persisted_objects_);
@@ -151,6 +152,17 @@ void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& inc
     {
         boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
         persisted_objects_.insert(object);
+    }
+}
+
+void ObjectFactory::PersistHandlerQueue(const shared_ptr<swganh::EventInterface>& incoming_event)
+{
+    auto object = static_pointer_cast<ObjectEvent>(incoming_event)->Get();
+	HashString typ = static_pointer_cast<ObjectEvent>(incoming_event)->Type();
+    if (object && object->IsDatabasePersisted())
+    {
+        boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted_objects_queue_.push(make_pair(object,typ));
     }
 }
 

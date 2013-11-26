@@ -9,6 +9,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include <set>
+#include <queue>
 #include <boost/optional.hpp>
 #include <boost/thread/mutex.hpp>
 
@@ -79,10 +80,15 @@ public:
     void PersistAttributes(std::shared_ptr<Object> object, boost::unique_lock<boost::mutex>& lock);
 
     virtual void PersistChangedObjects();
-    void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
+    /*! \brief Persisthandler will receive Events of the dispatcher for persisting Objects asynchronically
+	* There is currently NO way of sorting it to event specific handlers
+	* as every request will be handled by persistObject
+	*/
+	void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
+	void PersistHandlerQueue(const std::shared_ptr<swganh::EventInterface>& incoming_event);
     virtual void RegisterEventHandlers();
 
-    // Fiils in missing data for the object from the client file...
+    // Fills in missing data for the object from the client file...
     void GetClientData(const std::shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock);
 
     void LoadContainedObjects(const std::shared_ptr<Object>& object);
@@ -108,6 +114,7 @@ protected:
     boost::mutex persisted_objects_mutex_;
     swganh::app::SwganhKernel* kernel_;
     std::set<std::shared_ptr<Object>> persisted_objects_;
+	std::queue<std::pair<std::shared_ptr<Object>,HashString>> persisted_objects_queue_;
 };
 
 }

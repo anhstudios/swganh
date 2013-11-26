@@ -131,8 +131,17 @@ public:
         const std::shared_ptr<swganh::object::Object>& object,
         std::shared_ptr<swganh::connection::ConnectionClientInterface> client) = 0;
 
+	/**
+	*	this will remove all subscribers from the Objects subscription list and drop the 
+	*	Controller's (subscription) refcount by one
+	*/
     virtual void StopControllingObject(uint64_t object_id) = 0;
     virtual void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
+
+	/**
+	*	Returns the Object Controller
+	*/
+	virtual std::shared_ptr<swganh::object::ObjectController> GetObjectController(uint64_t object_id) = 0;
 
     template<typename MessageType>
     struct GenericControllerHandler

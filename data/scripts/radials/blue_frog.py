@@ -2,6 +2,8 @@ import swgpy
 from swgpy.object import *
 from swgpy.sui import *
 from swgpy.utility import vector3, quat
+from swgpy.combat import *
+
 import random
 
 class PyRadialMenu(RadialMenu):
@@ -17,6 +19,7 @@ class PyRadialMenu(RadialMenu):
 		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu5, 3, 'Pets Pack'))
 		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu6, 3, 'Droids Pack'))
 		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu7, 3, 'Instrument Pack'))
+		radial_list.append(RadialOptions(1, RadialIdentifier.serverMenu8, 3, 'Ham Options'))
 		return radial_list
 	
 	levels = ('None', 'Light', 'Medium', 'Heavy')
@@ -124,6 +127,54 @@ class PyRadialMenu(RadialMenu):
 		if event_id == 0:
 			self.giveItems(owner, self.structureDeeds[int(results[0])], self.defaultPostProcess)
 		return True
+
+	def hamCallback(self, owner, event_id, results):
+		print('result : ' + "{0} : {1}".format(event_id, results[0]))
+		if event_id == 0:
+			if int(results[0]) == 0:
+				self.displaySUIList(owner, ['Health Wounds', 'heal Health Wounds','Action Wounds', 'heal Action Wounds', 'Mind Wounds', 'heal Mind Wounds'], 'woundCallback')
+			if int(results[0]) == 1:
+				self.displaySUIList(owner, ['Health Damage', 'heal Health Damage', 'Action Damage', 'Mind Damage'], 'damageCallback')
+		return True
+
+	def woundCallback(self, owner, event_id, results):
+		if event_id == 0:
+			combat = self.getKernel().serviceManager().combatService()
+			ham = combat.getHamManager()
+			creature = owner.toCreature()
+			if int(results[0]) == 0:
+				a = ham.applyWound(creature,0,25)
+			if int(results[0]) == 1:
+				ham.removeWound(creature,0,25)
+			if int(results[0]) == 2:
+				ham.applyWound(creature,3,25)
+			if int(results[0]) == 3:
+				ham.removeWound(creature,3,25)
+			if int(results[0]) == 4:
+				ham.applyWound(creature,6,25)
+			if int(results[0]) == 5:
+				ham.removeWound(creature,6,25)
+		return True
+
+	def damageCallback(self, owner, event_id, results):
+		combat = self.getKernel().serviceManager().combatService()
+		ham = combat.getHamManager()
+		creature = owner.toCreature()
+		if event_id == 0:
+			if int(results[0]) == 0:
+				ham.updateCurrentHitpoints(creature, 0, -75)
+			if int(results[0]) == 1:
+				ham.updateCurrentHitpoints(creature, 0, 75)			
+			if int(results[0]) == 2:
+				ham.updateCurrentHitpoints(creature, 3, -75)
+			if int(results[0]) == 3:
+				ham.updateCurrentHitpoints(creature, 3, 75)
+			if int(results[0]) == 4:
+				ham.updateCurrentHitpoints(creature, 6, -75)
+			if int(results[0]) == 5:
+				ham.updateCurrentHitpoints(creature, 6, 75)
+		return True
+
 		
 	def handleRadial(self, owner, target, action):
 		if action == RadialIdentifier.serverMenu1:
@@ -143,6 +194,9 @@ class PyRadialMenu(RadialMenu):
 			self.giveItems(owner, self.droidDeeds, self.defaultPostProcess)
 		elif action == RadialIdentifier.serverMenu7:
 			self.giveItems(owner, self.instruments, self.defaultPostProcess)
+		elif action == RadialIdentifier.serverMenu8:
+			self.displaySUIList(owner, ['Wounds', 'Damage'], 'hamCallback')
+
 				
 	vehicleDeeds = ('object/tangible/deed/vehicle_deed/shared_jetpack_deed.iff',
 					'object/tangible/deed/vehicle_deed/shared_landspeeder_av21_deed.iff',

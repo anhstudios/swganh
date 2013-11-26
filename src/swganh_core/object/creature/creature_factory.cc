@@ -21,7 +21,6 @@
 using namespace std;
 using namespace swganh::database;
 using namespace swganh::object;
-using namespace swganh::object;
 using namespace swganh::simulation;
 
 
@@ -36,7 +35,7 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     auto creature = std::dynamic_pointer_cast<Creature>(object);
     if(!creature)
     {
-        throw InvalidObject("Object requested for loading is not Intangible");
+        throw InvalidObject("Object requested for loading is not a creature");
     }
 
     auto statement = std::unique_ptr<sql::PreparedStatement>
@@ -49,8 +48,10 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     {
         while (result->next())
         {
+			//why the heck would you want to persist these two values ????
             creature->SetOwnerId(result->getUInt64("owner_id"), lock);
-            creature->SetListenToId(result->getUInt64("musician_id"), lock);
+			creature->SetListenToId(result->getUInt64("musician_id"), lock);
+
             creature->SetBankCredits(result->getUInt("bank_credits"), lock);
             creature->SetCashCredits(result->getUInt("cash_credits"), lock);
             creature->SetPosture((Posture)result->getUInt("posture"), lock);
@@ -65,12 +66,16 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetRunSpeed(static_cast<float>(result->getDouble("run_speed")), lock);
             creature->SetSlopeModifierAngle(static_cast<float>(result->getDouble("slope_modifier_angle")), lock);
             creature->SetSlopeModifierPercent(static_cast<float>(result->getDouble("slope_modifier_percent")), lock);
-            creature->SetWalkingSpeed(static_cast<float>(result->getDouble("walking_speed")), lock);
             creature->SetTurnRadius(static_cast<float>(result->getDouble("turn_radius")), lock);
+			creature->SetWalkingSpeed(static_cast<float>(result->getDouble("walking_speed")), lock);
             creature->SetWaterModifierPercent(static_cast<float>(result->getDouble("water_modifier_percent")), lock);
             creature->SetCombatLevel(result->getUInt("combat_level"), lock);
+
+			//why the heck would animation be persisted ?
             creature->SetAnimation(result->getString("animation"), lock);
-            creature->SetMoodAnimation(result->getString("mood_animation"), lock);
+            
+			
+			creature->SetMoodAnimation(result->getString("mood_animation"), lock);
 
             /// @TODO: Find a better place for this.
             if (creature->GetMoodAnimation(lock).compare("none") == 0)
@@ -78,14 +83,28 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
                 creature->SetMoodAnimation("neutral", lock);
             }
 
+			//why persist groupId??????
             creature->SetGroupId(result->getUInt64("group_id"), lock);
-            creature->SetGuildId(result->getUInt("guild_id"), lock);
+            
+			creature->SetGuildId(result->getUInt("guild_id"), lock);
             creature->SetWeaponId(result->getUInt64("weapon_id"), lock);
             creature->SetMoodId(result->getUInt("mood_id"), lock);
-            creature->SetPerformanceId(result->getUInt("performance_id"), lock);
-            creature->SetDisguise(result->getString("disguise_template"), lock);
 
-            creature->SetStatCurrent(HEALTH, result->getUInt("current_health"), lock);
+			//why the heck would performance_id be persisted ?
+            creature->SetPerformanceId(result->getUInt("performance_id"), lock);
+            
+			creature->SetDisguise(result->getString("disguise_template"), lock);
+            creature->SetStatWound(HEALTH, result->getUInt("health_wounds"), lock);
+            creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"), lock);
+            creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"), lock);
+            creature->SetStatWound(ACTION, result->getUInt("action_wounds"), lock);
+            creature->SetStatWound(QUICKNESS, result->getUInt("quickness_wounds"), lock);
+            creature->SetStatWound(STAMINA, result->getUInt("stamina_wounds"), lock);
+            creature->SetStatWound(MIND, result->getUInt("mind_wounds"), lock);
+            creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"), lock);
+            creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"), lock);
+			
+			creature->SetStatCurrent(HEALTH, result->getUInt("current_health"), lock);
             creature->SetStatCurrent(STRENGTH, result->getUInt("current_strength"), lock);
             creature->SetStatCurrent(CONSTITUTION, result->getUInt("current_constitution"), lock);
             creature->SetStatCurrent(ACTION, result->getUInt("current_action"), lock);
@@ -105,25 +124,25 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetStatMax(FOCUS, result->getUInt("max_focus"), lock);
             creature->SetStatMax(WILLPOWER, result->getUInt("max_willpower"), lock);
 
-            creature->SetStatWound(HEALTH, result->getUInt("health_wounds"), lock);
-            creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"), lock);
-            creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"), lock);
-            creature->SetStatWound(ACTION, result->getUInt("action_wounds"), lock);
-            creature->SetStatWound(QUICKNESS, result->getUInt("quickness_wounds"), lock);
-            creature->SetStatWound(STAMINA, result->getUInt("stamina_wounds"), lock);
-            creature->SetStatWound(MIND, result->getUInt("mind_wounds"), lock);
-            creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"), lock);
-            creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"), lock);
+			creature->SetStatEncumberance(HEALTH, result->getUInt("health_encumberance"), lock);
+			creature->SetStatEncumberance(STRENGTH, result->getUInt("strength_encumberance"), lock);
+            creature->SetStatEncumberance(CONSTITUTION, result->getUInt("constitution_encumberance"), lock);
+            creature->SetStatEncumberance(ACTION, result->getUInt("action_encumberance"), lock);
+            creature->SetStatEncumberance(QUICKNESS, result->getUInt("quickness_encumberance"), lock);
+            creature->SetStatEncumberance(STAMINA, result->getUInt("stamina_encumberance"), lock);
+            creature->SetStatEncumberance(MIND, result->getUInt("mind_encumberance"), lock);
+            creature->SetStatEncumberance(FOCUS, result->getUInt("focus_encumberance"), lock);
+            creature->SetStatEncumberance(WILLPOWER, result->getUInt("willpower_encumberance"), lock);
 
-            creature->SetStatBase(HEALTH, result->getUInt("health_wounds"), lock);
-            creature->SetStatBase(STRENGTH, result->getUInt("strength_wounds"), lock);
-            creature->SetStatBase(CONSTITUTION, result->getUInt("constitution_wounds"), lock);
-            creature->SetStatBase(ACTION, result->getUInt("action_wounds"), lock);
-            creature->SetStatBase(QUICKNESS, result->getUInt("quickness_wounds"), lock);
-            creature->SetStatBase(STAMINA, result->getUInt("stamina_wounds"), lock);
-            creature->SetStatBase(MIND, result->getUInt("mind_wounds"), lock);
-            creature->SetStatBase(FOCUS, result->getUInt("focus_wounds"), lock);
-            creature->SetStatBase(WILLPOWER, result->getUInt("willpower_wounds"), lock);
+            creature->SetStatBase(HEALTH, result->getUInt("current_health"), lock);
+            creature->SetStatBase(STRENGTH, result->getUInt("current_strength"), lock);
+            creature->SetStatBase(CONSTITUTION, result->getUInt("current_constitution"), lock);
+            creature->SetStatBase(ACTION, result->getUInt("current_action"), lock);
+            creature->SetStatBase(QUICKNESS, result->getUInt("current_quickness"), lock);
+            creature->SetStatBase(STAMINA, result->getUInt("current_stamina"), lock);
+            creature->SetStatBase(MIND, result->getUInt("current_mind"), lock);
+            creature->SetStatBase(FOCUS, result->getUInt("current_focus"), lock);
+            creature->SetStatBase(WILLPOWER, result->getUInt("current_willpower"), lock);
         }
     }
     while(statement->getMoreResults());
@@ -139,8 +158,10 @@ void CreatureFactory::RegisterEventHandlers()
     GetEventDispatcher()->Subscribe("Creature::Bank", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::Cash", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::StatBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    GetEventDispatcher()->Subscribe("Creature::Skill", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    GetEventDispatcher()->Subscribe("Creature::Posture", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    
+	GetEventDispatcher()->Subscribe("Creature::Skill", std::bind(&CreatureFactory::PersistHandlerQueue, this, std::placeholders::_1));
+    
+	GetEventDispatcher()->Subscribe("Creature::Posture", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::OwnerId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::Scale", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::BattleFatigue", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
@@ -176,12 +197,22 @@ void CreatureFactory::RegisterEventHandlers()
     GetEventDispatcher()->Subscribe("Creature::Stationary", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::PvPStatus", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
 }
+
+
+
+//ok what exactly do you want to achieve here ???
+//you get the iterator for a persistent object (out of a set no less (for what reason?))
+//with a trigger that gets lost after the object has been added
+//so we dont even know what we want to persist ...
+
 void CreatureFactory::PersistChangedObjects()
 {
+	
     std::set<shared_ptr<Object>> persisted;
     {
         boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
         persisted = move(persisted_objects_);
+		
     }
 for (auto& object : persisted)
     {
@@ -191,16 +222,85 @@ for (auto& object : persisted)
             PersistObject(object, lock);
         }
     }
+
+	//the advantage of the set is actualle that the respective Object can be in there only once
+	//without us having to actively check if its in there
+	//the queue on the other hand has much less overhead is faster (in every respect as the amount of data 
+	//will usually be small and we dont need log n as guaranteed time)
+	//but we might end up persisiting one object several times without the actual need
+	//I dont really think the issue warrants a dirty flag just yet or writing a sort handler for a set pair
+	std::pair<shared_ptr<Object>,HashString> p1;
+	while(!persisted_objects_queue_.empty())
+    {
+		p1 = persisted_objects_queue_.front();
+		persisted_objects_queue_.pop();
+		auto object = p1.first;
+        auto lock = object->AcquireLock();
+        if(object->IsDatabasePersisted(lock))
+        {
+			if (p1.second.ident_string() == "Creature::Skill")
+			{
+				PersistSkills(object,lock);
+			}
+        }
+    }
+
 }
+
+uint32_t CreatureFactory::PersistSkills(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
+{
+	uint32_t counter = 0;
+
+	auto conn		= GetDatabaseManager()->getConnection("galaxy");
+	auto creature	= static_pointer_cast<Creature>(object);
+    auto skills		= creature->GetSkillsSyncQueue(lock);
+
+        while(skills.size())
+        {
+            auto queue_item = skills.front();
+
+            switch(queue_item.first)
+            {
+            case 0: // Remove
+            {
+                auto statement = conn->prepareStatement("CALL sp_RemoveSkill(?, ?);");
+                statement->setUInt64(1, creature->GetObjectId(lock));
+				statement->setString(2, queue_item.second);
+                auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+                break;
+            }
+
+            case 1: // Add
+            {
+                auto statement = conn->prepareStatement("CALL sp_PersistSkill(?, ?);");
+                statement->setUInt64(1, creature->GetObjectId(lock));
+                statement->setString(2, queue_item.second);
+                auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+                break;
+            }
+            }
+
+            skills.pop();
+        }
+
+	
+	return counter;
+}
+
 uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object, boost::unique_lock<boost::mutex>& lock, bool persist_inherited)
 {
     uint32_t counter = 1;
 
     TangibleFactory::PersistObject(object, lock, persist_inherited);
 
+
+
     // Now for the biggy
     try
     {
+
+		//auto skill = static_pointer_cast<reature>(object);
+
         auto conn = GetDatabaseManager()->getConnection("galaxy");
         // 65 of these
         string sql = "CALL sp_PersistCreature(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
@@ -279,6 +379,9 @@ uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object, boost:
         int updated = statement->executeUpdate();
 
         LOG(warning) << "Updated " << updated << " rows in sp_PersistCreature with object id = " << object->GetObjectId(lock);
+
+		//save the skills to the db
+		//PersistSkills(creature,lock);
     }
     catch(sql::SQLException &e)
     {
@@ -311,7 +414,7 @@ void CreatureFactory::LoadSkills_(const std::shared_ptr<sql::Connection>& connec
     {
         while (result->next())
         {
-            creature->AddSkill(result->getString("name"), lock);
+            creature->AddSkill(result->getString("name"), lock, false);
         }
     }
     while(statement->getMoreResults());

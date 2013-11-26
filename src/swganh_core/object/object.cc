@@ -5,6 +5,7 @@
 
 #include <glm/gtx/transform2.hpp>
 #include <sstream>
+#include "vector"
 
 #include "object_events.h"
 
@@ -399,6 +400,69 @@ void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_p
     }
 }
 
+
+void Object::__InternalReloadPlayer()
+{
+	//iterate through all aware Objects and create them just for us
+	auto find_itr	= aware_objects_.begin();
+	auto we			= this->GetController();
+
+	//this crashes the client - presumably because the order is wrong?
+	//fixit by sending yalp creo and slot objects manually
+	//and filter them out when iterating through the awares
+
+	std::set<uint64_t> v;
+	
+	//send the creature Object first
+	this->SendCreateByCrc(this->GetController());
+    this->CreateBaselines(this->GetController());
+	v.insert(this->GetObjectId());
+
+	bool done = false;
+	bool iterationSuccess = false;
+	
+	//now iterate through our awares and start sending the children of our creature Container
+	while (!done)	{
+		iterationSuccess = false;
+		find_itr	= aware_objects_.begin();
+		while (find_itr != aware_objects_.end())	{
+			auto observed = find_itr->get();
+			auto container = observed->GetContainer() ;
+			DLOG(error) << "Checking Container : " << container->GetObjectId();
+			if(container && (v.find(container->GetObjectId()) != v.end() ))	{
+				DLOG(error) << "Container : " << container->GetObjectId() << "has already been created";
+				if((v.find(container->GetObjectId()) != v.end()) && (v.find(observed->GetObjectId()) == v.end()) )	{
+					iterationSuccess = true;
+					observed->SendCreateByCrc(this->GetController());
+					observed->CreateBaselines(this->GetController());
+
+					v.insert(observed->GetObjectId());
+				}
+			}
+			find_itr ++;
+		}
+			
+		if(v.size() == aware_objects_.size())	{
+			DLOG(error) << "everything has been send : ";
+			done = true;
+		}	else if(!iterationSuccess)		
+		{
+			while (find_itr != aware_objects_.end())	{
+				auto observed = find_itr->get();
+				if(v.find(observed->GetObjectId()) == v.end() )	{
+					
+					observed->SendCreateByCrc(this->GetController());
+					observed->CreateBaselines(this->GetController());
+					v.insert(observed->GetObjectId());
+					find_itr ++;
+				}
+			}
+			done = true;
+		}
+
+	}
+	DLOG(error) << "everything has been send : ";
+}
 
 void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object, bool reverse_still_valid)
 {
@@ -983,7 +1047,8 @@ void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface
     scene_object.position = GetPosition(lock);
     scene_object.orientation = GetOrientation(lock);
     scene_object.byte_flag = 0;
-
+	
+	
     observer->Notify(&scene_object);
 
     SendUpdateContainmentMessage(observer, lock, true);

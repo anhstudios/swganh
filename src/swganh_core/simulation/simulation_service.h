@@ -75,6 +75,11 @@ public:
     void StopControllingObject(uint64_t object_id);
     void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object);
 
+	/**
+	*	Returns the ObjectController of the Object with the given ID
+	*/
+	std::shared_ptr<swganh::object::ObjectController> GetObjectController(uint64_t object_id);
+
     void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler);
 
     void UnregisterControllerHandler(uint32_t handler_id);

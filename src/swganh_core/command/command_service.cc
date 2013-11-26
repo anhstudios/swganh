@@ -213,8 +213,11 @@ void CommandService::SubscribeObjectReadyEvent(swganh::EventDispatcher* dispatch
                         "ObjectReadyEvent",
                         [this] (std::shared_ptr<swganh::EventInterface> incoming_event)
     {
+		
         const auto& object = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
 
+		
+		//this WILL create a new CommandQueue, even if the old still exists
         command_queue_manager_impl_->AddQueue(
             object->GetObjectId(),
             kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::CommandQueue"));

@@ -126,7 +126,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
             LOG(info) << "Created Connection Service Session for " << endpoint.address().to_string();
         }
     }
-
+	
     return session;
 }
 
@@ -139,14 +139,17 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session)
 
     auto connection_client = static_pointer_cast<ConnectionClient>(session);
 
+	//get the ObserverInterface
     if (auto controller = connection_client->GetController())
     {
-        simulation_service_->StopControllingObject(controller->GetId());
+		//we might not want to do this at this point - we still might log back in
+		//the controller is needed to find the
+        //simulation_service_->StopControllingObject(controller->GetId());
 
         kernel_->GetEventDispatcher()->Dispatch(std::make_shared<ValueEvent<uint64_t>>("Connection::ControllerConnectionClosed", controller->GetId()));
     }
 
-    LOG(info) << "Removing disconnected client";
+    LOG(info) << "Removing disconnected client : " << connection_client->GetPlayerId();
     session_provider_->EndGameSession(connection_client->GetPlayerId());
 
 

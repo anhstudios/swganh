@@ -39,7 +39,11 @@ void CommandQueueManager::AddQueue(uint64_t queue_owner_id, const std::shared_pt
     auto find_iter = queue_map_.find(queue_owner_id);
     if (find_iter != queue_map_.end())
     {
-        throw std::runtime_error("Queue already exists for user");
+		//we get here when the player relogs before the playerObject could get cleaned up
+        //throw std::runtime_error("CommandQueueManager::AddQueue : Queue already exists for user");
+		
+		//remove the old Queue
+		queue_map_.erase(queue_owner_id);
     }
 
     queue_map_.insert(std::make_pair(queue_owner_id, command_queue));

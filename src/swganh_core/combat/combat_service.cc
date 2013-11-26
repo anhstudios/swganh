@@ -36,6 +36,8 @@
 #include "swganh_core/static/static_service.h"
 #include "swganh_core/static/skill_manager.h"
 
+//#include "swganh_core/combat/ham_manager.h"
+
 #include "swganh_core/messages/controllers/combat_action_message.h"
 #include "swganh_core/messages/controllers/combat_spam_message.h"
 #include "swganh_core/messages/controllers/show_fly_text.h"
@@ -63,6 +65,7 @@ CombatService::CombatService(SwganhKernel* kernel)
     , buff_manager_(kernel)
     , active_(kernel->GetCpuThreadPool())
     , kernel_(kernel)
+	, ham_manager_(kernel)
 {
     SetServiceDescription(ServiceDescription(
                               "CombatService",
@@ -93,6 +96,7 @@ void CombatService::Initialize()
 void CombatService::Startup()
 {
     buff_manager_.Start();
+	ham_manager_.Start();
 }
 
 void CombatService::SendCombatAction(BaseCombatCommand* command)
@@ -542,6 +546,9 @@ bool CombatService::ApplySpecialCost(
                 return false;
             }
         }
+
+		//todo - use the ham manager
+
         if (health_cost > 0 && attacker->GetStatCurrent(StatIndex::HEALTH) <= health_cost)
             return false;
         if (action_cost > 0 && attacker->GetStatCurrent(StatIndex::ACTION) <= action_cost)
@@ -550,11 +557,11 @@ bool CombatService::ApplySpecialCost(
             return false;
 
         if (health_cost > 0)
-            attacker->DeductStatCurrent(StatIndex::HEALTH, health_cost);
+            ham_manager_.ApplyHamCost(attacker,StatIndex::HEALTH, health_cost);
         if (action_cost > 0)
-            attacker->DeductStatCurrent(StatIndex::ACTION, action_cost);
+            return ham_manager_.ApplyHamCost(attacker,StatIndex::ACTION, action_cost);
         if (mind_cost > 0)
-            attacker->DeductStatCurrent(StatIndex::MIND, mind_cost);
+            return ham_manager_.ApplyHamCost(attacker,StatIndex::MIND, mind_cost);
 
         // TODO: Weapon decay
     }
@@ -607,6 +614,8 @@ int CombatService::ApplyDamage(
     return 0;
 }
 
+//grrml - do you really believe that damage gets solely aplied in combat ?
+//wound and bf calculation are arbitrary
 int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Creature>& defender,
@@ -620,7 +629,9 @@ int CombatService::ApplyDamage(
 
     damage = generator_.Rand(1, 100);
 
-    float wounds_ratio = 0; /*attacker->GetWeapon()->GetWoundsRatio();*/
+    float wounds_ratio = 0; 
+	//attacker->GetWeapon()->GetWoundsRatio();
+	
     float health_damage = 0.0f, action_damage = 0.0f, mind_damage = 0.0f;
     float damage_multiplier = combat_data->damage_multiplier == 0 ? 1.0f : combat_data->damage_multiplier;
     bool wounded = false;
@@ -630,57 +641,47 @@ int CombatService::ApplyDamage(
         return 0;
 
 
+	int random = generator_.Rand(1,100);
+	int base_Wound_Chance = 5; //+= weapons wound ratio
+
+	if (random <= base_Wound_Chance)
+    {
+        //defender->AddStatWound(StatIndex::HEALTH, generator_.Rand(1,2));
+		//add one wound to all three main stats
+		ham_manager_.ApplyWound(defender,swganh::object::HEALTH,1);;//generator_.Rand(1,2));
+		ham_manager_.ApplyWound(defender,swganh::object::ACTION,1);;//generator_.Rand(1,2));
+		ham_manager_.ApplyWound(defender,swganh::object::MIND,1);;//generator_.Rand(1,2));RCYTHR!!!!!!!!!!!!!
+    
+    }
+
+
     if (pool == HEALTH)
     {
         //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
         health_damage = damage * damage_multiplier;
-        if (defender->GetStatCurrent(StatIndex::HEALTH) - health_damage <= 0)
-        {
-            defender->SetStatCurrent(StatIndex::HEALTH, 0);
-            SetIncapacitated(attacker, defender);
-        }
-        else
-            defender->DeductStatCurrent(StatIndex::HEALTH, (int)(health_damage));
-        // Will this reduce this pool <= 0 ?
-        if (!wounded && health_damage < wounds_ratio)
-        {
-            defender->AddStatWound(StatIndex::HEALTH, generator_.Rand(1,2));
-            wounded = true;
-        }
+        
+		if (ham_manager_.UpdateCurrentHitpoints(defender,swganh::object::HEALTH,(uint32_t)health_damage) == 0)	{
+			SetIncapacitated(attacker, defender);
+		}
+        
     }
     if (pool == ACTION)
     {
-        //action_damage = GetArmorReduction(attacker, defender, damage, ACTION) * damage_multiplier;
+        //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
         action_damage = damage * damage_multiplier;
-        if (defender->GetStatCurrent(StatIndex::ACTION) - action_damage <= 0)
-        {
-            defender->SetStatCurrent(StatIndex::ACTION, 0);
-            SetIncapacitated(attacker, defender);
-        }
-        else
-            defender->DeductStatCurrent(StatIndex::ACTION, (int)(action_damage));
-        if (!wounded && action_damage < wounds_ratio)
-        {
-            defender->AddStatWound(StatIndex::ACTION, generator_.Rand(1,2));
-            wounded = true;
-        }
+        
+		if (ham_manager_.UpdateCurrentHitpoints(defender,swganh::object::ACTION,(uint32_t)action_damage) == 0)	{
+			SetIncapacitated(attacker, defender);
+		}
     }
     if (pool == MIND)
     {
-        //mind_damage = GetArmorReduction(attacker, defender, damage, MIND) * damage_multiplier;
+        //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
         mind_damage = damage * damage_multiplier;
-        if (defender->GetStatCurrent(StatIndex::MIND) - mind_damage <= 0)
-        {
-            defender->SetStatCurrent(StatIndex::MIND, 0);
-            SetIncapacitated(attacker, defender);
-        }
-        else
-            defender->DeductStatCurrent(StatIndex::MIND, (int)(mind_damage));
-        if (!wounded && mind_damage < wounds_ratio)
-        {
-            defender->AddStatWound(StatIndex::MIND, generator_.Rand(1,2));
-            wounded = true;
-        }
+        
+		if (ham_manager_.UpdateCurrentHitpoints(defender,swganh::object::MIND,(uint32_t)mind_damage) == 0)	{
+			SetIncapacitated(attacker, defender);
+		}
     }
 
     if (wounded)

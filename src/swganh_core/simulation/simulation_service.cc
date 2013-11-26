@@ -27,6 +27,7 @@
 #include "swganh_core/connection/connection_service_interface.h"
 
 #include "swganh_core/messages/select_character.h"
+#include "swganh_core/messages/scene_create_object_by_crc.h"
 
 #include "swganh_core/player/player_service_interface.h"
 
@@ -341,11 +342,25 @@ public:
             return;
         }
 
+		//remove our controller - think of it as the link to our client
         object->ClearController();
 
+		// ok were removing the Object controller here - 
         LOG(warning) << "Removing controlled object";
         controlled_objects_.unsafe_erase(find_iter);
     }
+
+	std::shared_ptr<swganh::object::ObjectController> GetObjectController(uint64_t object_id) 
+	{
+		auto find_iter = controlled_objects_.find(object_id);
+
+        if (find_iter != controlled_objects_.end())
+        {
+			return(find_iter->second);
+        }
+
+		return nullptr;
+	}
 
     void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler)
     {
@@ -393,10 +408,30 @@ public:
     void HandleSelectCharacter(
         const shared_ptr<ConnectionClientInterface>& client,
         SelectCharacter* message)
-    {
-        auto object = LoadObjectById(message->character_id, Creature::type);
+	{
 
-        auto event_dispatcher = kernel_->GetEventDispatcher();
+		auto event_dispatcher = kernel_->GetEventDispatcher();
+
+		//this loads the creature Object!!!!
+		//the player Object will automatically be loaded as equipped Object through the factory
+
+		//as the Object is already loaded the Simulation server will not create a new Object via 
+		//factory but return a pointer to the existing Object
+		//this causes issues as the client (of the reconnecting player) wont get new Baselines
+
+		//check if we are already loaded - this is the case if we relog for example after a client crash
+		bool reload = false;
+		
+		auto object = this->GetObjectById(message->character_id);
+		if(object)	{
+			reload = true;
+
+		}	else
+		{
+			object = LoadObjectById(message->character_id, Creature::type);
+		}
+
+        
         auto player = GetEquipmentService()->GetEquippedObject<Player>(object, "ghost");
 
         //Should be done on this thread to avoid issues with interleaving
@@ -423,6 +458,10 @@ public:
                            [=](uint16_t sequence)
         {
             StartControllingObject(object, client);
+
+			if(reload)	{
+				object->InternalReloadPlayer();
+			}
 
             if(object->GetContainer() == nullptr)
             {
@@ -617,6 +656,11 @@ shared_ptr<ObserverInterface> SimulationService::StartControllingObject(
 void SimulationService::StopControllingObject(const shared_ptr<Object>& object)
 {
     impl_->StopControllingObject(object);
+}
+
+std::shared_ptr<swganh::object::ObjectController> SimulationService::GetObjectController(uint64_t object_id) 
+{
+	return impl_->GetObjectController(object_id);
 }
 
 void SimulationService::StopControllingObject(uint64_t object_id)

@@ -207,9 +207,12 @@ void Creature::AddSkill(std::string skill)
     AddSkill(skill, lock);
 }
 
-void Creature::AddSkill(std::string skill, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddSkill(std::string skill, boost::unique_lock<boost::mutex>& lock, bool persist)
 {
     skills_.add(skill);
+	if(persist){
+		skills_sync_queue_.push(std::pair<uint8_t, std::string>(1, skill));
+	}
     DISPATCH(Creature, Skill);
 }
 
@@ -222,6 +225,7 @@ void Creature::RemoveSkill(std::string skill)
 void Creature::RemoveSkill(std::string skill, boost::unique_lock<boost::mutex>& lock)
 {
     skills_.remove(skill);
+	skills_sync_queue_.push(std::pair<uint8_t, std::string>(0, skill));
     DISPATCH(Creature, Skill);
 }
 
@@ -1434,8 +1438,9 @@ void Creature::SetStatMax(uint16_t stat_index, int32_t value)
 
 void Creature::SetStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
 {
-    stat_max_list_.update(stat_index, value);
-    DISPATCH(Creature, StatMax);
+    if(stat_max_list_.update(stat_index, value)){
+		DISPATCH(Creature, StatMax);
+	}
 }
 
 void Creature::AddStatMax(uint16_t stat_index, int32_t value)
@@ -1938,6 +1943,17 @@ void Creature::SerializeSkills(swganh::messages::BaseSwgMessage* message)
 void Creature::SerializeSkills(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
 {
     skills_.Serialize(message);
+}
+
+std::queue<std::pair<uint8_t, std::string>> Creature::GetSkillsSyncQueue()
+{
+    auto lock = AcquireLock();
+    return GetSkillsSyncQueue(lock);
+}
+
+std::queue<std::pair<uint8_t, std::string>> Creature::GetSkillsSyncQueue(boost::unique_lock<boost::mutex>& lock)
+{
+    return skills_sync_queue_;
 }
 
 void Creature::SerializeStatWounds(swganh::messages::BaseSwgMessage* message)

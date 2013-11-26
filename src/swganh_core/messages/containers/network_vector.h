@@ -94,10 +94,17 @@ void update(iterator itr)
     update(itr - data_.begin());
 }
 
-void update(const uint16_t index, const T& new_value)
+//update updates the given índex with a new value
+//it returns true if the value was changed(different)
+//otherwise NO UPDATE MUST BE SENT, else the client will desynchronize
+bool  update(const uint16_t index, const T& new_value)
 {
+	if(data_[index] == new_value)	{
+		return false;
+	}
     data_[index] = new_value;
     update(index);
+	return true;
 }
 
 void reset(const std::vector<T>& other, bool update=true)

@@ -57,6 +57,12 @@ public:
      */
     SkillModsMap GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
 
+	/*
+     * @brief Drops a skill	
+     * updates the relevant Skillmods afterwards
+     */
+	void DropSkill(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_name);
+
 private:
     void _loadSkills(std::unique_ptr<sql::ResultSet> results);
     void _loadSkillPrereqs(std::unique_ptr<sql::ResultSet> results);

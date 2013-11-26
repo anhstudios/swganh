@@ -29,6 +29,7 @@ using ::tbb::concurrent_unordered_map;
 
 #include "swganh_core/combat/combat_service_interface.h"
 #include "swganh_core/combat/buff_manager.h"
+#include "swganh_core/combat/ham_manager.h"
 
 #include "swganh/random_generator.h"
 #include "swganh/service/service_interface.h"
@@ -37,8 +38,12 @@ using ::tbb::concurrent_unordered_map;
 #include "swganh_core/command/command_properties.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
+
+
+
 namespace swganh
 {
+	
 namespace statics
 {
 class StaticServiceInterface;
@@ -151,12 +156,23 @@ public:
 
     void Initialize();
     void Startup();
+	/**
+	*	returns a pointer to the Ham Manager
+	*   for Python to enjoy
+	*/
+	HamInterface* GetHamManager(){
+		return &ham_manager_;
+	}
+
 
     /**
     * Executes a combat action
     * @param command the command of the combat action to execute
     */
     void SendCombatAction(swganh::command::BaseCombatCommand* command);
+
+	void SayHi(){std::cout << "hi :)" << std::endl;}
+
 
 private:
     typedef Concurrency::concurrent_unordered_map<uint32_t, CombatHandler> HandlerMap;
@@ -202,6 +218,7 @@ private:
     swganh::RandomGenerator generator_;
 
     swganh::combat::BuffManager buff_manager_;
+	swganh::combat::HamManager ham_manager_;
 
     swganh::ActiveObject active_;
     swganh::app::SwganhKernel* kernel_;

@@ -55,6 +55,10 @@ public:
     void AddAwareObject(std::shared_ptr<swganh::object::Object> observer);
     virtual void __InternalAddAwareObject(std::shared_ptr<swganh::object::Object> observer, bool reverse_still_valid) {};
 
+	//Call to log a Player bag in
+	void InternalReloadPlayer();
+    virtual void __InternalReloadPlayer() {};
+
     //Call to View
     void ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
     virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr) = 0;
