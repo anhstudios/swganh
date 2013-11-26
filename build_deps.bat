@@ -36,7 +36,7 @@ set "PROJECT_BASE=%~dp0"
 set "PROJECT_DRIVE=%~d0"
 set "BUILD_DIR=%PROJECT_BASE%build\deps\"
 set "VENDOR_DIR=%PROJECT_BASE%vendor\"
-set MSVC_VERSION=12
+set MSVC_VERSION=11
 set BOOST_VERSION=1.54.0
 set BOOST_LOG_REVISION=737
 set TURTLE_VERSION=1.2.0
@@ -130,6 +130,8 @@ call where git /Q | findstr /c:"git.exe" >nul && (
     echo ***** Git required and not found in system PATH *****
     exit /b 1
 )
+echo"!VS%MSVC_VERSION%0COMNTOOLS!"
+echo !VS%MSVC_VERSION%0COMNTOOLS!
 
 if not exist "!VS%MSVC_VERSION%0COMNTOOLS!" (
     echo ***** Microsoft Visual Studio %MSVC_VERSION% required *****
