@@ -40,6 +40,17 @@ public:
     void SetCell(uint32_t cell_number);
     void SetCell(uint32_t cell_number, boost::unique_lock<boost::mutex>& lock);
 
+	virtual void CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterface> observer);
+
+	/**
+     * @brief Sends the create by crc message to the observer of 'this' object
+	 * Cells currently have their own as they dont get created through the abstraction in Object
+	 * as special rules apply
+     */
+    
+	virtual void SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer);
+    virtual void SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock);
+
 private:
     typedef swganh::ValueEvent<std::shared_ptr<Cell>> CellEvent;
 

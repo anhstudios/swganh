@@ -675,6 +675,12 @@ enum Type :
     bool IsCollidable(void) const;
     bool IsCollidable(boost::unique_lock<boost::mutex>& lock) const;
 
+	void SetIsInTre(bool inTre);
+	void SetIsInTre(bool inTre, boost::unique_lock<boost::mutex>& lock);
+
+	bool IsInTre(void) const;
+    bool IsInTre(boost::unique_lock<boost::mutex>& lock) const;
+
     boost::unique_lock<boost::mutex> AcquireLock() const;
     boost::unique_lock<boost::mutex> AcquireLock(boost::defer_lock_t t) const;
     boost::unique_lock<boost::mutex> AcquireLock(boost::try_to_lock_t t) const;
@@ -712,6 +718,7 @@ private:
     bool is_dirty_;
     bool database_persisted_;
     bool in_snapshot_;
+	bool is_in_tre_;
 
     std::set<std::string> flags_;
 

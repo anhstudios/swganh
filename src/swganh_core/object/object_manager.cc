@@ -204,7 +204,14 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
 void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 {
     boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-    object_map_.erase(object_map_.find(object->GetObjectId()));
+	auto itr = object_map_.find(object->GetObjectId());
+	if(itr != object_map_.end())	{
+		object_map_.erase(itr);
+	}	else
+	{
+		LOG(error) << "cant find Object : " << object->GetObjectId() << "for eradication";
+	}
+    
 }
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)

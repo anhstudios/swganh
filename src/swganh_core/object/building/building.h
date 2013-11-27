@@ -26,6 +26,16 @@ public:
     uint32_t GetType() const;
     const static uint32_t type = 0x4255494f;
 
+	virtual void CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterface> observer);
+
+	/**
+     * @brief Sends the create by crc message to the observer of 'this' object
+	 * buildings currently have their own as special rules apply
+     */
+    
+	virtual void SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer);
+    virtual void SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer, boost::unique_lock<boost::mutex>& lock);
+
 private:
 
 };

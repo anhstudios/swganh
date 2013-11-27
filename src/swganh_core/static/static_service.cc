@@ -204,6 +204,7 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
         object->SetSceneId(scene_id);
         object->SetInSnapshot(true);
         object->SetDatabasePersisted(false);
+		object->SetIsInTre(true);
 
         //Put it into the scene
         simulation_service->AddObjectToScene(object, scene_name);
@@ -225,6 +226,7 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
         object->SetSceneId(scene_id);
         object->SetInSnapshot(true);
         object->SetDatabasePersisted(false);
+		object->SetIsInTre(true);
 
         auto parent = simulation_service->GetObjectById(result->getInt64(2));
         if(parent != nullptr)
@@ -257,6 +259,7 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
         if(object == nullptr)
             continue;
 
+		object->SetIsInTre(true);
         object->SetOrientation(glm::quat(
                                    static_cast<float>(result->getDouble(6)),
                                    static_cast<float>(result->getDouble(3)),
@@ -345,7 +348,7 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 
         if(object == nullptr)
             continue;
-
+		object->SetIsInTre(true);
         object->SetOrientation(glm::quat(
                                    static_cast<float>(result->getDouble(7)),
                                    static_cast<float>(result->getDouble(4)),

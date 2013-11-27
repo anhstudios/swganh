@@ -178,6 +178,8 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, boost::u
         auto container = object->GetContainer(lock);
         if (container != nullptr)
         {
+			//wtf ???
+
             prepared_statement->setUInt(counter++, object->GetSceneId(lock));
 
             //We need to make sure we only have one object locked a time.
@@ -187,6 +189,9 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, boost::u
         }
         else
         {
+			//ever wondered what happens if the object is saved while the character is being deleted?
+			//I had several inventories and some items with owner ID zero in the db
+			//and Im not 100% sure what causes this
             prepared_statement->setUInt(counter++, object->GetSceneId(lock));
             prepared_statement->setUInt64(counter++, 0);
         }

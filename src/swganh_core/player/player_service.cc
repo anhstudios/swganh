@@ -131,11 +131,10 @@ void PlayerService::OnPlayerExit(shared_ptr<swganh::object::Player> player)
         auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetCpuThreadPool(), boost::posix_time::seconds(30));
         auto parent = std::static_pointer_cast<swganh::object::Object>(player->GetContainer());
 
-		//fatal - we cant relog after logging out
-		//the actual issue is, that Objectcontroller is already removed at this point
-		//so the deadlinetimer never gets called
-		// plus getController() wont get us the ObjectController :(
-        //auto object_controller = std::static_pointer_cast<swganh::object::ObjectController>(parent->GetController());
+		kernel_->GetEventDispatcher()->Dispatch(
+                make_shared<ValueEvent<shared_ptr<swganh::object::Object>>>("ObjectRemovedEvent", parent));
+
+		
 		auto object_controller = simulation_service_->GetObjectController(parent->GetObjectId());
         if(object_controller != nullptr)
         {
@@ -275,7 +274,6 @@ void PlayerService::RemoveClientTimerHandler_(
     int delay_in_secs,
     shared_ptr<swganh::object::ObjectController> controller)
 {
-	DLOG(info) << "calling PlayerService::RemoveClientTimerHandler_";
     if (controller)
     {
         // destroy if they haven't reconnected
@@ -308,8 +306,6 @@ void PlayerService::RemoveClientTimerHandler_(
 
             simulation_service_->RemoveObject(object);
 
-            kernel_->GetEventDispatcher()->Dispatch(
-                make_shared<ValueEvent<shared_ptr<swganh::object::Object>>>("ObjectRemovedEvent", object));
         }
     }
 }

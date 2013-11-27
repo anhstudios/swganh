@@ -44,7 +44,7 @@ void PlayerFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
     auto player = std::dynamic_pointer_cast<Player>(object);
     if(!player)
     {
-        throw InvalidObject("Object requested for loading is not Intangible");
+        throw InvalidObject("Object requested for loading is not a player");
     }
 
     auto statement = std::unique_ptr<sql::PreparedStatement>
@@ -210,9 +210,10 @@ void PlayerFactory::PersistXP_(const shared_ptr<Player>& player, boost::unique_l
         auto xp = player->GetXp(lock);
         for(auto& xpData : xp)
         {
-            auto statement = conn->prepareStatement("CALL sp_UpdateExperience(?,?);");
-            statement->setString(1,xpData.first);
-            statement->setUInt(2,xpData.second.value);
+            auto statement = conn->prepareStatement("CALL sp_UpdateExperience(?,?,?);");
+            statement->setUInt64(1, player->GetObjectId(lock));
+			statement->setString(2,xpData.first);
+            statement->setUInt(3,xpData.second.value);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
         };
     }
@@ -628,7 +629,7 @@ void PlayerFactory::LoadXP_(const std::shared_ptr<sql::Connection>& connection, 
     {
         while (result->next())
         {
-            player->AddExperience(result->getString("name"), result->getUInt("value"), lock);
+            player->AddExperience(result->getString("label"), result->getUInt("value"), lock);
         }
     }
     while(statement->getMoreResults());

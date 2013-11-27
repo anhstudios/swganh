@@ -50,6 +50,8 @@ Object::Object()
     , collidable_(false)
     , controller_(nullptr)
     , event_dispatcher_(nullptr)
+	, is_in_tre_(false)
+	, is_dirty_(false)
 {
 }
 
@@ -407,9 +409,12 @@ void Object::__InternalReloadPlayer()
 	auto find_itr	= aware_objects_.begin();
 	auto we			= this->GetController();
 
-	//this crashes the client - presumably because the order is wrong?
-	//fixit by sending yalp creo and slot objects manually
-	//and filter them out when iterating through the awares
+	//in order to be able to achieve this without crashing the client
+	//we need to adhere to a certain order where our Player is concerned
+
+	//first creature Object
+	//second contained Objects like inventory etc
+	//third their content - containers first - content afterwards
 
 	std::set<uint64_t> v;
 	
@@ -418,21 +423,32 @@ void Object::__InternalReloadPlayer()
     this->CreateBaselines(this->GetController());
 	v.insert(this->GetObjectId());
 
+	//our parentId second so all the npcs and other players get created
+	auto container = this->GetContainer();
+	v.insert(container->GetObjectId());
+
 	bool done = false;
 	bool iterationSuccess = false;
 	
 	//now iterate through our awares and start sending the children of our creature Container
+	//and of the main scene
 	while (!done)	{
 		iterationSuccess = false;
 		find_itr	= aware_objects_.begin();
 		while (find_itr != aware_objects_.end())	{
 			auto observed = find_itr->get();
 			auto container = observed->GetContainer() ;
-			DLOG(error) << "Checking Container : " << container->GetObjectId();
+			
+			//no houses no cells for now as there applay special rules and at this point its the tre structures anyway
+			if(observed->IsInTre())	{
+				v.insert(observed->GetObjectId());
+			}
+			
 			if(container && (v.find(container->GetObjectId()) != v.end() ))	{
-				DLOG(error) << "Container : " << container->GetObjectId() << "has already been created";
-				if((v.find(container->GetObjectId()) != v.end()) && (v.find(observed->GetObjectId()) == v.end()) )	{
+				
+				if(v.find(observed->GetObjectId()) == v.end() )	{
 					iterationSuccess = true;
+					LOG(error) << " create : " << observed->GetTemplate();
 					observed->SendCreateByCrc(this->GetController());
 					observed->CreateBaselines(this->GetController());
 
@@ -443,10 +459,10 @@ void Object::__InternalReloadPlayer()
 		}
 			
 		if(v.size() == aware_objects_.size())	{
-			DLOG(error) << "everything has been send : ";
 			done = true;
 		}	else if(!iterationSuccess)		
 		{
+			find_itr	= aware_objects_.begin();
 			while (find_itr != aware_objects_.end())	{
 				auto observed = find_itr->get();
 				if(v.find(observed->GetObjectId()) == v.end() )	{
@@ -1557,6 +1573,31 @@ bool Object::IsCollidable(boost::unique_lock<boost::mutex>& lock) const
 {
     return collidable_;
 }
+
+void Object::SetIsInTre(bool inTre)
+{
+    auto lock = AcquireLock();
+    SetIsInTre(inTre, lock);
+}
+
+void Object::SetIsInTre(bool inTre, boost::unique_lock<boost::mutex>& lock)
+{
+    is_in_tre_= inTre;
+}
+
+bool Object::IsInTre() const
+{
+    auto lock = AcquireLock();
+    return IsInTre(lock);
+}
+
+bool Object::IsInTre(boost::unique_lock<boost::mutex>& lock) const
+{
+    return is_in_tre_;
+}
+
+
+
 
 void Object::__BuildCollisionBox(void)
 {

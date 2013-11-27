@@ -213,10 +213,14 @@ public:
         StopControllingObject(object);
 
         // We're ok with the object existing in the object_manager until server shutdown
-        /*object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> viewObject){
+		//actually ... no were not ???
+        //if the object remains and the core saves async to db when the parent is gone
+		//we get faulty parent_ids
+		//thus best iterate from bottom to top!
+		object->ViewObjects(nullptr, 0, false, [&](shared_ptr<Object> viewObject){
         	object_manager_->RemoveObject(viewObject);
         });
-        object_manager_->RemoveObject(object);*/
+        object_manager_->RemoveObject(object);
 
     }
 
