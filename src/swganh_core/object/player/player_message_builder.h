@@ -43,7 +43,7 @@ public:
     static void BuildForceSensitiveQuestDelta(const std::shared_ptr<Player>& object);
     static void BuildCompletedForceSensitiveQuestDelta(const std::shared_ptr<Player>& object);
     static void BuildQuestJournalDelta(const std::shared_ptr<Player>& object);
-    static void BuildAbilityDelta(const std::shared_ptr<Player>& object);
+	static void BuildSkillCommandDelta(const std::shared_ptr<Player>& object);
     static void BuildExperimentationFlagDelta(const std::shared_ptr<Player>& object);
     static void BuildCraftingStageDelta(const std::shared_ptr<Player>& object);
     static void BuildNearestCraftingStationDelta(const std::shared_ptr<Player>& object);
@@ -58,6 +58,8 @@ public:
     static void BuildCurrentDrinkDelta(const std::shared_ptr<Player>& object);
     static void BuildMaxDrinkDelta(const std::shared_ptr<Player>& object);
     static void BuildJediStateDelta(const std::shared_ptr<Player>& object);
+	
+	
 
     // baselines
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(const std::shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock);

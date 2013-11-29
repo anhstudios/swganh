@@ -532,3 +532,15 @@ std::map<std::string, std::pair<uint32_t, uint32_t>> StaticService::GetSkillMods
 {
     return skill_mod_manager_.GetSkillMods(creature);
 }
+
+
+const std::shared_ptr <Skill> StaticService::GetStaticSkillData(std::string skill_name)
+{
+	return skill_mod_manager_.GetStaticSkillData(skill_name);
+}
+
+
+bool StaticService::CheckSkillCommandDuplicity(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& command_name)
+{
+	return skill_mod_manager_.CheckSkillCommandDuplicity( creature, command_name);
+}

@@ -66,9 +66,6 @@ private:
     void LoadSkillMods_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature,
                         boost::unique_lock<boost::mutex>& lock);
 
-    void LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature,
-                            boost::unique_lock<boost::mutex>& lock);
-
     void LoadBuffs_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<swganh::object::Creature>& creature,
                     boost::unique_lock<boost::mutex>& lock);
 

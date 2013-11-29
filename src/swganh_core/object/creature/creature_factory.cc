@@ -150,7 +150,6 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
     LoadBuffs_(connection, creature, lock);
     LoadSkills_(connection, creature, lock);
     LoadSkillMods_(connection, creature, lock);
-    LoadSkillCommands_(connection, creature, lock);
 }
 
 void CreatureFactory::RegisterEventHandlers()
@@ -170,8 +169,12 @@ void CreatureFactory::RegisterEventHandlers()
     GetEventDispatcher()->Subscribe("Creature::AccelerationMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::AccelerationMultiplierModifier", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::StatEncumberance", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    GetEventDispatcher()->Subscribe("Creature::SkillMod", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
-    GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    
+	//nothing really to persist here
+	//GetEventDispatcher()->Subscribe("Creature::SkillMod", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+	//GetEventDispatcher()->Subscribe("Creature::SkillCommand", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
+    
+	GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierBase", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::SpeedMultiplierModifer", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::ListenToId", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
     GetEventDispatcher()->Subscribe("Creature::RunSpeed", std::bind(&CreatureFactory::PersistHandler, this, std::placeholders::_1));
@@ -434,25 +437,6 @@ void CreatureFactory::LoadSkillMods_(const std::shared_ptr<sql::Connection>& con
         while (result->next())
         {
             creature->AddSkillMod(SkillMod(result->getString("name"), result->getUInt("value"), 0), lock);
-        }
-    }
-    while(statement->getMoreResults());
-}
-
-void CreatureFactory::LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Creature>& creature,
-        boost::unique_lock<boost::mutex>& lock)
-{
-    auto statement = std::shared_ptr<sql::PreparedStatement>
-                     (connection->prepareStatement("CALL sp_GetCreatureSkillCommands(?);"));
-
-    statement->setUInt64(1, creature->GetObjectId(lock));
-
-    auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-    do
-    {
-        while (result->next())
-        {
-            creature->AddSkillCommand(std::make_pair(result->getInt("id"), result->getString("name")), lock);
         }
     }
     while(statement->getMoreResults());

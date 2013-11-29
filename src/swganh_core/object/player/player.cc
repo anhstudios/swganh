@@ -89,7 +89,7 @@ void Player::ClearStatusFlags()
 
 void Player::ClearStatusFlags(boost::unique_lock<boost::mutex>& lock)
 {
-    for_each(begin(status_flags_), end(status_flags_), [] (uint32_t& value)
+    for_each(begin(status_flags_), end(status_flags_), [=] (uint32_t& value)
     {
         value = 0;
     });
@@ -139,7 +139,7 @@ void Player::ClearProfileFlags()
 
 void Player::ClearProfileFlags(boost::unique_lock<boost::mutex>& lock)
 {
-    for_each(begin(profile_flags_), end(profile_flags_), [] (uint32_t& value)
+    for_each(begin(profile_flags_), end(profile_flags_), [=] (uint32_t& value)
     {
         value = 0;
     });
@@ -1301,4 +1301,79 @@ std::queue<std::pair<uint8_t, uint32_t>> Player::GetBadgesSyncQueue()
 std::queue<std::pair<uint8_t, uint32_t>> Player::GetBadgesSyncQueue(boost::unique_lock<boost::mutex>& lock)
 {
     return badges_sync_queue_;
+}
+
+bool  Player::HasSkillCommand(std::string skill_command)
+{
+    auto lock = AcquireLock();
+    return HasSkillCommand(skill_command, lock);
+}
+
+bool  Player::HasSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock)
+{
+    auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (std::string command)
+    {
+        return command == skill_command;
+    });
+    if (find_it != end(skill_commands_))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+void  Player::AddSkillCommand(std::string skill_command)
+{
+    auto lock = AcquireLock();
+    AddSkillCommand(skill_command, lock);
+}
+
+void  Player::AddSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock)
+{
+   
+   skill_commands_.add(skill_command);
+    DISPATCH(Player, SkillCommand);
+   
+}
+
+void  Player::RemoveSkillCommand(std::string skill_command)
+{
+    auto lock = AcquireLock();
+    RemoveSkillCommand(skill_command, lock);
+}
+
+void  Player::RemoveSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock)
+{
+    auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (std::string command)
+    {
+        return command == skill_command;
+    });
+    if (find_it != end(skill_commands_))
+    {
+		skill_commands_.remove(find_it);
+    }
+}
+
+swganh::containers::NetworkSet<std::string>   Player::GetSkillCommands()
+{
+    auto lock = AcquireLock();
+    return GetSkillCommands(lock);
+}
+
+swganh::containers::NetworkSet<std::string>   Player::GetSkillCommands(boost::unique_lock<boost::mutex>& lock)
+{
+    return skill_commands_;
+}
+
+void Player::SerializeSkillCommands(swganh::messages::BaseSwgMessage* message)
+{
+    auto lock = AcquireLock();
+    SerializeSkillCommands(message, lock);
+}
+
+void Player::SerializeSkillCommands(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+{
+    skill_commands_.Serialize(message);
 }

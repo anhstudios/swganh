@@ -115,8 +115,17 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(CommandI
 
     if (required_ability.length() > 0)
     {
-        auto actor = std::static_pointer_cast<Creature>(swg_command->GetActor());
-        if (actor != nullptr && actor->HasSkillCommand(required_ability))
+        auto actor			= std::static_pointer_cast<Creature>(swg_command->GetActor());
+		auto player_actor	= std::static_pointer_cast<Player>(swg_command->GetPlayerActor());
+
+
+		if (player_actor != nullptr && player_actor->HasSkillCommand(required_ability))
+        {
+            check_passed = true;
+        } 
+		//if I am right with my assesment then creatures/NPCs shouldnt be able to use skillcommands like flourisch / heal etc in the first place
+		else
+        if (actor != nullptr)
         {
             check_passed = true;
         }

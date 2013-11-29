@@ -18,15 +18,12 @@
 namespace swganh
 {
 
-namespace creature
+namespace object
 {
 class Creature;
+class Player;
+}
 
-namespace player
-{
-	class Player;
-}
-}
 namespace combat
 {
 	
@@ -110,7 +107,7 @@ private:
 
     boost::asio::deadline_timer timer_;
 	swganh::equipment::EquipmentServiceInterface* equipment_service_;
-};
+};//class
 
-}
-}
+} //namespace combat
+} //namespace swganh

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
+#include "swganh_core/object/player/player.h"
 
 #include "command_interface.h"
 #include "command_properties.h"
@@ -28,6 +29,7 @@ namespace object
 {
 class Object;
 class Creature;
+class Player;
 }
 
 namespace messages
@@ -73,8 +75,9 @@ public:
 
     bool IsQueuedCommand() const;
 
-    const std::shared_ptr<object::Object>& GetActor() const;
-    void SetActor(std::shared_ptr<object::Object> object);
+	const std::shared_ptr<object::Player>&			GetPlayerActor() const;
+    const std::shared_ptr<object::Object>&			GetActor() const;
+    void											SetActor(std::shared_ptr<object::Object>	object);
 
     const std::shared_ptr<object::Object>& GetTarget() const;
     std::shared_ptr<object::Creature> GetTargetCreature();
@@ -94,6 +97,7 @@ private:
     const CommandProperties* properties_;
     std::shared_ptr<swganh::observer::ObserverInterface> controller_;
     mutable std::shared_ptr<object::Object> actor_;
+	mutable std::shared_ptr<object::Player> player_actor_;
     mutable std::shared_ptr<object::Object> target_;
     swganh::messages::controllers::CommandQueueEnqueue command_request_;
 };

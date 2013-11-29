@@ -10,6 +10,8 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
+#include "swganh_core/object/player/player.h"
+
 using namespace swganh::statics;
 using namespace swganh::object;
 
@@ -26,6 +28,29 @@ void SkillManager::Start(std::shared_ptr<sql::Statement> statement)
     statement->getMoreResults();
     _loadSkillMods(std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())));
 
+	statement->getMoreResults();
+    _loadSkillCommands(std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())));
+
+}
+
+void SkillManager::_loadSkillCommands(std::unique_ptr<sql::ResultSet> result)
+{
+    while(result->next())
+    {
+		std::string skill_name = result->getString(1);
+        std::string cmd_name = result->getString(2);
+
+        auto find_itr = skills_.find(skill_name);
+
+		if(find_itr != skills_.end())
+        {
+			find_itr->second->commands_.insert(cmd_name);
+		}	
+		else
+		{
+			DLOG(error) << "SkillManager::_loadSkillCommands couldnt find skill : " << skill_name << " for command : " << cmd_name;
+		}
+	}
 }
 
 void SkillManager::_loadSkills(std::unique_ptr<sql::ResultSet> result)
@@ -86,56 +111,49 @@ void SkillManager::_loadSkillMods(std::unique_ptr<sql::ResultSet> result)
     }
 }
 
-void SkillManager::DropSkill(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_name)
+const std::shared_ptr <Skill> SkillManager::GetStaticSkillData(std::string skill_name)
 {
-	//look up the skill
 	auto find_itr = skills_.find(skill_name);
 	if(find_itr != skills_.end())	{
+		return find_itr->second;
+	}
+	return nullptr;
+}
+
+bool SkillManager::CheckSkillCommandDuplicity(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& command_name)
+{
+	// when we get called we check whether an available skill grants us the command_name skill command
+	auto skill_list = creature->GetSkills();
+	auto find_itr = skill_list.begin();
 	
-		//iterate through the mods and remove them
-		auto mod_map = (find_itr)->second->skill_mods_;
-		auto mod_itr = mod_map.begin();
-		while(mod_itr != mod_map.end())	{
-			
-			//we now need to check whether we remove the mod or just manipulate the value
-			auto mod = creature->GetSkillMod(mod_itr->first);
-			uint32_t characterModValue	= 	mod.modifier;
-			uint32_t skillModValue		=	mod_itr->second;
+	//iterate through all the skills
+	while(find_itr != skill_list.end())
+	{
+		//get the skills name
+		auto skill_name = (*find_itr);
 
-			//dont remove the mod just alter its value
-			if(characterModValue > skillModValue)	{
-				mod.modifier = characterModValue - skillModValue;
-				creature->SetSkillMod(mod);
-			}	
-			else if(characterModValue == skillModValue)	{
-				//ok we need to remove the mod
-				//this will send the relevant deltas to the player
-				creature->RemoveSkillMod(mod_itr->first);
-			}
-			else	{
-				//panic
-				LOG(error) << "Dropskill skillmodvalues dont add up";
-
-			}
+		//and look it up in the skill list
+		auto skill_find_itr = skills_.find(skill_name);
+		if(skill_find_itr == skills_.end())	{
+			find_itr++;
+			break;
 		}
 
-		//todo handle skillcommands schematics
+		//is the command in the skills command list?
+		auto cmd_map = (skill_find_itr)->second->commands_;
+		auto cmd_iter = cmd_map.find(command_name);
 
+		if(cmd_iter != cmd_map.end()){
+			return true;
+		}
 
-		//prepare skillcommands
-
-		//prepare schematics
-
-		//remove skill
-	}
-	else	{
-		//bail out we dont own the skill
-		return;		
+		find_itr++;
 	}
 
+	return false;
 
-	
 }
+
 
 std::pair<uint32_t, uint32_t> SkillManager::GetSkillMod(const std::shared_ptr<Creature>& creature, const std::string& skill_mod_name)
 {

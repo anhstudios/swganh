@@ -13,6 +13,7 @@
 
 #include "swganh_core/messages/containers/network_map.h"
 #include "swganh_core/messages/containers/network_vector.h"
+#include "swganh_core/messages/containers/network_set.h"
 #include "swganh_core/object/intangible/intangible.h"
 
 #include "gender.h"
@@ -727,6 +728,23 @@ public:
     std::queue<std::pair<uint8_t, uint32_t>> GetBadgesSyncQueue();
     std::queue<std::pair<uint8_t, uint32_t>> GetBadgesSyncQueue(boost::unique_lock<boost::mutex>& lock);
 
+	// Skill Commands they get updated through the YALP 9 !!!!!!!!!!!!!!
+    swganh::containers::NetworkSet<std::string>  GetSkillCommands();
+    swganh::containers::NetworkSet<std::string>  GetSkillCommands(boost::unique_lock<boost::mutex>& lock);
+
+    bool HasSkillCommand(std::string skill);
+    bool HasSkillCommand(std::string skill, boost::unique_lock<boost::mutex>& lock);
+
+    void AddSkillCommand(std::string skill_command);
+    void AddSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock);
+
+    void RemoveSkillCommand(std::string skill_command);
+    void RemoveSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock);
+
+	void SerializeSkillCommands(swganh::messages::BaseSwgMessage* message);
+    void SerializeSkillCommands(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
+
+
     // baselines
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 
@@ -735,6 +753,7 @@ public:
 private:
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
+	//swganh::containers::NetworkSet<std::string> skill_commands_;
     std::array<uint32_t, 4> status_flags_;
     std::array<uint32_t, 4> profile_flags_;
     std::string profession_tag_;
@@ -742,6 +761,7 @@ private:
     uint32_t total_playtime_;
     uint8_t admin_tag_;
     uint32_t region_;
+	swganh::containers::NetworkSet<std::string> skill_commands_;
     swganh::containers::NetworkMap<std::string, XpData, XpData> experience_;
     swganh::containers::NetworkMap<uint64_t, PlayerWaypointSerializer, PlayerWaypointSerializer> waypoints_;
     int32_t current_force_power_;

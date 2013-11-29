@@ -108,19 +108,6 @@ public:
 	std::queue<std::pair<uint8_t, std::string>> GetSkillsSyncQueue();
     std::queue<std::pair<uint8_t, std::string>> GetSkillsSyncQueue(boost::unique_lock<boost::mutex>& lock);
 
-    // Skill Commands
-    std::map<uint32_t, std::string> GetSkillCommands();
-    std::map<uint32_t, std::string> GetSkillCommands(boost::unique_lock<boost::mutex>& lock);
-
-    bool HasSkillCommand(std::string skill);
-    bool HasSkillCommand(std::string skill, boost::unique_lock<boost::mutex>& lock);
-
-    void AddSkillCommand(std::pair<uint32_t, std::string> skill_command);
-    void AddSkillCommand(std::pair<uint32_t, std::string> skill_command, boost::unique_lock<boost::mutex>& lock);
-
-    void RemoveSkillCommand(std::string skill_command);
-    void RemoveSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock);
-
     // Posture
     void SetPosture(Posture posture);
     void SetPosture(Posture posture, boost::unique_lock<boost::mutex>& lock);
@@ -564,6 +551,7 @@ public:
     void ViewBuffs(BuffIterator functor);
     void ViewBuffs(BuffIterator functor, boost::unique_lock<boost::mutex>& lock);
 
+
     // Baselines
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 
@@ -576,7 +564,7 @@ private:
     swganh::containers::NetworkVector<int32_t> stat_base_list_;
     swganh::containers::NetworkSet<std::string> skills_;
 	std::queue<std::pair<uint8_t, std::string>>	skills_sync_queue_;
-    std::map<uint32_t, std::string> skill_commands_;
+    
     uint32_t    posture_;
     uint8_t     faction_rank_;
     uint64_t    owner_id_;

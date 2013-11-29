@@ -61,6 +61,8 @@ void exportPlayer()
 
     class_<Player, bases<Intangible>, std::shared_ptr<Player>, boost::noncopyable> p("Player", "The :class:`.Player` is a child of :class:`.Object` and describes actions specific to a Player Character.")
     ;
+	p.def("hasSkillCommand", (bool(Player::*)(std::string)) &Player::HasSkillCommand, "returns true if the creature has the skill command")
+    ;
     p.def("addStatusFlag", (void(Player::*)(StatusFlags,StatusIndex)) &Player::AddStatusFlag, "adds a status flag to the existing :class:`.STATUS_FLAGS`")
     ;
     p.def("removeStatusFlag", (void(Player::*)(StatusFlags,StatusIndex)) &Player::RemoveStatusFlag, "remove status flag from existing :class:`.STATUS_FLAGS`")

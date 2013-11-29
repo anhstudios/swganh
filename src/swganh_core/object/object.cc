@@ -439,7 +439,7 @@ void Object::__InternalReloadPlayer()
 			auto observed = find_itr->get();
 			auto container = observed->GetContainer() ;
 			
-			//no houses no cells for now as there applay special rules and at this point its the tre structures anyway
+			//no houses no cells for now as there apply special rules and at this point its the tre structures anyway
 			if(observed->IsInTre())	{
 				v.insert(observed->GetObjectId());
 			}
@@ -448,7 +448,6 @@ void Object::__InternalReloadPlayer()
 				
 				if(v.find(observed->GetObjectId()) == v.end() )	{
 					iterationSuccess = true;
-					LOG(error) << " create : " << observed->GetTemplate();
 					observed->SendCreateByCrc(this->GetController());
 					observed->CreateBaselines(this->GetController());
 

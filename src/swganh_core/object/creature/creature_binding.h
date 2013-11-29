@@ -166,8 +166,6 @@ void exportCreature()
     ;
     c.def("hasSkill", (bool(Creature::*)(std::string)) &Creature::HasSkill, "returns true if the creature has the skill")
     ;
-	c.def("hasSkillCommand", (bool(Creature::*)(std::string)) &Creature::HasSkillCommand, "returns true if the creature has the skill command")
-    ;
     c.def("addSkillMod", (void(Creature::*)(SkillMod)) &Creature::AddSkillMod, "adds skill mod to the creature")
     ;
     c.def("removeSkillMod", (void(Creature::*)(std::string)) &Creature::RemoveSkillMod, "removes skill mod from the creature")

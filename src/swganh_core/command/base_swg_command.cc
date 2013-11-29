@@ -1,13 +1,14 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
+#include <memory>
+
 #include "base_swg_command.h"
-
 #include "swganh/service/service_manager.h"
-
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/simulation/simulation_service_interface.h"
+#include "swganh_core/equipment/equipment_service_interface.h"
 
 using swganh::observer::ObserverInterface;
 using swganh::command::BaseSwgCommand;
@@ -15,8 +16,10 @@ using swganh::command::CommandProperties;
 using swganh::command::CommandGroup;
 using swganh::object::Object;
 using swganh::object::Creature;
+using swganh::object::Player;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::simulation::SimulationServiceInterface;
+using swganh::equipment::EquipmentServiceInterface;
 
 void BaseSwgCommand::Initialize(
     swganh::app::SwganhKernel* kernel,
@@ -25,6 +28,7 @@ void BaseSwgCommand::Initialize(
     kernel_ = kernel;
     properties_ = &properties;
     actor_ = nullptr;
+	player_actor_ = nullptr;
     target_ = nullptr;
 }
 
@@ -106,6 +110,19 @@ const std::shared_ptr<Object>& BaseSwgCommand::GetActor() const
     }
 
     return actor_;
+}
+
+const std::shared_ptr<Player>& BaseSwgCommand::GetPlayerActor() const
+{
+    if (!player_actor_)
+    {
+		auto equipment_service = kernel_->GetServiceManager()->GetService<EquipmentServiceInterface>("EquipmentService");
+		player_actor_ = std::static_pointer_cast<Player>(equipment_service->GetEquippedObject(GetActor(), "ghost"));
+		
+		//player_actor_ = simulation_service->GetObjectById(command_request_.observable_id+1);
+    }
+
+    return player_actor_;
 }
 
 void BaseSwgCommand::SetActor(std::shared_ptr<Object> object)

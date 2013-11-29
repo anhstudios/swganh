@@ -58,16 +58,21 @@ public:
     SkillModsMap GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
 
 	/*
-     * @brief Drops a skill	
-     * updates the relevant Skillmods afterwards
+     * @brief Checks whether a certain SkillCommand is granted by any skill the creature has
      */
-	void DropSkill(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_name);
+	bool CheckSkillCommandDuplicity(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& command_name);
+
+	/*
+     * @brief returns a pointer to the static SkillData of the given skill
+     */
+	const std::shared_ptr <Skill> GetStaticSkillData(std::string skill_name);
 
 private:
-    void _loadSkills(std::unique_ptr<sql::ResultSet> results);
-    void _loadSkillPrereqs(std::unique_ptr<sql::ResultSet> results);
-    void _loadSkillsRequiredSpecies(std::unique_ptr<sql::ResultSet> results);
-    void _loadSkillMods(std::unique_ptr<sql::ResultSet> results);
+    void	_loadSkills(std::unique_ptr<sql::ResultSet> results);
+    void	_loadSkillPrereqs(std::unique_ptr<sql::ResultSet> results);
+    void	_loadSkillsRequiredSpecies(std::unique_ptr<sql::ResultSet> results);
+    void	_loadSkillMods(std::unique_ptr<sql::ResultSet> results);
+	void	_loadSkillCommands(std::unique_ptr<sql::ResultSet> results);
 
     std::map<std::string, std::shared_ptr<Skill>> skills_;
 };

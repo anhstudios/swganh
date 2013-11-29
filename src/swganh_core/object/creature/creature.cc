@@ -251,73 +251,6 @@ bool Creature::HasSkill(std::string skill, boost::unique_lock<boost::mutex>& loc
     return skills_.contains(skill);
 }
 
-std::map<uint32_t, std::string>  Creature::GetSkillCommands()
-{
-    auto lock = AcquireLock();
-    return GetSkillCommands(lock);
-}
-
-std::map<uint32_t, std::string>  Creature::GetSkillCommands(boost::unique_lock<boost::mutex>& lock)
-{
-    return skill_commands_;
-}
-
-
-bool  Creature::HasSkillCommand(std::string skill_command)
-{
-    auto lock = AcquireLock();
-    return HasSkillCommand(skill_command, lock);
-}
-
-bool  Creature::HasSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock)
-{
-    auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (pair<uint32_t, string> command)
-    {
-        return command.second == skill_command;
-    });
-    if (find_it != end(skill_commands_))
-    {
-        return true;
-    }
-
-    return false;
-}
-
-
-void  Creature::AddSkillCommand(std::pair<uint32_t, std::string> skill_command)
-{
-    auto lock = AcquireLock();
-    AddSkillCommand(skill_command, lock);
-}
-
-void  Creature::AddSkillCommand(std::pair<uint32_t, std::string> skill_command, boost::unique_lock<boost::mutex>& lock)
-{
-    auto find_it = skill_commands_.find(skill_command.first);
-
-    if (find_it == end(skill_commands_))
-    {
-        skill_commands_.insert(skill_command);
-    }
-}
-
-void  Creature::RemoveSkillCommand(std::string skill_command)
-{
-    auto lock = AcquireLock();
-    RemoveSkillCommand(skill_command, lock);
-}
-
-void  Creature::RemoveSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock)
-{
-    auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (pair<uint32_t, string> command)
-    {
-        return command.second == skill_command;
-    });
-    if (find_it != end(skill_commands_))
-    {
-        skill_commands_.erase(find_it);
-    }
-}
-
 void Creature::SetPosture(Posture posture)
 {
     auto lock = AcquireLock();
@@ -2032,3 +1965,7 @@ void Creature::SerializeEquipment(swganh::messages::BaseSwgMessage* message, boo
 {
     equipment_list_.Serialize(message);
 }
+
+
+
+

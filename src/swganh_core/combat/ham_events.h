@@ -11,10 +11,7 @@ namespace object
 {
 class Creature;
 //enum StatIndex;
-}
 
-namespace creature
-{
 struct HamEvent : swganh::BaseEvent
 {
     HamEvent(swganh::EventType type,

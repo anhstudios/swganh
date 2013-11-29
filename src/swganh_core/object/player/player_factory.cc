@@ -90,6 +90,9 @@ void PlayerFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& conn
     LoadQuestJournal_(connection, player, lock);
     LoadWaypoints_(connection, player, lock);
     LoadXP_(connection, player, lock);
+
+
+	LoadSkillCommands_(connection, player, lock);
 }
 
 void PlayerFactory::RegisterEventHandlers()
@@ -419,6 +422,37 @@ void PlayerFactory::RemoveFromIgnoredList_(const shared_ptr<Player>& player, uin
         statement->execute();
     }
     catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
+void PlayerFactory::LoadSkillCommands_(const std::shared_ptr<sql::Connection>& connection, const std::shared_ptr<Player>& player, boost::unique_lock<boost::mutex>& lock)
+{
+	try
+	{
+		auto conn = GetDatabaseManager()->getConnection("galaxy");
+		auto statement = conn->prepareStatement("CALL sp_GetCreatureSkillCommands(?);");
+	
+		//the creatureObject is the Container of the Player Object!
+		//this is a very dirty hack - however I have no idea on how to get the creature ID otherwise
+		auto id = player->GetObjectId(lock);
+		LOG(error) << "PlayerFactory::LoadSkillCommands_ : load id : " << id-1;
+		statement->setUInt64(1, id-1);
+
+		auto result = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+		do
+		{
+			while (result->next())
+			{
+				result->getInt("id");
+				player->AddSkillCommand(result->getString("name"), lock);
+			}
+		}
+		while(statement->getMoreResults());
+	}
+	catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();

@@ -22,6 +22,12 @@ using namespace swganh::messages;
 void PlayerMessageBuilder::RegisterEventHandlers()
 {
 
+	event_dispatcher->Subscribe("Player::SkillCommand", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildSkillCommandDelta(value_event->Get());
+    });
+
     event_dispatcher->Subscribe("Player::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
@@ -316,16 +322,13 @@ void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& obje
         object->AddDeltasUpdate(&message);
     }
 }
-void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
+
+void PlayerMessageBuilder::BuildSkillCommandDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
-        //object->SerializeAbilities(&message);
-
-        message.data.write<uint32_t>(0);
-        message.data.write<uint32_t>(0);
-
+        object->SerializeSkillCommands(&message);
         object->AddDeltasUpdate(&message);
     }
 }
@@ -469,6 +472,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
     }
 }
 
+
 // baselines
 boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock)
 {
@@ -510,7 +514,8 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(const sha
 boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(const shared_ptr<Player>& object, boost::unique_lock<boost::mutex>& lock)
 {
     auto message = CreateBaselinesMessage(object, lock, Object::VIEW_8, 7);
-    object->SerializeXp(&message, lock);
+   
+	object->SerializeXp(&message, lock);
     object->SerializeWaypoints(&message, lock);
 
     message.data.write<uint32_t>(object->GetCurrentForcePower(lock));
@@ -531,9 +536,9 @@ boost::optional<BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(const sha
 {
     auto message = CreateBaselinesMessage(object, lock, Object::VIEW_9, 17);
 
-    //object->SerializeAbilities(&message, lock);
-    message.data.write<uint32_t>(0);
-    message.data.write<uint32_t>(0);
+    object->SerializeSkillCommands(&message, lock);
+    //message.data.write<uint32_t>(0);
+    //message.data.write<uint32_t>(0);
 
     message.data.write<uint32_t>(object->GetExperimentationFlag(lock));
     message.data.write<uint32_t>(object->GetCraftingStage(lock));

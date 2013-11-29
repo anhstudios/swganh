@@ -27,7 +27,7 @@
 using namespace swganh::scripting;
 using namespace boost::posix_time;
 using namespace swganh::app;
-using namespace swganh::creature;
+using namespace swganh::object;
 using namespace swganh::combat;
 using namespace swganh::equipment;
 using namespace swganh::messages::controllers;

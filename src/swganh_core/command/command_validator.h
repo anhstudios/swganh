@@ -16,6 +16,13 @@ class BaseSwgCommand;
 
 namespace swganh
 {
+namespace object
+{
+	class creature;
+	class player;
+}
+
+
 namespace command
 {
 

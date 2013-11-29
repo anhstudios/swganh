@@ -61,6 +61,17 @@ public:
      */
     std::map<std::string, std::pair<uint32_t, uint32_t>> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
 
+	/*
+     * @brief returns a pointer to the static SkillData of the given skill
+     */
+	const std::shared_ptr <Skill> GetStaticSkillData(std::string skill_name);
+
+	/*
+     * @brief Checks whether a certain SkillCommand is granted by any skill the creature has
+     * returns true if the command is granted by one of the creatures skills
+     */
+	bool CheckSkillCommandDuplicity(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& command_name);
+
 private:
 
     void _loadBuildings(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
