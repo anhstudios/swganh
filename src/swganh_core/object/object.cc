@@ -469,8 +469,8 @@ void Object::__InternalReloadPlayer()
 					observed->SendCreateByCrc(this->GetController());
 					observed->CreateBaselines(this->GetController());
 					v.insert(observed->GetObjectId());
-					find_itr ++;
 				}
+				find_itr ++;
 			}
 			done = true;
 		}

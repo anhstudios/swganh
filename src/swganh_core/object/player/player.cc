@@ -44,6 +44,7 @@ Player::Player()
     , max_drink_(0)
     , jedi_state_(0)
     , gender_(MALE)
+	, skill_commands_(0)
 {}
 
 std::array<uint32_t, 4> Player::GetStatusFlags()
@@ -1330,11 +1331,13 @@ void  Player::AddSkillCommand(std::string skill_command)
     AddSkillCommand(skill_command, lock);
 }
 
-void  Player::AddSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock)
+void  Player::AddSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock, bool persist )
 {
    
-   skill_commands_.add(skill_command);
-    DISPATCH(Player, SkillCommand);
+   skill_commands_.add(skill_command, persist);
+   if(persist)	{
+		DISPATCH(Player, SkillCommand);
+   }
    
 }
 
@@ -1356,13 +1359,13 @@ void  Player::RemoveSkillCommand(std::string skill_command, boost::unique_lock<b
     }
 }
 
-swganh::containers::NetworkSet<std::string>   Player::GetSkillCommands()
+swganh::containers::NetworkVector<std::string>   Player::GetSkillCommands()
 {
     auto lock = AcquireLock();
     return GetSkillCommands(lock);
 }
 
-swganh::containers::NetworkSet<std::string>   Player::GetSkillCommands(boost::unique_lock<boost::mutex>& lock)
+swganh::containers::NetworkVector<std::string>   Player::GetSkillCommands(boost::unique_lock<boost::mutex>& lock)
 {
     return skill_commands_;
 }

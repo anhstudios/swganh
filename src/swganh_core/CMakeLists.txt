@@ -8,6 +8,7 @@ add_subdirectory(chat)
 add_subdirectory(command)
 add_subdirectory(combat)
 add_subdirectory(equipment)
+add_subdirectory(gamesystems)
 add_subdirectory(map)
 add_subdirectory(object)
 add_subdirectory(player)
@@ -21,7 +22,7 @@ add_subdirectory(weather)
 add_custom_target(
     swgpy ALL
     DEPENDS
-        swgpy_app swgpy_command swgpy_chat swgpy_combat swgpy_object swgpy_simulation swgpy_utility
+        swgpy_app swgpy_command swgpy_chat swgpy_combat swgpy_gamesystems swgpy_object swgpy_simulation swgpy_utility
     COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
     VERBATIM

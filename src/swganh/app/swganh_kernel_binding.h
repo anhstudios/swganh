@@ -56,7 +56,7 @@ void exportSWGANHKernel()
 
     class_<swganh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
 		.def("gamesystemsService", make_function(
-               std::bind(&swganh::service::ServiceManager::GetService<swganh::gamesystems::GameSystemsServiceInterface>, std::placeholders::_1, "ChatService"),
+               std::bind(&swganh::service::ServiceManager::GetService<swganh::gamesystems::GameSystemsServiceInterface>, std::placeholders::_1, "GameSystemsService"),
                return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::gamesystems::GameSystemsServiceInterface*, swganh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.GameSystems`")

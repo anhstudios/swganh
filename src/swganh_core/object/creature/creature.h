@@ -178,10 +178,10 @@ public:
     void DeductStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
 
     void AddStatWound(uint16_t stat_index, int32_t value);
-    void AddStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+    void AddStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize = true);
 
     void SetStatWound(uint16_t stat_index, int32_t value);
-    void SetStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+    void SetStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize = true);
 
     std::vector<int32_t> GetStatWounds();
     std::vector<int32_t> GetStatWounds(boost::unique_lock<boost::mutex>& lock);
@@ -214,7 +214,7 @@ public:
     void DeductStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
 
     void SetStatEncumberance(uint16_t stat_index, int32_t value);
-    void SetStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+    void SetStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize = true);
 
     std::vector<int32_t> GetStatEncumberances();
     std::vector<int32_t> GetStatEncumberances(boost::unique_lock<boost::mutex>& lock);
@@ -226,14 +226,17 @@ public:
     void SerializeStatEncumberances(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
 
     // Skill Mods
+	bool HasSkillMod(std::string identifier);
+    bool HasSkillMod(std::string identifier, boost::unique_lock<boost::mutex>& lock);
+
     void AddSkillMod(SkillMod mod);
-    void AddSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock);
+    void AddSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock, bool persist = true);
 
     void RemoveSkillMod(std::string identifier);
     void RemoveSkillMod(std::string identifier, boost::unique_lock<boost::mutex>& lock);
 
     void SetSkillMod(SkillMod mod);
-    void SetSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock);
+    void SetSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock, bool serialize = true);
 
     std::map<std::string, SkillMod> GetSkillMods();
     std::map<std::string, SkillMod> GetSkillMods(boost::unique_lock<boost::mutex>& lock);
@@ -241,8 +244,12 @@ public:
     SkillMod GetSkillMod(std::string identifier);
     SkillMod GetSkillMod(std::string identifier, boost::unique_lock<boost::mutex>& lock);
 
-    void SerializeSkillMods(swganh::messages::BaseSwgMessage* message);
-    void SerializeSkillMods(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock);
+	/*
+	*@brief serializes the skillmods for baselines or deltas
+	*deltas report as false as to not send empty updates
+	*/
+    bool SerializeSkillMods(swganh::messages::BaseSwgMessage* message);
+    bool SerializeSkillMods(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock, bool baseline = false);
 
     // Speed Multiplier Base
     void SetSpeedMultiplierBase(float speed_multiplier_base);
@@ -260,7 +267,7 @@ public:
 
     // Listen To Id
     void SetListenToId(uint64_t listen_to_id);
-    void SetListenToId(uint64_t listen_to_id, boost::unique_lock<boost::mutex>& lock);
+    void SetListenToId(uint64_t listen_to_id, boost::unique_lock<boost::mutex>& lock, bool serialize = true);
 
     uint64_t GetListenToId();
     uint64_t GetListenToId(boost::unique_lock<boost::mutex>& lock);
@@ -415,8 +422,11 @@ public:
 
     // Current Stats
     void SetStatCurrent(uint16_t stat_index, int32_t value);
-    void SetStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+    void SetStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize = true);
 
+	/**	adds 'value' to stat 'stat_index'
+	*	
+	*/
     void AddStatCurrent(uint16_t stat_index, int32_t value);
     void AddStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
 
@@ -443,7 +453,7 @@ public:
 	*	This is the maximum we can *currently* have with all buffs and debuffs
 	*/
     void SetStatMax(uint16_t stat_index, int32_t value);
-    void SetStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);
+    void SetStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize = true);
 
     void AddStatMax(uint16_t stat_index, int32_t value);
     void AddStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock);

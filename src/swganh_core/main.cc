@@ -37,6 +37,7 @@
 #include "weather/weather_init.h"
 #include "terrain/terrain_init.h"
 #include "travel/travel_init.h"
+#include "gamesystems/gamesystems_init.h"
 
 using swganh::app::KernelInterface;
 using swganh::plugin::ExitFunc;
@@ -80,5 +81,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     swganh::terrain::Initialize(swganh_kernel);
     swganh::map::Initialize(swganh_kernel);
     swganh::travel::Initialize(swganh_kernel);
+	swganh::gamesystems::Initialize(swganh_kernel);
     return ExitModule;
 }

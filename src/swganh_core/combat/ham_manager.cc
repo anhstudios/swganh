@@ -91,7 +91,7 @@ uint32_t  HamManager::regenerationModifier_(std::shared_ptr<swganh::object::Crea
 {
 	swganh::object::Posture posture = creature->GetPosture();
 
-	float modifier;
+	float modifier = 1;
 	uint32_t result;
 	uint32_t mHealthRegenDivider = 50;
 
@@ -103,11 +103,12 @@ uint32_t  HamManager::regenerationModifier_(std::shared_ptr<swganh::object::Crea
 		case swganh::object::INCAPACITATED : 
 		case swganh::object::DEAD : modifier = 0.0f;	break;
 		case swganh::object::KNOCKED_DOWN : modifier = 0.75f;	break;
+		default : modifier = 1;
 	}
 
 	//mainstatindex+2 is constitution for health; willpower for mind and STAMINA for action
-	result = (uint32_t)(creature->GetStatCurrent(mainstatIndex+2) / mHealthRegenDivider * modifier);
-
+	result = (uint32_t)((creature->GetStatCurrent(mainstatIndex+2) / mHealthRegenDivider) * modifier);
+	LOG(error) << " we will heal for : " << result;
 	// Test for creatures
 	auto player = std::static_pointer_cast<swganh::object::Player>(equipment_service_->GetEquippedObject(creature, "ghost"));
 	if (player)	{
@@ -127,8 +128,11 @@ int32_t HamManager::UpdateCurrentHitpoints(const std::shared_ptr<swganh::object:
 	int32_t currentHam = creature->GetStatCurrent(statIndex); 
 	int32_t u = update;
 
+	DLOG (error) << "HamManager::UpdateCurrentHitpoints : " << creature->GetObjectId();
+
 	//sanity check for range
 	if((update > 0) && (currentHam >= creature->GetStatMax(statIndex)))	{
+		DLOG (error) << "HamManager::UpdateCurrentHitpoints : sanity out of range : currentHam : " << currentHam << " update : " << update << " "  << creature->GetObjectId();
 		return currentHam;
 	}
 
@@ -140,6 +144,7 @@ int32_t HamManager::UpdateCurrentHitpoints(const std::shared_ptr<swganh::object:
 	//No Nonsense In case we get damaged and already are at zero the update will be canceled
 	//In case we get spammed with zero updates we will break here
 	if(u == 0)	{
+		DLOG (error) << "HamManager::UpdateCurrentHitpoints : sanity out of range : currentHam : " << currentHam << " update would be : " << u << " after recalc "  << creature->GetObjectId();
 		return currentHam;
 	}
 
@@ -148,13 +153,19 @@ int32_t HamManager::UpdateCurrentHitpoints(const std::shared_ptr<swganh::object:
 
 	//set us on the regeneration timer in case were not already on it
 	if(update < 0)	{
+		DLOG (error) << "HamManager::UpdateCurrentHitpoints : put : " << creature->GetObjectId() << " on the regenration timer";
 		uint64_t id = creature->GetObjectId();
 		auto find_itr = reg_.find(id);
-		if(find_itr != reg_.end())
+		if(find_itr == reg_.end())
 		{
+			DLOG (error) << "HamManager::UpdateCurrentHitpoints : " << creature->GetObjectId() << "was added to the regenration timer";
 			ptime next_time = second_clock::local_time() + seconds(1);
 			reg_.insert(std::make_pair(id,std::make_pair(next_time , creature)));
-		}        
+		}   
+		else
+		{
+			DLOG (error) << "HamManager::UpdateCurrentHitpoints : " << creature->GetObjectId() << "was already on the regenration timer";
+		}
 	}
 	
 	return currentHam;
@@ -338,10 +349,18 @@ bool HamManager::ApplyHamCost(std::shared_ptr<swganh::object::Creature> creature
 bool HamManager::regenerate_(std::shared_ptr<swganh::object::Creature> creature)
 {
 	bool done = true;
+
+	if(creature == nullptr)	{
+		//bail out
+		return true;
+	}
+
 	//regeneration only for health action mind
+	LOG (error) << "regenerate : " << creature->GetFirstName();
 	for(uint16_t mainstatIndex = swganh::object::MAINHEALTH; mainstatIndex <= swganh::object::MAINMIND;mainstatIndex++){
 		int32_t maxPool = creature->GetStatMax(mainstatIndex);
 		if(creature->GetStatCurrent(mainstatIndex) < maxPool ){
+			LOG (error) << "regenerate : " << creature->GetFirstName() << " needs to be healed";
 			int32_t newPool = UpdateCurrentHitpoints(creature, mainstatIndex, regenerationModifier_(creature, mainstatIndex));
 			if (newPool < maxPool)	{
 				done = false;
@@ -366,6 +385,9 @@ void HamManager::handleTick_(const boost::system::error_code& e)
 			if(current_time > iterator->second.first)	{
 				if(regenerate_(iterator->second.second)){
 					reg_.erase(iterator);
+					if(iterator == reg.end())	{
+						break;
+					}
 				}
 			}
 		}

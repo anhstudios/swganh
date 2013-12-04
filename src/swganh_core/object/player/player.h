@@ -729,14 +729,19 @@ public:
     std::queue<std::pair<uint8_t, uint32_t>> GetBadgesSyncQueue(boost::unique_lock<boost::mutex>& lock);
 
 	// Skill Commands they get updated through the YALP 9 !!!!!!!!!!!!!!
-    swganh::containers::NetworkSet<std::string>  GetSkillCommands();
-    swganh::containers::NetworkSet<std::string>  GetSkillCommands(boost::unique_lock<boost::mutex>& lock);
+    swganh::containers::NetworkVector<std::string>  GetSkillCommands();
+    swganh::containers::NetworkVector<std::string>  GetSkillCommands(boost::unique_lock<boost::mutex>& lock);
 
     bool HasSkillCommand(std::string skill);
     bool HasSkillCommand(std::string skill, boost::unique_lock<boost::mutex>& lock);
 
+	/*
+	*@brief adds a skill to the skill list of the player
+	*skill_command is the name of the skill as in the iff; we cannot persist when we are loading the object in tha factory!!!
+	*otherwise we crash when we send the first delta
+	*/
     void AddSkillCommand(std::string skill_command);
-    void AddSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock);
+    void AddSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock, bool persist = true);
 
     void RemoveSkillCommand(std::string skill_command);
     void RemoveSkillCommand(std::string skill_command, boost::unique_lock<boost::mutex>& lock);
@@ -753,7 +758,6 @@ public:
 private:
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
-	//swganh::containers::NetworkSet<std::string> skill_commands_;
     std::array<uint32_t, 4> status_flags_;
     std::array<uint32_t, 4> profile_flags_;
     std::string profession_tag_;
@@ -761,7 +765,8 @@ private:
     uint32_t total_playtime_;
     uint8_t admin_tag_;
     uint32_t region_;
-	swganh::containers::NetworkSet<std::string> skill_commands_;
+	swganh::containers::NetworkVector<std::string> skill_commands_;
+	//swganh::containers::NetworkSet<std::string> skill_commands_;
     swganh::containers::NetworkMap<std::string, XpData, XpData> experience_;
     swganh::containers::NetworkMap<uint64_t, PlayerWaypointSerializer, PlayerWaypointSerializer> waypoints_;
     int32_t current_force_power_;

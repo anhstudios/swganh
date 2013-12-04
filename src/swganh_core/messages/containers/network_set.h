@@ -17,6 +17,11 @@ namespace containers
 {
 
 template<typename T, typename Serializer=DefaultSerializer<T>>
+		/*
+		*@brief NetworkSET is the helper Class to deserialize a Set to baselines and deltas
+		*it is used for datastructures where the client does NOT expect an index of the elements position in the delta
+		*
+		*/
         class NetworkSet
         {
             public:
@@ -42,7 +47,7 @@ void remove(iterator itr, bool update=true)
             const T& data = *itr;
             deltas_.push([=] (swganh::messages::DeltasMessage& message)
             {
-                message.data.write<uint8_t>(0);
+				message.data.write<uint8_t>(delta_flag::_remove);
                 Serializer::SerializeDelta(message.data, data);
             });
         }
@@ -59,7 +64,7 @@ void add(const T& data, bool update=true)
         {
             deltas_.push([=] (swganh::messages::DeltasMessage& message)
             {
-                message.data.write<uint8_t>(1);
+                message.data.write<uint8_t>(delta_flag::_add);
                 Serializer::SerializeDelta(message.data, *pair.first);
             });
         }
@@ -73,7 +78,7 @@ void clear(bool update=true)
     {
         deltas_.push([=] (swganh::messages::DeltasMessage& message)
         {
-            message.data.write<uint8_t>(2);
+            message.data.write<uint8_t>(delta_flag::_clear);
         });
     }
 }
@@ -119,6 +124,7 @@ void Serialize(swganh::messages::BaselinesMessage& message)
 {
     message.data.write<uint32_t>(data_.size());
     message.data.write<uint32_t>(0);
+	update_counter_ += data_.size();
     for(auto& item : data_)
     {
         Serializer::SerializeBaseline(message.data, item);
@@ -128,7 +134,8 @@ void Serialize(swganh::messages::BaselinesMessage& message)
 void Serialize(swganh::messages::DeltasMessage& message)
 {
     message.data.write<uint32_t>(deltas_.size());
-    message.data.write<uint32_t>(++update_counter_);
+    message.data.write<uint32_t>(update_counter_);
+	update_counter_ += 1;
 
     while(!deltas_.empty())
     {
@@ -142,6 +149,16 @@ std::set<T> data_;
 
 uint32_t update_counter_;
 std::queue<std::function<void(swganh::messages::DeltasMessage&)>> deltas_;
+
+/*
+*most lists in the protocol use 0 for delete and 1 for add
+*at least skillmods use 0 for add and 1 for remove!!!!! that is what the network_map is for!!!
+*/
+enum delta_flag {
+	_remove = 0,
+	_add,
+	_clear
+};
         };
 
 }

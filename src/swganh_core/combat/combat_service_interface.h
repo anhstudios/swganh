@@ -70,8 +70,6 @@ public:
 
 	virtual HamInterface* GetHamManager() = 0;
 
-	virtual void SayHi() = 0;
-
     virtual void Startup() = 0;
 
     virtual void SendCombatAction(swganh::command::BaseCombatCommand* command) = 0;

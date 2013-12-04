@@ -94,45 +94,46 @@ void CreatureFactory::LoadFromStorage(const std::shared_ptr<sql::Connection>& co
             creature->SetPerformanceId(result->getUInt("performance_id"), lock);
             
 			creature->SetDisguise(result->getString("disguise_template"), lock);
-            creature->SetStatWound(HEALTH, result->getUInt("health_wounds"), lock);
-            creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"), lock);
-            creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"), lock);
-            creature->SetStatWound(ACTION, result->getUInt("action_wounds"), lock);
-            creature->SetStatWound(QUICKNESS, result->getUInt("quickness_wounds"), lock);
-            creature->SetStatWound(STAMINA, result->getUInt("stamina_wounds"), lock);
-            creature->SetStatWound(MIND, result->getUInt("mind_wounds"), lock);
-            creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"), lock);
-            creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"), lock);
+
+			creature->SetStatWound(HEALTH, result->getUInt("health_wounds"), lock, false);
+            creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"), lock, false);
+            creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"), lock, false);
+            creature->SetStatWound(ACTION, result->getUInt("action_wounds"), lock, false);
+            creature->SetStatWound(QUICKNESS, result->getUInt("quickness_wounds"), lock, false);
+            creature->SetStatWound(STAMINA, result->getUInt("stamina_wounds"), lock, false);
+            creature->SetStatWound(MIND, result->getUInt("mind_wounds"), lock, false);
+            creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"), lock, false);
+            creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"), lock, false);
 			
-			creature->SetStatCurrent(HEALTH, result->getUInt("current_health"), lock);
-            creature->SetStatCurrent(STRENGTH, result->getUInt("current_strength"), lock);
-            creature->SetStatCurrent(CONSTITUTION, result->getUInt("current_constitution"), lock);
-            creature->SetStatCurrent(ACTION, result->getUInt("current_action"), lock);
-            creature->SetStatCurrent(QUICKNESS, result->getUInt("current_quickness"), lock);
-            creature->SetStatCurrent(STAMINA, result->getUInt("current_stamina"), lock);
-            creature->SetStatCurrent(MIND, result->getUInt("current_mind"), lock);
-            creature->SetStatCurrent(FOCUS, result->getUInt("current_focus"), lock);
-            creature->SetStatCurrent(WILLPOWER, result->getUInt("current_willpower"), lock);
+			creature->SetStatCurrent(HEALTH, result->getUInt("current_health"), lock, false);
+            creature->SetStatCurrent(STRENGTH, result->getUInt("current_strength"), lock, false);
+            creature->SetStatCurrent(CONSTITUTION, result->getUInt("current_constitution"), lock, false);
+            creature->SetStatCurrent(ACTION, result->getUInt("current_action"), lock, false);
+            creature->SetStatCurrent(QUICKNESS, result->getUInt("current_quickness"), lock, false);
+            creature->SetStatCurrent(STAMINA, result->getUInt("current_stamina"), lock, false);
+            creature->SetStatCurrent(MIND, result->getUInt("current_mind"), lock, false);
+            creature->SetStatCurrent(FOCUS, result->getUInt("current_focus"), lock, false);
+            creature->SetStatCurrent(WILLPOWER, result->getUInt("current_willpower"), lock, false);
 
-            creature->SetStatMax(HEALTH, result->getUInt("max_health"), lock);
-            creature->SetStatMax(STRENGTH, result->getUInt("max_strength"), lock);
-            creature->SetStatMax(CONSTITUTION, result->getUInt("max_constitution"), lock);
-            creature->SetStatMax(ACTION, result->getUInt("max_action"), lock);
-            creature->SetStatMax(QUICKNESS, result->getUInt("max_quickness"), lock);
-            creature->SetStatMax(STAMINA, result->getUInt("max_stamina"), lock);
-            creature->SetStatMax(MIND, result->getUInt("max_mind"), lock);
-            creature->SetStatMax(FOCUS, result->getUInt("max_focus"), lock);
-            creature->SetStatMax(WILLPOWER, result->getUInt("max_willpower"), lock);
+            creature->SetStatMax(HEALTH, result->getUInt("max_health"), lock, false);
+            creature->SetStatMax(STRENGTH, result->getUInt("max_strength"), lock, false);
+            creature->SetStatMax(CONSTITUTION, result->getUInt("max_constitution"), lock, false);
+            creature->SetStatMax(ACTION, result->getUInt("max_action"), lock, false);
+            creature->SetStatMax(QUICKNESS, result->getUInt("max_quickness"), lock, false);
+            creature->SetStatMax(STAMINA, result->getUInt("max_stamina"), lock, false);
+            creature->SetStatMax(MIND, result->getUInt("max_mind"), lock, false);
+            creature->SetStatMax(FOCUS, result->getUInt("max_focus"), lock, false);
+            creature->SetStatMax(WILLPOWER, result->getUInt("max_willpower"), lock, false);
 
-			creature->SetStatEncumberance(HEALTH, result->getUInt("health_encumberance"), lock);
-			creature->SetStatEncumberance(STRENGTH, result->getUInt("strength_encumberance"), lock);
-            creature->SetStatEncumberance(CONSTITUTION, result->getUInt("constitution_encumberance"), lock);
-            creature->SetStatEncumberance(ACTION, result->getUInt("action_encumberance"), lock);
-            creature->SetStatEncumberance(QUICKNESS, result->getUInt("quickness_encumberance"), lock);
-            creature->SetStatEncumberance(STAMINA, result->getUInt("stamina_encumberance"), lock);
-            creature->SetStatEncumberance(MIND, result->getUInt("mind_encumberance"), lock);
-            creature->SetStatEncumberance(FOCUS, result->getUInt("focus_encumberance"), lock);
-            creature->SetStatEncumberance(WILLPOWER, result->getUInt("willpower_encumberance"), lock);
+			creature->SetStatEncumberance(HEALTH, result->getUInt("health_encumberance"), lock, false);
+			creature->SetStatEncumberance(STRENGTH, result->getUInt("strength_encumberance"), lock, false);
+            creature->SetStatEncumberance(CONSTITUTION, result->getUInt("constitution_encumberance"), lock, false);
+            creature->SetStatEncumberance(ACTION, result->getUInt("action_encumberance"), lock, false);
+            creature->SetStatEncumberance(QUICKNESS, result->getUInt("quickness_encumberance"), lock, false);
+            creature->SetStatEncumberance(STAMINA, result->getUInt("stamina_encumberance"), lock, false);
+            creature->SetStatEncumberance(MIND, result->getUInt("mind_encumberance"), lock, false);
+            creature->SetStatEncumberance(FOCUS, result->getUInt("focus_encumberance"), lock, false);
+            creature->SetStatEncumberance(WILLPOWER, result->getUInt("willpower_encumberance"), lock, false);
 
             creature->SetStatBase(HEALTH, result->getUInt("current_health"), lock);
             creature->SetStatBase(STRENGTH, result->getUInt("current_strength"), lock);
@@ -436,7 +437,7 @@ void CreatureFactory::LoadSkillMods_(const std::shared_ptr<sql::Connection>& con
     {
         while (result->next())
         {
-            creature->AddSkillMod(SkillMod(result->getString("name"), result->getUInt("value"), 0), lock);
+            creature->AddSkillMod(SkillMod(result->getString("name"), result->getUInt("value"), 0), lock, false);
         }
     }
     while(statement->getMoreResults());

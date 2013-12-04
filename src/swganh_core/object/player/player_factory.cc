@@ -437,6 +437,7 @@ void PlayerFactory::LoadSkillCommands_(const std::shared_ptr<sql::Connection>& c
 	
 		//the creatureObject is the Container of the Player Object!
 		//this is a very dirty hack - however I have no idea on how to get the creature ID otherwise
+		//as the containerobject is still nullptr
 		auto id = player->GetObjectId(lock);
 		LOG(error) << "PlayerFactory::LoadSkillCommands_ : load id : " << id-1;
 		statement->setUInt64(1, id-1);
@@ -447,7 +448,7 @@ void PlayerFactory::LoadSkillCommands_(const std::shared_ptr<sql::Connection>& c
 			while (result->next())
 			{
 				result->getInt("id");
-				player->AddSkillCommand(result->getString("name"), lock);
+				player->AddSkillCommand(result->getString("name"), lock, false);
 			}
 		}
 		while(statement->getMoreResults());

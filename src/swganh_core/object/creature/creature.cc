@@ -209,11 +209,12 @@ void Creature::AddSkill(std::string skill)
 
 void Creature::AddSkill(std::string skill, boost::unique_lock<boost::mutex>& lock, bool persist)
 {
-    skills_.add(skill);
+    skills_.add(skill, persist);
 	if(persist){
 		skills_sync_queue_.push(std::pair<uint8_t, std::string>(1, skill));
+		
 	}
-    DISPATCH(Creature, Skill);
+	DISPATCH(Creature, Skill);    
 }
 
 void Creature::RemoveSkill(std::string skill)
@@ -477,10 +478,12 @@ void Creature::SetStatWound(uint16_t stat_index, int32_t value)
     SetStatWound(stat_index, value, lock);
 }
 
-void Creature::SetStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize)
 {
-    stat_wound_list_.update(stat_index, value);
-    DISPATCH(Creature, StatWound);
+    stat_wound_list_.update(stat_index, value, serialize);
+    if(serialize)	{
+		DISPATCH(Creature, StatWound);
+	}
 }
 
 void Creature::AddStatWound(uint16_t stat_index, int32_t value)
@@ -489,10 +492,12 @@ void Creature::AddStatWound(uint16_t stat_index, int32_t value)
     AddStatWound(stat_index, value, lock);
 }
 
-void Creature::AddStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddStatWound(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize)
 {
     stat_wound_list_.update(stat_index, stat_wound_list_[stat_index] + value);
-    DISPATCH(Creature, StatWound);
+	if(serialize)	{
+		DISPATCH(Creature, StatWound);
+	}
 }
 
 void Creature::DeductStatWound(uint16_t stat_index, int32_t value)
@@ -582,10 +587,12 @@ void Creature::SetStatEncumberance(uint16_t stat_index, int32_t value)
     SetStatEncumberance(stat_index, value, lock);
 }
 
-void Creature::SetStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatEncumberance(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize)
 {
-    stat_encumberance_list_.update(stat_index, value);
-    DISPATCH(Creature, StatEncumberance);
+	stat_encumberance_list_.update(stat_index, value, serialize);
+	if(serialize)	{
+		DISPATCH(Creature, StatEncumberance);
+	}
 }
 
 void Creature::AddStatEncumberance(uint16_t stat_index, int32_t value)
@@ -636,16 +643,39 @@ int32_t Creature::GetStatEncumberance(uint16_t stat_index, boost::unique_lock<bo
     return stat_encumberance_list_[stat_index];
 }
 
+bool Creature::HasSkillMod(std::string identifier)
+{
+    auto lock = AcquireLock();
+    return HasSkillMod(identifier, lock);
+}
+
+bool Creature::HasSkillMod(std::string identifier, boost::unique_lock<boost::mutex>& lock)
+{
+    auto iter = std::find_if(begin(skill_mod_list_), end(skill_mod_list_), [=](std::pair<std::string, SkillMod> pair)->bool
+    {
+        return (identifier == pair.first);
+    });
+	
+	if(iter != end(skill_mod_list_))
+    {
+        return true;
+    }
+	return false;
+  
+}
+
 void Creature::AddSkillMod(SkillMod mod)
 {
     auto lock = AcquireLock();
     AddSkillMod(mod, lock);
 }
 
-void Creature::AddSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock)
+void Creature::AddSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock, bool persist)
 {
-    skill_mod_list_.add(mod.identifier, mod);
-    DISPATCH(Creature, SkillMod);
+    skill_mod_list_.add(mod.identifier, mod, persist);
+	if(persist){
+		DISPATCH(Creature, SkillMod);
+	}
 }
 
 void Creature::RemoveSkillMod(std::string identifier)
@@ -663,11 +693,11 @@ void Creature::RemoveSkillMod(std::string identifier, boost::unique_lock<boost::
 
     if(iter != end(skill_mod_list_))
     {
-        return;
+        skill_mod_list_.remove(iter);
+		DISPATCH(Creature, SkillMod);
     }
 
-    skill_mod_list_.remove(iter);
-    DISPATCH(Creature, SkillMod);
+    
 }
 
 void Creature::SetSkillMod(SkillMod mod)
@@ -676,10 +706,12 @@ void Creature::SetSkillMod(SkillMod mod)
     SetSkillMod(mod, lock);
 }
 
-void Creature::SetSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetSkillMod(SkillMod mod, boost::unique_lock<boost::mutex>& lock, bool serialize)
 {
     skill_mod_list_.update(mod.identifier);
-    DISPATCH(Creature, SkillMod);
+	if(serialize)	{
+		DISPATCH(Creature, SkillMod);
+	}
 }
 
 std::map<std::string, SkillMod> Creature::GetSkillMods()
@@ -768,10 +800,12 @@ void Creature::SetListenToId(uint64_t listen_to_id)
     SetListenToId(listen_to_id, lock);
 }
 
-void Creature::SetListenToId(uint64_t listen_to_id, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetListenToId(uint64_t listen_to_id, boost::unique_lock<boost::mutex>& lock, bool serialize)
 {
     listen_to_id_ = listen_to_id;
-    DISPATCH(Creature, ListenToId);
+	if(serialize)	{
+		DISPATCH(Creature, ListenToId);
+	}
 }
 
 uint64_t Creature::GetListenToId()
@@ -1309,10 +1343,12 @@ void Creature::SetStatCurrent(uint16_t stat_index, int32_t value)
     SetStatCurrent(stat_index, value, lock);
 }
 
-void Creature::SetStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatCurrent(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize)
 {
-    stat_current_list_.update(stat_index, value);
-    DISPATCH(Creature, StatCurrent);
+    stat_current_list_.update(stat_index, value, serialize);
+	if(serialize)	{
+		DISPATCH(Creature, StatCurrent);
+	}
 }
 
 void Creature::AddStatCurrent(uint16_t stat_index, int32_t value)
@@ -1325,7 +1361,7 @@ void Creature::AddStatCurrent(uint16_t stat_index, int32_t value, boost::unique_
 {
     int32_t new_value = stat_current_list_[stat_index] + value;
     stat_current_list_.update(stat_index, new_value);
-    DISPATCH(Creature, StatCurrent);
+	DISPATCH(Creature, StatCurrent);
 }
 
 void Creature::DeductStatCurrent(uint16_t stat_index, int32_t value)
@@ -1369,11 +1405,13 @@ void Creature::SetStatMax(uint16_t stat_index, int32_t value)
     SetStatMax(stat_index, value, lock);
 }
 
-void Creature::SetStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock)
+void Creature::SetStatMax(uint16_t stat_index, int32_t value, boost::unique_lock<boost::mutex>& lock, bool serialize)
 {
-    if(stat_max_list_.update(stat_index, value)){
-		DISPATCH(Creature, StatMax);
+    stat_max_list_.update(stat_index, value, serialize);
+	if(serialize) {
+			DISPATCH(Creature, StatMax);
 	}
+
 }
 
 void Creature::AddStatMax(uint16_t stat_index, int32_t value)
@@ -1911,15 +1949,20 @@ void Creature::SerializeStatEncumberances(swganh::messages::BaseSwgMessage* mess
     stat_encumberance_list_.Serialize(message);
 }
 
-void Creature::SerializeSkillMods(swganh::messages::BaseSwgMessage* message)
+bool Creature::SerializeSkillMods(swganh::messages::BaseSwgMessage* message)
 {
     auto lock = AcquireLock();
-    SerializeSkillMods(message, lock);
+    return SerializeSkillMods(message, lock);
 }
 
-void Creature::SerializeSkillMods(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock)
+bool Creature::SerializeSkillMods(swganh::messages::BaseSwgMessage* message, boost::unique_lock<boost::mutex>& lock, bool baseline)
 {
-    skill_mod_list_.Serialize(message);
+	//dont build deltas when we're empty lol
+	if((skill_mod_list_.update_size() > 0) || baseline)	{
+		skill_mod_list_.Serialize(message);
+		return true;
+	}
+	return false;
 }
 
 void Creature::SerializeMissionCriticalObjects(swganh::messages::BaseSwgMessage* message)

@@ -373,9 +373,11 @@ void CreatureMessageBuilder::BuildSkillModDelta(const shared_ptr<Creature>& crea
 {
     if (creature->HasObservers())
     {
+		//we do not want to send empty deltas!
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 3);
-        creature->SerializeSkillMods(&message);
-        creature->AddDeltasUpdate(&message);
+        if (creature->SerializeSkillMods(&message))	{
+			creature->AddDeltasUpdate(&message);
+		}
     }
 }
 
@@ -673,7 +675,7 @@ boost::optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline4(const s
     message.data.write<float>(creature->GetAccelerationMultiplierBase(lock));         // Acceleration Multiplier Base
     message.data.write<float>(creature->GetAccelerationMultiplierModifier(lock));     // Acceleration Multiplier Modifier
     creature->SerializeStatEncumberances(&message, lock);                       // Stat Encumberances
-    creature->SerializeSkillMods(&message, lock);                               // Skill Mods
+    creature->SerializeSkillMods(&message, lock, true);                               // Skill Mods
     message.data.write<float>(creature->GetSpeedMultiplierBase(lock));                // Speed Multiplier Base
     message.data.write<float>(creature->GetSpeedMultiplierModifier(lock));            // Speed Multiplier Modifier
     message.data.write<uint64_t>(creature->GetListenToId(lock));                      // Listen To Id

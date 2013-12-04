@@ -17,6 +17,12 @@ namespace containers
 {
 
 template<typename T, typename Serializer=DefaultSerializer<T>>
+		/*
+		*@brief NetworkVector is the helper Class to deserialize a Vector to baselines and deltas
+		*it is used for datastructures where the client expects an index of the elements position in the delta
+		*like in many YALP data structures like commands (Abilities) or the DraftSchematicList or Ham in the creo
+		*
+		*/
         class NetworkVector
         {
             public:
@@ -50,7 +56,7 @@ void remove(const uint16_t index, bool update=true)
     {
         deltas_.push([=] (swganh::messages::DeltasMessage& message)
         {
-            message.data.write<uint8_t>(0);
+            message.data.write<uint8_t>(delta_flag::_remove);
             message.data.write<uint16_t>(index);
         });
     }
@@ -72,7 +78,7 @@ void add(const T& data, bool update=true)
     {
         deltas_.push([=] (swganh::messages::DeltasMessage& message)
         {
-            message.data.write<uint8_t>(1);
+			message.data.write<uint8_t>(delta_flag::_add);
             message.data.write<uint16_t>(index);
             Serializer::SerializeDelta(message.data, new_data);
         });
@@ -83,7 +89,7 @@ void update(const uint16_t index)
 {
     deltas_.push([=] (swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint8_t>(2);
+        message.data.write<uint8_t>(delta_flag::_update);
         message.data.write<uint16_t>(index);
         Serializer::SerializeDelta(message.data, data_[index]);
     });
@@ -97,13 +103,18 @@ void update(iterator itr)
 //update updates the given índex with a new value
 //it returns true if the value was changed(different)
 //otherwise NO UPDATE MUST BE SENT, else the client will desynchronize
-bool  update(const uint16_t index, const T& new_value)
+bool  update(const uint16_t index, const T& new_value, bool serialize = true)
 {
 	if(data_[index] == new_value)	{
 		return false;
 	}
     data_[index] = new_value;
-    update(index);
+	
+	//if the value gets initialized by the factory before the basleine
+	//we MUST NOT send a delta otherwise the client will desynchronize
+	if(serialize)	{
+		update(index);
+	}
 	return true;
 }
 
@@ -114,7 +125,7 @@ void reset(const std::vector<T>& other, bool update=true)
         //A copy will be made for the update
         deltas_.push([=] (swganh::messages::DeltasMessage& message)
         {
-            message.data.write<uint8_t>(3);
+            message.data.write<uint8_t>(delta_flag::_reset);
             message.data.write<uint16_t>(other.size());
             for(auto& item : other)
             {
@@ -198,7 +209,8 @@ void Serialize(swganh::messages::BaseSwgMessage* message)
 void Serialize(swganh::messages::BaselinesMessage& message)
 {
     message.data.write<uint32_t>(data_.size());
-    message.data.write<uint32_t>(0);
+    //think of the players loggin in later and getting the baseline and then the deltas
+	message.data.write<uint32_t>(update_counter_);
     for(auto& item : data_)
     {
         Serializer::SerializeBaseline(message.data, item);
@@ -208,7 +220,9 @@ void Serialize(swganh::messages::BaselinesMessage& message)
 void Serialize(swganh::messages::DeltasMessage& message)
 {
     message.data.write<uint32_t>(deltas_.size());
-    message.data.write<uint32_t>(++update_counter_);
+	//confirmed in captures for ham
+	update_counter_ += deltas_.size();
+    message.data.write<uint32_t>(update_counter_);
 
     while(!deltas_.empty())
     {
@@ -221,6 +235,18 @@ private:
 std::vector<T> data_;
 uint32_t update_counter_;
 std::queue<std::function<void(swganh::messages::DeltasMessage&)>> deltas_;
+/*
+*most lists in the protocol use 0 for delete and 1 for add
+*at least skillmods use 0 for add and 1 for remove!!!!! (use network_map for that)
+*/
+enum delta_flag {
+	_remove = 0,
+	_add,
+	_update,
+	_reset
+};
+  
+
         };
 
 }
